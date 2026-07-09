@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Multi-Client Facial Tracking Relay for VTubers | Celeste Blog</title>
+    <meta name="description" content="Split iFacialMocap UDP streams to multiple applications simultaneously. Lightweight Go relay for VTube Studio, Warudo, and other facial tracking tools." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/vtuberhub-facial-tracking-relay.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Multi-Client Facial Tracking Relay for VTubers",
+      "description": "Split iFacialMocap UDP streams to multiple applications simultaneously. Lightweight Go relay for VTube Studio, Warudo, and other facial tracking tools.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2025-01-26",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/vtuberhub-facial-tracking-relay.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Gamer-Tech Lifestyle</p>
+          <h1>Multi-Client Facial Tracking Relay for VTubers</h1>
+          <p class="meta">Split iFacialMocap UDP streams to multiple applications simultaneously. Lightweight Go relay enabling VTube Studio, Warudo, and other tools to share the same facial tracking data.</p>
+          <p class="meta"><strong>Last updated:</strong> January 26, 2025</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>VTuberHub is a zero-latency UDP relay that forwards iFacialMocap facial tracking data to multiple destinations simultaneously.</li>
+            <li>Built in Go for minimal overhead—sub-millisecond latency, <0.5% CPU usage, perfect for real-time VTuber streaming.</li>
+            <li>Includes packet dumping for replay tooling, configurable targets, and comprehensive Windows/macOS/Linux support.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>The Problem: One Stream, Many Applications</h2>
+          <p>iFacialMocap is an excellent iOS app for facial tracking, but it only sends data to one destination at a time. As a VTuber, I wanted to use the same tracking data in multiple applications simultaneously:</p>
+          <p><img src="https://s3.whykusanagi.xyz/images/vtuberhub/demo.gif" alt="VTuberHub demo showing two models receiving facial tracking data simultaneously" style="max-width: 100%; border-radius: 8px; margin: 1rem 0;" /></p>
+          <ul>
+            <li><strong>VTube Studio</strong>: For live streaming with my 3D model</li>
+            <li><strong>Warudo</strong>: For virtual world interactions and recording</li>
+            <li><strong>Future Tools</strong>: Any other application that accepts ARKit-style blendshape data</li>
+          </ul>
+          <p>Running multiple instances of iFacialMocap or switching between applications wasn't practical. I needed a way to split the UDP stream without introducing latency or packet loss.</p>
+        </section>
+
+        <section>
+          <h2>The Solution: Byte-for-Byte UDP Relay</h2>
+          <p>VTuberHub is a lightweight Go application that listens on a UDP port, receives packets from iFacialMocap, and forwards identical copies to all configured targets in parallel. The relay makes zero modifications to the data—it's a pure traffic splitter.</p>
+          <p><strong>Key Design Principles:</strong></p>
+          <ol>
+            <li><strong>Zero Latency</strong>: Packets are forwarded immediately using Go's efficient UDP networking</li>
+            <li><strong>Parallel Forwarding</strong>: All targets receive data simultaneously, not sequentially</li>
+            <li><strong>No Packet Modification</strong>: Byte-for-byte forwarding ensures compatibility with all ARKit-compatible applications</li>
+            <li><strong>Minimal Overhead</strong>: Go's compiled nature and efficient concurrency keep CPU usage under 0.5%</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Architecture & Performance</h2>
+          <p>The relay uses Go's <code>net.UDPConn</code> for efficient packet handling. Each received packet triggers parallel writes to all configured targets using goroutines, ensuring minimal latency. The main loop pre-allocates buffers to avoid garbage collection pauses during high-frequency streaming (30-60 FPS).</p>
+          <p><strong>Performance Metrics:</strong></p>
+          <ul>
+            <li><strong>Average Latency</strong>: <1 ms (typically 0.1-0.5 ms)</li>
+            <li><strong>CPU Usage</strong>: <0.5% on modern hardware</li>
+            <li><strong>Memory Usage</strong>: <15 MB</li>
+            <li><strong>Packet Loss</strong>: <0.1% under normal conditions</li>
+          </ul>
+          <p>Socket buffers are set to 64KB (read and write) to handle burst traffic and reduce packet drops. The relay includes comprehensive statistics reporting, showing uptime, packets received/forwarded/dropped, and average latency every 10 seconds.</p>
+        </section>
+
+        <section>
+          <h2>Packet Dumping & Replay Tooling</h2>
+          <p>One of the most powerful features is the packet dump functionality. When enabled via <code>dump_packets: true</code> in the config, the relay writes every received packet to timestamped files in the specified directory (default: <code>raw_packets/</code>).</p>
+          <p>This enables several use cases:</p>
+          <ul>
+            <li><strong>Format Analysis</strong>: Study the exact ARKit blendshape format for building custom tools</li>
+            <li><strong>Replay Tooling</strong>: Create scripts that replay saved packets to test applications without live tracking</li>
+            <li><strong>Chat Reaction System</strong>: Build systems that trigger specific facial expressions based on chat messages by replaying pre-recorded blendshape sequences</li>
+            <li><strong>Debugging</strong>: Capture problematic packets for analysis when troubleshooting tracking issues</li>
+          </ul>
+          <p>Each packet is saved as a separate file with a timestamp, making it easy to process them chronologically or filter by time range.</p>
+        </section>
+
+        <section>
+          <h2>Configuration & Usage</h2>
+          <p>The relay uses a simple JSON configuration file:</p>
+          <pre><code>{
+  "listen_port": 13121,
+  "targets": [
+    {"host": "127.0.0.1", "port": 49983, "name": "VBridger"},
+    {"host": "127.0.0.1", "port": 39539, "name": "Warudo"}
+  ],
+  "buffer_size": 4096,
+  "log_level": "info",
+  "stats_interval": 10,
+  "dump_packets": false,
+  "dump_dir": "raw_packets"
+}</code></pre>
+          <p>Setup is straightforward:</p>
+          <ol>
+            <li>Configure iFacialMocap to send to your PC's IP on port 13121</li>
+            <li>Start the relay: <code>./ifmrelay.exe -config relay_config.json</code></li>
+            <li>Configure target applications (VBridger, Warudo) to listen on their respective ports</li>
+            <li>Enable packet dumping if you want to capture data for replay tooling</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Code Quality & Testing</h2>
+          <p>VTuberHub follows enterprise-grade standards with comprehensive unit tests covering config loading, normalization, and packet forwarding logic. The codebase includes:</p>
+          <ul>
+            <li><strong>Config Validation</strong>: Strict normalization ensures sensible defaults and prevents misconfiguration</li>
+            <li><strong>Error Handling</strong>: Graceful degradation when targets are unreachable—other targets continue receiving data</li>
+            <li><strong>Atomic Statistics</strong>: Thread-safe counters using Go's <code>atomic</code> package for accurate metrics</li>
+            <li><strong>Cross-Platform Support</strong>: Works on Windows (primary), macOS, and Linux with identical behavior</li>
+          </ul>
+          <p>All tests pass with <code>go test ./...</code>, and the code is formatted with <code>gofmt</code> following Go best practices.</p>
+        </section>
+
+        <section>
+          <h2>Windows Firewall Configuration</h2>
+          <p>Windows Defender Firewall blocks incoming UDP connections by default. You'll need to create a firewall rule to allow the relay to receive packets from your iOS device. The README includes PowerShell commands and GUI instructions for both port-based and executable-based rules.</p>
+          <p>For quick setup (PowerShell as Administrator):</p>
+          <pre><code>New-NetFirewallRule -DisplayName "iFacialMocap UDP Relay" `
+  -Direction Inbound -Protocol UDP -LocalPort 13121 `
+  -Action Allow -Profile Any</code></pre>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><a href="https://github.com/whykusanagi/VTuberHub" target="_blank" rel="noopener">VTuberHub repository</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Will this work with other facial tracking apps besides iFacialMocap?<br>
+          <strong>A:</strong> Yes! Any application that sends ARKit-compatible blendshape data over UDP can use VTuberHub. The relay is protocol-agnostic—it forwards whatever it receives. Just configure the source app to send to the relay's listen port.</p>
+          <p><strong>Q:</strong> Can I use this for non-VTuber applications?<br>
+          <strong>A:</strong> Absolutely. The relay is useful for any scenario where you need to split a UDP stream to multiple destinations—motion capture, sensor data, game streaming, or any real-time UDP application.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/VTuberHub" target="_blank" rel="noopener">View on GitHub</a>
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+          <a class="btn" href="../links.html#discord">Join Community</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

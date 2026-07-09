@@ -1,0 +1,20 @@
+/* warning-overlay.css — NIKKE-style warning-screen foreground (canvas-rendered).
+ * Canvas is drawn by drawWarningCanvas() in index.html using assets ported from
+ * skuqre.github.io's NIKKE warning generator, with corruption-palette hue-shift.
+ * Canvas sits in the same slot as #celeste-image. */
+
+#warning-overlay-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 95; /* above #celeste-image (90), below #title-area (100) */
+    pointer-events: none;
+    display: none;
+    object-fit: contain;
+}
+
+#warning-overlay-canvas.active {
+    display: block;
+}

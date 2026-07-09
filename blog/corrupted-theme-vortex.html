@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Corrupted Theme Vortex: Interstellar-Style Black Hole Animation in CSS and Canvas | Celeste Blog</title>
+    <meta name="description" content="Corrupted Theme v0.1.8 adds Vortex, a real-time black hole animation with accretion disk physics, spaghettification, and Saturn-ring layering. Pure Canvas rendering for glassmorphic UI backgrounds." />
+    <meta name="keywords" content="corrupted theme, corrupted theme vortex, black hole animation css, black hole animation canvas, glassmorphic design system npm, accretion disk animation web, interstellar black hole web animation, vortex animation component, web animation canvas 60fps, voidpunk aesthetic css, npm css framework glassmorphism, corrupted theme npm, glassmorphism background animation, whykusanagi design system" />
+    <meta name="author" content="Celeste" />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/corrupted-theme-vortex.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/corrupted-theme-vortex.html">
+    <meta property="og:title" content="Corrupted Theme Vortex: Interstellar-Style Black Hole Animation">
+    <meta property="og:description" content="Real-time black hole animation with accretion disk physics and spaghettification for glassmorphic UI backgrounds. Corrupted Theme v0.1.8.">
+    <meta property="og:image" content="https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png">
+    <meta property="og:site_name" content="whykusanagi">
+    <meta property="article:published_time" content="2026-03-01">
+    <meta property="article:modified_time" content="2026-03-01">
+    <meta property="article:section" content="Design Systems">
+    <meta property="article:tag" content="animation">
+    <meta property="article:tag" content="glassmorphism">
+    <meta property="article:tag" content="Canvas">
+    <meta property="article:tag" content="npm package">
+    <meta property="article:tag" content="CSS framework">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/corrupted-theme-vortex.html">
+    <meta name="twitter:title" content="Corrupted Theme Vortex: Black Hole Animation in Canvas">
+    <meta name="twitter:description" content="Real-time accretion disk animation with spaghettification and Saturn-ring layering for glassmorphic UIs.">
+    <meta name="twitter:image" content="https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png">
+    <meta name="twitter:site" content="@whykusanagi">
+
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Article",
+          "headline": "Corrupted Theme Vortex: Interstellar-Style Black Hole Animation in CSS and Canvas",
+          "description": "Corrupted Theme v0.1.8 adds Vortex, a real-time black hole animation with accretion disk physics, spaghettification, and Saturn-ring layering.",
+          "keywords": "corrupted theme, black hole animation, canvas animation, glassmorphic design, accretion disk, voidpunk aesthetic, npm css framework",
+          "articleSection": "AI Corruption Aesthetics",
+          "inLanguage": "en-US",
+          "wordCount": "1000",
+          "author": {
+            "@type": "Person",
+            "name": "Celeste",
+            "url": "https://whykusanagi.xyz/"
+          },
+          "datePublished": "2026-03-01",
+          "dateModified": "2026-03-01",
+          "image": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png",
+          "mainEntityOfPage": "https://whykusanagi.xyz/blog/corrupted-theme-vortex.html",
+          "publisher": {
+            "@type": "Organization",
+            "name": "whykusanagi",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+            }
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Does the Corrupted Theme Vortex animation impact page performance?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "On modern hardware (2020+ laptop, any recent desktop), it runs at 60fps with minimal CPU impact since it is Canvas-rendered and uses requestAnimationFrame. On older devices, the particle count can be reduced or the animation can be paused entirely."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I use just the Vortex animation without the rest of Corrupted Theme?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "The Vortex component is part of the full package and shares the theme's color variables and Canvas utilities. For standalone use, it is easier to import the full theme and only use the Vortex component."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Why does the Corrupted Theme black hole look different from Interstellar?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Interstellar's Gargantua was rendered with physically accurate general relativity. This is a stylized 2D approximation optimized for looking good behind UI panels, with Corrupted Theme's signature magenta/purple palette instead of the warm orange tones in the film."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">AI Corruption Aesthetics</p>
+          <h1>Corrupted Theme Vortex: An Interstellar-Style Black Hole Animation for Glassmorphic UIs</h1>
+          <p class="meta">Corrupted Theme v0.1.8 introduces Vortex - a real-time black hole animation rendered entirely in Canvas. Features an Interstellar-inspired accretion disk with continuous particle flow, spaghettification effects, Saturn-ring depth layering, and a magenta corona. Designed as a dramatic background element for glassmorphic UI compositions.</p>
+          <p class="meta"><strong>Last updated:</strong> March 1, 2026</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>Real-time black hole animation</strong>: Canvas-rendered vortex with matter spiraling inward toward a central event horizon</li>
+            <li><strong>Interstellar-style accretion disk</strong>: Continuous particle flow replacing the old spark-arm approach, with Saturn-like ring layering and near/far depth split</li>
+            <li><strong>Spaghettification</strong>: Particles stretch and accelerate as they approach the event horizon, mimicking gravitational tidal effects</li>
+            <li><strong>Color-accurate rendering</strong>: Dedicated purple hue zone, HSV saturation clamping, and Reinhard tone mapping to eliminate white bleed artifacts</li>
+            <li><strong>Part of Corrupted Theme v0.1.8</strong>: Available via npm as <code>@whykusanagi/corrupted-theme</code></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What Is Vortex?</h2>
+          <p>Vortex is a background animation component for the <a href="corrupted-theme-design-system.html">Corrupted Theme</a> design system. It renders a black hole with an orbiting accretion disk that you can place behind glassmorphic UI panels. The animation runs at 60fps on modern hardware and is designed to be visually dramatic without overwhelming the foreground content.</p>
+          <p>The visual reference is the Gargantua black hole from Interstellar - a flattened accretion disk viewed at an angle, with matter spiraling inward and a glowing corona around the event horizon. Corrupted Theme's version adds its signature magenta and purple color palette.</p>
+        </section>
+
+        <section>
+          <h2>Accretion Disk Physics</h2>
+          <p>The accretion disk evolved through several iterations before landing on the current approach:</p>
+          <ol>
+            <li><strong>Spark arms</strong> (initial): Discrete particle bursts along spiral arms. Looked too much like a galaxy, not a black hole</li>
+            <li><strong>Orbital particles</strong> (v2): Individual particles on orbital paths. Better, but still felt scattered</li>
+            <li><strong>Continuous accretion disk</strong> (final): A dense band of particles forming a flattened disk with side-view perspective. Matter flows inward continuously, creating the illusion of gravitational pull</li>
+          </ol>
+          <p>The final implementation uses a <strong>near/far depth split</strong> for proper Saturn-ring layering. Particles in front of the black hole render on top of the event horizon and corona, while particles behind render underneath. This creates convincing depth without actual 3D rendering.</p>
+
+          <h3>Spaghettification</h3>
+          <p>As particles approach the event horizon, they exhibit spaghettification - stretching along their direction of travel and accelerating. The effect is subtle but sells the illusion of intense gravitational tidal forces. Particles that cross the event horizon threshold are removed from the simulation and respawned at the disk edge.</p>
+
+          <h3>Reversed Flow</h3>
+          <p>Early versions had matter spiraling outward (visually expanding). The final version reverses this - matter spirals inward toward the event horizon, which reads correctly as gravitational accretion. This small change dramatically improved the visual believability.</p>
+        </section>
+
+        <section>
+          <h2>Color Rendering Pipeline</h2>
+          <p>Getting the colors right required solving several rendering artifacts:</p>
+          <ul>
+            <li><strong>White bleed</strong>: High-energy particles near the core were blowing out to white. Fixed by clamping HSV saturation to [0,1] before RGB conversion and applying Reinhard tone mapping</li>
+            <li><strong>Purple zone</strong>: Purple was being interpolated through blue/magenta instead of rendered as a true purple. Fixed by assigning a dedicated hue zone (0.65-0.74) specifically for purple particles</li>
+            <li><strong>Power curve collapse</strong>: Applying a power curve after Reinhard tone mapping was collapsing dim cloud particles to pure black, losing detail in the outer disk. Reordered the pipeline to preserve low-luminance detail</li>
+            <li><strong>Magenta corona</strong>: The corona glow around the event horizon is rendered as a separate element with its own width and opacity controls, tightened to 16-50 pixel width to prevent it from overwhelming the disk</li>
+          </ul>
+          <p>The gold halo (gravitational lensing effect) was also reduced to prevent it from dominating the palette. The final look is predominantly deep purples and magentas with a restrained warm accent.</p>
+        </section>
+
+        <section>
+          <h2>Integration with Corrupted Theme</h2>
+          <p>Vortex is available as part of Corrupted Theme v0.1.8:</p>
+          <pre><code>npm install @whykusanagi/corrupted-theme@0.1.8</code></pre>
+          <p>Use it as a background behind glassmorphic panels. The animation's dark palette and organic motion complement the frosted glass aesthetic without competing for attention. The vortex renders on a Canvas element that sits behind the glass-backdrop layer.</p>
+          <p>All version references across the package (package.json, README, changelog, docs) are synchronized to 0.1.8 following the documented version bump procedure.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Does the Vortex animation impact page performance?<br>
+          <strong>A:</strong> On modern hardware (2020+ laptop, any recent desktop), it runs at 60fps with minimal CPU impact since it's Canvas-rendered and uses requestAnimationFrame. On older or low-power devices, the particle count can be reduced or the animation can be paused entirely. The glassmorphic panels in front use backdrop-filter: blur which is GPU-accelerated, so the combination stays smooth on capable hardware.</p>
+
+          <p><strong>Q:</strong> Can I use just the Vortex animation without the rest of Corrupted Theme?<br>
+          <strong>A:</strong> The Vortex component is part of the full package and shares the theme's color variables and Canvas utilities. You could extract it, but you'd need to bring along the color pipeline and particle system utilities. For standalone use, it's easier to import the full theme and only use the Vortex component.</p>
+
+          <p><strong>Q:</strong> Why does the black hole look different from the one in Interstellar?<br>
+          <strong>A:</strong> Interstellar's Gargantua was rendered with physically accurate general relativity light bending by Kip Thorne's team. This is a stylized 2D approximation optimized for looking good behind UI panels, not for scientific accuracy. The accretion disk, corona, and depth layering evoke the same visual language, but with Corrupted Theme's signature magenta/purple palette instead of the warm orange tones in the film. It's art direction, not astrophysics.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="corrupted-theme-design-system.html"><i class="fas fa-palette"></i> Corrupted Theme Overview</a>
+          <a class="btn" href="https://www.npmjs.com/package/@whykusanagi/corrupted-theme" target="_blank" rel="noopener"><i class="fab fa-npm"></i> npm Package</a>
+          <a class="btn" href="../tools.html"><i class="fas fa-tools"></i> More Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

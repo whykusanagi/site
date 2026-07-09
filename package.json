@@ -1,0 +1,28 @@
+{
+  "name": "whykusanagi-celeste-worker",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker for Celeste AI key injection on whykusanagi.xyz",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "echo 'No build required for Cloudflare Workers'"
+  },
+  "keywords": [
+    "cloudflare-workers",
+    "celeste-ai",
+    "whykusanagi"
+  ],
+  "author": "whykusanagi",
+  "license": "MIT",
+  "devDependencies": {
+    "wrangler": "^3.30.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@whykusanagi/corrupted-theme": "^0.2.1"
+  }
+}

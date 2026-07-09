@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Background Generator — Corrupted Theme</title>
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0a0a0a; color: #f5f1f8; font-family: system-ui, sans-serif; }
+    #app { display: flex; min-height: 100vh; gap: 16px; padding: 16px; }
+    #preview-pane { flex: 1; display: flex; align-items: center; justify-content: center;
+      background: repeating-conic-gradient(#1a1a1a 0% 25%, #222 0% 50%) 50% / 24px 24px; border-radius: 8px; padding: 16px; }
+    #stage { max-width: 100%; max-height: 85vh; box-shadow: 0 8px 40px rgba(0,0,0,.6); background: #000; }
+    #controls-pane { width: 320px; flex: none; overflow-y: auto; max-height: 95vh; padding: 8px; }
+    .ctl-group { border: 1px solid #3a2555; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+    .ctl-group h3 { margin: 0 0 8px; font-size: 14px; color: #e86ca8; }
+    .ctl-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
+    .ctl-row label { flex: 1; }
+    select, input[type="number"] { background: #140c28; color: #f5f1f8; border: 1px solid #3a2555; border-radius: 4px; padding: 4px; }
+    button { background: linear-gradient(135deg,#d94f90,#b61b70); color: #fff; border: none; border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: 600; }
+    button.secondary { background: #2a1d40; }
+    #selftest { display: none; padding: 8px; border-radius: 6px; margin-bottom: 10px; font-size: 13px; white-space: pre-wrap; }
+    #selftest.pass { display: block; background: #14331a; color: #8fe28f; }
+    #selftest.fail { display: block; background: #3a1414; color: #e28f8f; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="preview-pane">
+      <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet"></svg>
+    </div>
+    <div id="controls-pane">
+      <div id="selftest"></div>
+      <div class="ctl-group">
+        <h3>Export</h3>
+        <div class="ctl-row"><button id="c-export-one">Export PNG (current)</button></div>
+        <div class="ctl-row"><button id="c-export-all" class="secondary">Export all sizes</button></div>
+        <div class="ctl-row"><button id="c-randomize" class="secondary">🎲 Randomize variant</button></div>
+      </div>
+      <div class="ctl-group">
+        <h3>Theme</h3>
+        <div class="ctl-row">
+          <label for="c-theme">Preset</label>
+          <select id="c-theme">
+            <option value="">— custom —</option>
+            <option value="lavender">Lavender</option>
+            <option value="corrupted">Corrupted</option>
+            <option value="abyss">Abyss</option>
+            <option value="succubus">Succubus</option>
+          </select>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h3>Canvas</h3>
+        <div class="ctl-row">
+          <label for="c-size">Size</label>
+          <select id="c-size">
+            <option value="16:9">1920×1080 (16:9)</option>
+            <option value="9:16">1080×1920 (9:16)</option>
+            <option value="1:1">1080×1080 (1:1)</option>
+          </select>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h3>Base</h3>
+        <div class="ctl-row"><label for="c-base-on">Enabled</label><input type="checkbox" id="c-base-on" checked></div>
+        <div class="ctl-row">
+          <label for="c-base-style">Style</label>
+          <select id="c-base-style">
+            <option value="lavender">Lavender gradient</option>
+            <option value="solid">Solid</option>
+            <option value="gradient-purple">Purple gradient</option>
+            <option value="gradient-accent">Accent gradient</option>
+          </select>
+        </div>
+        <div class="ctl-row"><label for="c-base-color">Color / top</label><input type="color" id="c-base-color" value="#c7c4ec"></div>
+        <div class="ctl-row"><label for="c-base-color2">Bottom</label><input type="color" id="c-base-color2" value="#eef0fb"></div>
+      </div>
+      <div class="ctl-group">
+        <h3>Halftone dots</h3>
+        <div class="ctl-row"><label for="c-ht-on">Enabled</label><input type="checkbox" id="c-ht-on" checked></div>
+        <div class="ctl-row"><label for="c-ht-color">Color</label><input type="color" id="c-ht-color" value="#1a1430"></div>
+        <div class="ctl-row">
+          <label for="c-ht-density">Density</label>
+          <select id="c-ht-density">
+            <option value="low">Low</option><option value="med" selected>Med</option><option value="high">High</option>
+          </select>
+        </div>
+        <div class="ctl-row">
+          <label for="c-ht-size">Dot size</label>
+          <select id="c-ht-size">
+            <option value="micro">Micro</option><option value="fine">Fine</option><option value="small">Small</option><option value="normal" selected>Normal</option><option value="large">Large</option>
+          </select>
+        </div>
+        <div class="ctl-row">
+          <label for="c-ht-spread">Spread</label>
+          <select id="c-ht-spread">
+            <option value="corner" selected>Corner</option>
+            <option value="edge-fade">Edge fade</option>
+            <option value="full-field">Full field</option>
+          </select>
+        </div>
+        <div class="ctl-row"><label>Corners</label>
+          <label><input type="checkbox" class="c-ht-corner" value="tl" checked>TL</label>
+          <label><input type="checkbox" class="c-ht-corner" value="tr">TR</label>
+          <label><input type="checkbox" class="c-ht-corner" value="bl">BL</label>
+          <label><input type="checkbox" class="c-ht-corner" value="br">BR</label>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h3>Halftone dots B</h3>
+        <div class="ctl-row"><label for="c-ht2-on">Enabled</label><input type="checkbox" id="c-ht2-on"></div>
+        <div class="ctl-row"><label for="c-ht2-color">Color</label><input type="color" id="c-ht2-color" value="#1a1430"></div>
+        <div class="ctl-row">
+          <label for="c-ht2-density">Density</label>
+          <select id="c-ht2-density">
+            <option value="low">Low</option><option value="med" selected>Med</option><option value="high">High</option>
+          </select>
+        </div>
+        <div class="ctl-row">
+          <label for="c-ht2-size">Dot size</label>
+          <select id="c-ht2-size">
+            <option value="micro">Micro</option><option value="fine">Fine</option><option value="small" selected>Small</option><option value="normal">Normal</option><option value="large">Large</option>
+          </select>
+        </div>
+        <div class="ctl-row">
+          <label for="c-ht2-spread">Spread</label>
+          <select id="c-ht2-spread">
+            <option value="corner" selected>Corner</option>
+            <option value="edge-fade">Edge fade</option>
+            <option value="full-field">Full field</option>
+          </select>
+        </div>
+        <div class="ctl-row"><label>Corners</label>
+          <label><input type="checkbox" class="c-ht2-corner" value="tl">TL</label>
+          <label><input type="checkbox" class="c-ht2-corner" value="tr">TR</label>
+          <label><input type="checkbox" class="c-ht2-corner" value="bl">BL</label>
+          <label><input type="checkbox" class="c-ht2-corner" value="br" checked>BR</label>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h3>Spectrum</h3>
+        <div class="ctl-row"><label for="c-spec-on">Enabled</label><input type="checkbox" id="c-spec-on"></div>
+      </div>
+      <div class="ctl-group">
+        <h3>EVA patterns</h3>
+        <div class="ctl-row"><label for="c-eva-on">Enabled</label><input type="checkbox" id="c-eva-on"></div>
+      </div>
+      <div class="ctl-group">
+        <h3>Sparkles</h3>
+        <div class="ctl-row"><label for="c-sp-on">Enabled</label><input type="checkbox" id="c-sp-on" checked></div>
+        <div class="ctl-row"><label for="c-sp-color">Color</label><input type="color" id="c-sp-color" value="#1a1430"></div>
+        <div class="ctl-row"><label for="c-sp-count">Count / corner</label><input type="number" id="c-sp-count" min="1" max="20" value="6"></div>
+        <div class="ctl-row"><label>Corners</label>
+          <label><input type="checkbox" class="c-sp-corner" value="tl">TL</label>
+          <label><input type="checkbox" class="c-sp-corner" value="tr" checked>TR</label>
+          <label><input type="checkbox" class="c-sp-corner" value="bl">BL</label>
+          <label><input type="checkbox" class="c-sp-corner" value="br" checked>BR</label>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h3>Glyphs + phrase</h3>
+        <div class="ctl-row"><label for="c-gl-on">Enabled</label><input type="checkbox" id="c-gl-on"></div>
+        <div class="ctl-row"><label for="c-gl-color">Color</label><input type="color" id="c-gl-color" value="#1a1430"></div>
+        <div class="ctl-row"><label for="c-gl-nsfw">NSFW phrases</label><input type="checkbox" id="c-gl-nsfw"></div>
+        <div class="ctl-row"><label for="c-gl-phrase-on">Show phrase</label><input type="checkbox" id="c-gl-phrase-on" checked></div>
+        <div class="ctl-row"><button class="secondary" id="c-gl-roll">🎲 new phrase</button></div>
+      </div>
+      <div class="ctl-group">
+        <h3>Rails</h3>
+        <div class="ctl-row"><label for="c-rl-on">Enabled</label><input type="checkbox" id="c-rl-on" checked></div>
+        <div class="ctl-row"><label for="c-rl-color">Color</label><input type="color" id="c-rl-color" value="#1a1430"></div>
+      </div>
+      <div class="ctl-group">
+        <h3>Nameplate</h3>
+        <div class="ctl-row"><label for="c-np-on">Enabled</label><input type="checkbox" id="c-np-on"></div>
+        <div class="ctl-row"><label for="c-np-color">Color</label><input type="color" id="c-np-color" value="#0a0a0a"></div>
+        <div class="ctl-row"><label for="c-np-corner">Corner</label>
+          <select id="c-np-corner">
+            <option value="tl">TL</option><option value="tr">TR</option>
+            <option value="bl" selected>BL</option><option value="br">BR</option>
+          </select>
+        </div>
+      </div>
+      <div class="ctl-group">
+        <h3>Logo text</h3>
+        <div class="ctl-row"><label for="c-lg-on">Enabled</label><input type="checkbox" id="c-lg-on"></div>
+        <div class="ctl-row"><label for="c-lg-color">Color</label><input type="color" id="c-lg-color" value="#f5f1f8"></div>
+        <div class="ctl-row"><label for="c-lg-text">Text</label><input type="text" id="c-lg-text" value="CELESTE" style="flex:1;background:#140c28;color:#f5f1f8;border:1px solid #3a2555;border-radius:4px;padding:4px;"></div>
+      </div>
+      <div class="ctl-group">
+        <h3>Screen FX</h3>
+        <div class="ctl-row"><label for="c-fx-glitch">Glitch</label><input type="checkbox" id="c-fx-glitch"></div>
+        <div class="ctl-row"><label for="c-fx-glitch-amt">↳ amount</label><input type="range" id="c-fx-glitch-amt" min="0" max="1" step="0.05" value="0.45"></div>
+        <div class="ctl-row"><label for="c-fx-scan">Scanlines + vignette</label><input type="checkbox" id="c-fx-scan"></div>
+        <div class="ctl-row"><label for="c-fx-scan-lines">↳ scanlines</label><input type="range" id="c-fx-scan-lines" min="0" max="0.2" step="0.01" value="0.06"></div>
+        <div class="ctl-row"><label for="c-fx-vig">↳ vignette</label><input type="range" id="c-fx-vig" min="0" max="1" step="0.05" value="0.55"></div>
+        <div class="ctl-row"><label for="c-fx-noise">Noise</label><input type="checkbox" id="c-fx-noise"></div>
+        <div class="ctl-row"><label for="c-fx-noise-amt">↳ amount</label><input type="range" id="c-fx-noise-amt" min="0" max="0.3" step="0.01" value="0.08"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+  import { LEWD_PHRASES_SFW, LEWD_PHRASES_NSFW } from '../thumbnail-generator/js/lewd-frame.js';
+  function rollPhrase(nsfw) {
+    const pool = nsfw ? LEWD_PHRASES_NSFW : LEWD_PHRASES_SFW;
+    return pool[Math.floor(Math.random() * pool.length)];
+  }
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+
+  function el(name, attrs = {}, parent = null, text = null) {
+    const n = document.createElementNS(SVG_NS, name);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    if (text != null) n.textContent = text;
+    if (parent) parent.appendChild(n);
+    return n;
+  }
+
+  const SIZES = {
+    '16:9': { w: 1920, h: 1080 },
+    '9:16': { w: 1080, h: 1920 },
+    '1:1':  { w: 1080, h: 1080 },
+  };
+
+  const PALETTE = {
+    lavender: '#c7c4ec', lavenderLight: '#eef0fb',
+    pink: '#d94f90', purple: '#8b5cf6', cyan: '#00ffff',
+    ink: '#1a1430', dark: '#0a0a0a', light: '#f5f1f8',
+    purpleLight: '#b08aff', magentaLight: '#e86ca8',
+    red: '#ff0000', yellow: '#ffff00', evaOrange: '#ff6600',
+    neonMagenta: '#ff00ff', deepBlue: '#0088ff',
+  };
+
+  const DEFAULT_LAYERS = {
+    base:      { on: true,  style: 'lavender', color: PALETTE.lavender, color2: PALETTE.lavenderLight },
+    halftone:  { on: true,  color: PALETTE.ink, density: 'med', corners: ['tl'], spread: 'corner', dotSize: 'normal' },
+    halftone2: { on: false, color: PALETTE.ink, density: 'med', corners: ['br'], spread: 'corner', dotSize: 'small' },
+    spectrum:  { on: false, gradient: true },
+    eva:       { on: false },
+    sparkles:  { on: true,  color: PALETTE.ink, count: 6, corners: ['tr', 'br'] },
+    glyphs:    { on: false, color: '#1a1430', nsfw: false, showPhrase: true, phrase: '' },
+    rails:     { on: true,  color: PALETTE.ink },
+    nameplate: { on: false, color: PALETTE.dark, corner: 'bl' },
+    logo:      { on: false, color: PALETTE.light, text: 'CELESTE' },
+    glitch:    { on: false, amount: 0.45 },
+    scanlines: { on: false, lines: 0.06, vignette: 0.55 },
+    noise:     { on: false, amount: 0.08 },
+  };
+
+  const state = { size: '16:9', layers: JSON.parse(JSON.stringify(DEFAULT_LAYERS)) };
+  function dims() { return SIZES[state.size]; }
+
+  function cornerXY(corner) {
+    const { w, h } = dims();
+    return {
+      tl: { x: 0, y: 0, sx: 1,  sy: 1  },
+      tr: { x: w, y: 0, sx: -1, sy: 1  },
+      bl: { x: 0, y: h, sx: 1,  sy: -1 },
+      br: { x: w, y: h, sx: -1, sy: -1 },
+    }[corner];
+  }
+
+  function buildBase(svg) {
+    const L = state.layers.base;
+    if (!L.on) return;
+    const { w, h } = dims();
+    let fill = L.color;
+    if (L.style !== 'solid') {
+      const defs = el('defs', {}, svg);
+      const grad = el('linearGradient', { id: 'base-grad', x1: '0', y1: '0', x2: '0', y2: '1' }, defs);
+      let c1 = L.color, c2 = L.color2;
+      if (L.style === 'gradient-purple') { c1 = PALETTE.purple; c2 = PALETTE.pink; }
+      if (L.style === 'gradient-accent') { c1 = PALETTE.pink;   c2 = PALETTE.dark; }
+      el('stop', { offset: '0%',   'stop-color': c1 }, grad);
+      el('stop', { offset: '100%', 'stop-color': c2 }, grad);
+      fill = 'url(#base-grad)';
+    }
+    el('rect', { x: 0, y: 0, width: w, height: h, fill }, svg);
+  }
+
+  const HALFTONE_DENSITY = { low: 4, med: 6, high: 9 };
+  const HALFTONE_SCALE = { micro: 0.28, fine: 0.45, small: 0.7, normal: 1.0, large: 1.4 };
+  function buildHalftone(svg, L) {
+    if (!L.on) return;
+    const { w, h } = dims();
+    const g = el('g', {}, svg);
+    const n = HALFTONE_DENSITY[L.density] || 6;
+    const unit = Math.min(w, h) * 0.05 * (HALFTONE_SCALE[L.dotSize] || 1.0);
+    const maxR = unit * 0.42;
+    const spread = L.spread || 'corner';
+    if (spread === 'corner') {
+      for (const corner of L.corners) {
+        const c = cornerXY(corner);
+        for (let row = 0; row < n; row++) for (let col = 0; col < n; col++) {
+          if (row + col >= n) continue;
+          const cx = c.x + c.sx * (col + 0.5) * unit;
+          const cy = c.y + c.sy * (row + 0.5) * unit;
+          const t = 1 - (row + col) / n;
+          el('circle', { cx, cy, r: maxR * t, fill: L.color, opacity: (0.25 + 0.55 * t).toFixed(3) }, g);
+        }
+      }
+    } else {
+      const cols = Math.ceil(w / unit), rows = Math.ceil(h / unit);
+      for (let row = 0; row < rows; row++) for (let col = 0; col < cols; col++) {
+        const cx = (col + 0.5) * unit, cy = (row + 0.5) * unit;
+        const t = spread === 'full-field' ? (1 - col / cols) : Math.max(0, 1 - cy / (h * 0.4));
+        if (t <= 0.02) continue;
+        el('circle', { cx, cy, r: maxR * 0.7 * t, fill: L.color, opacity: (0.08 + 0.32 * t).toFixed(3) }, g);
+      }
+    }
+  }
+
+  function buildSpectrum(svg) {
+    const L = state.layers.spectrum;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const g = el('g', { opacity: 0.6 }, svg);
+    const defs = el('defs', {}, g);
+    const gradId = 'spec-grad';
+    const grad = el('linearGradient', { id: gradId, x1: '0', y1: '1', x2: '0', y2: '0' }, defs);
+    el('stop', { offset: '0%',   'stop-color': PALETTE.pink }, grad);
+    el('stop', { offset: '50%',  'stop-color': PALETTE.purple }, grad);
+    el('stop', { offset: '100%', 'stop-color': PALETTE.cyan }, grad);
+    const strip = h * 0.18;
+    const bw = (w / 128) * 2.5;
+    const gap = 1;
+    for (let x = 0, i = 0; x < w; x += bw + gap, i++) {
+      const bh = strip * (0.1 + Math.random() * 0.8);
+      el('rect', { x: x.toFixed(1), y: (h - bh).toFixed(1), width: Math.max(1, bw - gap).toFixed(1), height: bh.toFixed(1), fill: `url(#${gradId})` }, g);
+    }
+  }
+
+  function buildEva(svg) {
+    const L = state.layers.eva;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const sx = w / 1920, sy = h / 1080;
+    const g = el('g', {}, svg);
+    const P = (pts, stroke, sw, op) => el('polyline', { points: pts, fill: 'none', stroke, 'stroke-width': sw, opacity: op }, g);
+    const scale = pts => pts.map(([x, y]) => `${(x * sx).toFixed(1)},${(y * sy).toFixed(1)}`).join(' ');
+    // corner L-brackets (orange)
+    [[[50,50],[50,150],[150,150]], [[1870,50],[1870,150],[1770,150]],
+     [[50,1030],[50,930],[150,930]], [[1870,1030],[1870,930],[1770,930]]]
+      .forEach(p => P(scale(p), PALETTE.evaOrange, 4, 0.9));
+    // hexagons (purple)
+    [[[960,100],[1000,125],[1000,175],[960,200],[920,175],[920,125]],
+     [[960,880],[1000,905],[1000,955],[960,980],[920,955],[920,905]]]
+      .forEach(p => el('polygon', { points: scale(p), fill: 'none', stroke: PALETTE.purple, 'stroke-width': 3, opacity: 0.8 }, g));
+    // crosshairs (neon magenta)
+    [[200,540],[1720,540]].forEach(([cx, cy]) => {
+      const x = cx * sx, y = cy * sy, r = 30 * sx;
+      el('circle', { cx: x, cy: y, r, fill: 'none', stroke: PALETTE.neonMagenta, 'stroke-width': 3, opacity: 0.7 }, g);
+      el('line', { x1: x - r, y1: y, x2: x + r, y2: y, stroke: PALETTE.neonMagenta, 'stroke-width': 3, opacity: 0.7 }, g);
+      el('line', { x1: x, y1: y - r, x2: x, y2: y + r, stroke: PALETTE.neonMagenta, 'stroke-width': 3, opacity: 0.7 }, g);
+    });
+    // corruption diagonals (magenta)
+    [[[0,0],[400,400]], [[1920,0],[1520,400]], [[0,1080],[400,680]], [[1920,1080],[1520,680]]]
+      .forEach(([[x1,y1],[x2,y2]]) => el('line', { x1: x1*sx, y1: y1*sy, x2: x2*sx, y2: y2*sy, stroke: PALETTE.pink, 'stroke-width': 1.5, opacity: 0.4 }, g));
+  }
+
+  function starPathD(s) {
+    const o = s, i = s / 4;                       // 4-point star, from iconography-mode.js
+    return `M 0,${-o} L ${i},${-i} L ${o},0 L ${i},${i} L 0,${o} L ${-i},${i} L ${-o},0 L ${-i},${-i} Z`;
+  }
+  function buildSparkles(svg) {
+    const L = state.layers.sparkles;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const g = el('g', {}, svg);
+    const m = Math.min(w, h);
+    const span = m * 0.20;
+    const big = m * 0.055;
+    const inset = m * 0.04;
+    for (const corner of L.corners) {
+      const c = cornerXY(corner);
+      for (let k = 0; k < L.count; k++) {
+        const ox = c.x + c.sx * (inset + Math.random() * span);
+        const oy = c.y + c.sy * (inset + Math.random() * span);
+        const size = k === 0 ? big : big * (0.25 + Math.random() * 0.45);
+        el('path', { d: starPathD(size), transform: `translate(${ox.toFixed(1)},${oy.toFixed(1)})`, fill: L.color }, g);
+      }
+    }
+  }
+
+  function buildGlyphs(svg) {
+    const L = state.layers.glyphs;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const g = el('g', {}, svg);
+    const gs = Math.min(w, h) * 0.06;
+    el('text', { x: w * 0.04, y: h * 0.10, 'font-size': gs, fill: L.color, 'font-family': 'Georgia, serif' }, g, '⚠');
+    el('text', { x: w * 0.92, y: h * 0.96, 'font-size': gs, fill: L.color, 'font-family': 'Georgia, serif' }, g, '◈');
+    if (L.showPhrase) {
+      const phrase = L.phrase || rollPhrase(L.nsfw);
+      const fs = Math.min(w, h) * 0.034;
+      el('text', {
+        x: w / 2, y: h * 0.80, 'text-anchor': 'middle',
+        'font-family': "'Courier New', monospace", 'font-size': fs,
+        'letter-spacing': '0.18em', 'font-weight': 'bold', fill: L.color,
+        stroke: 'rgba(0,0,0,0.7)', 'stroke-width': fs * 0.06, 'paint-order': 'stroke',
+      }, g, phrase);
+    }
+  }
+
+  function buildRails(svg) {
+    const L = state.layers.rails;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const g = el('g', {}, svg);
+    const m = Math.min(w, h) * 0.045;
+    const sw = Math.max(2, Math.min(w, h) * 0.004);
+    el('line', { x1: m, y1: m, x2: w - m, y2: m, stroke: L.color, 'stroke-width': sw }, g);
+    el('line', { x1: m, y1: h - m, x2: w - m, y2: h - m, stroke: L.color, 'stroke-width': sw }, g);
+  }
+  function buildNameplate(svg) {
+    const L = state.layers.nameplate;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const bw = w * 0.28, bh = h * 0.08;
+    const c = cornerXY(L.corner);
+    const x = c.sx > 0 ? c.x : c.x - bw;
+    const y = c.sy > 0 ? c.y : c.y - bh;
+    el('rect', { x, y, width: bw, height: bh, fill: L.color }, svg);
+  }
+  function buildLogo(svg) {
+    const L = state.layers.logo;
+    if (!L.on) return;
+    const { w, h } = dims();
+    el('text', {
+      x: w / 2, y: h / 2,
+      'text-anchor': 'middle', 'dominant-baseline': 'middle',
+      'font-family': 'Georgia, serif', 'font-size': Math.min(w, h) * 0.08,
+      'letter-spacing': '0.12em', fill: L.color,
+    }, svg, L.text);
+  }
+  function buildGlitch(svg) {
+    const L = state.layers.glitch;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const g = el('g', {}, svg);
+    const amt = L.amount != null ? L.amount : 0.45;
+    const slices = 4 + Math.floor(Math.random() * 4);
+    for (let i = 0; i < slices; i++) {
+      const y = Math.random() * h, bh = h * (0.01 + Math.random() * 0.03), off = w * 0.01 * (1 + Math.random() * 2);
+      el('rect', { x: -off, y, width: w, height: bh, fill: PALETTE.cyan, opacity: amt }, g);
+      el('rect', { x: off, y: y + bh * 0.3, width: w, height: bh, fill: PALETTE.red, opacity: amt * 0.9 }, g);
+    }
+  }
+  function buildScanlines(svg) {
+    const L = state.layers.scanlines;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const defs = el('defs', {}, svg);
+    const lineOp = L.lines != null ? L.lines : 0.06;
+    const vigStr = L.vignette != null ? L.vignette : 0.55;
+    if (lineOp > 0) {
+      const pat = el('pattern', { id: 'scan', width: 4, height: 4, patternUnits: 'userSpaceOnUse' }, defs);
+      el('rect', { x: 0, y: 0, width: 4, height: 1, fill: PALETTE.cyan, opacity: lineOp }, pat);
+      el('rect', { x: 0, y: 0, width: w, height: h, fill: 'url(#scan)' }, svg);
+    }
+    if (vigStr > 0) {
+      const vig = el('radialGradient', { id: 'vig', cx: '50%', cy: '50%', r: '75%' }, defs);
+      el('stop', { offset: '55%', 'stop-color': 'rgba(0,0,0,0)' }, vig);
+      el('stop', { offset: '100%', 'stop-color': `rgba(0,0,0,${vigStr})` }, vig);
+      el('rect', { x: 0, y: 0, width: w, height: h, fill: 'url(#vig)' }, svg);
+    }
+  }
+  function buildNoise(svg) {
+    const L = state.layers.noise;
+    if (!L.on) return;
+    const { w, h } = dims();
+    const defs = el('defs', {}, svg);
+    const f = el('filter', { id: 'noisef' }, defs);
+    el('feTurbulence', { type: 'fractalNoise', baseFrequency: '0.9', numOctaves: '2', stitchTiles: 'stitch' }, f);
+    el('feColorMatrix', { type: 'saturate', values: '0' }, f);
+    el('rect', { x: 0, y: 0, width: w, height: h, filter: 'url(#noisef)', opacity: (L.amount != null ? L.amount : 0.08) }, svg);
+  }
+
+  function rebuild() {
+    const svg = document.getElementById('stage');
+    const { w, h } = dims();
+    svg.setAttribute('viewBox', `0 0 ${w} ${h}`);
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    buildBase(svg);
+    buildHalftone(svg, state.layers.halftone);
+    buildHalftone(svg, state.layers.halftone2);
+    buildSpectrum(svg);
+    buildEva(svg);
+    buildSparkles(svg);
+    buildGlyphs(svg);
+    buildRails(svg);
+    buildNameplate(svg);
+    buildLogo(svg);
+    buildGlitch(svg);
+    buildScanlines(svg);
+    buildNoise(svg);
+  }
+
+  // ---- controls ----
+  function wireControls() {
+    const $ = id => document.getElementById(id);
+    $('c-size').addEventListener('change', e => { state.size = e.target.value; rebuild(); });
+    $('c-base-on').addEventListener('change', e => { state.layers.base.on = e.target.checked; rebuild(); });
+    $('c-base-style').addEventListener('change', e => { state.layers.base.style = e.target.value; rebuild(); });
+    $('c-base-color').addEventListener('input', e => { state.layers.base.color = e.target.value; rebuild(); });
+    $('c-base-color2').addEventListener('input', e => { state.layers.base.color2 = e.target.value; rebuild(); });
+    $('c-ht-on').addEventListener('change', e => { state.layers.halftone.on = e.target.checked; rebuild(); });
+    $('c-ht-color').addEventListener('input', e => { state.layers.halftone.color = e.target.value; rebuild(); });
+    $('c-ht-density').addEventListener('change', e => { state.layers.halftone.density = e.target.value; rebuild(); });
+    $('c-ht-size').addEventListener('change', e => { state.layers.halftone.dotSize = e.target.value; rebuild(); });
+    document.querySelectorAll('.c-ht-corner').forEach(cb => cb.addEventListener('change', () => {
+      state.layers.halftone.corners = [...document.querySelectorAll('.c-ht-corner:checked')].map(x => x.value);
+      rebuild();
+    }));
+    $('c-ht2-on').addEventListener('change', e => { state.layers.halftone2.on = e.target.checked; rebuild(); });
+    $('c-ht2-color').addEventListener('input', e => { state.layers.halftone2.color = e.target.value; rebuild(); });
+    $('c-ht2-density').addEventListener('change', e => { state.layers.halftone2.density = e.target.value; rebuild(); });
+    $('c-ht2-size').addEventListener('change', e => { state.layers.halftone2.dotSize = e.target.value; rebuild(); });
+    $('c-ht2-spread').addEventListener('change', e => { state.layers.halftone2.spread = e.target.value; rebuild(); });
+    document.querySelectorAll('.c-ht2-corner').forEach(cb => cb.addEventListener('change', () => {
+      state.layers.halftone2.corners = [...document.querySelectorAll('.c-ht2-corner:checked')].map(x => x.value);
+      rebuild();
+    }));
+    $('c-spec-on').addEventListener('change', e => { state.layers.spectrum.on = e.target.checked; rebuild(); });
+    $('c-eva-on').addEventListener('change', e => { state.layers.eva.on = e.target.checked; rebuild(); });
+    $('c-sp-on').addEventListener('change', e => { state.layers.sparkles.on = e.target.checked; rebuild(); });
+    $('c-sp-color').addEventListener('input', e => { state.layers.sparkles.color = e.target.value; rebuild(); });
+    $('c-sp-count').addEventListener('change', e => { state.layers.sparkles.count = Math.max(1, +e.target.value || 1); rebuild(); });
+    document.querySelectorAll('.c-sp-corner').forEach(cb => cb.addEventListener('change', () => {
+      state.layers.sparkles.corners = [...document.querySelectorAll('.c-sp-corner:checked')].map(x => x.value);
+      rebuild();
+    }));
+    $('c-gl-on').addEventListener('change', e => { state.layers.glyphs.on = e.target.checked; rebuild(); });
+    $('c-gl-color').addEventListener('input', e => { state.layers.glyphs.color = e.target.value; rebuild(); });
+    $('c-gl-nsfw').addEventListener('change', e => { state.layers.glyphs.nsfw = e.target.checked; state.layers.glyphs.phrase = ''; rebuild(); });
+    $('c-gl-phrase-on').addEventListener('change', e => { state.layers.glyphs.showPhrase = e.target.checked; rebuild(); });
+    $('c-gl-roll').addEventListener('click', () => { state.layers.glyphs.phrase = rollPhrase(state.layers.glyphs.nsfw); rebuild(); });
+    $('c-rl-on').addEventListener('change', e => { state.layers.rails.on = e.target.checked; rebuild(); });
+    $('c-rl-color').addEventListener('input', e => { state.layers.rails.color = e.target.value; rebuild(); });
+    $('c-np-on').addEventListener('change', e => { state.layers.nameplate.on = e.target.checked; rebuild(); });
+    $('c-np-color').addEventListener('input', e => { state.layers.nameplate.color = e.target.value; rebuild(); });
+    $('c-np-corner').addEventListener('change', e => { state.layers.nameplate.corner = e.target.value; rebuild(); });
+    $('c-lg-on').addEventListener('change', e => { state.layers.logo.on = e.target.checked; rebuild(); });
+    $('c-lg-color').addEventListener('input', e => { state.layers.logo.color = e.target.value; rebuild(); });
+    $('c-lg-text').addEventListener('input', e => { state.layers.logo.text = e.target.value; rebuild(); });
+    $('c-fx-glitch').addEventListener('change', e => { state.layers.glitch.on = e.target.checked; rebuild(); });
+    $('c-fx-glitch-amt').addEventListener('input', e => { state.layers.glitch.amount = +e.target.value; rebuild(); });
+    $('c-fx-scan').addEventListener('change', e => { state.layers.scanlines.on = e.target.checked; rebuild(); });
+    $('c-fx-scan-lines').addEventListener('input', e => { state.layers.scanlines.lines = +e.target.value; rebuild(); });
+    $('c-fx-vig').addEventListener('input', e => { state.layers.scanlines.vignette = +e.target.value; rebuild(); });
+    $('c-fx-noise').addEventListener('change', e => { state.layers.noise.on = e.target.checked; rebuild(); });
+    $('c-fx-noise-amt').addEventListener('input', e => { state.layers.noise.amount = +e.target.value; rebuild(); });
+    $('c-theme').addEventListener('change', e => { if (e.target.value) applyTheme(e.target.value); });
+    $('c-ht-spread').addEventListener('change', e => { state.layers.halftone.spread = e.target.value; rebuild(); });
+    $('c-export-one').addEventListener('click', () => exportCurrent());
+    $('c-export-all').addEventListener('click', () => exportAll());
+    $('c-randomize').addEventListener('click', () => randomize());
+  }
+
+  // ---- themes ----
+  const THEMES = {
+    lavender:  { base: { style: 'lavender', color: PALETTE.lavender, color2: PALETTE.lavenderLight }, accent: PALETTE.ink,        glyph: PALETTE.ink },
+    corrupted: { base: { style: 'gradient-accent', color: PALETTE.pink, color2: PALETTE.dark },       accent: PALETTE.pink,       glyph: PALETTE.magentaLight },
+    abyss:     { base: { style: 'solid', color: PALETTE.dark, color2: PALETTE.dark },                 accent: PALETTE.cyan,       glyph: PALETTE.cyan },
+    succubus:  { base: { style: 'gradient-purple', color: PALETTE.purple, color2: PALETTE.pink },     accent: PALETTE.purpleLight, glyph: PALETTE.neonMagenta },
+  };
+  function applyTheme(name) {
+    const t = THEMES[name]; if (!t) return;
+    const L = state.layers;
+    L.base.style = t.base.style; L.base.color = t.base.color; L.base.color2 = t.base.color2;
+    L.halftone.color = t.accent; L.halftone2.color = t.accent; L.sparkles.color = t.accent; L.rails.color = t.accent;
+    if (L.glyphs) L.glyphs.color = t.glyph;
+    syncControls(); rebuild();
+  }
+  function syncControls() {
+    const $ = id => document.getElementById(id);
+    const L = state.layers;
+    $('c-size').value = state.size;
+    $('c-base-on').checked = L.base.on; $('c-base-style').value = L.base.style;
+    $('c-base-color').value = L.base.color; $('c-base-color2').value = L.base.color2;
+    $('c-ht-on').checked = L.halftone.on; $('c-ht-color').value = L.halftone.color;
+    $('c-ht-density').value = L.halftone.density; $('c-ht-spread').value = L.halftone.spread || 'corner';
+    $('c-ht-size').value = L.halftone.dotSize || 'normal';
+    $('c-ht2-on').checked = L.halftone2.on; $('c-ht2-color').value = L.halftone2.color;
+    $('c-ht2-density').value = L.halftone2.density; $('c-ht2-spread').value = L.halftone2.spread || 'corner';
+    $('c-ht2-size').value = L.halftone2.dotSize || 'small';
+    document.querySelectorAll('.c-ht2-corner').forEach(cb => { cb.checked = L.halftone2.corners.includes(cb.value); });
+    document.querySelectorAll('.c-ht-corner').forEach(cb => { cb.checked = L.halftone.corners.includes(cb.value); });
+    $('c-spec-on').checked = L.spectrum.on;
+    $('c-eva-on').checked = L.eva.on;
+    $('c-sp-on').checked = L.sparkles.on; $('c-sp-color').value = L.sparkles.color; $('c-sp-count').value = L.sparkles.count;
+    document.querySelectorAll('.c-sp-corner').forEach(cb => { cb.checked = L.sparkles.corners.includes(cb.value); });
+    $('c-gl-on').checked = L.glyphs.on; $('c-gl-color').value = L.glyphs.color; $('c-gl-nsfw').checked = L.glyphs.nsfw; $('c-gl-phrase-on').checked = L.glyphs.showPhrase;
+    $('c-rl-on').checked = L.rails.on; $('c-rl-color').value = L.rails.color;
+    $('c-np-on').checked = L.nameplate.on; $('c-np-color').value = L.nameplate.color; $('c-np-corner').value = L.nameplate.corner;
+    $('c-lg-on').checked = L.logo.on; $('c-lg-color').value = L.logo.color; $('c-lg-text').value = L.logo.text;
+    $('c-fx-glitch').checked = L.glitch.on; $('c-fx-glitch-amt').value = L.glitch.amount;
+    $('c-fx-scan').checked = L.scanlines.on; $('c-fx-scan-lines').value = L.scanlines.lines; $('c-fx-vig').value = L.scanlines.vignette;
+    $('c-fx-noise').checked = L.noise.on; $('c-fx-noise-amt').value = L.noise.amount;
+  }
+
+  // ---- export ----
+  function svgToPng(w, h) {
+    return new Promise((resolve, reject) => {
+      const svg = document.getElementById('stage').cloneNode(true);
+      svg.setAttribute('width', w);
+      svg.setAttribute('height', h);
+      const xml = new XMLSerializer().serializeToString(svg);
+      const url = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(xml);
+      const img = new Image();
+      img.onload = () => {
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        cv.toBlob(b => b ? resolve(b) : reject(new Error('toBlob returned null')), 'image/png');
+      };
+      img.onerror = () => reject(new Error('svg image failed to load'));
+      img.src = url;
+    });
+  }
+  function downloadBlob(blob, name) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+  async function exportCurrent() {
+    const { w, h } = dims();
+    downloadBlob(await svgToPng(w, h), `bg_${state.layers.base.style}${state.layers.glyphs && state.layers.glyphs.on && state.layers.glyphs.nsfw ? '_nsfw' : ''}_${w}x${h}.png`);
+  }
+  async function exportAll() {
+    const prev = state.size;
+    for (const key of Object.keys(SIZES)) {
+      state.size = key; rebuild();
+      const { w, h } = SIZES[key];
+      downloadBlob(await svgToPng(w, h), `bg_${state.layers.base.style}${state.layers.glyphs && state.layers.glyphs.on && state.layers.glyphs.nsfw ? '_nsfw' : ''}_${w}x${h}.png`);
+    }
+    state.size = prev; rebuild();
+  }
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+  function randomize() {
+    applyTheme(pick(['lavender', 'corrupted', 'abyss', 'succubus']));
+    const L = state.layers;
+    const corners = ['tl', 'tr', 'bl', 'br'].sort(() => Math.random() - 0.5);
+    L.halftone.spread = pick(['corner', 'edge-fade', 'full-field']);
+    L.halftone.corners = corners.slice(0, 1 + Math.floor(Math.random() * 2));
+    L.sparkles.corners = corners.slice(2);
+    L.halftone.density = pick(['low', 'med', 'high']);
+    L.halftone.dotSize = pick(['micro', 'fine', 'small', 'normal', 'large']);
+    const opp = { tl: 'br', tr: 'bl', bl: 'tr', br: 'tl' };
+    L.halftone2.on = Math.random() < 0.5;
+    L.halftone2.corners = [opp[L.halftone.corners[0]] || 'br'];
+    L.halftone2.color = L.halftone.color;
+    L.halftone2.density = pick(['low', 'med', 'high']);
+    L.halftone2.dotSize = pick(['micro', 'fine', 'small']);
+    L.halftone2.spread = 'corner';
+    L.sparkles.count = 4 + Math.floor(Math.random() * 6);
+    L.spectrum.on = Math.random() < 0.5;
+    L.eva.on = Math.random() < 0.5;
+    L.glyphs.on = Math.random() < 0.6;
+    L.glyphs.phrase = '';
+    L.scanlines.on = Math.random() < 0.5;
+    L.noise.on = Math.random() < 0.6;
+    L.glitch.on = Math.random() < 0.35;
+    syncControls(); rebuild();
+  }
+
+  // ---- self check ----
+  async function runSelfCheck() {
+    const banner = document.getElementById('selftest');
+    const log = [];
+    const assert = (cond, msg) => { if (!cond) throw new Error(msg); log.push('ok: ' + msg); };
+    try {
+      state.size = '16:9';
+      state.layers = JSON.parse(JSON.stringify(DEFAULT_LAYERS));
+      rebuild();
+      const svg = document.getElementById('stage');
+      const xml = new XMLSerializer().serializeToString(svg);
+      assert(xml.length > 100, 'svg serializes non-empty');
+      assert(svg.querySelectorAll('rect').length >= 1, 'base rect present');
+      const ht = document.createElementNS(SVG_NS, 'svg');
+      state.layers.halftone.corners = ['tl'];
+      state.layers.halftone.density = 'med';
+      state.layers.halftone.spread = 'corner';
+      buildHalftone(ht, state.layers.halftone);
+      const n = HALFTONE_DENSITY.med;
+      assert(ht.querySelectorAll('circle').length === n * (n + 1) / 2, 'halftone circle count (triangular)');
+      const sp = document.createElementNS(SVG_NS, 'svg');
+      state.layers.sparkles.corners = ['tr', 'br'];
+      state.layers.sparkles.count = 6;
+      buildSparkles(sp);
+      assert(sp.querySelectorAll('path').length === 6 * 2, 'sparkle star count = count * corners');
+      const blob = await svgToPng(1920, 1080);
+      assert(blob && blob.size > 0, 'png raster non-empty');
+      banner.className = 'pass';
+      banner.textContent = `SELFTEST PASS (${log.length} checks)\n` + log.join('\n');
+    } catch (err) {
+      banner.className = 'fail';
+      banner.textContent = 'SELFTEST FAIL: ' + err.message;
+      console.error('SELFTEST FAIL', err);
+    }
+  }
+
+  // ---- boot ----
+  wireControls();
+  syncControls();
+  rebuild();
+  window.runSelfCheck = runSelfCheck;
+  if (new URLSearchParams(location.search).has('selftest')) runSelfCheck();
+  </script>
+</body>
+</html>

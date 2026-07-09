@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying | Celeste Blog</title>
+    <meta name="description" content="Celeste CLI v1.11.2 makes -config profiles work in read commands and lists real provider models in the TUI /model picker. Plus a recap of the 1.11.x Fugu arc." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-cli-v1112.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying",
+      "description": "Celeste CLI v1.11.2 makes -config profiles work in read commands and lists real provider models in the TUI /model picker, capping the 1.11.x Fugu arc.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-06-23",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-cli-v1112.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tooling</p>
+          <h1>Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying</h1>
+          <p class="meta">A small bugfix release that fixes two things you'd notice: config profiles in read commands, and the TUI model picker.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>Read commands now honor <code>-config &lt;profile&gt;</code>, so the profile you pass is the one that runs, with no fallback to the default.</li>
+            <li>The TUI <code>/model</code> command lists the real models your provider exposes instead of a hardcoded set, so what you pick is what you can call.</li>
+            <li>This caps the 1.11.x line, which added Sakana AI's Fugu provider (now the default) and fixed agent checkpoint collisions.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What v1.11.2 fixes</h2>
+          <p>Two bugs, both in the "this should have just worked" category.</p>
+          <ul>
+            <li><strong>Read commands honor <code>-config</code>.</strong> If you keep more than one config profile (say one pinned to Fugu, one pinned to a local model), read commands were ignoring the <code>-config</code> flag and falling back to the default profile. Now the read command threads the flag through and runs against the profile you named.</li>
+            <li><strong><code>/model</code> lists real provider models.</strong> Inside the TUI, the model picker used to show a fixed list that could drift from what your provider serves. It now pulls the live model list from the provider, so the menu matches reality and you can't pick something that 404s on the first call.</li>
+          </ul>
+          <p>Both shipped in <a href="https://github.com/whykusanagi/celeste-cli/issues/82" target="_blank" rel="noopener">#82</a>.</p>
+        </section>
+
+        <section>
+          <h2>The 1.11.x arc, in case you skipped it</h2>
+          <p>v1.11.2 is the tail of a busier release line. If you're jumping from 1.10, these landed along the way:</p>
+          <ol>
+            <li><strong>Sakana AI (Fugu) provider, now the default.</strong> The headline of 1.11.0. I benchmarked it against Grok: it went ten-for-ten on the reasoning set and drove a dependency-DAG subagent relay where Grok ran flaky. The full writeup is in <a href="fugu-vs-grok-celeste-cli.html">Fugu vs Grok</a>.</li>
+            <li><strong>Agent run IDs are unique now.</strong> Concurrent agent runs could collide on checkpoint files and step on each other's state. Each run gets its own ID, so the checkpoints stay separate.</li>
+            <li><strong>Deterministic code-graph ranking.</strong> The MinHash seeds are fixed, so the codegraph ranking test stopped being flaky: same input, same ranking, every run.</li>
+            <li><strong>Dependency and security pass.</strong> Bumped the Anthropic Go SDK, pinned <code>govulncheck</code> past a generics panic, and aligned GPG release verification with celeste-ops so the signed-release story is consistent across both tools.</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>Upgrading</h2>
+          <p>Grab v1.11.2 from the <a href="https://github.com/whykusanagi/celeste-cli/releases" target="_blank" rel="noopener">releases page</a>. Releases are GPG-signed; verify the signature before you run the binary. If you're already on the 1.11.x line, this is a drop-in update with no config migration. If you're coming from 1.10 or earlier, expect the default model to be Fugu now; pin a different one with a config profile if you'd rather.</p>
+          <p>Want the pitch instead of the patch notes? The <a href="../celeste-cli-presentation.html">Celeste CLI deck</a> covers what the tool does: graph-powered code search, structural review, and MCP tools for Claude Code.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Do I have to switch to Fugu?<br>
+          <strong>A:</strong> No. It's the default as of 1.11.0, but every OpenAI-compatible provider still works. If you keep a config profile pinned to something else, pass it with <code>-config</code>, and as of this release read commands respect it.</p>
+
+          <p><strong>Q:</strong> I passed <code>-config</code> before and it seemed ignored. Was that me?<br>
+          <strong>A:</strong> That was the bug, not you. Read commands weren't threading the profile through, so they fell back to the default. v1.11.2 fixes it: update and your profile sticks.</p>
+
+          <p><strong>Q:</strong> Where do the <code>/model</code> entries come from now?<br>
+          <strong>A:</strong> Straight from your provider's model list. The picker reflects what you can call, so you won't choose a name the API doesn't recognize.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">Celeste CLI on GitHub</a>
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2026 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

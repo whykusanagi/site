@@ -1,0 +1,149 @@
+/* ============================================================
+ * Iconography Layout Mode
+ * Static styles + keyframe animations for the icon composition.
+ * The SVG itself is built in iconography-mode.js.
+ * ========================================================== */
+
+/* The SVG is hidden by default; .active reveals it when the
+   iconography layout mode is selected. */
+#iconography-svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    display: none;
+    z-index: 5; /* above seamless background + vignette, below character */
+}
+#iconography-svg.active {
+    display: block;
+}
+
+/* Iconography control panel section visibility */
+.iconography-controls-section {
+    display: none;
+}
+.iconography-controls-section.active {
+    display: block;
+}
+
+/* Element-group visibility (toggled by per-element checkboxes) */
+.icon-hidden {
+    display: none !important;
+}
+
+/* ============================================================
+ * Ring text rotation
+ * Each rotating group must have its own transform-origin set
+ * inline (via JS) because the center is canvas-dependent.
+ * ========================================================== */
+@keyframes icon-spin-cw  { to { transform: rotate(360deg);  } }
+@keyframes icon-spin-ccw { to { transform: rotate(-360deg); } }
+
+.icon-ring-cw  { animation: icon-spin-cw  60s linear infinite; }
+.icon-ring-ccw { animation: icon-spin-ccw 40s linear infinite; }
+
+/* ============================================================
+ * Star pulse — the inner <path> scales around its local (0,0),
+ * which is the star's visual center because each star is wrapped
+ * in <g transform="translate(x,y)"> with the path drawn at 0,0.
+ * ========================================================== */
+@keyframes icon-star-pulse {
+    0%   { opacity: 0.30; transform: scale(0.35); }
+    50%  { opacity: 1.00; transform: scale(1.00); }
+    100% { opacity: 0.30; transform: scale(0.35); }
+}
+
+.icon-star {
+    animation: icon-star-pulse 3.2s ease-in-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+}
+
+/* Stagger phases — 10 buckets, evenly spaced over the cycle */
+.icon-star.ph0 { animation-delay: 0s;     }
+.icon-star.ph1 { animation-delay: 0.32s;  }
+.icon-star.ph2 { animation-delay: 0.64s;  }
+.icon-star.ph3 { animation-delay: 0.96s;  }
+.icon-star.ph4 { animation-delay: 1.28s;  }
+.icon-star.ph5 { animation-delay: 1.60s;  }
+.icon-star.ph6 { animation-delay: 1.92s;  }
+.icon-star.ph7 { animation-delay: 2.24s;  }
+.icon-star.ph8 { animation-delay: 2.56s;  }
+.icon-star.ph9 { animation-delay: 2.88s;  }
+
+/* ============================================================
+ * Centered character (reuse the same rules hero-mode applies).
+ * When iconography mode is active, the container also gets
+ * .hero-mode so the existing centering rules apply. We add a
+ * marker class so future code can distinguish the two modes.
+ * ========================================================== */
+#thumbnail-container.iconography-mode #title-area,
+#thumbnail-container.iconography-mode #logo-container {
+    display: none;
+}
+#thumbnail-container.iconography-mode.icon-show-title #title-area {
+    display: block;
+}
+#thumbnail-container.iconography-mode.icon-show-logo #logo-container {
+    display: block;
+}
+
+/* ============================================================
+ * Logo positioning inside iconography mode.
+ * .icon-logo-center  → logo dead-center over the character
+ * .icon-logo-corners → brand left + duplicated right (via flex tweak on the banner)
+ * Both require .icon-show-logo to also be set (the logo is hidden by default).
+ * The existing logo-component renders into #logo-banner inside #logo-container.
+ * We override the hero-mode top positioning to drop the banner into the canvas.
+ * ========================================================== */
+#thumbnail-container.iconography-mode.icon-show-logo.icon-logo-center #logo-banner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    z-index: 260;
+}
+
+#thumbnail-container.iconography-mode.icon-show-logo.icon-logo-corners #logo-banner {
+    position: absolute;
+    top: 40px;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: row;
+    gap: 80vw;
+    z-index: 260;
+}
+
+/* ============================================================
+ * Fit character in circle — clips the celeste image/canvas into a
+ * portrait roundel that hides square crop edges from source art
+ * that lacks full-body coverage.
+ *
+ * The clip radius is computed in JS as ~R*0.49 (just inside the
+ * inner cyan ring) and pushed via the --icon-fit-circle-r CSS
+ * custom property on #thumbnail-container. Because it's an
+ * absolute pixel value, the visible circle stays the same size
+ * regardless of how the user scales the character image — the
+ * image content moves/scales BEHIND a fixed mask, so the user
+ * can "crop in" via the existing character-size slider.
+ *
+ * Override hero-mode's bottom: 0 inline style with !important so
+ * the image re-anchors to canvas-center; this puts the image's
+ * own 50%/50% (where the clip is centered) at the canvas center.
+ * ========================================================== */
+#thumbnail-container.iconography-mode.icon-fit-circle #celeste-image,
+#thumbnail-container.iconography-mode.icon-fit-circle #celeste-canvas {
+    top: 50% !important;
+    bottom: auto !important;
+    transform: translate(-50%, -50%) !important;
+    clip-path: circle(var(--icon-fit-circle-r, 240px) at 50% 50%);
+    -webkit-clip-path: circle(var(--icon-fit-circle-r, 240px) at 50% 50%);
+}
+

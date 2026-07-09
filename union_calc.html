@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Union Raid Boss HP Calculator | whykusanagi</title>
+    <meta name="description" content="Union Raid boss HP calculator using local boss data to estimate remaining HP from up to three player damage inputs." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/union_calc.html">
+    
+    <!-- Load environment config -->
+    <script src="assets/js/env-config.js"></script>
+    <!-- Background image setup (uses env-config for URL conversion) -->
+    <script src="assets/js/background-setup.js"></script>
+    
+    <!-- Corrupted Theme Framework -->
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    
+    <!-- Site-Specific Overrides -->
+    <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <script type="module" src="assets/js/site-bootstrap.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        .calculator-container {
+            max-width: 700px;
+            margin: 2rem auto;
+        }
+
+        .form-group {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: var(--spacing-md);
+            background: var(--glass);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text);
+            font-size: 1rem;
+            transition: all var(--transition-normal);
+        }
+
+        .form-group select:focus,
+        .form-group input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(217, 79, 144, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .button-group .btn {
+            flex: 1;
+        }
+
+        #output {
+            margin-top: var(--spacing-xl);
+            font-weight: 700;
+            text-align: center;
+            font-size: 1.25rem;
+            color: var(--accent);
+            padding: var(--spacing-md);
+            background: rgba(217, 79, 144, 0.1);
+            border: 1px solid rgba(217, 79, 144, 0.3);
+            border-radius: var(--radius-md);
+        }
+
+        #hp-visualization {
+            position: relative;
+            height: 60px;
+            width: 100%;
+            margin-top: var(--spacing-xl);
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        #hp-visualization div {
+            height: 100%;
+            position: absolute;
+            top: 0;
+            transition: width 0.3s ease, left 0.3s ease;
+        }
+
+        #boss-hp-bar {
+            background-color: rgba(255, 0, 0, 0.3);
+            z-index: 1;
+            width: 100%;
+        }
+
+        #player1-bar {
+            background-color: rgba(0, 100, 255, 0.8);
+            z-index: 2;
+        }
+
+        #player2-bar {
+            background-color: rgba(0, 200, 0, 0.8);
+            z-index: 3;
+        }
+
+        #player3-bar {
+            background-color: rgba(255, 165, 0, 0.8);
+            z-index: 4;
+        }
+
+        #character-banner {
+            width: 100%;
+            height: 200px;
+            margin-top: var(--spacing-xl);
+            background-image: url('https://s3.whykusanagi.xyz/character_banner.png');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            border-radius: var(--radius-lg);
+            opacity: 0.6;
+        }
+    </style>
+</head>
+<body>
+    <script src="assets/js/loading.js"></script>
+
+    <nav class="navbar">
+        <div class="navbar-content">
+            <a href="index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+            <div class="navbar-links">
+                <a href="celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+        <a href="music.html"><i class="fas fa-music"></i> Music</a>
+                <a href="blog/index.html"><i class="fas fa-blog"></i> Blog</a>
+                <a href="art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+                <a href="references.html"><i class="fas fa-palette"></i> References</a>
+                <a href="doujin.html"><i class="fas fa-book"></i> Doujin</a>
+                <a href="links.html"><i class="fas fa-link"></i> Links</a>
+                <a href="tools.html" class="active"><i class="fas fa-tools"></i> Tools</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="app-shell">
+        <div class="calculator-container">
+            <div class="glass-card">
+                <h1>Union Raid Boss HP Calculator</h1>
+                <p>Use this calculator to estimate remaining boss HP after up to three player damage inputs. Select a level and boss, enter damage values, then run the calculation.</p>
+                <p><strong>Data source:</strong> boss HP values are loaded from <code>boss.json</code> on this site.</p>
+
+                <h2 style="margin-top: 1.5rem;">How to Use</h2>
+                <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                    <li>Select the raid level and boss.</li>
+                    <li>Enter damage for Player 1 and Player 2.</li>
+                    <li>Enter Player 3 damage, or enable <strong>Ignore Player 3</strong>.</li>
+                    <li>Click <strong>Calculate</strong> to see remaining HP and bar visualization.</li>
+                </ol>
+
+                <div class="form-group">
+                    <label for="level">Level:</label>
+                    <select id="level"></select>
+                </div>
+
+                <div class="form-group">
+                    <label for="boss">Boss:</label>
+                    <select id="boss"></select>
+                </div>
+
+                <h3>Player Damage:</h3>
+                
+                <div class="form-group">
+                    <label for="player1">Player 1:</label>
+                    <input type="number" id="player1" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="player2">Player 2:</label>
+                    <input type="number" id="player2" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label for="player3">Player 3:</label>
+                    <input type="number" id="player3" value="0">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="ignorePlayer3">
+                    <label for="ignorePlayer3" style="margin: 0;">Ignore Player 3?</label>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="calculateHP()">Calculate</button>
+                    <button class="btn secondary" id="reset-button" onclick="resetValues()">Reset</button>
+                </div>
+
+                <div id="output">Remaining HP: 0</div>
+
+                <div id="hp-visualization">
+                    <div id="boss-hp-bar"></div>
+                    <div id="player1-bar" style="width: 0%; left: 0%;"></div>
+                    <div id="player2-bar" style="width: 0%; left: 0%;"></div>
+                    <div id="player3-bar" style="width: 0%; left: 0%;"></div>
+                </div>
+
+                <div id="character-banner"></div>
+
+                <section style="margin-top: 1.5rem;">
+                    <h2>Quick FAQ</h2>
+                    <p><strong>Q:</strong> Why does the level dropdown start at 1 even though internal values are zero-based?<br><strong>A:</strong> The UI displays level +1 for readability while using the underlying dataset keys.</p>
+                    <p><strong>Q:</strong> Can this be used without a third player hit?<br><strong>A:</strong> Yes. Enable <strong>Ignore Player 3</strong> to calculate using two players only.</p>
+                </section>
+            </div>
+        </div>
+
+        <footer>
+            &copy; 2025 whykusanagi. All rights reserved.<br>
+            <a href="index.html">Back to Home</a> | <a href="privacy.html">Privacy Policy</a>
+        </footer>
+    </main>
+
+    <script>
+        let data = {}; // Initialize an empty data object
+
+        // Fetch data from boss.json
+        fetch('boss.json')
+            .then(response => response.json())
+            .then(jsonData => {
+                data = jsonData; // Store the fetched data
+
+                // Populate level and boss dropdowns after data is loaded
+                populateDropdowns();
+            })
+            .catch(error => {
+                console.error('Error loading boss data:', error);
+                // Handle the error gracefully, perhaps display a message to the user
+            });
+        
+        function populateDropdowns() {
+            const levelSelect = document.getElementById("level");
+            const bossSelect = document.getElementById("boss");
+
+            // Get all levels as numbers and sort them
+            const levels = Object.keys(data).map(Number).sort((a, b) => a - b);
+
+            // Populate level dropdown
+            for (const level of levels) {
+                const option = document.createElement("option");
+                option.value = level;
+                option.text = level + 1;
+                levelSelect.appendChild(option);
+            }
+
+            // Populate boss dropdown based on the first level's bosses
+            const firstLevelBosses = Object.keys(data[Object.keys(data)[0]]);
+            for (const boss of firstLevelBosses) {
+                const option = document.createElement("option");
+                option.value = boss;
+                option.text = boss;
+                bossSelect.appendChild(option);
+            }
+        }
+
+        function calculateHP() {
+            const level = parseInt(document.getElementById("level").value); // Parse level to a number
+            const boss = document.getElementById("boss").value;
+            const player1DamageInput = convertDamage(parseFloat(document.getElementById("player1").value));
+            const player2DamageInput = convertDamage(parseFloat(document.getElementById("player2").value));
+            // Check if Player 3 should be ignored
+            const ignorePlayer3 = document.getElementById("ignorePlayer3").checked;
+            const player3DamageInput = ignorePlayer3 ? 0 : convertDamage(parseFloat(document.getElementById("player3").value));
+
+            if (!data[level] || !data[level][boss]) {
+                console.error("Invalid level or boss selection.");
+                document.getElementById("output").textContent = "Invalid level or boss selection.";
+                return;
+            }
+
+            // Fetch boss HP for the current level and boss
+            const bossHP = data[level][boss]; 
+            
+            // calc player damage
+            const player1Damage = Math.max(bossHP - player1DamageInput, 0) 
+            const player2Damage = Math.max(bossHP - player2DamageInput, 0)
+            const player3Damage = ignorePlayer3 ? 0 : Math.max(bossHP - player3DamageInput, 0)
+
+            // Total damage dealt by all players
+            const totalDamage = Math.max(player1Damage + player2Damage + player3Damage);
+            // Remaining HP of the boss
+            const remainingHP = Math.max(bossHP - totalDamage); // Let HP go negative if it's overkill
+
+            // Update the output
+            const outputDiv = document.getElementById("output");
+            outputDiv.textContent = `Remaining HP: ${remainingHP.toLocaleString()}`;
+
+            if (remainingHP <= 0) {
+                outputDiv.textContent += " - Boss Dead!";
+            }
+
+            // Update HP visualization
+            const player1Percent = Math.min((player1Damage / bossHP) * 100, 100);
+            const player2Percent = Math.min((player2Damage / bossHP) * 100, 100);
+            const player3Percent = ignorePlayer3 ? 0 : Math.min((player3Damage / bossHP) * 100, 100);
+
+            // Calculate cumulative percentages to avoid overflow
+            const totalPercent = Math.min(player1Percent + player2Percent + player3Percent, 100);
+
+            // Set the width and left positions of the bars
+            document.getElementById("player1-bar").style.width = player1Percent + "%";
+            document.getElementById("player1-bar").style.left = "0%";
+
+            document.getElementById("player2-bar").style.width = player2Percent + "%";
+            document.getElementById("player2-bar").style.left = player1Percent + "%";
+
+            document.getElementById("player3-bar").style.width = Math.min(player3Percent, 100 - player1Percent - player2Percent) + "%";
+            document.getElementById("player3-bar").style.left = (player1Percent + player2Percent) + "%";
+        }
+
+        // Helper function to convert damage
+        function convertDamage(damageInput) {
+            const damage = parseInt(damageInput) || 0;
+            return damage * 1000000;
+        }
+
+        function resetValues() {
+            // Reset all player input fields to 0
+            document.getElementById("player1").value = "0";
+            document.getElementById("player2").value = "0";
+            document.getElementById("player3").value = "0";
+            
+            // Reset checkbox to unchecked
+            document.getElementById("ignorePlayer3").checked = false;
+
+            // Get the selected level and boss
+            const level = parseInt(document.getElementById("level").value); // Parse level to a number
+            const boss = document.getElementById("boss").value;
+            
+            // Get the correct HP value for the selected boss and level
+            if (!data[level] || !data[level][boss]) {
+                console.error("Invalid level or boss selection.");
+                document.getElementById("output").textContent = "Invalid level or boss selection.";
+                return;
+            }
+            
+            const bossHP = data[level][boss];
+            
+            // Reset the output text to show the full HP value
+            const outputDiv = document.getElementById("output");
+            outputDiv.textContent = `Remaining HP: ${bossHP.toLocaleString()}`;
+            
+            // Reset the HP visualization bar to full width (100%)
+            document.getElementById("player1-bar").style.width = "0%";
+            document.getElementById("player2-bar").style.width = "0%";
+            document.getElementById("player3-bar").style.width = "0%";
+        }
+    </script>
+
+    <script src="src/lib/celeste-widget.js"></script>
+</body>
+</html>

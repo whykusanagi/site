@@ -1,0 +1,23 @@
+[
+  {
+    "AllowedOrigins": [
+      "https://whykusanagi.xyz",
+      "https://site-45q.pages.dev",
+      "https://colab.research.google.com",
+      "https://github.com",
+      "https://skeb.jp",
+      "https://vgen.co",
+      "https://ondigitalocean.app",
+      "https://cloud.digitalocean.com",
+      "https://discord.com",
+      "https://canary.discord.com"
+    ],
+    "AllowedMethods": [
+      "GET"
+    ],
+    "AllowedHeaders": [
+      "*"
+    ],
+    "ExposeHeaders": []
+  }
+]

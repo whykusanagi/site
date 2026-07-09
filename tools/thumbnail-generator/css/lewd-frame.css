@@ -1,0 +1,20 @@
+/* lewd-frame.css — rounded magenta/purple frame outline + inset phrase rows.
+ * Canvas-rendered overlay that sits on top of the z-stack so the frame is the
+ * outermost visual element on the exported thumbnail. Toggled by the
+ * Lewd Frame controls in index.html. */
+
+#lewd-frame-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 110; /* above #title-area (100), warning (95), image (90) */
+    pointer-events: none;
+    display: none;
+    object-fit: contain;
+}
+
+#lewd-frame-canvas.active {
+    display: block;
+}

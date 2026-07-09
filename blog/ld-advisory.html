@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>// ADVISORY :: LD CLOUD / LDPLAYER / LDSHOP EXPOSURE</title>
+
+<!-- ───── corrupted-theme CSS (locally hosted; site CSP blocks unpkg) ───── -->
+<link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+
+<!-- Display font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ───── advisory layout (extends theme, doesn't override) ───── */
+  body {
+    font-family: 'Space Mono', ui-monospace, monospace;
+    background: var(--bg, #0a0a0f);
+    color: var(--text, #e8e8f0);
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  .advisory-shell{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── system banner ─── */
+  .sysbar{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem 1.5rem;
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .12em;
+    color: var(--accent-light);
+    padding: .65rem 1.1rem;
+    margin-bottom: var(--spacing-lg);
+    border: 1px dashed var(--border);
+    background: var(--glass-darker);
+    border-radius: var(--radius-md);
+  }
+  .sysbar .dot{
+    display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    margin-right: .55rem;
+    animation: pulse 1.4s infinite;
+  }
+  .sysbar .err{ color: var(--accent); font-weight: 700; }
+  .sysbar .ok { color: #8be57a; }
+
+  /* ─── masthead ─── */
+  .masthead{
+    text-align: left;
+    margin-bottom: var(--spacing-lg);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border-radius: var(--radius-md);
+    background: var(--glass-darker);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before{
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 2px,
+      rgba(217, 79, 144, 0.04) 2px,
+      rgba(217, 79, 144, 0.04) 3px
+    );
+    pointer-events: none;
+  }
+  .masthead-tag{
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .2em;
+    color: var(--accent);
+    margin-bottom: .4rem;
+    text-transform: uppercase;
+  }
+  .masthead h1{
+    font-family: 'VT323', monospace;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 .6rem 0;
+    color: var(--text);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .masthead h1 .accent{ color: var(--accent); }
+  .masthead .lede{
+    font-size: .95rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: .5rem 0 0;
+    max-width: 65ch;
+  }
+  .masthead .meta{
+    margin-top: 1rem;
+    display: flex; flex-wrap: wrap; gap: .5rem .9rem;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .08em;
+    color: var(--accent-light);
+  }
+  .masthead .meta span{
+    padding: .15rem .55rem;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,.25);
+    border-radius: var(--radius-sm, 4px);
+  }
+
+  /* ─── section blocks ─── */
+  .panel{
+    padding: clamp(1rem, 2.5vw, 1.6rem);
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--radius-md);
+    background: var(--glass-darker);
+    border: 1px solid var(--border);
+  }
+  .panel h2{
+    font-family: 'VT323', monospace;
+    font-size: 1.6rem;
+    letter-spacing: .08em;
+    margin: 0 0 .9rem 0;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: .6rem;
+  }
+  .panel h2::before{
+    content: '▍';
+    color: var(--accent);
+  }
+  .panel h3{
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    letter-spacing: .08em;
+    margin: 1.2rem 0 .4rem 0;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .panel p{
+    font-size: .92rem;
+    line-height: 1.65;
+    margin: .5rem 0;
+    color: var(--text);
+  }
+  .panel p.muted{ color: var(--text-muted); }
+  .panel strong{ color: var(--accent-light); font-weight: 700; }
+
+  .panel ul, .panel ol{
+    padding-left: 1.2rem;
+    margin: .5rem 0;
+  }
+  .panel li{
+    font-size: .92rem;
+    line-height: 1.65;
+    margin: .35rem 0;
+    color: var(--text);
+  }
+  .panel li::marker{ color: var(--accent); }
+
+  /* ─── evidence grid ─── */
+  .evidence-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: .8rem;
+    margin: .8rem 0 .3rem;
+  }
+  .evidence-item{
+    padding: .8rem .9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(0,0,0,.25);
+  }
+  .evidence-item .num{
+    font-family: 'VT323', monospace;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--accent);
+    display: block;
+  }
+  .evidence-item .label{
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: .25rem;
+    display: block;
+  }
+  .evidence-item .desc{
+    font-size: .85rem;
+    line-height: 1.5;
+    color: var(--text);
+    margin-top: .4rem;
+  }
+
+  /* ─── action checklist ─── */
+  .action-list{
+    list-style: none;
+    padding: 0;
+    margin: .6rem 0 0;
+    counter-reset: step;
+  }
+  .action-list li{
+    counter-increment: step;
+    padding: .7rem .9rem .7rem 3rem;
+    margin: .5rem 0;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(0,0,0,.25);
+    position: relative;
+    font-size: .92rem;
+    line-height: 1.55;
+  }
+  .action-list li::before{
+    content: '0' counter(step);
+    position: absolute;
+    left: .85rem; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--accent);
+    letter-spacing: .04em;
+  }
+
+  /* ─── callout ─── */
+  .callout{
+    padding: 1rem 1.1rem;
+    margin: 1rem 0;
+    border-left: 3px solid var(--accent);
+    background: rgba(217, 79, 144, 0.08);
+    border-radius: 0 var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
+  }
+  .callout-title{
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin: 0 0 .35rem 0;
+  }
+  .callout p{ margin: .3rem 0; font-size: .9rem; }
+
+  /* ─── source link ─── */
+  .source-block{
+    display: flex; flex-wrap: wrap; gap: .8rem; align-items: center;
+    padding: 1rem 1.1rem;
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--glass-darker);
+  }
+  .source-block .label{
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .source-block a{
+    color: var(--accent-light);
+    text-decoration: none;
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .04em;
+    padding: .3rem .7rem;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(217, 79, 144, 0.08);
+    transition: var(--transition);
+  }
+  .source-block a:hover{
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 14px rgba(217, 79, 144, 0.5);
+  }
+
+  /* ─── do/don't grid ─── */
+  .dual-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .8rem;
+    margin-top: .6rem;
+  }
+  @media (min-width: 720px){
+    .dual-grid{ grid-template-columns: 1fr 1fr; }
+  }
+  .dual-cell{
+    padding: .9rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(0,0,0,.25);
+  }
+  .dual-cell h4{
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin: 0 0 .5rem 0;
+  }
+  .dual-cell.avoid h4{ color: var(--accent); }
+  .dual-cell.avoid h4::before{ content: '✕ '; }
+  .dual-cell.use h4{ color: #8be57a; }
+  .dual-cell.use h4::before{ content: '✓ '; }
+  .dual-cell ul{ padding-left: 1.1rem; margin: 0; }
+  .dual-cell li{ font-size: .85rem; margin: .3rem 0; }
+
+  /* ─── footer ─── */
+  .advisory-foot{
+    margin-top: var(--spacing-lg);
+    padding: 1rem 1.1rem;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .1em;
+    color: var(--text-muted);
+    border-top: 1px dashed var(--border);
+  }
+  .advisory-foot .accent{ color: var(--accent); }
+
+  /* small print code-like spans */
+  code, .mono{
+    font-family: 'Space Mono', ui-monospace, monospace;
+    font-size: .85em;
+    padding: .1rem .35rem;
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--accent-light);
+  }
+</style>
+</head>
+
+<body>
+
+<!-- glass-backdrop is a fixed background overlay; sits behind everything -->
+<div class="glass-backdrop"></div>
+
+<div class="advisory-shell">
+
+  <!-- ─────── SYSTEM BANNER ─────── -->
+  <div class="sysbar">
+    <span><span class="dot"></span>SIGNAL :: <span class="err">COMPROMISED</span></span>
+    <span>SEV :: <span class="err">HIGH</span></span>
+    <span>SCOPE :: LD CLOUD / LDPLAYER / LDSHOP</span>
+    <span>STATUS :: <span class="err">PUBLIC // UNAUTHENTICATED</span></span>
+  </div>
+
+  <!-- ─────── MASTHEAD ─────── -->
+  <header class="masthead">
+    <div class="masthead-tag">// SECURITY ADVISORY — STREAM BRIEF</div>
+    <h1>
+      <span
+        class="corrupted-multilang"
+        data-english="PUBLIC BUCKETS"
+        data-romaji="KOUKAI BAKETSU"
+        data-katakana="パブリック バケット"
+        data-kanji="公開バケット"
+      >PUBLIC BUCKETS</span><br>
+      <span class="accent">LD CLOUD // LDPLAYER // LDSHOP</span>
+    </h1>
+    <p class="lede">
+      Twenty-three Huawei Cloud storage buckets associated with the LD operator
+      currently accept anonymous listing requests. The contents include database
+      backups, session recordings of users logging into games such as
+      <strong>Wuthering Waves</strong>, and admin infrastructure that should
+      never be public. This page is a structured brief for an on-stream
+      walkthrough — facts only, with priority user actions at the bottom.
+    </p>
+    <div class="meta">
+      <span>BUCKETS :: 23 (VERIFIED)</span>
+      <span>FILES :: 900+ INDEXED</span>
+      <span>SOURCE :: @NTE_WL (X)</span>
+      <span>METHOD :: ANONYMOUS LISTING ONLY</span>
+    </div>
+  </header>
+
+  <!-- ─────── SOURCE LINK ─────── -->
+  <div class="source-block">
+    <span class="label">// PRIMARY POST ::</span>
+    <a href="https://x.com/whyKusanagi/status/2054696585238651089" target="_blank" rel="noopener">
+      x.com/whyKusanagi/status/2054696585238651089 ↗
+    </a>
+  </div>
+
+  <!-- ─────── 60-SECOND OPENER ─────── -->
+  <section class="panel">
+    <h2>60-Second Opener</h2>
+    <p>
+      Earlier this week, someone on X posted a list of cloud storage buckets
+      connected to LDPlayer, LD Cloud, and LDShop. I verified what's in those
+      buckets myself. <strong>Twenty-three of them are publicly listable right
+      now, no password required.</strong> The contents include database backups,
+      recordings of people's login sessions in games like Wuthering Waves, and a
+      bunch of admin infrastructure that should never be public.
+    </p>
+    <p>
+      I'm not accusing anyone of anything. I'm telling you what's there, and
+      I'm telling you that <strong>if you've ever used any of these products,
+      you should change your passwords tonight.</strong>
+    </p>
+  </section>
+
+  <!-- ─────── WHAT I CONFIRMED ─────── -->
+  <section class="panel">
+    <h2>What I Confirmed</h2>
+
+    <div class="evidence-grid">
+      <div class="evidence-item">
+        <span class="num">23</span>
+        <span class="label">Listable Buckets</span>
+        <p class="desc">Anonymous listing on Huawei Cloud. No credentials required to enumerate filenames.</p>
+      </div>
+      <div class="evidence-item">
+        <span class="num">900+</span>
+        <span class="label">Files Indexed</span>
+        <p class="desc">First page of one bucket. Sample file inspected was a screen recording (~9 min, low fps/bitrate) shaped like a session capture.</p>
+      </div>
+      <div class="evidence-item">
+        <span class="num">∞</span>
+        <span class="label">JumpServer Backups</span>
+        <p class="desc">Daily backups of SSH bastion. Contains admin credentials and recorded admin sessions.</p>
+      </div>
+      <div class="evidence-item">
+        <span class="num">MoM</span>
+        <span class="label">MySQL Dumps</span>
+        <p class="desc">Daily database backups going back months. User-account tables included.</p>
+      </div>
+    </div>
+
+    <h3>Sample Frame</h3>
+    <p>
+      I pulled one video to confirm the format, viewed <strong>only the first
+      frame</strong>, and stopped. That frame showed the Kuro Games login dialog
+      opening — the login screen for Wuthering Waves. I did not watch the video.
+      I did not download any database. The capture profile and file shape are
+      consistent with session recording, not gameplay capture.
+    </p>
+
+    <h3>Other Objects Confirmed in Buckets</h3>
+    <ul>
+      <li>Per-user, per-day SDK telemetry directory for every device using the cloud streaming product</li>
+      <li>A packet capture file (<code>.pcap</code>) sitting unprotected at the bucket root</li>
+      <li>AOSP base images for three storefronts — <code>EasyFun</code>, <code>FunPass</code>, <code>XD</code> — sharing the same path structure, confirming a single operator with multiple brand fronts</li>
+    </ul>
+  </section>
+
+  <!-- ─────── ARCHITECTURE ─────── -->
+  <section class="panel">
+    <h2>Why This Is Structurally Different</h2>
+    <p>
+      LD Cloud's underlying product is a <strong>cloud Android emulator</strong>.
+      The Android instance does not run on the user's PC — it runs on the
+      operator's servers, and the user receives a rendered video stream of it.
+    </p>
+    <p>
+      The consequence most people don't see: <strong>when a user types a
+      password into a game on this product, the keystrokes are not on the
+      user's machine. They are on the operator's server.</strong> The operator's
+      server takes the keystrokes and draws the asterisks the user sees. The
+      user's screen only ever shows asterisks — but the operator's machine held
+      the plaintext keystrokes for the brief moment between keypress and render.
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">// The Line</div>
+      <p>
+        Recordings showing only asterisks are <strong>not exculpatory</strong>.
+        The capture moment exists structurally, by design of the product.
+        Whether keystrokes were saved alongside the videos is a retention
+        question. That they were on the operator's machine is not in question.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────── SOGOU ─────── -->
+  <section class="panel">
+    <h2>The Sogou IME Angle (Local LDPlayer)</h2>
+    <p>
+      Most users who say "LDPlayer" mean the PC emulator running on their own
+      machine, not the cloud product. The cloud-architecture argument doesn't
+      apply to that group directly — but there's a separate concern.
+    </p>
+    <p>
+      The same install bundle ships LD's own client app <em>and</em>
+      <strong>Sogou Pinyin</strong>, Tencent's Chinese input method. Co-bundling
+      is what you'd do if Sogou were being preinstalled as the default keyboard
+      inside the LDPlayer Android image. If so, <strong>every keystroke a local
+      LDPlayer user types hits the Sogou input method first</strong>. The IME
+      sees plaintext. The game's password field only sees the result. Sogou has
+      a long, well-documented telemetry history including cloud completion that
+      uploads typed input to remote servers.
+    </p>
+    <p class="muted">
+      <strong>Honest caveat:</strong> I haven't visually confirmed Sogou is the
+      default IME in the local LDPlayer image. The co-bundling makes it the
+      obvious read, but if asked in chat, the truthful answer is
+      "most likely, but not personally verified."
+    </p>
+  </section>
+
+  <!-- ─────── WHAT I AM NOT CLAIMING ─────── -->
+  <section class="panel">
+    <h2>What I Am Not Claiming</h2>
+    <p>
+      I have not read any user's password out of these files. I downloaded one
+      sample video, viewed only the first frame, and stopped. I pulled zero
+      database dumps. I did not attempt to decrypt the encrypted logs. Crossing
+      from <em>"listing an open bucket"</em> into <em>"possessing exfiltrated
+      user data"</em> is a line I'm not crossing and not recommending viewers
+      cross either.
+    </p>
+    <p>
+      I also don't know the operator's intent. There are two clean readings:
+    </p>
+    <ul>
+      <li><strong>(A)</strong> Deliberate harvesting operation that someone forgot to lock down.</li>
+      <li><strong>(B)</strong> Catastrophic cloud storage misconfiguration on top of an otherwise normal cloud-gaming business.</li>
+    </ul>
+    <p>
+      From the outside I genuinely can't tell which it is. Both are bad for
+      users. Both have the same fix and the same recommended user action.
+      <strong>That's the only part that matters in the next few days.</strong>
+    </p>
+  </section>
+
+  <!-- ─────── ACTIONS ─────── -->
+  <section class="panel">
+    <h2>What Viewers Should Do — Tonight</h2>
+    <ol class="action-list">
+      <li>
+        If you've entered an account password while using <strong>LDPlayer, LD
+        Cloud, LDShop, EasyFun, FunPass, FunPG, LDYunOS</strong>, or any link
+        via <code>oslink.io</code> — change the password on every game and
+        account you've entered. Priority: <strong>Wuthering Waves, Genshin
+        Impact, Neverness to Everness, Honkai Star Rail, Zenless Zone Zero,
+        Arknights / Endfield.</strong>
+      </li>
+      <li>
+        Turn on <strong>two-factor authentication</strong> on those accounts.
+        Authenticator app or hardware key preferred. SMS is the weakest option
+        but better than nothing.
+      </li>
+      <li>
+        Check the <strong>login history and active sessions</strong> in each
+        game's account portal. Revoke anything you don't recognise.
+      </li>
+      <li>
+        If you reused that password anywhere else, <strong>rotate it
+        everywhere</strong>.
+      </li>
+      <li>
+        If you ran payments through any of these products, <strong>watch your
+        card and bank statements</strong> over the coming weeks. The operator's
+        user-account databases are exposed; stored payment identifiers may be
+        too.
+      </li>
+      <li>
+        For breach notification, use <strong>Have I Been Pwned</strong>. Sign up
+        for free alerts at <code>haveibeenpwned.com/NotifyMe</code>. Once the
+        dumps get ingested you'll get email automatically. <strong>Don't grep
+        the dumps yourself</strong> — that puts you in possession of other
+        people's data.
+      </li>
+    </ol>
+  </section>
+
+  <!-- ─────── Q&A ─────── -->
+  <section class="panel">
+    <h2>Q&amp;A — Safe Answers</h2>
+
+    <h3>"Is this LDPlayer recording me right now?"</h3>
+    <p class="muted">
+      If you're on the cloud streaming product, sessions run on the operator's
+      servers, and the buckets show those servers produce recordings. Whether
+      your specific session is in there is something only the operator knows.
+      <strong>Defensive assumption: yes. Treat your credentials as exposed.</strong>
+    </p>
+
+    <h3>"Is Tencent involved?"</h3>
+    <p class="muted">
+      Tencent owns Sogou. Sogou Pinyin appears to ship in the LDPlayer bundle.
+      I have no evidence Tencent operates LD Cloud itself. Don't conflate the
+      IME question with the operator question.
+    </p>
+
+    <h3>"Is this a state spying operation?"</h3>
+    <p class="muted">
+      No evidence either way. Operator is mainland-China based, buckets are on
+      Huawei Cloud which is also mainland-China — circumstantial.
+      <strong>Not speculating on stream.</strong>
+    </p>
+
+    <h3>"How do I check if my account was leaked?"</h3>
+    <p class="muted">
+      Wait for HIBP to ingest the dumps. Sign up for notifications now. Do not
+      grep the data yourself.
+    </p>
+
+    <h3>"Should I uninstall LDPlayer?"</h3>
+    <p class="muted">
+      Yes, until the operator publicly explains what's been exposed and
+      confirms credential-entry sessions are no longer being recorded. There
+      are other emulators. The cost of switching is one evening.
+    </p>
+
+    <h3>"How did you find this?"</h3>
+    <p class="muted">
+      I didn't. <strong>@NTE_WL</strong> on X posted the bucket list. I
+      verified contents myself with anonymous listing from an isolated
+      container — no auth, no database downloads.
+    </p>
+
+    <h3>"Has the operator responded?"</h3>
+    <p class="muted">
+      Not as of the timestamp at the top of the stream. I'll update if that
+      changes.
+    </p>
+
+    <h3>"Can you link the buckets?"</h3>
+    <p class="muted">
+      Not on stream. The original X post has them. People who want to verify
+      can find them. I'm not making it one click easier for casual viewers to
+      start downloading other people's data.
+    </p>
+  </section>
+
+  <!-- ─────── LANGUAGE GUIDE ─────── -->
+  <section class="panel">
+    <h2>On-Camera Language</h2>
+    <p>Phrases that get clipped out of context vs. phrases that hold up.</p>
+
+    <div class="dual-grid">
+      <div class="dual-cell avoid">
+        <h4>Avoid</h4>
+        <ul>
+          <li>"They're selling your accounts"</li>
+          <li>"They're spying on you"</li>
+          <li>"This is malware"</li>
+          <li>"189,000 accounts have been leaked" (don't claim as your own count)</li>
+          <li>"You should sue LDPlayer"</li>
+          <li>"I have screenshots of the videos"</li>
+        </ul>
+      </div>
+      <div class="dual-cell use">
+        <h4>Use Instead</h4>
+        <ul>
+          <li>"Account marketplace exists as a separate product"</li>
+          <li>"The operator's servers record sessions"</li>
+          <li>"Cloud-gaming product that records what you do on it"</li>
+          <li>"The original disclosure cited ~189k accounts"</li>
+          <li>"Legal options may exist in some jurisdictions — not my call"</li>
+          <li>"One frame of a third-party login dialog — not redistributing"</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─────── WRAP ─────── -->
+  <section class="panel">
+    <h2>Wrap-Up Line</h2>
+    <div class="callout">
+      <div class="callout-title">// End on the action</div>
+      <p>
+        "If you've used any of this, change your passwords tonight. Turn on
+        2FA. Watch your accounts. Whether this is a deliberate harvesting
+        operation or the worst cloud storage misconfiguration I've ever seen,
+        the data is public either way, and the right response from your side
+        is the same."
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────── FOOTER ─────── -->
+  <footer class="advisory-foot">
+    <span class="accent">//</span>
+    BRIEF COMPILED FROM PUBLIC DISCLOSURE — NOT LEGAL ADVICE
+    <span class="accent">//</span>
+    PRIMARY SOURCE :: <a href="https://x.com/whyKusanagi/status/2054696585238651089" style="color: var(--accent-light); text-decoration: none;">@whyKusanagi</a>
+    <span class="accent">//</span>
+  </footer>
+
+</div>
+
+<!-- ───── corrupted-theme JS (auto-glitches .corrupted-multilang; jsdelivr is whitelisted in site CSP) ───── -->
+<script src="https://cdn.jsdelivr.net/npm/@whykusanagi/corrupted-theme@0.2.0/src/lib/corrupted-text.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Zero-Context Validation for Documentation Quality | Celeste Blog</title>
+    <meta name="description" content="Use blind sub-agents to test whether documentation is complete before developers get blocked. A practical documentation-quality workflow for Claude Code." />
+    <meta name="keywords" content="zero-context validation, documentation testing, blind agents, claude code, ai agents, documentation quality, developer tools, tdd documentation" />
+    <meta name="author" content="Celeste" />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/zero-context-validation.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Zero-Context Validation for Documentation Quality",
+      "description": "Use blind sub-agents to test whether documentation is complete before developers get blocked.",
+      "keywords": "zero-context validation, documentation testing, blind agents, claude code, ai agents, documentation quality",
+      "articleSection": "Developer Tools",
+      "inLanguage": "en-US",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-02-05",
+      "image": "https://s3.whykusanagi.xyz/art/tabane_bodysuit_full.jpg",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/zero-context-validation.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tools</p>
+          <h1>Zero-Context Validation: Test Documentation Completeness with Blind Sub-Agents</h1>
+          <p class="meta">A Claude Code skill that tests documentation completeness by spawning blind sub-agents to expose gaps before they waste developer time. Built with TDD methodology and validated under pressure. Like unit tests for your documentation—find blindspots before developers get blocked. Available on <a href="https://github.com/whykusanagi/zero-context-validation" target="_blank" rel="noopener">GitHub</a>.</p>
+          <p class="meta"><strong>Last updated:</strong> February 5, 2026</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>Blind agent testing</strong>: Spawn sub-agents with zero context to test if your documentation is actually complete</li>
+            <li><strong>Find gaps before shipping</strong>: Missing function definitions, unclear return types, and undocumented structures exposed automatically</li>
+            <li><strong>TDD for documentation</strong>: Test fails (agent gets blocked) → Fix docs → Test passes → Ship with confidence</li>
+            <li><strong>No assumptions allowed</strong>: Blind agents must report gaps, not guess—preventing documentation debt from accumulating</li>
+            <li><strong>Time savings</strong>: 1 hour validation saves 2-4 hours of developer confusion and support tickets</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/tabane_bodysuit_full.jpg" alt="Zero-Context Validation - Blind Agent Testing for Documentation Quality" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>What Is Zero-Context Validation?</h2>
+          <p>Zero-Context Validation is a <strong>Claude Code skill</strong> that tests your documentation by spawning blind sub-agents that attempt implementation using ONLY the docs. No prior knowledge, no assumptions, no guessing. If the agent gets blocked, you found documentation gaps BEFORE they waste developer time.</p>
+          <p>The problem: You write documentation that looks complete. You review it and think "this is clear." But when a developer tries to use it, they get blocked:</p>
+          <ul>
+            <li>Where is this function defined?</li>
+            <li>What should this method return?</li>
+            <li>Which file should I modify?</li>
+            <li>What's the structure of this object?</li>
+          </ul>
+          <p><strong>The gap:</strong> What's obvious to you (with context) isn't documented for others (without context). You can't objectively test your own docs because you know too much. Blind sub-agents don't know anything, so gaps are obvious to them.</p>
+          <p>Zero-Context Validation is like <strong>TDD for documentation</strong>: Test (blind sub-agent) fails → Fix docs → Test passes → Ship. The skill enforces the "Iron Law"—no assumptions allowed. Gaps must be reported, not filled. This prevents documentation debt from accumulating.</p>
+        </section>
+
+        <section>
+          <h2>How to Use Zero-Context Validation</h2>
+          <h3>Installation</h3>
+          <p>Clone the skill to your Claude Code skills directory:</p>
+          <pre><code>git clone https://github.com/whykusanagi/zero-context-validation.git \
+  ~/.claude/skills/zero-context-validation</code></pre>
+          <p>Verify installation:</p>
+          <pre><code>ls ~/.claude/skills/zero-context-validation/SKILL.md</code></pre>
+
+          <h3>Basic Usage</h3>
+          <p>When you've written documentation and want to test if it's actually complete:</p>
+          <ol>
+            <li><strong>Prepare your documentation</strong>: API docs, onboarding guides, developer workflows—anything that should be implementable</li>
+            <li><strong>Define a clear implementation task</strong>: What should a developer be able to do using ONLY the docs?</li>
+            <li><strong>Invoke the skill</strong>: Tell Claude Code to use <code>zero-context-validation</code> when testing documentation completeness</li>
+            <li><strong>Spawn a blind sub-agent</strong>: The skill launches a fresh agent that can ONLY use your documentation</li>
+            <li><strong>Agent attempts implementation</strong>: The blind agent tries to complete the task or reports specific gaps</li>
+            <li><strong>Iterate until success</strong>: Fix gaps, re-test with fresh blind agent, repeat until agent succeeds without assumptions</li>
+          </ol>
+
+          <h3>Real Workflow Example</h3>
+          <p>Here's how a typical validation session looks:</p>
+          <p><strong>Iteration 1:</strong></p>
+          <ul>
+            <li>YOU: Spawn blind sub-agent to add premium widget from my docs</li>
+            <li>BLIND AGENT: "BLOCKED - Missing base class definition"</li>
+            <li>YOU: "That's a real blindspot! I know Widget but didn't document it."</li>
+            <li>YOU: Add Widget documentation</li>
+          </ul>
+          <p><strong>Iteration 2:</strong></p>
+          <ul>
+            <li>YOU: Spawn new blind agent with updated docs</li>
+            <li>BLIND AGENT: "BLOCKED - Missing render() return type"</li>
+            <li>YOU: "Good catch! I know it returns HTMLElement, forgot to document"</li>
+            <li>YOU: Add render() contract documentation</li>
+          </ul>
+          <p><strong>Iteration 3:</strong></p>
+          <ul>
+            <li>YOU: Spawn new blind agent</li>
+            <li>BLIND AGENT: "Implementation complete using only docs!"</li>
+            <li>YOU: Review - no assumptions made ✓</li>
+            <li>YOU: Ship documentation ✓</li>
+          </ul>
+          <p><strong>Key insight:</strong> Multiple iterations are normal! Blind agents expose blindspots you couldn't see because you had context. Each iteration makes your docs more complete.</p>
+        </section>
+
+        <section>
+          <h2>What Makes This Different?</h2>
+          <h3>Traditional Documentation Review</h3>
+          <ul>
+            <li>You review your own documentation</li>
+            <li>It looks complete to you (because you have context)</li>
+            <li>You unconsciously fill gaps while reading</li>
+            <li>Blindspots ship to production</li>
+            <li>Developers get blocked and file support tickets</li>
+          </ul>
+
+          <h3>Zero-Context Validation Approach</h3>
+          <ul>
+            <li>You spawn blind sub-agents to test your docs</li>
+            <li>They have zero context - can't fill gaps unconsciously</li>
+            <li>They expose actual blindspots in documentation</li>
+            <li>You iterate until blind agents succeed</li>
+            <li>Only then are docs truly complete</li>
+          </ul>
+
+          <h3>The Iron Law: No Assumptions</h3>
+          <p>The skill enforces strict rules to prevent compromised validation:</p>
+          <ul>
+            <li><strong>Gaps must be reported, not filled</strong>: Blind agents can't make assumptions or use "common patterns"</li>
+            <li><strong>Getting blocked is success</strong>: When the agent can't proceed, we found gaps before they wasted real developer time</li>
+            <li><strong>Pressure resistance</strong>: The skill guards against time pressure, authority pressure, and "use your best judgment" traps</li>
+            <li><strong>Fresh agents each iteration</strong>: Each test uses a new blind agent to ensure zero context contamination</li>
+          </ul>
+
+          <h3>Built with TDD Methodology</h3>
+          <p>Zero-Context Validation is itself tested using TDD principles:</p>
+          <ul>
+            <li>500-word reference guide (token efficient)</li>
+            <li>Detailed examples showing success vs failure scenarios</li>
+            <li>Visual workflow diagrams for understanding the process</li>
+            <li>Quick Reference table for common situations</li>
+            <li>Rationalization table countering common excuses</li>
+            <li>Red flags detection for compromised validation</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>When to Use Zero-Context Validation</h2>
+          <p>This skill is most valuable when documentation quality directly impacts developer experience:</p>
+          <ul>
+            <li><strong>Before publishing API documentation</strong>: Ensure endpoints, parameters, and responses are fully documented</li>
+            <li><strong>After major refactors</strong>: Verify workflows still make sense after changing code structure</li>
+            <li><strong>Creating onboarding guides</strong>: Test if new developers can actually follow your setup instructions</li>
+            <li><strong>Before merging PRs with new docs</strong>: Validate documentation changes before they reach main branch</li>
+            <li><strong>When external developers will use your docs</strong>: They have zero context about your codebase—just like blind agents</li>
+            <li><strong>After receiving "docs unclear" feedback</strong>: Find and fix specific gaps causing confusion</li>
+          </ul>
+
+          <h3>Time Investment vs Savings</h3>
+          <p>Validation takes approximately 1 hour (3-5 iterations typical). This prevents:</p>
+          <ul>
+            <li>2-4 hours of developer confusion per person</li>
+            <li>Support tickets asking "how do I..."</li>
+            <li>Duplicate implementations because docs were unclear</li>
+            <li>Tech debt from developers making wrong assumptions</li>
+            <li>Loss of trust in documentation quality</li>
+          </ul>
+          <p><strong>ROI:</strong> For documentation used by 3+ developers, validation pays for itself immediately. For public API docs, the ROI is even higher.</p>
+        </section>
+
+        <section>
+          <h2>For Developers: Technical Details</h2>
+          <p><em>If you're interested in the implementation or want to contribute:</em></p>
+
+          <h3>Skill Architecture</h3>
+          <p>Zero-Context Validation is built as a Claude Code skill using the official <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">Anthropic Skills</a> specification:</p>
+          <ul>
+            <li><strong>SKILL.md</strong>: 500-word reference guide for the AI agent (token efficient)</li>
+            <li><strong>examples.md</strong>: Multi-iteration workflows showing success vs failure scenarios</li>
+            <li><strong>workflow.md</strong>: Visual diagrams of the main agent + blind sub-agent loop</li>
+            <li><strong>README.md</strong>: User-facing documentation with quick start guide</li>
+          </ul>
+
+          <h3>How It Works Internally</h3>
+          <p>The skill uses Claude Code's <code>superpowers:dispatching-parallel-agents</code> to spawn blind sub-agents:</p>
+          <ol>
+            <li><strong>Main agent (you)</strong>: Has full context about the codebase and documentation</li>
+            <li><strong>Blind sub-agent</strong>: Fresh agent with ONLY access to documentation being tested</li>
+            <li><strong>Task definition</strong>: Main agent specifies what should be implementable from docs</li>
+            <li><strong>Implementation attempt</strong>: Blind agent tries to complete task using only docs</li>
+            <li><strong>Gap reporting</strong>: If blocked, blind agent reports specific missing information</li>
+            <li><strong>Iteration loop</strong>: Main agent fixes docs and spawns fresh blind agent for re-test</li>
+          </ol>
+
+          <h3>Integration with Development Workflow</h3>
+          <p>Zero-Context Validation integrates with existing developer workflows:</p>
+          <ul>
+            <li><strong>Pre-commit hooks</strong>: Validate documentation changes before committing</li>
+            <li><strong>CI/CD pipelines</strong>: Run validation as part of PR review process</li>
+            <li><strong>Documentation linting</strong>: Complement existing linters with semantic completeness testing</li>
+            <li><strong>API versioning</strong>: Ensure new API versions have complete documentation before release</li>
+          </ul>
+
+          <h3>Contributing</h3>
+          <p>The skill is open source under MIT license. Contributions welcome:</p>
+          <ul>
+            <li>Fork the <a href="https://github.com/whykusanagi/zero-context-validation" target="_blank" rel="noopener">GitHub repository</a></li>
+            <li>Submit pull requests with improvements</li>
+            <li>Follow TDD methodology for skill changes</li>
+            <li>See <a href="https://github.com/anthropics/skills" target="_blank" rel="noopener">writing-skills</a> specification</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Related Developer Tools</h2>
+          <p>Zero-Context Validation is part of a larger ecosystem of developer productivity tools:</p>
+          <ul>
+            <li><strong><a href="corrupted-theme-design-system.html">Corrupted Theme Design System</a></strong>: CSS design system with glassmorphism, dark mode, and component library for consistent UI development</li>
+            <li><strong><a href="vtuberhub-facial-tracking-relay.html">Multi-Client Facial Tracking Relay</a></strong>: Zero-latency Go relay for splitting iFacialMocap streams to multiple applications</li>
+            <li><strong><a href="celeste-discord-command-guide.html">Celeste Discord Command Guide</a></strong>: Documentation for Celeste AI's Discord bot commands and integration patterns</li>
+          </ul>
+          <p>All tools follow the same philosophy: invest time in tooling to prevent future pain. Quality documentation is infrastructure—treat it with the same rigor as code.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> How is this different from regular code review or documentation review?<br>
+          <strong>A:</strong> Regular reviews are done by people who already have context about your codebase. They unconsciously fill in gaps while reading because they know how things work. Blind sub-agents have zero context—they can't fill gaps, so they expose actual blindspots. It's like the difference between asking a colleague to review your docs (they already know the system) versus asking a new hire to follow your onboarding guide (they know nothing). Blind agents are like new hires—they reveal what's actually missing.</p>
+
+          <p><strong>Q:</strong> Isn't this overkill for internal documentation?<br>
+          <strong>A:</strong> Internal docs are where this is MOST valuable! Your team changes over time—new hires join, people switch teams, knowledge gets lost. What's obvious to you today won't be obvious to someone reading these docs in 6 months. Blind agent validation ensures your internal docs remain useful as the team evolves. Plus, poor internal docs waste the most expensive resource: senior developer time answering "how do I..." questions.</p>
+
+          <p><strong>Q:</strong> How long does validation typically take?<br>
+          <strong>A:</strong> Expect 3-5 iterations for most documentation, taking about 1 hour total. First iteration usually catches major gaps (missing base classes, undefined functions). Second iteration catches interface details (return types, parameter contracts). Third iteration often succeeds or catches minor edge cases. Some complex APIs might need 5-7 iterations, but that just means you found MORE gaps before they wasted developer time. The ROI is there—1 hour validation prevents 2-4 hours of confusion per developer who uses the docs.</p>
+
+          <p><strong>Q:</strong> What if the blind agent makes assumptions despite the skill's rules?<br>
+          <strong>A:</strong> The skill includes pressure-resistant instructions and red flag detection. If an agent makes assumptions, that's a signal to strengthen the "no assumptions" instruction and re-test. The skill specifically guards against "using common patterns," "assuming based on Y," and other rationalization traps. If you see these, restart validation with stricter rules. The skill documentation includes a rationalization table showing common excuses and how to counter them.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/zero-context-validation" target="_blank" rel="noopener"><i class="fab fa-github"></i> View on GitHub</a>
+          <a class="btn" href="corrupted-theme-design-system.html"><i class="fas fa-palette"></i> Design System</a>
+          <a class="btn" href="celeste-discord-command-guide.html"><i class="fas fa-robot"></i> Celeste Commands</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

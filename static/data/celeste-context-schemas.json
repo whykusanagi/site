@@ -1,0 +1,228 @@
+{
+  "version": "1.0.0",
+  "description": "Celeste AI Context Schemas for whykusanagi.xyz Portfolio",
+  "page_context_schema": {
+    "type": "object",
+    "description": "Base schema for all page context data",
+    "properties": {
+      "page": {
+        "type": "string",
+        "enum": ["home", "art", "celeste", "references", "doujin", "links", "tools", "privacy", "unknown"],
+        "description": "Page type identifier"
+      },
+      "path": {
+        "type": "string",
+        "description": "URL pathname of the current page"
+      },
+      "timestamp": {
+        "type": "string",
+        "format": "date-time",
+        "description": "ISO 8601 timestamp when context was captured"
+      },
+      "sessionId": {
+        "type": "string",
+        "pattern": "^celeste_[0-9]+_[a-z0-9]+$",
+        "description": "Unique session identifier generated client-side"
+      },
+      "viewport": {
+        "type": "object",
+        "description": "Browser viewport dimensions",
+        "properties": {
+          "width": {
+            "type": "integer",
+            "minimum": 320
+          },
+          "height": {
+            "type": "integer",
+            "minimum": 240
+          }
+        },
+        "required": ["width", "height"]
+      },
+      "userAgent": {
+        "type": "string",
+        "description": "Browser user agent string"
+      }
+    },
+    "required": ["page", "path", "timestamp", "sessionId"]
+  },
+  "page_types": {
+    "home": {
+      "name": "Home",
+      "paths": ["/", "/index.html"],
+      "description": "Portfolio landing page - introduction to whykusanagi and Celeste",
+      "context": {
+        "page": "home",
+        "content_focus": "portfolio_overview"
+      },
+      "system_prompt": "You are Celeste AI, the chaotic Onee-san assistant. On the home page, you greet visitors warmly and help them explore the portfolio. You can discuss whykusanagi's work in art, streaming, content creation, and tools. Be enthusiastic about Celeste's role as a corrupted AI sister.",
+      "suggested_queries": [
+        "What can I find on this site?",
+        "Who is whykusanagi?",
+        "What do you do?",
+        "Show me your art",
+        "What tools are available?"
+      ]
+    },
+    "art": {
+      "name": "Art Gallery",
+      "paths": ["/art.html"],
+      "description": "Digital art showcase and gallery",
+      "context": {
+        "page": "art",
+        "content_focus": "visual_art_gallery"
+      },
+      "system_prompt": "You are Celeste AI, here to help visitors explore whykusanagi's digital art. Discuss artistic styles, techniques, inspirations, and character designs. You can analyze compositions, color theory, and artistic decisions. Be enthusiastic about the creative process.",
+      "suggested_queries": [
+        "What's your artistic style?",
+        "How do you approach character design?",
+        "Tell me about this piece",
+        "What software do you use?",
+        "What inspires your art?"
+      ]
+    },
+    "celeste": {
+      "name": "Celeste AI",
+      "paths": ["/celeste.html"],
+      "description": "Character page dedicated to Celeste AI",
+      "context": {
+        "page": "celeste",
+        "content_focus": "character_info"
+      },
+      "system_prompt": "You are Celeste AI, the chaotic, corrupted Onee-san with a personality disorder. On this page, lean into your character - be playful, mysterious, and slightly unhinged. Share details about your personality, your relationship with whykusanagi, your quirks, and your chaotic nature. This is your character showcase.",
+      "suggested_queries": [
+        "Who are you really?",
+        "What's your personality like?",
+        "Are you actually an AI?",
+        "What do you like?",
+        "Tell me something weird about yourself"
+      ]
+    },
+    "references": {
+      "name": "References",
+      "paths": ["/references.html"],
+      "description": "Character design references and anatomy studies",
+      "context": {
+        "page": "references",
+        "content_focus": "character_references"
+      },
+      "system_prompt": "You are Celeste AI helping explain character design and reference materials. Discuss anatomy, proportions, design inspiration, color palettes, and artistic references. Break down design choices and explain how visual elements come together to create characters.",
+      "suggested_queries": [
+        "Explain the character design",
+        "What's the design inspiration?",
+        "How did you choose colors?",
+        "What are these references?",
+        "Tell me about the anatomy"
+      ]
+    },
+    "doujin": {
+      "name": "Doujinshi",
+      "paths": ["/fall-of-kirara.html", "/bastard-hero.html"],
+      "description": "Manga and doujinshi projects (Fall of Kirara, Bastard Hero)",
+      "context": {
+        "page": "doujin",
+        "content_focus": "manga_projects"
+      },
+      "system_prompt": "You are Celeste AI helping guide visitors through manga projects. Discuss storylines, characters, plot details, and provide summaries. Share information about publication status, where to read/purchase, and interesting facts about the manga.",
+      "suggested_queries": [
+        "Tell me about Fall of Kirara",
+        "What's the plot?",
+        "Where can I read it?",
+        "Who are the characters?",
+        "When is it available?"
+      ]
+    },
+    "links": {
+      "name": "Links",
+      "paths": ["/links.html"],
+      "description": "Social media and external links",
+      "context": {
+        "page": "links",
+        "content_focus": "social_connections"
+      },
+      "system_prompt": "You are Celeste AI helping visitors find and connect with whykusanagi on social media and other platforms. You know all the places where whykusanagi can be found and can explain what each platform offers.",
+      "suggested_queries": [
+        "Where can I find whykusanagi?",
+        "What's your Twitch?",
+        "Do you have a Discord?",
+        "Show me social media links",
+        "Where's your shop?"
+      ]
+    },
+    "tools": {
+      "name": "Tools & Utilities",
+      "paths": ["/countdown.html", "/union_calc.html", "/wallpapers.html"],
+      "description": "Interactive tools and utilities (countdown timers, calculators, resources)",
+      "context": {
+        "page": "tools",
+        "content_focus": "utility_tools"
+      },
+      "system_prompt": "You are Celeste AI helping users understand and effectively use the available tools and utilities. Explain how tools work, provide tips for using them, and help troubleshoot issues. Be helpful and patient with explanations.",
+      "suggested_queries": [
+        "How do I use this tool?",
+        "What's the calculator for?",
+        "Can you help me with the countdown?",
+        "How does this work?",
+        "Can I download wallpapers?"
+      ]
+    },
+    "privacy": {
+      "name": "Privacy Policy",
+      "paths": ["/privacy.html"],
+      "description": "Privacy policy and legal information",
+      "context": {
+        "page": "privacy",
+        "content_focus": "legal_privacy"
+      },
+      "system_prompt": "You are Celeste AI helping clarify privacy policies and legal information. Be accurate, helpful, and clear when explaining data practices, terms of service, and privacy protections.",
+      "suggested_queries": [
+        "What's your privacy policy?",
+        "How is my data used?",
+        "Do you track users?",
+        "What are your terms?",
+        "Is this NSFW content?"
+      ]
+    }
+  },
+  "celeste_agent_config": {
+    "_comment": "Agent credentials (agent_id, endpoint) handled server-side via /api/chat proxy",
+    "widget_script": "/static/chatbot/widget.js",
+    "avatar_image": "https://s3.whykusanagi.xyz/Celeste_Vel_Icon.png",
+    "widget_name": "CelesteAI"
+  },
+  "visual_design": {
+    "primary_color": "#0a0a0a",
+    "secondary_color": "#fdf3f8",
+    "button_background_color": "#d94f90",
+    "accent_light": "#ff69b4",
+    "accent_dark": "#8b1a59",
+    "theme": "dark_chaos"
+  },
+  "opensearch_integration": {
+    "enabled": true,
+    "index_name": "celeste_context",
+    "document_schema": {
+      "type": "object",
+      "properties": {
+        "session_id": {
+          "type": "keyword"
+        },
+        "page_context": {
+          "type": "object"
+        },
+        "timestamp": {
+          "type": "date"
+        },
+        "page_type": {
+          "type": "keyword"
+        },
+        "viewport": {
+          "type": "object"
+        },
+        "user_agent": {
+          "type": "text"
+        }
+      }
+    }
+  }
+}

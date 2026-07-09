@@ -1,0 +1,40 @@
+{
+  "title": "Hexagon Shape Test:",
+  "eventDate": "2025-12-31T23:59:59-07:00",
+  "basicMessage": "Testing hexagon shape",
+  "detailedMessage": "This is a test of the hexagon shape container",
+  "completedMessage": "Event has started!",
+  "style": "compact",
+  "character": {
+    "image": "bastard_hero.png",
+    "rotation": 0,
+    "background": {
+      "type": "hexagon",
+      "color": null,
+      "borderColor": null,
+      "pattern": false
+    },
+    "overlay": {
+      "image": null,
+      "position": null,
+      "animation": null,
+      "rotation": null
+    }
+  },
+  "popup": {
+    "message": "⬡ <strong>Hexagon Shape Test!</strong><br>This popup shows the hexagon shape container.",
+    "frequency": 10000,
+    "duration": 5000,
+    "colors": {
+      "bg": null,
+      "border": null,
+      "text": null
+    }
+  },
+  "colors": {
+    "primary": null,
+    "accent": null,
+    "text": null
+  }
+}
+

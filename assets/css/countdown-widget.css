@@ -1,0 +1,365 @@
+/**
+ * Countdown Widget Styles
+ * Aligned with corrupted-theme glassmorphism and typography
+ */
+
+html, body {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+}
+
+/* Black background variant — applied via ?bg=black URL param */
+html.bg-black, html.bg-black body {
+  background: #0a0a0a !important;
+  background-color: #0a0a0a !important;
+}
+
+.countdown-container {
+  position: relative;
+  width: 600px;
+  height: 600px;
+}
+
+/* ========== SHAPE CONTAINER BASE (Glassmorphism) ========== */
+.shape-container {
+  position: absolute;
+  width: 375px;
+  height: 375px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 1px solid var(--border, #3a2555);
+  box-shadow: 0 8px 32px rgba(217, 79, 144, 0.15), inset 0 0 20px rgba(217, 79, 144, 0.05);
+  overflow: hidden;
+  z-index: 2;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+  backdrop-filter: blur(15px);
+  animation: pulse 2s infinite alternate;
+  transition: all var(--transition-normal, 0.3s ease);
+}
+
+.shape-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* ========== DIAMOND SHAPE ========== */
+.shape-container.diamond {
+  transform: translate(-50%, -50%) rotate(45deg);
+  border-radius: var(--radius-xl, 16px);
+}
+
+.shape-container.diamond .shape-content {
+  transform: rotate(-45deg);
+}
+
+/* ========== CIRCLE SHAPE ========== */
+.shape-container.circle {
+  border-radius: 50%;
+}
+
+/* ========== STAR SHAPE ========== */
+.shape-container.star {
+  clip-path: path('M187.5,18.75 L227.17550452974194,132.89135287969106 L347.9907871248072,135.3533821992276 L251.69631484992286,208.35864712030894 L286.68876132435486,324.0216178007724 L187.5,255.0 L88.31123867564517,324.0216178007724 L123.30368515007714,208.35864712030894 L27.009212875192816,135.35338219922764 L147.82449547025806,132.89135287969106 Z');
+  border: none;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+}
+
+.shape-container.star::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+  backdrop-filter: blur(15px);
+  clip-path: path('M187.5,18.75 L227.17550452974194,132.89135287969106 L347.9907871248072,135.3533821992276 L251.69631484992286,208.35864712030894 L286.68876132435486,324.0216178007724 L187.5,255.0 L88.31123867564517,324.0216178007724 L123.30368515007714,208.35864712030894 L27.009212875192816,135.35338219922764 L147.82449547025806,132.89135287969106 Z');
+  z-index: -1;
+}
+
+.shape-container.star::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border, #3a2555);
+  clip-path: path('M187.5,18.75 L227.17550452974194,132.89135287969106 L347.9907871248072,135.3533821992276 L251.69631484992286,208.35864712030894 L286.68876132435486,324.0216178007724 L187.5,255.0 L88.31123867564517,324.0216178007724 L123.30368515007714,208.35864712030894 L27.009212875192816,135.35338219922764 L147.82449547025806,132.89135287969106 Z');
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shape-container.star .shape-content {
+  clip-path: path('M187.5,18.75 L227.17550452974194,132.89135287969106 L347.9907871248072,135.3533821992276 L251.69631484992286,208.35864712030894 L286.68876132435486,324.0216178007724 L187.5,255.0 L88.31123867564517,324.0216178007724 L123.30368515007714,208.35864712030894 L27.009212875192816,135.35338219922764 L147.82449547025806,132.89135287969106 Z');
+  overflow: hidden;
+}
+
+/* ========== HEXAGON SHAPE ========== */
+.shape-container.hexagon {
+  clip-path: path('M187.5,18.75 L333.641786888624,103.125 L333.64178688862404,271.875 L187.5,356.25 L41.35821311137602,271.87500000000006 L41.35821311137599,103.12499999999999 Z');
+  border: none;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+}
+
+.shape-container.hexagon::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+  backdrop-filter: blur(15px);
+  clip-path: path('M187.5,18.75 L333.641786888624,103.125 L333.64178688862404,271.875 L187.5,356.25 L41.35821311137602,271.87500000000006 L41.35821311137599,103.12499999999999 Z');
+  z-index: -1;
+}
+
+.shape-container.hexagon::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border, #3a2555);
+  clip-path: path('M187.5,18.75 L333.641786888624,103.125 L333.64178688862404,271.875 L187.5,356.25 L41.35821311137602,271.87500000000006 L41.35821311137599,103.12499999999999 Z');
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shape-container.hexagon .shape-content {
+  clip-path: path('M187.5,18.75 L333.641786888624,103.125 L333.64178688862404,271.875 L187.5,356.25 L41.35821311137602,271.87500000000006 L41.35821311137599,103.12499999999999 Z');
+  overflow: hidden;
+}
+
+/* ========== HEART SHAPE ========== */
+/* Heart path: classic heart with two distinct rounded lobes at top, point at bottom */
+/* Scaled to 375x375 container, same width as diamond/circle */
+/* Path formula: M (top center), C (curve to left lobe), C (down to point), C (up to right lobe), C (back to top), Z */
+.shape-container.heart {
+  clip-path: path('M37.5,125.0 A75.0,83.33 0 0 1 187.5,125.0 A75.0,83.33 0 0 1 337.5,125.0 Q337.5,250.0 187.5,375.0 Q37.5,250.0 37.5,125.0 Z');
+  border: none;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+}
+
+.shape-container.heart::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+  backdrop-filter: blur(15px);
+  clip-path: path('M37.5,125.0 A75.0,83.33 0 0 1 187.5,125.0 A75.0,83.33 0 0 1 337.5,125.0 Q337.5,250.0 187.5,375.0 Q37.5,250.0 37.5,125.0 Z');
+  z-index: -1;
+}
+
+.shape-container.heart::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border: 1px solid var(--border, #3a2555);
+  clip-path: path('M37.5,125.0 A75.0,83.33 0 0 1 187.5,125.0 A75.0,83.33 0 0 1 337.5,125.0 Q337.5,250.0 187.5,375.0 Q37.5,250.0 37.5,125.0 Z');
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shape-container.heart .shape-content {
+  clip-path: path('M37.5,125.0 A75.0,83.33 0 0 1 187.5,125.0 A75.0,83.33 0 0 1 337.5,125.0 Q337.5,250.0 187.5,375.0 Q37.5,250.0 37.5,125.0 Z');
+  overflow: hidden;
+}
+
+/* ========== IMAGE LAYERS ========== */
+.tentacle-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 150%;
+  height: 150%;
+  transform: translate(-50%, -50%) scale(0.9);
+  z-index: 1;
+  overflow: hidden;
+}
+
+.tentacle-float {
+  width: 100%;
+  height: 100%;
+  animation: tentacleFloat 4s ease-in-out infinite alternate;
+}
+
+.tentacle-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.character-img {
+  position: absolute;
+  width: 150%;
+  height: 150%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  object-fit: cover;
+  object-position: center;
+  z-index: 2;
+  transition: transform var(--transition-normal, 0.3s ease);
+}
+
+/* ========== CHARACTER GLOW ========== */
+/* Matches thumbnail generator: double drop-shadow, purple, 30px/60px */
+
+.countdown-character {
+  filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8))
+          drop-shadow(0 0 60px rgba(139, 92, 246, 0.4));
+}
+
+/* ========== COUNTDOWN BOX (Glassmorphism Card) ========== */
+.countdown-box {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--text, #f5f1f8);
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+  border: 1px solid var(--border, #3a2555);
+  backdrop-filter: blur(15px);
+  padding: var(--spacing-md, 1rem);
+  border-radius: var(--radius-xl, 16px);
+  z-index: 4;
+  bottom: var(--spacing-md, 1rem);
+  box-shadow: 0 8px 32px rgba(217, 79, 144, 0.15), inset 0 0 20px rgba(217, 79, 144, 0.05);
+  transition: all var(--transition-normal, 0.3s ease);
+}
+
+.countdown-text {
+  margin-bottom: var(--spacing-xs, 0.25rem);
+  font-size: 1.25rem; /* 20px */
+  font-weight: 600;
+  /* color removed - applied via inline style from theme */
+  line-height: 1.4;
+}
+
+.countdown {
+  font-size: 1.875rem; /* 30px */
+  font-weight: 700;
+  /* color removed - applied via inline style from theme */
+  line-height: 1.2;
+  letter-spacing: 0.5px;
+}
+
+/* ========== POPUP (Glassmorphism Modal) ========== */
+.popup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 90%;
+  text-align: center;
+  font-size: 1.75rem; /* 28px */
+  font-weight: 700;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--text, #f5f1f8);
+  background: var(--glass, rgba(20, 12, 40, 0.7));
+  border: 1px solid var(--border, #3a2555);
+  backdrop-filter: blur(15px);
+  padding: var(--spacing-md, 1rem);
+  border-radius: var(--radius-xl, 16px);
+  z-index: 5;
+  opacity: 0;
+  box-shadow: 0 20px 60px rgba(217, 79, 144, 0.35), inset 0 0 40px rgba(217, 79, 144, 0.1);
+  transition: opacity var(--transition-normal, 0.3s ease);
+  line-height: 1.5;
+}
+
+.popup a {
+  color: var(--accent-light, #e86ca8);
+  text-decoration: underline;
+  transition: color var(--transition-normal, 0.3s ease);
+}
+
+.popup a:hover {
+  color: var(--accent, #d94f90);
+}
+
+.popup strong {
+  color: var(--text, #f5f1f8);
+  font-weight: 700;
+}
+
+/* ========== ANIMATIONS ========== */
+@keyframes pulse {
+  0% {
+    box-shadow: 0 8px 32px rgba(217, 79, 144, 0.15), inset 0 0 20px rgba(217, 79, 144, 0.05);
+  }
+  100% {
+    box-shadow: 0 12px 48px rgba(217, 79, 144, 0.25), inset 0 0 30px rgba(217, 79, 144, 0.08);
+  }
+}
+
+@keyframes pulse-diamond {
+  0% {
+    transform: translate(-50%, -50%) rotate(45deg) scale(1);
+    box-shadow: 0 8px 32px rgba(217, 79, 144, 0.15), inset 0 0 20px rgba(217, 79, 144, 0.05);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(45deg) scale(1.05);
+    box-shadow: 0 12px 48px rgba(217, 79, 144, 0.25), inset 0 0 30px rgba(217, 79, 144, 0.08);
+  }
+}
+
+.shape-container.diamond {
+  animation: pulse-diamond 2s infinite alternate;
+}
+
+.shape-container.circle,
+.shape-container.heart {
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes tentacleFloat {
+  0% { 
+    transform: translateY(-3%); 
+  }
+  100% { 
+    transform: translateY(3%); 
+  }
+}
+
+/* ========== RESPONSIVE ========== */
+@media screen and (max-width: 768px) {
+  .countdown-container {
+    width: 100%;
+    height: 100vh;
+    max-width: 100vw;
+  }
+
+  .shape-container {
+    width: 300px;
+    height: 300px;
+  }
+
+  .countdown-box {
+    font-size: 1.5rem;
+    padding: var(--spacing-sm, 0.5rem);
+  }
+
+  .countdown-text {
+    font-size: 1rem;
+  }
+
+  .countdown {
+    font-size: 1.5rem;
+  }
+
+  .popup {
+    font-size: 1.25rem;
+    padding: var(--spacing-sm, 0.5rem);
+  }
+}

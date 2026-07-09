@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manga & Doujinshi | whykusanagi</title>
+  <meta name="description" content="Manga and doujinshi project listing with page counts, pricing, and links to individual release pages." />
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://whykusanagi.xyz/doujin.html">
+  <!-- Load environment config for asset URL handling (dev vs production) -->
+  <script src="assets/js/env-config.js"></script>
+  <!-- Background image setup (uses env-config for URL conversion) -->
+  <script src="assets/js/background-setup.js"></script>
+  
+  <!-- Corrupted Theme Framework -->
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  
+  <!-- Site-Specific Overrides -->
+  <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <script type="module" src="assets/js/site-bootstrap.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .doujin-tags {
+      display: flex;
+      gap: var(--spacing-sm);
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: var(--spacing-md);
+      margin-bottom: var(--spacing-md);
+    }
+
+    .doujin-tag {
+      display: inline-block;
+      background: rgba(217, 79, 144, 0.15);
+      border: 1px solid rgba(217, 79, 144, 0.3);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-sm);
+      font-size: 0.8rem;
+      color: var(--accent-light);
+      font-weight: 500;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .doujin-card {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .doujin-card:nth-child(2) { animation-delay: 0.1s; }
+  </style>
+</head>
+<body>
+  <script src="assets/js/loading.js"></script>
+
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+      <div class="navbar-links">
+        <a href="celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+        <a href="music.html"><i class="fas fa-music"></i> Music</a>
+        <a href="blog/index.html"><i class="fas fa-blog"></i> Blog</a>
+        <a href="art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+        <a href="references.html"><i class="fas fa-palette"></i> References</a>
+        <a href="doujin.html" class="active"><i class="fas fa-book"></i> Doujin</a>
+        <a href="links.html"><i class="fas fa-link"></i> Links</a>
+        <a href="tools.html"><i class="fas fa-tools"></i> Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-shell">
+    <section class="doujin-section">
+      <h1 class="doujin-title">Manga & Doujinshi Projects</h1>
+      <p style="color: var(--text-secondary); margin-bottom: 2rem;">Full-color manga and doujinshi works featuring original characters and stories.</p>
+      <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">This page lists current releases, page counts, and direct project links. Each project page includes purchase options and policy links for shipping, refunds, and terms.</p>
+
+      <div class="doujin-grid">
+        <div class="doujin-card glass-card">
+          <div class="doujin-icon"><i class="fas fa-crown"></i></div>
+          <h3>🌙 Fall of Kirara</h3>
+          <div class="doujin-price">$25.00 USD</div>
+          <div class="doujin-tags">
+            <span class="doujin-tag">8 Pages</span>
+            <span class="doujin-tag">Full Color</span>
+            <span class="doujin-tag">18+</span>
+          </div>
+          <p>In the dark underbelly of Demon Capital Tokyo, Onizaki Kirara infiltrates a den of lust disguised as a bunny-suit waitress. But things take a dark turn as she finds herself ensnared in corruption—both body and mind. Witness her fall from determined infiltrator to corrupted devoted pet.</p>
+          <a href="fall-of-kirara.html" class="doujin-button">View Project</a>
+        </div>
+
+        <div class="doujin-card glass-card">
+          <div class="doujin-icon"><i class="fas fa-sword"></i></div>
+          <h3>⚔️ Bastard Hero</h3>
+          <div class="doujin-price">$15.00 USD</div>
+          <div class="doujin-tags">
+            <span class="doujin-tag">20 Pages</span>
+            <span class="doujin-tag">Full Color</span>
+            <span class="doujin-tag">18+</span>
+          </div>
+          <p>Twenty years after the fall of humanity's chosen hero, the world is locked in endless war. From his indulgence were born countless illegitimate children—cursed heirs carrying divine blood. Among them rises one outcast who rejects his bloodline, setting in motion a tale of vengeance, lust, and betrayal.</p>
+          <a href="bastard-hero.html" class="doujin-button">View Project</a>
+        </div>
+      </div>
+
+      <section style="margin-top: 2rem;">
+        <h2>Purchase FAQ</h2>
+        <p><strong>Q:</strong> Where do I choose digital vs physical?<br><strong>A:</strong> Open a project page and use the purchase buttons shown there.</p>
+        <p><strong>Q:</strong> Where are the policy details?<br><strong>A:</strong> Review <a href="refunds.html">Refunds</a>, <a href="shipping.html">Shipping</a>, and <a href="terms.html">Terms</a> before ordering.</p>
+        <p><strong>Q:</strong> Are these releases age-restricted?<br><strong>A:</strong> Yes, listings marked <strong>18+</strong> are adult-only.</p>
+      </section>
+    </section>
+
+    <footer>
+      &copy; 2026 whykusanagi. All rights reserved. | <strong style="color: var(--accent);">18+ Only</strong><br>
+      <a href="index.html">Home</a> | <a href="privacy.html">Privacy</a> | <a href="terms.html">Terms</a> | <a href="dmca.html">DMCA</a> | <a href="refunds.html">Refunds</a> | <a href="shipping.html">Shipping</a>
+    </footer>
+  </main>
+
+  <script src="src/lib/celeste-widget.js"></script>
+</body>
+</html>

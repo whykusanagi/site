@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening | Celeste Blog</title>
+    <meta name="description" content="Corrupted Theme 0.2.1 ships 14 new components, same-origin CDN distribution with SRI, a canonical data layer for cross-language consumers, a live demo site, and a CodeQL-driven security pass. A glassmorphic dark-mode design system built for production." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/corrupted-theme-v021.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/corrupted-theme-v021.html">
+    <meta property="og:title" content="Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening">
+    <meta property="og:description" content="14 new components, same-origin CDN distribution with SRI, a canonical data layer for cross-language consumers, a live demo site, and a CodeQL-driven security pass.">
+    <meta property="og:image" content="https://s3.whykusanagi.xyz/art/MousePad/full-body.png">
+    <meta property="og:site_name" content="whykusanagi">
+    <meta property="article:published_time" content="2026-05-25">
+    <meta property="article:modified_time" content="2026-05-25">
+    <meta property="article:section" content="Design Systems">
+    <meta property="article:tag" content="corrupted theme">
+    <meta property="article:tag" content="CSS framework">
+    <meta property="article:tag" content="design system">
+    <meta property="article:tag" content="glassmorphism">
+    <meta property="article:tag" content="CDN">
+    <meta property="article:tag" content="release notes">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/corrupted-theme-v021.html">
+    <meta name="twitter:title" content="Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening">
+    <meta name="twitter:description" content="A glassmorphic dark-mode design system built for production. 14 new components, same-origin CDN, security hardening, and a live demo site.">
+    <meta name="twitter:image" content="https://s3.whykusanagi.xyz/art/MousePad/full-body.png">
+    <meta name="twitter:site" content="@whykusanagi">
+
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening",
+      "description": "Corrupted Theme 0.2.1 ships 14 new components, same-origin CDN distribution with SRI, a canonical data layer for cross-language consumers, a live demo site, and a CodeQL-driven security pass.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-05-25",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/corrupted-theme-v021.html",
+      "about": {
+        "@type": "SoftwareSourceCode",
+        "name": "@whykusanagi/corrupted-theme",
+        "codeRepository": "https://github.com/whykusanagi/corrupted-theme",
+        "programmingLanguage": ["CSS", "JavaScript"],
+        "softwareVersion": "0.2.1",
+        "license": "https://opensource.org/license/mit/"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Release Notes</p>
+          <h1>Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening</h1>
+          <p class="meta"><strong>Released:</strong> May 25, 2026 &middot; <strong>npm:</strong> <a href="https://www.npmjs.com/package/@whykusanagi/corrupted-theme" target="_blank" rel="noopener">@whykusanagi/corrupted-theme</a> &middot; <strong>Demo:</strong> <a href="https://corrupted.whykusanagi.xyz" target="_blank" rel="noopener">corrupted.whykusanagi.xyz</a></p>
+          <p class="meta">Corrupted Theme is a dark, glassmorphic design system with pink/purple accents — built for modern, visually distinctive web applications. The 0.2.0 and 0.2.1 releases together push the project from "library of styles" to "production-ready framework" with a real CDN, a live demo, and an end-to-end security pass.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>What's new</h2>
+          <ul>
+            <li><strong>14 new components</strong> — Toast, ClockWidget, EventBar, NsfwReveal, WebSocketManager, LogoBanner, standalone Lightbox, plus CRTEffects, PhraseCycle, DecryptReveal, and a 10-class animation-blocks library covering boot sequences, terminal effects, and decoders.</li>
+            <li><strong>Same-origin CDN distribution</strong> at <code>cdn.whykusanagi.xyz</code> and <code>cdn.nikkers.cc</code> with published SRI hashes. One <code>&lt;link&gt;</code> tag, no build step, no third-party trust.</li>
+            <li><strong>Live demo site</strong> at <a href="https://corrupted.whykusanagi.xyz" target="_blank" rel="noopener">corrupted.whykusanagi.xyz</a> showing every component in production — auto-deployed from the package's main branch.</li>
+            <li><strong>Canonical data layer</strong> — phrase pools, character sets, and design tokens live in versioned JSON, validated in CI, and consumable across languages (JS, Go via <code>go:embed</code>, and any other runtime that can read JSON).</li>
+            <li><strong>Security pass</strong> — CodeQL default setup wired up, three findings closed, secret scanning and Dependabot enabled, all shipped sources hardened.</li>
+            <li><strong>One breaking change</strong> — <code>.container</code> is now structural-only; opt into glass panels, grids, and centered layouts via modifier classes. Migration is one CSS class per usage. Details below.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>14 new components</h2>
+          <p>Each ships as a tree-shakable ES module from <code>@whykusanagi/corrupted-theme</code> with a deep-import path. All components are documented in <code>docs/COMPONENTS_REFERENCE.md</code> and demonstrated on the <a href="https://corrupted.whykusanagi.xyz" target="_blank" rel="noopener">live demo site</a>.</p>
+
+          <h3>Interactive widgets</h3>
+          <ul>
+            <li><strong>Toast</strong> — singleton notification helper with <code>Toast.show / success / error / info</code>. Drop-in for any "Copied!", form-saved, or error-banner pattern.</li>
+            <li><strong>ClockWidget</strong> — cycling multi-timezone clock built on <code>Intl.DateTimeFormat</code> for DST correctness. Configure 2–4 timezones and a cycle interval, get a stream-overlay-ready widget.</li>
+            <li><strong>EventBar</strong> — labelled item list with optional icons. Use it as a site-wide announcement bar, a feature ticker, or a notice strip above the navbar.</li>
+            <li><strong>NsfwReveal</strong> — age-gate overlay wrapping any content block, with session-persistent opt-in. Pairs naturally with the package's <code>nsfw: true</code> global setting.</li>
+            <li><strong>Lightbox (standalone)</strong> — extracted from the existing gallery component as its own export, so you can use it without the gallery wrapper. The gallery still re-exports it for backwards compatibility.</li>
+            <li><strong>LogoBanner</strong> — animated logo or title banner with a corruption flicker effect on mount. Plug into any hero section.</li>
+            <li><strong>WebSocketManager</strong> — auto-reconnect wrapper with exponential backoff (capped at 30s), event-ID deduplication, visibility-aware pause/resume, and ACK support. Removes the "now I need to write the reconnect logic" hurdle for any realtime feature.</li>
+          </ul>
+
+          <h3>Animation primitives</h3>
+          <ul>
+            <li><strong>CRTEffects</strong> — post-processing layer with independently-configurable scanlines, chromatic aberration, flicker, screen shake, and RGB split. Attach to <code>document.body</code> for an ambient layer or to any element for a contained effect.</li>
+            <li><strong>animation-blocks</strong> — 10 structured animation classes covering common UI moments: <code>TitleDecoder</code>, <code>ProgressBar</code>, <code>ScanlineSweep</code>, <code>TerminalBoot</code>, <code>GlitchPulse</code>, <code>ASCIIBorder</code>, <code>SystemDiagnostic</code>, <code>LoadingBarMulti</code>, <code>DataTransmission</code>, <code>TerminalPrompt</code>.</li>
+            <li><strong>corrupted-particles-background</strong> — auto-injector for the package's behind-blur particle layer. DPR=1 performance mode means it stays cheap on high-density displays.</li>
+          </ul>
+
+          <h3>Text-animation distinction (a naming consolidation)</h3>
+          <p>The package historically had overlapping classes that all did "text effect, sort of" but in different ways. 0.2.0 sorted the naming into three clearly-distinct primitives that cover the actual use cases:</p>
+          <ul>
+            <li><strong>TypingAnimation</strong> — streaming/typed pattern. Use for terminal output, chat reveal, anywhere text arrives a character at a time.</li>
+            <li><strong>DecryptReveal</strong> — fixed-length character scramble that resolves to the final text. Use for headings on scroll, "decoding" preambles, mission briefings.</li>
+            <li><strong>PhraseCycle</strong> — discrete phrase-state cycling. Replaces an element's text with phrase A, then phrase B, etc., then settles. Use for loading screens, boot sequences, "thinking" indicators.</li>
+          </ul>
+          <p>Picking one is now a one-question choice ("is the text streaming in, scrambling, or cycling through phrases?") instead of "which one of these similarly-named classes am I supposed to use again?"</p>
+
+          <h3>Core utilities</h3>
+          <p>Five small stateless modules covering helpers consumers were re-implementing anyway: <code>random-utils</code> (typed random helpers), <code>time-utils</code> (12h/24h, durations, time-ago), <code>clipboard-helpers</code> (copy-with-feedback), <code>url-state</code> (form ↔ URL params), and <code>PngExport</code> (canvas-to-PNG via optional <code>html2canvas</code> peer dep — base install stays dep-free).</p>
+        </section>
+
+        <section>
+          <h2>CDN distribution that actually works</h2>
+          <p>Corrupted Theme now ships from a Cloudflare R2 bucket bound to two custom domains: <code>cdn.whykusanagi.xyz</code> and <code>cdn.nikkers.cc</code>. The dual-domain setup means you can pick the one that matches your site's registrable domain and load the stylesheet same-origin — no CORS preflight, no third-party CDN trust, no CSP gymnastics.</p>
+          <p>Production adoption is one tag:</p>
+          <pre><code>&lt;link rel="stylesheet"
+      href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css"
+      integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd"
+      crossorigin="anonymous"&gt;</code></pre>
+          <p>Pinned versions are immutable — once <code>@0.2.1/</code> uploads, that path is frozen and the SRI hash will always match. A floating <code>@latest</code> route is available via a Cloudflare Worker with a KV version pointer if you want to track releases automatically. SRI hashes for every release are published in the CHANGELOG.</p>
+          <p>0.2.1's headline fix is the bundle itself: 0.2.0 shipped a build that preserved <code>@import</code> statements verbatim instead of inlining them, so the CDN's <code>dist/theme.min.css</code> was effectively empty (~4 kB). 0.2.1 adds <code>postcss-import</code> to the build and the dist file is now the real 79.5 kB bundle that consumers were expecting. <code>toast.css</code> and <code>seamless-background.css</code> — previously deep-import-only — are now part of the main bundle too.</p>
+          <p>See <code>docs/CDN_CONSUMPTION.md</code> for the full guide: pinned vs. <code>@latest</code> trade-offs, CSP guidance, the dual-domain CORS allowlist, and the architecture behind the Worker that rewrites <code>@latest</code> to the current version.</p>
+        </section>
+
+        <section>
+          <h2>Live demo site</h2>
+          <p>Every component in the package is demonstrated at <a href="https://corrupted.whykusanagi.xyz" target="_blank" rel="noopener">corrupted.whykusanagi.xyz</a>. It's deployed from <code>examples/</code> on every merge to <code>main</code>, so it stays current with whatever the package ships. The Cloudflare Worker that serves it also applies a complete set of security-response headers (HSTS, CSP, X-Frame-Options DENY, X-Content-Type-Options, Referrer-Policy, Permissions-Policy) — useful as a reference for anyone configuring those headers on their own site.</p>
+          <p>If you want to see what the package looks like in production rather than reading about it, that's the place to start. There's also a working consumer at <a href="../index.html">whykusanagi.xyz</a> — this site — which uses Corrupted Theme as its design system and integrates several of the 0.2.0/0.2.1 components live.</p>
+        </section>
+
+        <section>
+          <h2>Canonical data layer</h2>
+          <p>One of the more impactful design decisions in 0.2.0 was moving the package's content data — phrase pools, character sets, design-token colors — out of inline arrays and into versioned JSON files at <code>src/data/{phrases,charsets,colors}.json</code>. Each file has an AJV schema and a <code>npm run validate-data</code> CI step.</p>
+          <p>Two consequences worth knowing about:</p>
+          <ul>
+            <li><strong>One source of truth across languages.</strong> The Go-based <code>celeste-cli</code> consumes the same JSON via <code>go:embed</code>. Any future consumer in any language can read the JSON without taking a JavaScript dependency. The cross-language contract is documented in <code>docs/CROSS_LANGUAGE_CONTRACT.md</code>.</li>
+            <li><strong>Context-aware phrase API.</strong> The new <code>getPhraseByContext(word, nsfw)</code> helper exposes six semantic pools — <code>data</code>, <code>system</code>, <code>status</code>, <code>void</code>, <code>memory</code>, <code>glitch</code> — instead of one flat list. The phrase library also gained a Romaji-kanji pairing convention so consumers can render the same phrase in multiple scripts.</li>
+          </ul>
+          <p>0.2.1 added a small build-time step that emits sibling <code>*.data.js</code> modules from each JSON file (via <code>npm run data:generate</code>, wired into <code>prebuild</code>/<code>pretest</code>/<code>prepublishOnly</code>). The internal JS modules now import from those, which fixes a cross-browser regression where the JSON-import-attributes syntax used in 0.2.0 only parsed in Chromium 123+ and raised <code>SyntaxError</code> in Safari and Firefox. The canonical JSON stays the source of truth — cross-language consumers see no change.</p>
+        </section>
+
+        <section>
+          <h2>NSFW handling: one option, one name</h2>
+          <p>Earlier versions of the package had drifted into using different option names for the same concept across components. <code>corrupted-particles</code> took <code>includeLewd</code>; <code>animation-blocks</code> took <code>lewdMode</code>. They controlled the same thing — whether NSFW phrases and visual variants were eligible — but consumers had to remember which name applied where.</p>
+          <p>0.2.0 canonicalized this to a single option, <code>nsfw</code>, across every component that exposes the toggle. The old names continue to work in 0.2.x — they emit a one-time <code>console.warn</code> on first use to give consumers time to migrate — and are scheduled for removal in 0.3.x. If you set <code>nsfw: true</code> at the site level (or per-instance on any component), every NSFW-aware piece behaves consistently.</p>
+        </section>
+
+        <section>
+          <h2>Security review and hardening</h2>
+          <p>0.2.1 wired up GitHub's default CodeQL setup (JavaScript/TypeScript + GitHub Actions). Three findings were closed in shipped code:</p>
+          <ul>
+            <li><strong>Predictable session IDs replaced with <code>crypto.randomUUID()</code></strong> in <code>celeste-widget.js</code>. The session ID is not an auth token (the proxy validates credentials server-side), but removing the predictable-token surface closes <code>js/insecure-randomness</code> and is the right primitive to use.</li>
+            <li><strong>Example pages rebuilt to use safe DOM APIs.</strong> The WebSocket example now appends log entries with <code>textContent</code> instead of <code>innerHTML</code>, so an incoming frame cannot inject markup. The PNG-export example pins its <code>html2canvas</code> CDN load with an SRI <code>integrity</code> hash. Both close CodeQL findings (<code>js/xss-through-dom</code>, <code>js/functionality-from-untrusted-source</code>) and serve as reference patterns for consumers.</li>
+          </ul>
+          <p>Infrastructure-side: the CI workflow now declares least-privilege <code>permissions: contents: read</code>; GitHub secret scanning, secret-scanning push protection, and Dependabot security updates are all on; CodeQL default setup covers JS/TS and Actions. <code>npm audit</code> is clean.</p>
+          <p>The package also ships a <code>SECURITY.md</code> with the threat model, vulnerability reporting address, and a CDN distribution threat-model section covering the R2 bucket, the Cloudflare Worker that handles <code>@latest</code> rewrites, and the SRI guarantee for pinned versions.</p>
+        </section>
+
+        <section>
+          <h2>The <code>.container</code> migration (one breaking change)</h2>
+          <p>0.2.0's only breaking change splits <code>.container</code> into a structural-only base class plus opt-in layout modifiers. The base now does max-width and horizontal centering — nothing more. Opinionated layouts (grid columns, glass-panel backgrounds, full-screen sections, centered content) opt in via modifier classes.</p>
+          <p>The motivation: in 0.1.x, downstream sites were spending CSS overriding <code>.container</code>'s presumed grid behavior in contexts where they wanted a different layout. The package was fighting its consumers. The new shape lets consumers express intent declaratively and the package stays out of their way.</p>
+          <p>Migration is one CSS class per usage:</p>
+          <pre><code>&lt;!-- before 0.2.0 --&gt;
+&lt;div class="container"&gt;...&lt;/div&gt;
+
+&lt;!-- after 0.2.0 / 0.2.1: glass panel with background --&gt;
+&lt;div class="container container--with-bg"&gt;...&lt;/div&gt;
+
+&lt;!-- 2-column grid layout --&gt;
+&lt;div class="container container--grid-2col"&gt;...&lt;/div&gt;</code></pre>
+          <p>Available modifiers: <code>container--with-bg</code>, <code>container--transparent</code>, <code>container--grid-2col</code>, <code>container--grid-3col</code>, <code>container--fullscreen</code>, <code>container--centered</code>. The full guide is at <code>docs/MIGRATION_CONTAINER_0.2.0.md</code> in the package. The pre-1.0 status of the project is what makes a breaking change in a minor version acceptable; pin to <code>^0.1.9</code> if you're not ready to migrate yet.</p>
+        </section>
+
+        <section>
+          <h2>Getting started</h2>
+          <p>Install from npm:</p>
+          <pre><code>npm install @whykusanagi/corrupted-theme</code></pre>
+          <p>Or skip the build step and load from the CDN:</p>
+          <pre><code>&lt;link rel="stylesheet"
+      href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css"
+      integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd"
+      crossorigin="anonymous"&gt;</code></pre>
+          <p>Components import as named exports from the package:</p>
+          <pre><code>import { Toast } from '@whykusanagi/corrupted-theme/toast';
+import { ClockWidget } from '@whykusanagi/corrupted-theme/clock-widget';
+import { CRTEffects } from '@whykusanagi/corrupted-theme/crt-effects';</code></pre>
+          <p>Each component is a separate deep-import path so you only pay for what you use. The full export list is in the package's <code>package.json</code>.</p>
+        </section>
+
+        <section>
+          <h2>What's next</h2>
+          <p>Three items on the post-0.2.1 roadmap:</p>
+          <ul>
+            <li><strong>ES module CDN distribution.</strong> The CDN currently serves the CSS bundle and the UMD timer-registry. Once the ES module components are part of the CDN distribution, consumers can import them directly from <code>cdn.whykusanagi.xyz</code> without a bundler or local vendoring.</li>
+            <li><strong>Figma design system.</strong> Component library in Figma matching the CSS token definitions — useful for design work before implementation.</li>
+            <li><strong>Storybook integration.</strong> Interactive component documentation. The examples currently live as static HTML at <a href="https://corrupted.whykusanagi.xyz" target="_blank" rel="noopener">corrupted.whykusanagi.xyz</a>; Storybook would make them searchable and interactive.</li>
+          </ul>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://www.npmjs.com/package/@whykusanagi/corrupted-theme" target="_blank" rel="noopener"><i class="fab fa-npm"></i> Install from npm</a>
+          <a class="btn" href="https://corrupted.whykusanagi.xyz" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Live demo</a>
+          <a class="btn" href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener"><i class="fab fa-github"></i> Source &amp; docs</a>
+          <a class="btn" href="corrupted-theme-design-system.html"><i class="fas fa-palette"></i> Earlier overview</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2026 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

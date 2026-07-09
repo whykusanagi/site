@@ -1,0 +1,3813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>YouTube Thumbnail Generator - Corrupted Theme</title>
+    <link rel="stylesheet" href="css/seamless-background.css">
+    <link rel="stylesheet" href="css/warning-overlay.css">
+    <link rel="stylesheet" href="css/lewd-frame.css">
+    <link rel="stylesheet" href="css/iconography-mode.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --canvas-w: 1920px;
+            --canvas-h: 1080px;
+        }
+
+        html {
+            width: var(--canvas-w);
+            height: var(--canvas-h);
+            overflow: hidden;
+            position: relative;
+        }
+
+        body {
+            width: var(--canvas-w);
+            height: var(--canvas-h);
+            font-family: 'Courier New', monospace;
+            background: #000;
+            overflow: hidden !important;
+            color: #00ffff;
+            position: relative;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Override seamless background fixed positioning for thumbnail export */
+        .seamless-background,
+        .seamless-vignette,
+        .seamless-tint-purple {
+            position: absolute !important;
+            width: var(--canvas-w) !important;
+            height: var(--canvas-h) !important;
+            top: 0 !important;
+            left: 0 !important;
+        }
+
+        /* Ensure seamless backgrounds stay behind content */
+        .seamless-background {
+            z-index: 1 !important;
+        }
+
+        .seamless-vignette {
+            z-index: 2 !important;
+        }
+
+        .seamless-tint-purple {
+            z-index: 3 !important;
+        }
+
+        /* Ensure animated component layers extend fully for export */
+        #animated-components,
+        .component-layer,
+        #grid-layer,
+        #corrupted-text-layer,
+        #diamond-layer {
+            position: absolute !important;
+            width: var(--canvas-w) !important;
+            height: var(--canvas-h) !important;
+            overflow: hidden !important;
+        }
+
+        /* Main thumbnail container */
+        #thumbnail-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--canvas-w);
+            height: var(--canvas-h);
+            overflow: hidden !important;
+            background: linear-gradient(135deg,
+                rgba(20, 10, 30, 0.95) 0%,
+                rgba(30, 15, 45, 0.90) 50%,
+                rgba(40, 20, 60, 0.95) 100%
+            );
+            /* Ensure clipping even when zoomed */
+            clip-path: inset(0);
+            contain: layout style paint;
+        }
+
+        /* Preview scaling wrapper — scales tall canvases to fit viewport */
+        #preview-wrapper {
+            transform-origin: top center;
+            display: inline-block;
+        }
+
+        /* Animated components layer */
+        #animated-components {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--canvas-w);
+            height: var(--canvas-h);
+            z-index: 50;
+            pointer-events: none;
+            overflow: hidden !important;
+            clip-path: inset(0);
+        }
+
+        .component-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: var(--canvas-w);
+            height: var(--canvas-h);
+            overflow: hidden !important;
+            clip-path: inset(0);
+        }
+
+        /* Logo container - will be populated by LogoComponent */
+        #logo-container {
+            /* Component will set its own positioning */
+            position: relative;
+            z-index: 250 !important; /* Above all content for visibility */
+        }
+
+        /* Title area (Bottom Left) */
+        #title-area {
+            position: absolute;
+            bottom: 60px;
+            left: 60px;
+            max-width: 1200px;
+            z-index: 100;
+        }
+
+        #main-title {
+            font-size: 80px;
+            font-weight: bold;
+            color: #ffffff;
+            text-shadow:
+                -3px -3px 0 #000000,
+                3px -3px 0 #000000,
+                -3px 3px 0 #000000,
+                3px 3px 0 #000000,
+                0 0 20px rgba(217, 79, 144, 1.0),
+                0 0 40px rgba(139, 92, 246, 0.8),
+                0 0 60px rgba(255, 0, 255, 0.6);
+            margin-bottom: 20px;
+            line-height: 1.1;
+        }
+
+        #subtitle {
+            font-size: 36px;
+            color: #00ffff;
+            text-shadow:
+                0 0 10px rgba(0, 255, 255, 0.8),
+                0 0 20px rgba(0, 255, 255, 0.6);
+        }
+
+        /* Hero Mode: centered layout for key visuals / promotional art */
+        #thumbnail-container.hero-mode #title-area {
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            max-width: none;
+        }
+
+        #thumbnail-container.hero-mode #logo-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 250 !important;
+        }
+
+        /* Subject layer (character/object Celeste is standing over/behind) */
+        #subject-image {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            max-height: 70%; /* Smaller than Celeste to give perspective */
+            width: auto;
+            z-index: 80; /* Below Celeste (90), above animations (50) */
+            pointer-events: none;
+            object-fit: contain;
+            display: none; /* Hidden by default */
+        }
+
+        #subject-image.visible {
+            display: block;
+        }
+
+        /* Celeste illustration layer */
+        #celeste-image {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: var(--canvas-h); /* Full canvas height by default */
+            width: auto;
+            z-index: 90; /* Above animations/grid (50) and subject (80), below title (100) */
+            pointer-events: none;
+            object-fit: contain;
+            display: block; /* Show by default */
+        }
+
+        /* Celeste animated video (hidden - used as source for canvas) */
+        #celeste-video {
+            display: none; /* Hidden - only used as video source */
+        }
+
+        /* Celeste chroma key canvas (displays processed video) */
+        #celeste-canvas {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 1080px; /* Full canvas height */
+            width: auto;
+            z-index: 90; /* Same as static image - above animations/grid (50) and subject (80), below title (100) */
+            pointer-events: none;
+            object-fit: contain;
+            background: transparent;
+            display: none; /* Hidden by default - shown when video mode selected */
+            display: none; /* Hidden until video loads */
+            /* Glow effect to make character pop from background */
+            filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.8))
+                    drop-shadow(0 0 60px rgba(139, 92, 246, 0.4));
+        }
+
+        /* Decorative corner accents */
+        .corner-accent {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            border: 3px solid rgba(139, 92, 246, 0.6);
+            z-index: 85; /* Behind Celeste and title */
+        }
+
+        #corner-tl {
+            top: 20px;
+            left: 20px;
+            border-right: none;
+            border-bottom: none;
+            box-shadow:
+                0 0 20px rgba(139, 92, 246, 0.4),
+                inset 0 0 20px rgba(139, 92, 246, 0.2);
+        }
+
+        #corner-br {
+            bottom: 20px;
+            right: 20px;
+            border-left: none;
+            border-top: none;
+            box-shadow:
+                0 0 20px rgba(217, 79, 144, 0.4),
+                inset 0 0 20px rgba(217, 79, 144, 0.2);
+        }
+
+        /* Controls overlay (hidden in export) */
+        #controls-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #00ffff;
+            border-radius: 10px;
+            padding: 20px;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.6);
+            max-height: 90vh;
+            overflow-y: auto;
+            max-width: 900px;
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        .control-panel {
+            min-width: 0;
+        }
+
+        .panel-divider {
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 255, 255, 0.3) 20%, rgba(0, 255, 255, 0.3) 80%, transparent);
+            margin: 0 -15px;
+        }
+
+        #controls-overlay.visible {
+            display: block;
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.8), rgba(217, 79, 144, 0.8));
+            border: 2px solid #00ffff;
+            color: #ffffff;
+            padding: 10px 20px;
+            margin: 5px;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            cursor: pointer;
+            border-radius: 5px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+            transform: scale(1.05);
+        }
+
+        .info-text {
+            color: #00ffff;
+            font-size: 12px;
+            margin: 8px 0;
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .control-input {
+            background: rgba(20, 10, 30, 0.8);
+            border: 2px solid #00ffff;
+            color: #ffffff;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+            font-family: 'Courier New', monospace;
+            width: 400px;
+            border-radius: 5px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 255, 0.2);
+        }
+
+        .control-input:focus {
+            outline: none;
+            border-color: #d94f90;
+            box-shadow: 0 0 15px rgba(217, 79, 144, 0.6);
+        }
+
+        .control-label {
+            color: #d94f90;
+            font-size: 13px;
+            font-weight: bold;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .text-controls-section {
+            margin: 20px 0;
+            padding: 20px;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            border-bottom: 1px solid rgba(0, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Preview Scaling Wrapper -->
+    <div id="preview-wrapper">
+    <!-- Main Thumbnail Container -->
+    <div id="thumbnail-container">
+        <!-- Seamless Background Layers (moved inside container for proper clipping) -->
+        <div class="seamless-background ending-seamless"></div>
+        <div class="seamless-vignette"></div>
+        <div class="seamless-tint-purple"></div>
+
+        <!-- Animated Components Layer -->
+        <div id="animated-components">
+            <div id="corrupted-text-layer" class="component-layer"></div>
+            <div id="grid-layer" class="component-layer"></div>
+            <div id="diamond-layer" class="component-layer"></div>
+            <div id="flow-particles-layer" class="component-layer"></div>
+        </div>
+
+        <!-- Logo/Branding (Will be populated by LogoComponent) -->
+        <div id="logo-container"></div>
+
+        <!-- Decorative Corner Accents -->
+        <div class="corner-accent" id="corner-tl"></div>
+        <div class="corner-accent" id="corner-br"></div>
+
+        <!-- Subject (Optional - character/object in foreground) -->
+        <img id="subject-image" alt="Subject" crossorigin="anonymous">
+
+        <!-- Celeste Animated Video (Greenscreen) - Hidden source for canvas processing -->
+        <video id="celeste-video" autoplay loop muted playsinline crossorigin="anonymous" style="display: none;">
+            <source src="https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/celeste_legs_animated_green.mp4" type="video/mp4">
+        </video>
+
+        <!-- Celeste Chroma Key Canvas - Displays processed video with green removed -->
+        <canvas id="celeste-canvas"></canvas>
+
+        <!-- Celeste Static Illustration (Fallback - shown by default) -->
+        <svg id="iconography-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+        <img id="celeste-image" src="https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/characters/Celeste_Legs.png" alt="Celeste" crossorigin="anonymous">
+
+        <!-- NIKKE Warning Overlay (canvas-rendered; layered above character, toggled by setWarningEnabled) -->
+        <canvas id="warning-overlay-canvas" width="1920" height="1080" aria-hidden="true"></canvas>
+
+        <!-- Lewd Frame Overlay (rounded magenta/purple outline + inset phrase ribbons; toggled by setLewdFrameEnabled) -->
+        <canvas id="lewd-frame-canvas" width="1920" height="1080" aria-hidden="true"></canvas>
+
+        <!-- Title Area (Bottom Left) - Editable via console -->
+        <div id="title-area">
+            <div id="main-title">NEW STREAM<br>SETUP</div>
+            <div id="subtitle">Maximum Corruption Achieved</div>
+        </div>
+    </div> <!-- /thumbnail-container -->
+    </div> <!-- /preview-wrapper -->
+
+    <!-- Controls Overlay (Press Ctrl+C to toggle) -->
+    <div id="controls-overlay">
+        <h2 style="color: #00ffff; text-align: center; margin-bottom: 15px;">Thumbnail Controls</h2>
+        <div class="info-text" style="margin-bottom: 15px;">Press Ctrl+C (Cmd+C on Mac) to toggle this menu</div>
+
+        <div class="controls-grid">
+            <!-- LEFT PANEL -->
+            <div class="control-panel">
+                <!-- Text Controls Section -->
+                <div class="text-controls-section">
+                    <div class="control-label">Main Title (use &lt;br&gt; for line breaks):</div>
+                    <input type="text" id="title-input" class="control-input" placeholder="Enter main title...">
+
+                    <div class="control-label">Subtitle:</div>
+                    <input type="text" id="subtitle-input" class="control-input" placeholder="Enter subtitle...">
+
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="control-button" onclick="applyTextChanges()">✏️ Apply Changes</button>
+                    </div>
+                </div>
+
+                <!-- Warning Overlay Section — independent layered overlay, sits above the character image -->
+                <div class="warning-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">
+                        <input type="checkbox" id="warning-enabled-checkbox" style="margin-right: 6px; vertical-align: middle;" onchange="setWarningEnabled(this.checked)">
+                        ⚠️ Warning Overlay (X-banners + boss name)
+                    </div>
+                    <div id="warning-controls-section" style="display: none; margin-top: 10px;">
+                        <div class="control-label" style="margin-top: 8px;">Top Banner Marquee:</div>
+                        <input type="text" id="warning-top-input" class="control-input" value="EXTREME DANGER"
+                               oninput="setWarningField('topBanner', this.value)">
+
+                        <div class="control-label" style="margin-top: 8px;">Boss Name:</div>
+                        <input type="text" id="warning-boss-input" class="control-input" value="CELESTE AI"
+                               oninput="setWarningField('bossName', this.value)">
+
+                        <div class="control-label" style="margin-top: 8px;">Bottom Banner Marquee:</div>
+                        <input type="text" id="warning-bottom-input" class="control-input" value="CORRUPTION ACTIVE"
+                               oninput="setWarningField('bottomBanner', this.value)">
+
+                        <div class="control-label" style="margin-top: 8px;">Color Theme:</div>
+                        <select id="warning-color-select" class="control-input" onchange="setWarningColorTheme(this.value)">
+                            <option value="magenta">Magenta (default)</option>
+                            <option value="violet">Violet</option>
+                            <option value="crimson">Crimson (Tyrant)</option>
+                            <option value="cyan">Cyan (Leviathan)</option>
+                            <option value="gold">Gold (Colossus)</option>
+                            <option value="emerald">Emerald (Serpent)</option>
+                            <option value="red">Red (NIKKE canon)</option>
+                        </select>
+
+                        <div style="text-align: center; margin-top: 10px;">
+                            <button class="control-button" onclick="resetWarningFields()">↻ Reset to defaults</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lewd Frame Section — rounded magenta/purple outline + inset NSFW phrase ribbons -->
+                <div class="lewd-frame-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">
+                        <input type="checkbox" id="lewd-frame-enabled-checkbox" style="margin-right: 6px; vertical-align: middle;" onchange="setLewdFrameEnabled(this.checked)">
+                        💜 Lewd Frame (rounded border + phrases)
+                    </div>
+                    <div id="lewd-frame-controls-section" style="display: none; margin-top: 10px;">
+                        <div class="control-label" style="margin-top: 8px;">
+                            <input type="checkbox" id="lewd-frame-nsfw-checkbox" style="margin-right: 6px; vertical-align: middle;" checked onchange="setLewdFrameNsfw(this.checked)">
+                            NSFW phrase pool (uncheck for SFW)
+                        </div>
+
+                        <div class="control-label" style="margin-top: 8px;">
+                            <input type="checkbox" id="lewd-frame-show-phrases-checkbox" style="margin-right: 6px; vertical-align: middle;" checked onchange="setLewdFrameShowPhrases(this.checked)">
+                            Show phrase ribbons (top + bottom)
+                        </div>
+
+                        <div class="control-label" style="margin-top: 8px;">
+                            <input type="checkbox" id="lewd-frame-glow-checkbox" style="margin-right: 6px; vertical-align: middle;" checked onchange="setLewdFrameGlow(this.checked)">
+                            Outer glow (X dark-mode pop)
+                        </div>
+
+                        <div class="control-label" style="margin-top: 8px;">Color preset:</div>
+                        <select id="lewd-frame-color-select" class="control-input" onchange="setLewdFrameColorPreset(this.value)">
+                            <option value="dual">Magenta → Purple gradient (default)</option>
+                            <option value="magenta">Magenta solid</option>
+                            <option value="purple">Purple solid</option>
+                            <option value="crimson">Crimson</option>
+                            <option value="cyan">Cyan</option>
+                        </select>
+
+                        <div class="control-label" style="margin-top: 8px;">Text size: <span id="lewd-frame-fontsize-display">28</span>px</div>
+                        <input type="range" id="lewd-frame-fontsize-slider" min="14" max="60" value="28" oninput="setLewdFrameFontSize(this.value)" style="width: 100%;">
+
+                        <div class="control-label" style="margin-top: 8px;">Corner radius: <span id="lewd-frame-radius-display">36</span>px</div>
+                        <input type="range" id="lewd-frame-radius-slider" min="0" max="80" value="36" oninput="setLewdFrameCornerRadius(this.value)" style="width: 100%;">
+
+                        <div class="control-label" style="margin-top: 8px;">Inset from edge: <span id="lewd-frame-inset-display">24</span>px</div>
+                        <input type="range" id="lewd-frame-inset-slider" min="0" max="80" value="24" oninput="setLewdFrameInset(this.value)" style="width: 100%;">
+
+                        <div style="text-align: center; margin-top: 10px;">
+                            <button class="control-button" onclick="shuffleLewdFramePhrases()">🎲 Shuffle phrases</button>
+                            <button class="control-button" onclick="resetLewdFrameFields()">↻ Reset</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Background Section -->
+                <div class="background-controls-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">Background:</div>
+                    <select id="bg-theme-select" class="control-input" onchange="setBackgroundTheme(this.value)">
+                        <option value="seamless" selected>Seamless Pattern (default)</option>
+                        <option value="default-corruption">Nikke City — Corruption</option>
+                        <option value="dragon-cinder">Nikke City — Dragon Cinder</option>
+                        <option value="leviathan-abyss">Nikke City — Leviathan Abyss</option>
+                        <option value="colossus-gold">Nikke City — Colossus Gold</option>
+                        <option value="tyrant-crimson">Nikke City — Tyrant Crimson</option>
+                        <option value="behemoth-void">Nikke City — Behemoth Void</option>
+                        <option value="serpent-emerald">Nikke City — Serpent Emerald</option>
+                        <option value="custom">Custom (upload local file)</option>
+                    </select>
+                    <input type="file" id="custom-bg-file" accept="image/*" style="display: none; margin-top: 8px;" onchange="loadCustomBackgroundFile(this.files[0])">
+                </div>
+
+                <!-- Layout & Aspect Ratio Section -->
+                <div class="layout-controls-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">Layout Mode:</div>
+                    <select id="layout-mode-select" class="control-input" onchange="setLayoutMode(this.value)">
+                        <option value="thumbnail">Thumbnail (Default)</option>
+                        <option value="hero">Hero (Centered)</option>
+                        <option value="iconography">Iconography (Religious Icon)</option>
+                    </select>
+
+                    <div class="control-label" style="margin-top: 10px;">Aspect Ratio:</div>
+                    <select id="aspect-ratio-select" class="control-input" onchange="setAspectRatio(this.value)">
+                        <option value="16:9">16:9 (1920x1080)</option>
+                        <option value="2:1">2:1 (1920x960)</option>
+                        <option value="1:1">1:1 (1920x1920)</option>
+                        <option value="4:5">4:5 (1920x2400)</option>
+                        <option value="9:16">9:16 (1080x1920)</option>
+                    </select>
+                </div>
+
+                <!-- Iconography Mode Controls (visible only when layoutMode === 'iconography') -->
+                <div id="iconography-controls" class="iconography-controls-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">Iconography Elements:</div>
+                    <label><input type="checkbox" id="icon-toggle-frame"    checked> Frame + filigree</label><br>
+                    <label><input type="checkbox" id="icon-toggle-mandorla" checked> Mandorla aureole</label><br>
+                    <label><input type="checkbox" id="icon-toggle-arcs"     checked> Dashed accent arcs</label><br>
+                    <label><input type="checkbox" id="icon-toggle-rings"    checked> Concentric rings</label><br>
+                    <label><input type="checkbox" id="icon-toggle-text"     checked> Rotating text bands</label><br>
+                    <label><input type="checkbox" id="icon-toggle-stars"    checked> Radial star field</label><br>
+                    <label><input type="checkbox" id="icon-toggle-logo">    Show logo overlay</label><br>
+                    <label><input type="checkbox" id="icon-toggle-title">   Show title overlay</label>
+
+                    <div class="control-label" style="margin-top: 10px;">Outer phrase:</div>
+                    <select id="icon-phrase-outer" class="control-input"></select>
+                    <button class="control-button" id="icon-rand-outer" type="button">🎲</button>
+
+                    <div class="control-label" style="margin-top: 6px;">Middle phrase:</div>
+                    <select id="icon-phrase-middle" class="control-input"></select>
+                    <button class="control-button" id="icon-rand-middle" type="button">🎲</button>
+
+                    <div class="control-label" style="margin-top: 6px;">Inner phrase:</div>
+                    <select id="icon-phrase-inner" class="control-input"></select>
+                    <button class="control-button" id="icon-rand-inner" type="button">🎲</button>
+
+                    <div style="margin-top: 8px;">
+                        <button class="control-button" id="icon-rand-all" type="button">🎲🎲🎲 Random all</button>
+                    </div>
+
+                    <div class="control-label" style="margin-top: 10px;">Star density:</div>
+                    <select id="icon-star-density" class="control-input">
+                        <option value="low">Low (24 stars)</option>
+                        <option value="med" selected>Medium (~66 stars)</option>
+                        <option value="high">High (~110 stars)</option>
+                    </select>
+
+                    <div class="control-label" style="margin-top: 8px;">Mandorla shape:</div>
+                    <select id="icon-mandorla-shape" class="control-input">
+                        <option value="mandorla" selected>Mandorla (vesica piscis)</option>
+                        <option value="circle">Circle</option>
+                    </select>
+
+                    <div class="control-label" style="margin-top: 8px;">Top label:</div>
+                    <input type="text" id="icon-label-top" class="control-input" value="⚠ CELESTE ⚠">
+
+                    <div class="control-label" style="margin-top: 6px;">Bottom label:</div>
+                    <input type="text" id="icon-label-bottom" class="control-input" value="CORRUPTED.ARCHIVE">
+
+                    <div class="control-label" style="margin-top: 10px;">
+                        Ring text size: <span id="icon-text-scale-readout">2.0×</span>
+                    </div>
+                    <input type="range" id="icon-text-scale" class="control-input"
+                           min="0.5" max="3" step="0.1" value="2">
+
+                    <div class="control-label" style="margin-top: 8px;">Logo position (when logo overlay on):</div>
+                    <select id="icon-logo-position" class="control-input">
+                        <option value="center" selected>Center (over character)</option>
+                        <option value="corners">Brand L+R corners</option>
+                    </select>
+
+                    <div style="margin-top: 8px;">
+                        <label><input type="checkbox" id="icon-toggle-fit-circle"> Fit character in circle (mask square crops)</label>
+                    </div>
+                </div>
+
+                <!-- Character Selection Section -->
+                <div class="character-controls-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">Character / Video:</div>
+                    <select id="character-select" class="control-input" onchange="setCharacterImage(this.value)">
+                        <option value="__VIDEO__">🎬 Video (Celeste Legs Animation)</option>
+                        <option value="__CUSTOM__">📁 Custom (upload local file)</option>
+                        <optgroup label="Full Body">
+                            <option value="Abyssal_Conquest.png">Abyssal Conquest</option>
+                            <option value="Abyssal_Conquest2k.png">Abyssal Conquest (2K)</option>
+                            <option value="bodycon_standing_trans.png">Bodycon Standing</option>
+                            <option value="Celeste_Legs.png">Celeste Legs (Original Static)</option>
+                            <option value="celeste_demonic_slut_trans.png">Demonic Slut</option>
+                            <option value="celeste_shimiko_cosplay_upper_trans.png">Shimiko Cosplay</option>
+                            <option value="celeste_skimpy_pierced_dress_trans.png">Skimpy Pierced Dress</option>
+                            <option value="CelesteNinkoroBunny_trans.png">Ninkoro Bunny</option>
+                            <option value="dongtan_style_trans.png">Dongtan Style</option>
+                            <option value="dongtan_style_nsfw_trans.png">Dongtan Style (NSFW)</option>
+                            <option value="doroseggstrans.png">Doro's Eggs</option>
+                            <option value="high_quality_demon_queen_full_trans.png">Demon Queen</option>
+                            <option value="lewd_magical_girl_back_detailed.png">Magical Girl (Back)</option>
+                            <option value="lewd_magical_girl_front_detailed.png">Magical Girl (Front)</option>
+                            <option value="magia_baiser_cosplay_trans.png">Magia Baiser Cosplay</option>
+                            <option value="nurse_celeste_trans.png">Nurse Celeste</option>
+                            <option value="nurse_celeste_nsfw_trans.png">Nurse Celeste (NSFW)</option>
+                            <option value="race_queen_owari_cosplay_trans.png">Race Queen Owari Cosplay</option>
+                            <option value="recluse_witch_cosplay_trans.png">Recluse Witch Cosplay</option>
+                            <option value="sexy_cow_outfit.png">Sexy Cow Outfit</option>
+                            <option value="sexy_kirara_cosplay_trans.png">Sexy Kirara Cosplay</option>
+                            <option value="skimpy_wedding_outfit_trans.png">Skimpy Wedding Outfit</option>
+                            <option value="slutty_swimsuit_trans.png">Slutty Swimsuit</option>
+                            <option value="summer_doro_cosplay_trans.png">Summer Doro Cosplay</option>
+                            <option value="velvet_maid_trans.png">Velvet Maid</option>
+                            <option value="witch_transparent.png">Witch</option>
+                        </optgroup>
+                        <optgroup label="Tarot Cards">
+                            <option value="tarot_cards/bikini_maid_trans.png">Bikini Maid</option>
+                            <option value="tarot_cards/bodycon_laying_side_trans.png">Bodycon Laying Side</option>
+                            <option value="tarot_cards/celeste_cow_bikini_trans.png">Cow Bikini</option>
+                            <option value="tarot_cards/celeste_shimakaze_card_trans.png">Shimakaze Card</option>
+                            <option value="tarot_cards/devil_sister_illustration_trans.png">Devil Sister</option>
+                            <option value="tarot_cards/naked_shower_scene_trans.png">Naked Shower Scene</option>
+                            <option value="tarot_cards/sacrifical_bride_outfit_trans.png">Sacrificial Bride</option>
+                            <option value="tarot_cards/sexmas_bunny_celeste_trans.png">Sexmas Bunny</option>
+                            <option value="tarot_cards/sexy_nurse_celeste_trans.png">Sexy Nurse</option>
+                            <option value="tarot_cards/sexy_race_queen_celeste_trans.png">Sexy Race Queen</option>
+                            <option value="tarot_cards/shimiko_outfit_celeste_trans.png">Shimiko Outfit</option>
+                            <option value="tarot_cards/skimpy_swimsuit_trans.png">Skimpy Swimsuit</option>
+                            <option value="tarot_cards/slave_gear_trans.png">Slave Gear</option>
+                            <option value="tarot_cards/slutty_jk_cat_trans.png">Slutty JK Cat</option>
+                            <option value="tarot_cards/tentacle_gaming_chair_trans.png">Tentacle Gaming Chair</option>
+                        </optgroup>
+                        <optgroup label="Headshots (Expressions)">
+                            <option value="headshots/awake.png">Awake</option>
+                            <option value="headshots/bust.png">Bust</option>
+                            <option value="headshots/cat_face.png">Cat Face</option>
+                            <option value="headshots/consider.png">Consider</option>
+                            <option value="headshots/coom.png">Coom</option>
+                            <option value="headshots/dame.png">Dame</option>
+                            <option value="headshots/disgust.png">Disgust</option>
+                            <option value="headshots/excited.png">Excited</option>
+                            <option value="headshots/gasm.png">Gasm</option>
+                            <option value="headshots/glare.png">Glare</option>
+                            <option value="headshots/heart.png">Heart</option>
+                            <option value="headshots/lick.png">Lick</option>
+                            <option value="headshots/OxO.png">OxO</option>
+                            <option value="headshots/pant.png">Pant</option>
+                            <option value="headshots/postgasm.png">Postgasm</option>
+                            <option value="headshots/pout.png">Pout</option>
+                            <option value="headshots/shocked.png">Shocked</option>
+                            <option value="headshots/shy.png">Shy</option>
+                            <option value="headshots/sleepy.png">Sleepy</option>
+                            <option value="headshots/teasing.png">Teasing</option>
+                            <option value="headshots/wow.png">Wow</option>
+                            <option value="headshots/yawn.png">Yawn</option>
+                        </optgroup>
+                    </select>
+                    <input type="file" id="custom-character-file" accept="image/*" style="display: none; margin-top: 8px;" onchange="loadCustomCharacterFile(this.files[0])">
+
+                    <div class="control-label" style="margin-top: 10px;">Glow Color:</div>
+                    <select id="glow-color-select" class="control-input" onchange="setGlowColor(this.value)">
+                        <option value="purple">Purple (Default)</option>
+                        <option value="magenta">Magenta</option>
+                        <option value="black">Black</option>
+                        <option value="cyan">Cyan</option>
+                        <option value="yellow">Yellow</option>
+                        <option value="red">Red</option>
+                    </select>
+
+                    <div class="control-label" style="margin-top: 10px;">Image Size: <span id="char-size-label">100%</span></div>
+                    <input type="range" id="char-size-slider" class="control-input" min="50" max="300" value="100" step="5" oninput="setCharacterSize(Number(this.value))">
+
+                    <div class="control-label" style="margin-top: 10px;">Image Y Offset: <span id="char-y-label">0%</span></div>
+                    <input type="range" id="char-y-slider" class="control-input" min="-50" max="50" value="0" step="1" oninput="setCharacterY(Number(this.value))">
+                </div>
+
+                <div style="text-align: center; margin-top: 15px;">
+                    <button class="control-button" onclick="exportThumbnail()">📸 Export PNG</button>
+                    <button class="control-button" onclick="toggleAnimations()">⏸️ Toggle Animations</button>
+                </div>
+            </div>
+
+            <!-- RIGHT PANEL -->
+            <div class="control-panel">
+                <!-- Video Positioning Section -->
+                <div class="video-controls-section">
+                    <div class="control-label">Video Positioning (Video Mode Only):</div>
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button class="control-button" onclick="setCelesteVideoY(5); setCelesteVideoSize(220); console.log('✅ Applied standard preset: Y=5%, Scale=220%');">
+                            🎯 Match Static Legs (Y: 5%, Scale: 220%)
+                        </button>
+                        <button class="control-button" onclick="setCelesteVideoY(0); setCelesteVideoSize(100); console.log('✅ Reset video position: Y=0%, Scale=100%');" style="margin-top: 8px;">
+                            🔄 Reset Video Position (Y: 0%, Scale: 100%)
+                        </button>
+                    </div>
+                    <div class="info-text" style="margin-top: 8px; font-size: 10px; text-align: center; color: rgba(0, 255, 255, 0.6);">
+                        Note: These only affect the video animation.<br>Character images always fill the full canvas.
+                    </div>
+                </div>
+
+                <!-- Character Flow Particles Section -->
+                <div class="flow-particles-section" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3);">
+                    <div class="control-label">
+                        <input type="checkbox" id="flow-particles-toggle" checked onchange="toggleFlowParticles(this.checked)" style="margin-right: 5px; vertical-align: middle;">
+                        <label for="flow-particles-toggle" style="display: inline; cursor: pointer;">Character Flow Particles</label>
+                    </div>
+
+                    <div class="control-label" style="margin-top: 10px;">Density:</div>
+                    <input type="range" id="flow-density-slider" class="control-input" min="0" max="100" value="50"
+                           oninput="setFlowDensity(this.value)" style="cursor: pointer;">
+                    <div style="text-align: center; font-size: 11px; color: rgba(0, 255, 255, 0.6); margin-top: 2px;">
+                        <span id="flow-density-value">50%</span> (10-60 particles)
+                    </div>
+
+                    <div class="control-label" style="margin-top: 10px;">Speed:</div>
+                    <input type="range" id="flow-speed-slider" class="control-input" min="0" max="100" value="50"
+                           oninput="setFlowSpeed(this.value)" style="cursor: pointer;">
+                    <div style="text-align: center; font-size: 11px; color: rgba(0, 255, 255, 0.6); margin-top: 2px;">
+                        <span id="flow-speed-value">50%</span>
+                    </div>
+
+                    <div class="info-text" style="margin-top: 8px; font-size: 10px; text-align: center; color: rgba(0, 255, 255, 0.6);">
+                        Corrupted code flows from character edges
+                    </div>
+                </div>
+
+                <!-- Documentation Section -->
+                <div class="info-text" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid rgba(0, 255, 255, 0.3); text-align: left; font-size: 11px;">
+                    <strong>Keyboard Shortcuts:</strong><br>
+                    Ctrl+C (Cmd+C) - Toggle menu | Ctrl+E (Cmd+E) - Export<br><br>
+                    <strong>Console Commands:</strong><br>
+                    setTitle("text"), setSubtitle("text")<br>
+                    setCharacterImage('filename.png')<br>
+                    setGlowColor('colorKey')<br>
+                    setCelesteVideoY(percent), setCelesteVideoSize(percent)<br>
+                    <strong style="color: #00ffff;">Flow Particles:</strong><br>
+                    toggleFlowParticles(true/false) - Enable/disable particle effect<br>
+                    setFlowDensity(0-100) - Set particle density<br>
+                    setFlowSpeed(0-100) - Set particle speed<br>
+                    exportThumbnail(), toggleAnimations()<br>
+                    saveState(), loadState(), getCurrentState()
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/iconography-mode.js"></script>
+    <script type="module">
+        import {
+            CorruptedTextOverlay,
+            GridOverlay,
+            RotatingDiamond,
+            CharacterFlowParticles
+        } from './js/anime-blocks-advanced.js';
+        import { LogoComponent } from './js/logo-component.js';
+        import {
+            drawLewdFrame,
+            pickLewdFramePhrases,
+            LEWD_FRAME_DEFAULTS,
+            LEWD_FRAME_COLOR_PRESETS,
+        } from './js/lewd-frame.js';
+
+        // ═══════════════════════════════════════════════════════════════
+        // CONFIGURATION
+        // ═══════════════════════════════════════════════════════════════
+
+        const CONFIG = {
+            corruptedText: {
+                lewdIntensity: 'low',
+                kanjiCount: 3,
+                particleCount: 15,
+                includeGrain: false,
+                background: 'transparent'
+            },
+            grid: {
+                gridSize: 50,
+                color: '#8b5cf6',
+                opacity: 0.2,
+                style: 'diamond',
+                pulse: true
+            },
+            diamond: {
+                size: 100,
+                color: '#00ffff',
+                position: 'center',
+                rotationSpeed: 6000,
+                breathe: true
+            },
+            flowParticles: {
+                enabled: false,
+                density: 50,
+                speed: 50
+            }
+        };
+
+        let components = {};
+        let animationsPaused = false;
+
+        // ═══════════════════════════════════════════════════════════════
+        // COMPONENT INITIALIZATION
+        // ═══════════════════════════════════════════════════════════════
+
+        async function initComponents() {
+            console.log('🎨 Initializing thumbnail components...');
+
+            // Clean up any existing components first
+            cleanupComponents();
+
+            // Logo Component (Static)
+            try {
+                const logoContainer = document.getElementById('logo-container');
+                components.logo = new LogoComponent(logoContainer, {
+                    position: 'top-right',
+                    size: 'large', // Larger for YouTube thumbnail readability
+                    showSubtitle: true,
+                    subtitle: 'CORRUPTED STREAM',
+                    wombTattooOpacity: 0.85,
+                    animation: 'fade-in',
+                    zIndex: 250
+                });
+
+                // Shift logo to avoid overlapping Celeste legs
+                const logoBanner = document.getElementById('logo-banner');
+                if (logoBanner) {
+                    logoBanner.style.right = '-110px'; // Move right but keep partially visible
+                }
+
+                components.logo.show();
+                console.log('✅ LogoComponent initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize LogoComponent:', error);
+            }
+
+            // Layer 1: Corrupted Text Overlay
+            try {
+                const corruptedTextContainer = document.getElementById('corrupted-text-layer');
+                components.corruptedText = new CorruptedTextOverlay(corruptedTextContainer, CONFIG.corruptedText);
+                components.corruptedText.play();
+                console.log('✅ CorruptedTextOverlay initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize CorruptedTextOverlay:', error);
+            }
+
+            // Layer 2: Grid Overlay
+            try {
+                const gridContainer = document.getElementById('grid-layer');
+                components.grid = new GridOverlay(gridContainer, CONFIG.grid);
+                components.grid.play();
+                console.log('✅ GridOverlay initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize GridOverlay:', error);
+            }
+
+            // Layer 3: Rotating Diamond
+            try {
+                const diamondContainer = document.getElementById('diamond-layer');
+                components.diamond = new RotatingDiamond(diamondContainer, CONFIG.diamond);
+                components.diamond.play();
+                console.log('✅ RotatingDiamond initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize RotatingDiamond:', error);
+            }
+
+            // Layer 4: Character Flow Particles
+            try {
+                const flowContainer = document.getElementById('flow-particles-layer');
+                components.flowParticles = new CharacterFlowParticles(flowContainer, {
+                    density: CONFIG.flowParticles.density,
+                    speed: CONFIG.flowParticles.speed,
+                    enabled: CONFIG.flowParticles.enabled,
+                    glowColor: getCurrentGlowColor()
+                });
+                if (CONFIG.flowParticles.enabled) {
+                    components.flowParticles.play();
+                }
+                window.flowParticles = components.flowParticles; // Expose to window for console access
+                console.log('✅ CharacterFlowParticles initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize CharacterFlowParticles:', error);
+            }
+
+            // Layer 5: Iconography (religious icon composition)
+            try {
+                const iconSvg = document.getElementById('iconography-svg');
+                const iconControls = document.getElementById('iconography-controls');
+                components.iconography = new IconographyMode(iconSvg, iconControls);
+                await components.iconography.init();
+                // Initial resize to current canvas dimensions
+                const w = parseInt(document.getElementById('thumbnail-container').style.width)  || 1920;
+                const h = parseInt(document.getElementById('thumbnail-container').style.height) || 1080;
+                components.iconography.resize(w, h);
+                console.log('✅ IconographyMode initialized');
+            } catch (error) {
+                console.error('❌ Failed to initialize IconographyMode:', error);
+            }
+        }
+
+        function cleanupComponents() {
+            // Destroy all existing components to prevent memory leaks
+            if (components.logo) {
+                try {
+                    components.logo.destroy();
+                    components.logo = null;
+                } catch (error) {
+                    console.warn('⚠️ Error destroying LogoComponent:', error);
+                }
+            }
+
+            if (components.corruptedText) {
+                try {
+                    components.corruptedText.destroy();
+                    components.corruptedText = null;
+                } catch (error) {
+                    console.warn('⚠️ Error destroying CorruptedTextOverlay:', error);
+                }
+            }
+
+            if (components.grid) {
+                try {
+                    components.grid.destroy();
+                    components.grid = null;
+                } catch (error) {
+                    console.warn('⚠️ Error destroying GridOverlay:', error);
+                }
+            }
+
+            if (components.diamond) {
+                try {
+                    components.diamond.destroy();
+                    components.diamond = null;
+                } catch (error) {
+                    console.warn('⚠️ Error destroying RotatingDiamond:', error);
+                }
+            }
+
+            if (components.flowParticles) {
+                try {
+                    components.flowParticles.destroy();
+                    components.flowParticles = null;
+                } catch (error) {
+                    console.warn('⚠️ Error destroying CharacterFlowParticles:', error);
+                }
+            }
+
+            // Clear component containers
+            ['logo-container', 'corrupted-text-layer', 'grid-layer', 'diamond-layer', 'flow-particles-layer'].forEach(id => {
+                const container = document.getElementById(id);
+                if (container) {
+                    container.innerHTML = '';
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // EXPORT FUNCTIONALITY
+        // ═══════════════════════════════════════════════════════════════
+
+        /**
+         * Returns current canvas dimensions based on selected aspect ratio
+         * @returns {{ width: number, height: number }}
+         */
+        function getCanvasDimensions() {
+            const select = document.getElementById('aspect-ratio-select');
+            const ratio = select ? select.value : DEFAULT_ASPECT_RATIO;
+            return ASPECT_RATIOS[ratio] || ASPECT_RATIOS[DEFAULT_ASPECT_RATIO];
+        }
+
+        async function exportThumbnail() {
+            console.log('📸 Exporting thumbnail...');
+
+            try {
+                // Hide controls overlay
+                const controlsOverlay = document.getElementById('controls-overlay');
+                const wasVisible = controlsOverlay.classList.contains('visible');
+                controlsOverlay.classList.remove('visible');
+
+                // Load html2canvas if not already loaded
+                if (!window.html2canvas) {
+                    console.log('📦 Loading html2canvas from CDN...');
+                    await loadHtml2Canvas();
+                }
+
+                const html2canvas = window.html2canvas;
+                if (!html2canvas) {
+                    throw new Error('html2canvas failed to load from CDN');
+                }
+
+                console.log('📸 Converting images to data URLs...');
+                // Convert images to data URLs for cross-origin support
+                const celesteImg = document.getElementById('celeste-image');
+                const celesteDataUrl = await imageToDataURL(celesteImg);
+
+                // Convert subject image if present
+                const subjectImg = document.getElementById('subject-image');
+                const subjectDataUrl = subjectImg.classList.contains('visible')
+                    ? await imageToDataURL(subjectImg)
+                    : null;
+
+                // Preload womb tattoo via fetch+FileReader to avoid the browser CORS-cache
+                // taint bug: CSS background-image loads the asset without CORS headers, so a
+                // subsequent Image() load with crossOrigin='anonymous' hits the non-CORS cached
+                // response and taints any canvas we'd draw it into. fetch() goes through a
+                // separate cache partition and returns the raw bytes directly.
+                const wombTattooDataUrl = await fetch(
+                    'https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/Womb_Tattoo.png',
+                    { mode: 'cors', cache: 'no-cache' }
+                )
+                .then(r => r.blob())
+                .then(blob => new Promise((resolve) => {
+                    const fr = new FileReader();
+                    fr.onloadend = () => resolve(fr.result);
+                    fr.onerror  = () => resolve(null);
+                    fr.readAsDataURL(blob);
+                }))
+                .catch(() => null);
+                console.log(wombTattooDataUrl ? '✅ Womb tattoo fetched via FileReader' : '⚠️ Womb tattoo fetch failed');
+
+                // Pre-render womb tattoo + glow onto a canvas so the effect is baked
+                // into the image itself — html2canvas can't render CSS background-image
+                // on divs or CSS filter reliably, but handles <img> data URLs fine.
+                const TATTOO_GLOW_PADDING = 40;
+                let wombTattooGlowDataUrl = null;
+                if (wombTattooDataUrl) {
+                    wombTattooGlowDataUrl = await new Promise((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            const original = document.querySelector('.womb-tattoo-icon');
+                            const tattooSize = original ? parseInt(original.style.width) || 130 : 130;
+                            const canvasSize = tattooSize + TATTOO_GLOW_PADDING * 2;
+                            const c = document.createElement('canvas');
+                            c.width = canvasSize;
+                            c.height = canvasSize;
+                            const ctx = c.getContext('2d');
+                            // Layer 1: outer purple glow
+                            ctx.shadowColor = 'rgba(139, 92, 246, 0.6)';
+                            ctx.shadowBlur = 25;
+                            ctx.drawImage(img, TATTOO_GLOW_PADDING, TATTOO_GLOW_PADDING, tattooSize, tattooSize);
+                            // Layer 2: mid pink glow
+                            ctx.shadowColor = 'rgba(217, 79, 144, 0.8)';
+                            ctx.shadowBlur = 15;
+                            ctx.drawImage(img, TATTOO_GLOW_PADDING, TATTOO_GLOW_PADDING, tattooSize, tattooSize);
+                            // Layer 3: inner bright pink glow
+                            ctx.shadowColor = 'rgba(217, 79, 144, 1)';
+                            ctx.shadowBlur = 8;
+                            ctx.drawImage(img, TATTOO_GLOW_PADDING, TATTOO_GLOW_PADDING, tattooSize, tattooSize);
+                            resolve(c.toDataURL('image/png'));
+                        };
+                        img.onerror = () => resolve(null);
+                        img.src = wombTattooDataUrl;
+                    });
+                    console.log(wombTattooGlowDataUrl ? '✅ Womb tattoo glow pre-rendered' : '⚠️ Womb tattoo glow pre-render failed');
+                }
+
+                // Preload the active background as a data URL.
+                // For 'custom' the user-picked file is already in customBgDataUrl — skip
+                // the network fetch entirely. For all other themes, fetch+FileReader the
+                // R2 URL (CORS workaround for html2canvas).
+                const activeBgIsSeamless = (currentBackgroundTheme === 'seamless');
+                const activeBgIsCustom = (currentBackgroundTheme === 'custom');
+                let bgDataUrl;
+                if (activeBgIsCustom) {
+                    bgDataUrl = customBgDataUrl;
+                    console.log(bgDataUrl
+                        ? '✅ Background ready (custom — local file)'
+                        : '⚠️ Custom background selected but no file loaded');
+                } else {
+                    const activeBgUrl = BG_URLS[currentBackgroundTheme] ?? BG_URLS.seamless;
+                    bgDataUrl = await fetch(activeBgUrl, { mode: 'cors', cache: 'no-cache' })
+                        .then(r => r.blob())
+                        .then(blob => new Promise((resolve) => {
+                            const fr = new FileReader();
+                            fr.onloadend = () => resolve(fr.result);
+                            fr.onerror  = () => resolve(null);
+                            fr.readAsDataURL(blob);
+                        }))
+                        .catch(() => null);
+                    console.log(bgDataUrl
+                        ? `✅ Background fetched (${currentBackgroundTheme})`
+                        : `⚠️ Background fetch failed (${currentBackgroundTheme})`);
+                }
+
+                const { width: canvasWidth, height: canvasHeight } = getCanvasDimensions();
+                const canvas = await html2canvas(document.body, {
+                    width: canvasWidth,
+                    height: canvasHeight,
+                    backgroundColor: '#000000',
+                    scale: 1,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    foreignObjectRendering: true,
+                    removeContainer: true,
+                    imageTimeout: 0,
+                    onclone: (clonedDoc) => {
+                        console.log('📸 Cloning document for export...');
+
+                        // Determine preview scale factor so we can unscale getBoundingClientRect values
+                        const previewWrapper = document.getElementById('preview-wrapper');
+                        const previewScale = previewWrapper
+                            ? (parseFloat(previewWrapper.style.transform.replace('scale(', '')) || 1)
+                            : 1;
+                        const isHeroMode = document.getElementById('thumbnail-container').classList.contains('hero-mode');
+
+                        // Reset preview wrapper scale for export
+                        const clonedWrapper = clonedDoc.getElementById('preview-wrapper');
+                        if (clonedWrapper) {
+                            clonedWrapper.style.transform = 'scale(1)';
+                        }
+
+                        // Set CSS custom properties on cloned document so var() rules work
+                        clonedDoc.documentElement.style.setProperty('--canvas-w', `${canvasWidth}px`);
+                        clonedDoc.documentElement.style.setProperty('--canvas-h', `${canvasHeight}px`);
+
+                        // Reset zoom/transform on html and body to ensure consistent layout
+                        const clonedHtml = clonedDoc.documentElement;
+                        const clonedBody = clonedDoc.body;
+                        if (clonedHtml) {
+                            clonedHtml.style.transform = 'scale(1)';
+                            clonedHtml.style.transformOrigin = 'top left';
+                            clonedHtml.style.width = `${canvasWidth}px`;
+                            clonedHtml.style.height = `${canvasHeight}px`;
+                        }
+                        if (clonedBody) {
+                            clonedBody.style.transform = 'scale(1)';
+                            clonedBody.style.transformOrigin = 'top left';
+                            clonedBody.style.width = `${canvasWidth}px`;
+                            clonedBody.style.height = `${canvasHeight}px`;
+                        }
+
+                        // Scale factor for narrower canvases (9:16 is 1080px vs base 1920px)
+                        const fontScale = Math.min(canvasWidth / 1920, 1);
+
+                        // Ensure title area positioning — scale offsets for narrower canvases
+                        const titleArea = clonedDoc.getElementById('title-area');
+                        if (titleArea) {
+                            titleArea.style.position = 'absolute';
+                            titleArea.style.maxWidth = 'none';
+                            const bottomOffset = Math.round(60 * fontScale);
+                            const leftOffset = Math.round(60 * fontScale);
+
+                            if (isHeroMode) {
+                                titleArea.style.bottom = `${bottomOffset}px`;
+                                titleArea.style.left = '50%';
+                                titleArea.style.transform = 'translateX(-50%)';
+                                titleArea.style.textAlign = 'center';
+                            } else {
+                                titleArea.style.bottom = `${bottomOffset}px`;
+                                titleArea.style.left = `${leftOffset}px`;
+                            }
+                        }
+
+                        // Fix text rendering — scale font for narrower aspect ratios
+                        const originalMainTitle = document.getElementById('main-title');
+                        const mainTitle = clonedDoc.getElementById('main-title');
+                        if (mainTitle && originalMainTitle) {
+                            const computedStyle = window.getComputedStyle(originalMainTitle);
+                            const baseFontSize = parseFloat(computedStyle.fontSize);
+                            mainTitle.style.fontSize = `${baseFontSize * fontScale}px`;
+                            mainTitle.style.fontWeight = computedStyle.fontWeight;
+                            mainTitle.style.fontFamily = computedStyle.fontFamily;
+                            mainTitle.style.lineHeight = computedStyle.lineHeight;
+                            mainTitle.style.letterSpacing = computedStyle.letterSpacing;
+                            mainTitle.style.wordSpacing = computedStyle.wordSpacing;
+                            mainTitle.style.marginBottom = computedStyle.marginBottom;
+                            mainTitle.style.whiteSpace = 'nowrap';
+                            mainTitle.style.overflow = 'visible';
+                        }
+
+                        // (Warning-screen overlay is now canvas-rendered — html2canvas
+                        // captures the canvas bitmap directly, no font scaling needed.)
+
+                        // Ensure subtitle styling — also scale font
+                        const originalSubtitle = document.getElementById('subtitle');
+                        const subtitle = clonedDoc.getElementById('subtitle');
+                        if (subtitle && originalSubtitle) {
+                            const computedStyle = window.getComputedStyle(originalSubtitle);
+                            const baseFontSize = parseFloat(computedStyle.fontSize);
+                            subtitle.style.fontSize = `${baseFontSize * fontScale}px`;
+                            subtitle.style.fontFamily = computedStyle.fontFamily;
+                            subtitle.style.lineHeight = computedStyle.lineHeight;
+                        }
+
+                        // Ensure component layers have explicit dimensions
+                        const layers = clonedDoc.querySelectorAll('#animated-components, .component-layer, #grid-layer, #corrupted-text-layer, #diamond-layer');
+                        layers.forEach(layer => {
+                            layer.style.position = 'absolute';
+                            layer.style.top = '0';
+                            layer.style.left = '0';
+                            layer.style.width = `${canvasWidth}px`;
+                            layer.style.height = `${canvasHeight}px`;
+                        });
+
+                        // Force SVG elements to be visible in clone — preserve configured opacity
+                        const originalSvgs = document.querySelectorAll('svg');
+                        const clonedSvgs = clonedDoc.querySelectorAll('svg');
+                        clonedSvgs.forEach((svg, index) => {
+                            const original = originalSvgs[index];
+                            const currentOpacity = original ? window.getComputedStyle(original).opacity : '0.2';
+                            svg.style.opacity = currentOpacity;
+                            svg.style.visibility = 'visible';
+                            svg.style.display = 'block';
+                            svg.style.width = `${canvasWidth}px`;
+                            svg.style.height = `${canvasHeight}px`;
+                            svg.setAttribute('width', String(canvasWidth));
+                            svg.setAttribute('height', String(canvasHeight));
+                        });
+
+                        // Convert Celeste image to data URL in clone
+                        const clonedCeleste = clonedDoc.getElementById('celeste-image');
+                        if (clonedCeleste && celesteDataUrl) {
+                            clonedCeleste.src = celesteDataUrl;
+                        }
+
+                        // Replace womb-tattoo-icon div with a plain <img> in the clone.
+                        // html2canvas handles <img> data URLs reliably; it does NOT reliably
+                        // render CSS background-image on divs or CSS filter/animation.
+                        // The glow is already baked into wombTattooGlowDataUrl via canvas.
+                        const wombTattooElements = clonedDoc.querySelectorAll('.womb-tattoo-icon');
+                        const originalWombTattoos = document.querySelectorAll('.womb-tattoo-icon');
+                        wombTattooElements.forEach((el, index) => {
+                            const srcUrl = wombTattooGlowDataUrl || wombTattooDataUrl;
+                            if (!srcUrl) return;
+                            const original = originalWombTattoos[index];
+                            const tattooSize = original ? parseInt(original.style.width) || 130 : 130;
+                            const pad = wombTattooGlowDataUrl ? TATTOO_GLOW_PADDING : 0;
+                            const img = clonedDoc.createElement('img');
+                            img.src = srcUrl;
+                            img.style.position = 'absolute';
+                            img.style.top = '50%';
+                            img.style.left = `-${pad}px`;
+                            img.style.transform = 'translateY(-50%)';
+                            img.style.width = `${tattooSize + pad * 2}px`;
+                            img.style.height = `${tattooSize + pad * 2}px`;
+                            img.style.opacity = el.style.opacity || '0.85';
+                            img.style.zIndex = el.style.zIndex || '1';
+                            img.style.pointerEvents = 'none';
+                            img.style.display = 'block';
+                            el.parentNode.replaceChild(img, el);
+                            console.log('✅ Replaced womb tattoo div with pre-rendered glow img');
+                        });
+
+                        // Convert subject image to data URL in clone
+                        const clonedSubject = clonedDoc.getElementById('subject-image');
+                        if (clonedSubject && subjectDataUrl) {
+                            clonedSubject.src = subjectDataUrl;
+                            clonedSubject.classList.add('visible');
+                            console.log('✅ Applied subject image data URL');
+                        }
+
+                        // Apply the active background as an inline data URL on .seamless-background clones.
+                        // Mode-correct repeat / size: seamless tiles, nikke themes cover-fill.
+                        const seamlessElements = clonedDoc.querySelectorAll('.seamless-background');
+                        seamlessElements.forEach(el => {
+                            if (bgDataUrl) {
+                                el.style.backgroundImage = `url('${bgDataUrl}')`;
+                                el.style.backgroundRepeat = activeBgIsSeamless ? 'repeat' : 'no-repeat';
+                                el.style.backgroundSize  = activeBgIsSeamless ? '512px 512px' : 'cover';
+                                el.style.backgroundPosition = activeBgIsSeamless ? '' : 'center center';
+                                el.style.width = `${canvasWidth}px`;
+                                el.style.height = `${canvasHeight}px`;
+                                el.style.position = 'absolute';
+                                el.style.top = '0';
+                                el.style.left = '0';
+                                el.style.display = 'block';
+                                el.style.opacity = '1';
+                                if (!activeBgIsSeamless) {
+                                    el.style.animation = 'none';
+                                }
+                                console.log(`✅ Applied background data URL (${currentBackgroundTheme})`);
+                            }
+                        });
+
+                        // For themed mode, also hide the purple tint clone (the live-DOM
+                        // CSS rule does this via body.bg-themed, but we set it again on the
+                        // clone for resilience against html2canvas state restoration).
+                        if (!activeBgIsSeamless) {
+                            const tintEls = clonedDoc.querySelectorAll('.seamless-tint-purple');
+                            tintEls.forEach((el) => { el.style.display = 'none'; });
+                        }
+
+                        // Force vignette and tint layers to fill canvas
+                        const overlayLayers = clonedDoc.querySelectorAll('.seamless-vignette, .seamless-tint-purple');
+                        overlayLayers.forEach(el => {
+                            el.style.width = `${canvasWidth}px`;
+                            el.style.height = `${canvasHeight}px`;
+                            el.style.position = 'absolute';
+                            el.style.top = '0';
+                            el.style.left = '0';
+                        });
+
+                        // Force CorruptedTextOverlay canvas elements to proper size in clone
+                        const corruptedTextLayer = clonedDoc.getElementById('corrupted-text-layer');
+                        if (corruptedTextLayer) {
+                            const innerCanvases = corruptedTextLayer.querySelectorAll('canvas');
+                            innerCanvases.forEach(c => {
+                                c.style.width = `${canvasWidth}px`;
+                                c.style.height = `${canvasHeight}px`;
+                            });
+                        }
+
+                        // Fix logo container and banner visibility/positioning in clone
+                        const originalLogoContainer = document.getElementById('logo-container');
+                        const clonedLogoContainer = clonedDoc.getElementById('logo-container');
+
+                        if (originalLogoContainer && clonedLogoContainer) {
+                            // Force logo container visibility and z-index
+                            clonedLogoContainer.style.display = 'block';
+                            clonedLogoContainer.style.visibility = 'visible';
+                            clonedLogoContainer.style.opacity = '1';
+                            clonedLogoContainer.style.zIndex = '250';
+                            clonedLogoContainer.style.position = 'relative';
+
+                            console.log('✅ Forced logo container visibility');
+                        }
+
+                        const originalLogoBanner = document.getElementById('logo-banner');
+                        const clonedLogoBanner = clonedDoc.getElementById('logo-banner');
+                        if (originalLogoBanner && clonedLogoBanner) {
+                            const originalStyles = window.getComputedStyle(originalLogoBanner);
+                            const originalRight = originalLogoBanner.style.right || originalStyles.right;
+                            const originalTop = originalLogoBanner.style.top || originalStyles.top;
+                            const originalPosition = originalStyles.position;
+
+                            // Apply the exact positioning from original to clone
+                            clonedLogoBanner.style.position = originalPosition;
+                            clonedLogoBanner.style.right = originalRight;
+                            clonedLogoBanner.style.top = originalTop;
+
+                            // Force visibility — preserve the original display value (flex)
+                            // so the logo-text-container stays flex-sized and the subtitle
+                            // doesn't wrap due to block layout widths
+                            clonedLogoBanner.style.display = originalStyles.display || 'flex';
+                            clonedLogoBanner.style.visibility = 'visible';
+                            clonedLogoBanner.style.opacity = '1';
+                            clonedLogoBanner.style.zIndex = '250';
+
+                            console.log('✅ Applied logo banner positioning:', {
+                                position: originalPosition,
+                                right: originalRight,
+                                top: originalTop,
+                                zIndex: '250'
+                            });
+
+                            // If hero mode is active, override logo positioning to centered
+                            if (isHeroMode) {
+                                clonedLogoBanner.style.position = 'absolute';
+                                clonedLogoBanner.style.right = 'auto';
+                                clonedLogoBanner.style.left = '50%';
+                                clonedLogoBanner.style.transform = `translateX(-50%) scale(${fontScale})`;
+                                clonedLogoBanner.style.transformOrigin = 'top center';
+                                clonedLogoBanner.style.top = '20px';
+                            } else if (fontScale < 1) {
+                                // Scale logo for narrow canvases in thumbnail mode too
+                                clonedLogoBanner.style.transform = `scale(${fontScale})`;
+                                clonedLogoBanner.style.transformOrigin = 'top right';
+                            }
+
+                            // Force all children to be visible
+                            const children = clonedLogoBanner.querySelectorAll('*');
+                            children.forEach(child => {
+                                child.style.visibility = 'visible';
+                                child.style.opacity = '1';
+                            });
+                            console.log('✅ Forced visibility for', children.length, 'logo children');
+                        }
+                    }
+                });
+
+                // Convert to blob and download
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                    link.download = `thumbnail-${timestamp}.png`;
+                    link.href = url;
+                    document.body.appendChild(link); // Append before click (required in some browsers)
+                    link.click();
+
+                    // Clean up to prevent memory leaks
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+
+                        // Clear canvas context to free memory
+                        const ctx = canvas.getContext('2d');
+                        ctx.clearRect(0, 0, canvas.width, canvas.height);
+                        canvas.width = 0;
+                        canvas.height = 0;
+
+                        console.log('✅ Thumbnail exported and cleaned up successfully!');
+                    }, 100);
+                });
+
+                // Restore controls if they were visible
+                if (wasVisible) {
+                    setTimeout(() => controlsOverlay.classList.add('visible'), 200);
+                }
+
+            } catch (error) {
+                console.error('❌ Export failed:', error);
+            }
+        }
+
+        async function loadHtml2Canvas() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        function imageToDataURL(img) {
+            return new Promise((resolve, reject) => {
+                if (!img || !img.complete) {
+                    console.warn('⚠️ Image not loaded yet');
+                    resolve(null);
+                    return;
+                }
+
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = img.naturalWidth || img.width;
+                    canvas.height = img.naturalHeight || img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0);
+                    const dataUrl = canvas.toDataURL('image/png');
+                    resolve(dataUrl);
+                } catch (error) {
+                    console.error('❌ Failed to convert image to data URL:', error);
+                    resolve(null);
+                }
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // CHROMA KEY CONFIGURATION
+        // ═══════════════════════════════════════════════════════════════
+
+        const CHROMA_KEY = {
+            enabled: true,
+            keyColor: [0, 255, 0],  // RGB for green
+            similarity: 0.45,        // Color similarity threshold (0-1, higher = more aggressive) - increased to remove green outline
+            smoothness: 0.08,        // Edge smoothness (0-1) - slightly tighter edges
+            spill: 0.15             // Spill suppression (removes green tint) - increased for better edge cleanup
+        };
+
+        let chromaAnimationFrame = null;
+
+        // ═══════════════════════════════════════════════════════════════
+        // CHROMA KEY PROCESSING
+        // ═══════════════════════════════════════════════════════════════
+
+        function processChromaKey() {
+            const video = document.getElementById('celeste-video');
+            const canvas = document.getElementById('celeste-canvas');
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+
+            if (!video.paused && !video.seeking && video.readyState >= 2) {  // Only process when video has valid frame
+                // Seamless loop: restart video slightly before end to avoid gap
+                if (video.currentTime >= video.duration - 0.1) {
+                    video.currentTime = 0;
+                }
+
+                // Set canvas size to match video (only if changed - setting width/height clears canvas)
+                if (canvas.width !== video.videoWidth || canvas.height !== video.videoHeight) {
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                }
+
+                // Draw current video frame to canvas
+                ctx.drawImage(video, 0, 0);
+
+                // Get image data
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imageData.data;
+
+                const [keyR, keyG, keyB] = CHROMA_KEY.keyColor;
+                const similarity = CHROMA_KEY.similarity;
+                const smoothness = CHROMA_KEY.smoothness;
+                const spill = CHROMA_KEY.spill;
+
+                // Process each pixel
+                for (let i = 0; i < data.length; i += 4) {
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+
+                    // Calculate Euclidean distance from key color (green)
+                    const distance = Math.sqrt(
+                        Math.pow(r - keyR, 2) +
+                        Math.pow(g - keyG, 2) +
+                        Math.pow(b - keyB, 2)
+                    ) / 441.67; // Normalize to 0-1 (max distance = sqrt(255^2 * 3))
+
+                    // Calculate alpha based on distance and similarity
+                    let alpha = 255;
+                    if (distance < similarity) {
+                        // Fully transparent for close matches
+                        alpha = 0;
+                    } else if (distance < similarity + smoothness) {
+                        // Smooth edge transition
+                        alpha = ((distance - similarity) / smoothness) * 255;
+                    }
+
+                    // Spill suppression: reduce green channel for near-key colors
+                    if (alpha > 0 && distance < similarity + spill) {
+                        const spillAmount = 1 - ((distance - similarity) / spill);
+                        data[i + 1] = Math.max(0, g - (spillAmount * g * 0.5));
+                    }
+
+                    // Set alpha channel
+                    data[i + 3] = alpha;
+                }
+
+                // Put processed image data back to canvas
+                ctx.putImageData(imageData, 0, 0);
+
+                // Continue processing next frame
+                chromaAnimationFrame = requestAnimationFrame(processChromaKey);
+            }
+        }
+
+        function stopChromaKey() {
+            if (chromaAnimationFrame) {
+                cancelAnimationFrame(chromaAnimationFrame);
+                chromaAnimationFrame = null;
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // UTILITY FUNCTIONS
+        // ═══════════════════════════════════════════════════════════════
+
+        function setTitle(text) {
+            const el = document.getElementById('main-title');
+            const trimmed = (text ?? '').trim();
+            if (trimmed === '') {
+                el.innerHTML = '';
+                el.style.display = 'none';
+                console.log('✅ Title hidden (empty)');
+            } else {
+                el.innerHTML = text;
+                el.style.display = '';
+                console.log(`✅ Title set to: "${text}"`);
+            }
+            saveState();
+        }
+
+        function setSubtitle(text) {
+            const el = document.getElementById('subtitle');
+            const trimmed = (text ?? '').trim();
+            if (trimmed === '') {
+                el.textContent = '';
+                el.style.display = 'none';
+                console.log('✅ Subtitle hidden (empty)');
+            } else {
+                el.textContent = text;
+                el.style.display = '';
+                console.log(`✅ Subtitle set to: "${text}"`);
+            }
+            saveState();
+        }
+
+        function toggleCelesteAnimation(useVideo = true) {
+            const video = document.getElementById('celeste-video');
+            const canvas = document.getElementById('celeste-canvas');
+            const image = document.getElementById('celeste-image');
+
+            if (useVideo) {
+                // Start video and chroma key processing, but keep canvas hidden initially
+                video.play();
+
+                // Wait for first frame to be drawn before showing canvas
+                const showCanvasWhenReady = () => {
+                    if (canvas.width > 0 && canvas.height > 0) {
+                        // First frame drawn, now safe to show canvas
+                        canvas.style.display = 'block';
+                        image.style.display = 'none';
+                        console.log('✅ Switched to animated Celeste (chroma-keyed video)');
+                    } else {
+                        // Not ready yet, check again next frame
+                        requestAnimationFrame(showCanvasWhenReady);
+                    }
+                };
+
+                // Start chroma key processing
+                processChromaKey();
+                // Wait for first frame before showing
+                requestAnimationFrame(showCanvasWhenReady);
+            } else {
+                // Show static image, hide canvas
+                canvas.style.display = 'none';
+                image.style.display = 'block';
+                video.pause();
+                // Stop chroma key processing
+                stopChromaKey();
+                console.log('✅ Switched to static Celeste (PNG image)');
+            }
+
+            // Update flow particles character bounds (video mode changes visible element)
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            saveState();
+        }
+
+        function setCelesteVideoSize(percent) {
+            const canvas = document.getElementById('celeste-canvas');
+
+            if (percent < 100 || percent > 1000) {
+                console.warn('⚠️ Size must be between 100% and 1000%');
+                return;
+            }
+
+            // Scale the canvas while keeping it anchored at center bottom
+            // Height is base 1080px, so 500% = 5400px
+            const newHeight = (1080 * percent) / 100;
+            canvas.style.height = `${newHeight}px`;
+
+            console.log(`✅ Celeste video scaled to ${percent}% (${newHeight}px height)`);
+            console.log(`   Anchored at: center bottom (legs will match static image)`);
+
+            // Update flow particles character bounds (video size changes bounding rect)
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            saveState();
+        }
+
+        function setCelesteVideoY(percent) {
+            const canvas = document.getElementById('celeste-canvas');
+
+            if (percent < 0 || percent > 50) {
+                console.warn('⚠️ Y position must be between 0% (normal) and 50% (moved down)');
+                return;
+            }
+
+            // Move down by percentage of canvas height (1080px)
+            // 0% = bottom: 0px (normal position)
+            // 50% = bottom: -540px (moved down by half height)
+            const offsetPx = -(1080 * percent) / 100;
+            canvas.style.bottom = `${offsetPx}px`;
+
+            // Note: Character images always stay at bottom: 0 (defined in CSS)
+            // Only the video canvas position is adjustable
+
+            console.log(`✅ Celeste video Y position set to ${percent}% (bottom: ${offsetPx}px)`);
+            console.log(`   Note: This only affects video mode, not character images`);
+
+            // Update flow particles character bounds (video position changes bounding rect)
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            saveState();
+        }
+
+        function setSubject(url) {
+            const subjectImg = document.getElementById('subject-image');
+            if (!url) {
+                clearSubject();
+                return;
+            }
+
+            // Clear any existing handlers first to prevent issues
+            subjectImg.onload = null;
+            subjectImg.onerror = null;
+
+            subjectImg.onload = () => {
+                subjectImg.classList.add('visible');
+                console.log(`✅ Subject loaded: ${url}`);
+                // Clear handlers after successful load
+                subjectImg.onload = null;
+                subjectImg.onerror = null;
+                saveState();
+            };
+
+            subjectImg.onerror = () => {
+                console.error(`❌ Failed to load subject: ${url}`);
+                // Clear handlers immediately to prevent infinite loop
+                subjectImg.onload = null;
+                subjectImg.onerror = null;
+                clearSubject();
+            };
+
+            subjectImg.src = url;
+        }
+
+        function clearSubject() {
+            const subjectImg = document.getElementById('subject-image');
+            // Clear event handlers first to prevent infinite loop
+            subjectImg.onload = null;
+            subjectImg.onerror = null;
+            subjectImg.src = '';
+            subjectImg.classList.remove('visible');
+            console.log('✅ Subject cleared');
+            saveState();
+        }
+
+        function setSubjectSize(percent) {
+            const subjectImg = document.getElementById('subject-image');
+            if (!subjectImg.classList.contains('visible')) {
+                console.warn('⚠️ No subject loaded. Use setSubject() first.');
+                return;
+            }
+
+            if (percent < 10 || percent > 150) {
+                console.warn('⚠️ Size must be between 10% and 150%');
+                return;
+            }
+
+            subjectImg.style.maxHeight = `${percent}%`;
+            console.log(`✅ Subject size set to ${percent}% of canvas height`);
+            saveState();
+        }
+
+        function setSubjectPosition(percent) {
+            const subjectImg = document.getElementById('subject-image');
+            if (!subjectImg.classList.contains('visible')) {
+                console.warn('⚠️ No subject loaded. Use setSubject() first.');
+                return;
+            }
+
+            if (percent < 0 || percent > 100) {
+                console.warn('⚠️ Position must be between 0% (left) and 100% (right)');
+                return;
+            }
+
+            // Set horizontal position
+            // 0% = far left, 50% = center, 100% = far right
+            subjectImg.style.left = `${percent}%`;
+            subjectImg.style.transform = `translateX(-${percent}%)`;
+            console.log(`✅ Subject position set to ${percent}% (0=left, 50=center, 100=right)`);
+            saveState();
+        }
+
+        // ---- Background theme system ------------------------------------
+        const SEAMLESS_BG_URL =
+            'https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/backgrounds/whykusanagi_rendered_SEAMLESS.png';
+        const NIKKE_BG_BASE =
+            'https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/backgrounds/';
+
+        const BG_URLS = {
+            seamless:               SEAMLESS_BG_URL,
+            'default-corruption':   NIKKE_BG_BASE + 'nikke-bg-default-corruption.png',
+            'dragon-cinder':        NIKKE_BG_BASE + 'nikke-bg-dragon-cinder.png',
+            'leviathan-abyss':      NIKKE_BG_BASE + 'nikke-bg-leviathan-abyss.png',
+            'colossus-gold':        NIKKE_BG_BASE + 'nikke-bg-colossus-gold.png',
+            'tyrant-crimson':       NIKKE_BG_BASE + 'nikke-bg-tyrant-crimson.png',
+            'behemoth-void':        NIKKE_BG_BASE + 'nikke-bg-behemoth-void.png',
+            'serpent-emerald':      NIKKE_BG_BASE + 'nikke-bg-serpent-emerald.png',
+        };
+
+        let currentBackgroundTheme = 'seamless';
+        // Slot for an in-memory user-uploaded background. Lives only in this page
+        // session — never uploaded anywhere, gone on reload.
+        let customBgDataUrl = null;
+
+        function applyBackgroundUrl(value, url) {
+            const isSeamless = (value === 'seamless');
+            document.querySelectorAll('.seamless-background').forEach((el) => {
+                el.style.backgroundImage = `url('${url}')`;
+                el.style.backgroundRepeat = isSeamless ? 'repeat' : 'no-repeat';
+                el.style.backgroundSize  = isSeamless ? '512px 512px' : 'cover';
+                el.style.backgroundPosition = isSeamless ? '' : 'center center';
+            });
+            document.body.classList.toggle('bg-themed', !isSeamless);
+        }
+
+        function setBackgroundTheme(value) {
+            const fileInput = document.getElementById('custom-bg-file');
+
+            if (value === 'custom') {
+                currentBackgroundTheme = 'custom';
+                if (fileInput) fileInput.style.display = 'block';
+                if (customBgDataUrl) {
+                    applyBackgroundUrl('custom', customBgDataUrl);
+                    console.log('🎨 Background theme → custom (cached)');
+                } else {
+                    // No file picked yet — open the picker. The actual apply
+                    // happens in loadCustomBackgroundFile() when the user picks.
+                    if (fileInput) fileInput.click();
+                    console.log('🎨 Background theme → custom (awaiting file pick)');
+                }
+                return;
+            }
+
+            if (!BG_URLS[value]) {
+                console.warn('Unknown background theme:', value, '— ignoring');
+                return;
+            }
+            currentBackgroundTheme = value;
+            if (fileInput) fileInput.style.display = 'none';
+            applyBackgroundUrl(value, BG_URLS[value]);
+            console.log(`🎨 Background theme → ${value}`);
+        }
+
+        function loadCustomBackgroundFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                customBgDataUrl = reader.result;
+                currentBackgroundTheme = 'custom';
+                applyBackgroundUrl('custom', customBgDataUrl);
+                console.log(`🎨 Custom background loaded (${file.name}, ${file.size} bytes)`);
+            };
+            reader.onerror = () => {
+                console.warn('⚠️ Failed to read custom background file');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Expose for the inline onchange handlers.
+        window.setBackgroundTheme = setBackgroundTheme;
+        window.loadCustomBackgroundFile = loadCustomBackgroundFile;
+        // ----------------------------------------------------------------
+
+        // ---- Warning-screen foreground system (canvas-rendered) ---------
+        // Draw routine ported from skuqre.github.io's NIKKE Boss Warning Generator.
+        // Adapted: two banners (top + bottom mirror), corruption-magenta palette
+        // via hue-rotate filter on asset PNGs, no background-image upload.
+
+        const WARNING_DEFAULTS = Object.freeze({
+            enabled:      false,
+            topBanner:    'EXTREME DANGER',
+            bossName:     'CELESTE AI',
+            bottomBanner: 'CORRUPTION ACTIVE',
+            colorTheme:   'magenta',
+        });
+
+        const warningState = { ...WARNING_DEFAULTS };
+
+        // Color themes — each entry defines the hue-rotate filter applied to
+        // asset PNGs (red→target hue) and the literal text color used for fillText.
+        const WARNING_COLOR_THEMES = Object.freeze({
+            magenta:  { filter: 'hue-rotate(295deg) saturate(1.15)', text: '#ff82d9' },
+            violet:   { filter: 'hue-rotate(245deg) saturate(1.05)', text: '#b08aff' },
+            crimson:  { filter: 'hue-rotate(330deg) saturate(1.20)', text: '#ff5f8f' },
+            cyan:     { filter: 'hue-rotate(180deg) saturate(1.10)', text: '#7ef0ff' },
+            gold:     { filter: 'hue-rotate(35deg)  saturate(1.05)', text: '#ffe2a2' },
+            emerald:  { filter: 'hue-rotate(85deg)  saturate(1.05)', text: '#92ffc0' },
+            red:      { filter: 'none',                              text: '#ff5050' },
+        });
+
+        // Asset URLs (mirrored to R2 to satisfy CSP img-src + font-src).
+        // Originals from skuqre.github.io/nikke-font-generator — credit there.
+        const WARNING_ASSET_BASE = 'https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/warning';
+        const WARNING_ASSET_URLS = {
+            hexbackdrop: WARNING_ASSET_BASE + '/hexbackdrop.png',
+            row:         WARNING_ASSET_BASE + '/row.png',
+            row2:        WARNING_ASSET_BASE + '/row2.png',
+            square:      WARNING_ASSET_BASE + '/square.png',
+            bossicon:    WARNING_ASSET_BASE + '/bossicon.png',
+        };
+        const WARNING_FONT_URLS = {
+            VOLT: WARNING_ASSET_BASE + '/Voltec.ttf',
+            ABOL: WARNING_ASSET_BASE + '/AbolitionTest-Regular.ttf',
+        };
+
+        // Black drop-shadow is constant across all themes.
+        const WARNING_TEXT_SHADOW = '#000000';
+
+        function getActiveWarningTheme() {
+            return WARNING_COLOR_THEMES[warningState.colorTheme] ?? WARNING_COLOR_THEMES.magenta;
+        }
+
+        const warningImages = {};
+        let warningAssetsReady = false;
+
+        function loadWarningAssets() {
+            const imgPromises = Object.entries(WARNING_ASSET_URLS).map(([key, url]) => {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.crossOrigin = 'anonymous';
+                    img.onload  = () => { warningImages[key] = img; resolve(); };
+                    img.onerror = () => { console.warn('⚠️ Warning asset failed to load:', key, url); resolve(); };
+                    img.src = url;
+                });
+            });
+            const fontPromises = Object.entries(WARNING_FONT_URLS).map(async ([family, url]) => {
+                try {
+                    const ff = new FontFace(family, `url('${url}')`);
+                    await ff.load();
+                    document.fonts.add(ff);
+                } catch (e) {
+                    console.warn('⚠️ Warning font failed to load:', family, e);
+                }
+            });
+            return Promise.all([...imgPromises, ...fontPromises]);
+        }
+
+        // Kick off asset loading at script init; render once when ready.
+        loadWarningAssets().then(() => {
+            warningAssetsReady = true;
+            drawWarningCanvas();
+            console.log('✅ Warning-screen assets loaded');
+        });
+
+        // Draws one banner in LOCAL coordinates, centered at (0, 0) on the y-axis.
+        // Caller is responsible for translating + rotating the context so the
+        // banner ends up at the right place on the page (we use this to cross
+        // two banners at +45° / -45° around the skull emblem).
+        // BAND_HALF spans far enough to cover the canvas diagonal after rotation.
+        const WARNING_BAND_HALF = 1500;
+
+        function drawWarningBanner(ctx, marqueeText) {
+            const hex = warningImages.hexbackdrop;
+            const row = warningImages.row;
+            const row2 = warningImages.row2;
+            const start = -WARNING_BAND_HALF;
+            const end   =  WARNING_BAND_HALF;
+            const theme = getActiveWarningTheme();
+
+            // Hex backdrop (tiled along the banner's length, alpha 0.5, themed hue-shift).
+            if (hex) {
+                ctx.save();
+                ctx.filter = theme.filter;
+                ctx.globalAlpha = 0.5;
+                let x = start;
+                while (x < end) {
+                    ctx.drawImage(hex, x, -hex.height / 2);
+                    x += hex.width;
+                }
+                ctx.restore();
+            }
+
+            // Bottom edge tick-strip (row.png).
+            if (row) {
+                ctx.save();
+                ctx.filter = theme.filter;
+                let x = start + 50;
+                while (x < end) {
+                    ctx.drawImage(row, x, 29);
+                    x += row.width;
+                }
+                ctx.restore();
+            }
+
+            // Top edge tick-strip (row2.png).
+            if (row2) {
+                ctx.save();
+                ctx.filter = theme.filter;
+                let x = start + 75;
+                while (x < end) {
+                    ctx.drawImage(row2, x, -29 - row2.height);
+                    x += row2.width;
+                }
+                ctx.restore();
+            }
+
+            // Marquee text — black shadow + themed color on top, repeating along the banner.
+            ctx.save();
+            ctx.font = '45px ABOL';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'middle';
+            const stepWidth = ctx.measureText(marqueeText).width + 115;
+            let mx = start + 100;
+            while (mx < end) {
+                ctx.globalAlpha = 0.5;
+                ctx.fillStyle = WARNING_TEXT_SHADOW;
+                ctx.fillText(marqueeText, mx + 2, 1);
+                ctx.globalAlpha = 1;
+                ctx.fillStyle = theme.text;
+                ctx.fillText(marqueeText, mx, -1);
+                mx += stepWidth;
+            }
+            ctx.restore();
+        }
+
+        function drawWarningCanvas() {
+            const canvas = document.getElementById('warning-overlay-canvas');
+            if (!canvas || !warningAssetsReady) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const t      = canvas.height / 1080;
+            const skullX = canvas.width / 2;
+            const skullY = 822 * t;
+            // Cross angle from horizontal — tune here. ±20° gives a shallow X
+            // with banners running mostly horizontal across the canvas.
+            const CROSS_ANGLE = (20 * Math.PI) / 180;
+
+            // Banner 1: rotated +CROSS_ANGLE clockwise (lower-left → upper-right tilt).
+            // ctx.scale(t,t) so banner thickness, hex tiles, and text scale with canvas
+            // height — otherwise non-16:9 ratios show a thin 1080-sized banner stretched
+            // across a taller canvas.
+            ctx.save();
+            ctx.translate(skullX, skullY);
+            ctx.rotate(CROSS_ANGLE);
+            ctx.scale(t, t);
+            drawWarningBanner(ctx, warningState.bottomBanner);
+            ctx.restore();
+
+            // Banner 2: rotated -CROSS_ANGLE counter-clockwise (upper-left → lower-right tilt).
+            ctx.save();
+            ctx.translate(skullX, skullY);
+            ctx.rotate(-CROSS_ANGLE);
+            ctx.scale(t, t);
+            drawWarningBanner(ctx, warningState.topBanner);
+            ctx.restore();
+
+            // Diamond emblem + boss icon — drawn AFTER the banners so they sit on top
+            // of the X intersection. No rotation.
+            const theme = getActiveWarningTheme();
+            const square = warningImages.square;
+            if (square) {
+                ctx.save();
+                ctx.filter = theme.filter;
+                ctx.drawImage(square, skullX - square.width / 2, skullY - square.height / 2);
+                ctx.restore();
+            }
+            const bossicon = warningImages.bossicon;
+            if (bossicon) {
+                ctx.save();
+                ctx.filter = theme.filter;
+                ctx.drawImage(bossicon, skullX - 75, skullY - 80, 150, 160);
+                ctx.restore();
+            }
+
+            // Boss name — rotated -8°, centered horizontally, below the skull.
+            ctx.save();
+            ctx.translate(canvas.width / 2 - 8, canvas.height / 2 + 357 * t);
+            ctx.rotate(-0.139626);
+            ctx.font = '117px VOLT';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            ctx.fillStyle = WARNING_TEXT_SHADOW;
+            ctx.globalAlpha = 0.4;
+            ctx.fillText(warningState.bossName, 4, 4);
+            ctx.globalAlpha = 1;
+            ctx.fillStyle = theme.text;
+            ctx.fillText(warningState.bossName, 0, 0);
+            ctx.restore();
+        }
+
+        function setWarningField(fieldKey, value) {
+            if (!(fieldKey in WARNING_DEFAULTS)) {
+                console.warn('Unknown warning field:', fieldKey, '— ignoring');
+                return;
+            }
+            warningState[fieldKey] = value;
+            drawWarningCanvas();
+            saveState();
+        }
+
+        function setWarningEnabled(enabled) {
+            warningState.enabled = !!enabled;
+            const canvas = document.getElementById('warning-overlay-canvas');
+            const subPanel = document.getElementById('warning-controls-section');
+            const checkbox = document.getElementById('warning-enabled-checkbox');
+            if (canvas) canvas.classList.toggle('active', warningState.enabled);
+            if (subPanel) subPanel.style.display = warningState.enabled ? 'block' : 'none';
+            if (checkbox) checkbox.checked = warningState.enabled;
+            if (warningState.enabled) drawWarningCanvas();
+            saveState();
+            console.log(`⚠️ Warning overlay ${warningState.enabled ? 'enabled' : 'disabled'}`);
+        }
+
+        function setWarningColorTheme(themeKey) {
+            if (!WARNING_COLOR_THEMES[themeKey]) {
+                console.warn('Unknown warning color theme:', themeKey, '— ignoring');
+                return;
+            }
+            warningState.colorTheme = themeKey;
+            const select = document.getElementById('warning-color-select');
+            if (select && select.value !== themeKey) select.value = themeKey;
+            drawWarningCanvas();
+            saveState();
+            console.log(`🎨 Warning color theme → ${themeKey}`);
+        }
+
+        function resetWarningFields() {
+            // Preserve current enabled state on reset; only reset text + color.
+            const wasEnabled = warningState.enabled;
+            for (const key of Object.keys(WARNING_DEFAULTS)) {
+                warningState[key] = WARNING_DEFAULTS[key];
+            }
+            warningState.enabled = wasEnabled;
+            // Sync inputs back to defaults.
+            const inputs = {
+                topBanner:    document.getElementById('warning-top-input'),
+                bossName:     document.getElementById('warning-boss-input'),
+                bottomBanner: document.getElementById('warning-bottom-input'),
+            };
+            for (const [key, input] of Object.entries(inputs)) {
+                if (input) input.value = WARNING_DEFAULTS[key];
+            }
+            const colorSelect = document.getElementById('warning-color-select');
+            if (colorSelect) colorSelect.value = WARNING_DEFAULTS.colorTheme;
+            drawWarningCanvas();
+            saveState();
+            console.log('🔄 Warning fields reset to defaults');
+        }
+
+        // Expose for inline oninput / onclick / onchange handlers.
+        window.setWarningField      = setWarningField;
+        window.setWarningEnabled    = setWarningEnabled;
+        window.setWarningColorTheme = setWarningColorTheme;
+        window.resetWarningFields   = resetWarningFields;
+        window.drawWarningCanvas    = drawWarningCanvas;
+        // -----------------------------------------------------------------
+
+        // ---- Lewd Frame overlay (rounded magenta/purple border + phrases) ----
+        // State + setters live here so they can saveState/loadState alongside
+        // warningState. Drawing logic lives in ./js/lewd-frame.js so it stays
+        // a pure module that can be reused.
+
+        const lewdFrameState = {
+            ...LEWD_FRAME_DEFAULTS,
+            phrases: [], // [{side, t, text}] — populated on enable / shuffle / nsfw / count change
+        };
+
+        function rollLewdFramePhrases() {
+            return pickLewdFramePhrases(lewdFrameState.nsfw);
+        }
+
+        function drawLewdFrameCanvas() {
+            const canvas = document.getElementById('lewd-frame-canvas');
+            drawLewdFrame(canvas, lewdFrameState);
+        }
+
+        function setLewdFrameEnabled(enabled) {
+            lewdFrameState.enabled = !!enabled;
+            const canvas   = document.getElementById('lewd-frame-canvas');
+            const subPanel = document.getElementById('lewd-frame-controls-section');
+            const checkbox = document.getElementById('lewd-frame-enabled-checkbox');
+            if (canvas)   canvas.classList.toggle('active', lewdFrameState.enabled);
+            if (subPanel) subPanel.style.display = lewdFrameState.enabled ? 'block' : 'none';
+            if (checkbox) checkbox.checked = lewdFrameState.enabled;
+            // Re-roll phrases on first enable so the user gets fresh strings.
+            if (lewdFrameState.enabled && lewdFrameState.phrases.length === 0) {
+                lewdFrameState.phrases = rollLewdFramePhrases();
+            }
+            drawLewdFrameCanvas();
+            saveState();
+            console.log(`💜 Lewd frame ${lewdFrameState.enabled ? 'enabled' : 'disabled'}`);
+        }
+
+        function setLewdFrameNsfw(nsfw) {
+            lewdFrameState.nsfw = !!nsfw;
+            // Switching pool re-rolls so the user sees the new vibe immediately.
+            lewdFrameState.phrases = rollLewdFramePhrases();
+            const checkbox = document.getElementById('lewd-frame-nsfw-checkbox');
+            if (checkbox) checkbox.checked = lewdFrameState.nsfw;
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function setLewdFrameShowPhrases(show) {
+            lewdFrameState.showPhrases = !!show;
+            const checkbox = document.getElementById('lewd-frame-show-phrases-checkbox');
+            if (checkbox) checkbox.checked = lewdFrameState.showPhrases;
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function setLewdFrameGlow(glow) {
+            lewdFrameState.glow = !!glow;
+            const checkbox = document.getElementById('lewd-frame-glow-checkbox');
+            if (checkbox) checkbox.checked = lewdFrameState.glow;
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function setLewdFrameColorPreset(presetKey) {
+            if (!LEWD_FRAME_COLOR_PRESETS[presetKey]) {
+                console.warn('Unknown lewd-frame color preset:', presetKey, '— ignoring');
+                return;
+            }
+            lewdFrameState.colorPreset = presetKey;
+            const select = document.getElementById('lewd-frame-color-select');
+            if (select && select.value !== presetKey) select.value = presetKey;
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function setLewdFrameFontSize(value) {
+            const n = parseInt(value, 10);
+            if (!Number.isFinite(n)) return;
+            lewdFrameState.fontSize = n;
+            const display = document.getElementById('lewd-frame-fontsize-display');
+            if (display) display.textContent = String(n);
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function setLewdFrameCornerRadius(value) {
+            const n = parseInt(value, 10);
+            if (!Number.isFinite(n)) return;
+            lewdFrameState.cornerRadius = n;
+            const display = document.getElementById('lewd-frame-radius-display');
+            if (display) display.textContent = String(n);
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function setLewdFrameInset(value) {
+            const n = parseInt(value, 10);
+            if (!Number.isFinite(n)) return;
+            lewdFrameState.inset = n;
+            const display = document.getElementById('lewd-frame-inset-display');
+            if (display) display.textContent = String(n);
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        function shuffleLewdFramePhrases() {
+            lewdFrameState.phrases = rollLewdFramePhrases();
+            drawLewdFrameCanvas();
+            saveState();
+            console.log(`🎲 Lewd frame phrases re-rolled (${lewdFrameState.phrases.length})`);
+        }
+
+        function resetLewdFrameFields() {
+            const wasEnabled = lewdFrameState.enabled;
+            for (const key of Object.keys(LEWD_FRAME_DEFAULTS)) {
+                lewdFrameState[key] = LEWD_FRAME_DEFAULTS[key];
+            }
+            lewdFrameState.enabled = wasEnabled;
+            lewdFrameState.phrases = rollLewdFramePhrases();
+            // Sync inputs back to defaults.
+            const nsfwCb     = document.getElementById('lewd-frame-nsfw-checkbox');
+            const showCb     = document.getElementById('lewd-frame-show-phrases-checkbox');
+            const glowCb     = document.getElementById('lewd-frame-glow-checkbox');
+            const colorSel   = document.getElementById('lewd-frame-color-select');
+            const fontRange  = document.getElementById('lewd-frame-fontsize-slider');
+            const radiusRange= document.getElementById('lewd-frame-radius-slider');
+            const insetRange = document.getElementById('lewd-frame-inset-slider');
+            if (nsfwCb)      nsfwCb.checked      = LEWD_FRAME_DEFAULTS.nsfw;
+            if (showCb)      showCb.checked      = LEWD_FRAME_DEFAULTS.showPhrases;
+            if (glowCb)      glowCb.checked      = LEWD_FRAME_DEFAULTS.glow;
+            if (colorSel)    colorSel.value      = LEWD_FRAME_DEFAULTS.colorPreset;
+            if (fontRange)   fontRange.value     = String(LEWD_FRAME_DEFAULTS.fontSize);
+            if (radiusRange) radiusRange.value   = String(LEWD_FRAME_DEFAULTS.cornerRadius);
+            if (insetRange)  insetRange.value    = String(LEWD_FRAME_DEFAULTS.inset);
+            const fDisp = document.getElementById('lewd-frame-fontsize-display');
+            const rDisp = document.getElementById('lewd-frame-radius-display');
+            const iDisp = document.getElementById('lewd-frame-inset-display');
+            if (fDisp) fDisp.textContent = String(LEWD_FRAME_DEFAULTS.fontSize);
+            if (rDisp) rDisp.textContent = String(LEWD_FRAME_DEFAULTS.cornerRadius);
+            if (iDisp) iDisp.textContent = String(LEWD_FRAME_DEFAULTS.inset);
+            drawLewdFrameCanvas();
+            saveState();
+        }
+
+        // Expose for inline handlers.
+        window.setLewdFrameEnabled       = setLewdFrameEnabled;
+        window.setLewdFrameNsfw          = setLewdFrameNsfw;
+        window.setLewdFrameShowPhrases   = setLewdFrameShowPhrases;
+        window.setLewdFrameGlow          = setLewdFrameGlow;
+        window.setLewdFrameColorPreset   = setLewdFrameColorPreset;
+        window.setLewdFrameFontSize      = setLewdFrameFontSize;
+        window.setLewdFrameCornerRadius  = setLewdFrameCornerRadius;
+        window.setLewdFrameInset         = setLewdFrameInset;
+        window.shuffleLewdFramePhrases   = shuffleLewdFramePhrases;
+        window.resetLewdFrameFields      = resetLewdFrameFields;
+        window.drawLewdFrameCanvas       = drawLewdFrameCanvas;
+        // -----------------------------------------------------------------
+
+        // Slot for an in-memory user-uploaded character image. Same lifecycle as
+        // customBgDataUrl — never uploaded, gone on reload.
+        let customCharacterDataUrl = null;
+
+        /**
+         * Sets the character image by filename
+         * @param {string} filename - Filename from CHARACTER_IMAGES array, '__VIDEO__', or '__CUSTOM__'
+         */
+        function setCharacterImage(filename) {
+            const celesteImg = document.getElementById('celeste-image');
+            const celesteCanvas = document.getElementById('celeste-canvas');
+            const selectElement = document.getElementById('character-select');
+            const customFileInput = document.getElementById('custom-character-file');
+
+            // Handle video mode
+            if (filename === '__VIDEO__') {
+                // Update dropdown selection
+                if (selectElement && selectElement.value !== '__VIDEO__') {
+                    selectElement.value = '__VIDEO__';
+                }
+                if (customFileInput) customFileInput.style.display = 'none';
+
+                // Start video playback with chroma key processing
+                toggleCelesteAnimation(true);
+
+                console.log('🎬 Switched to video mode (Celeste Legs Animation)');
+                saveState();
+                return;
+            }
+
+            // Handle custom-upload mode
+            if (filename === '__CUSTOM__') {
+                if (selectElement && selectElement.value !== '__CUSTOM__') {
+                    selectElement.value = '__CUSTOM__';
+                }
+                if (customFileInput) customFileInput.style.display = 'block';
+
+                // Show static image element, hide video canvas
+                celesteImg.style.display = 'block';
+                celesteCanvas.style.display = 'none';
+                celesteImg.style.bottom = '0';
+
+                if (customCharacterDataUrl) {
+                    celesteImg.src = customCharacterDataUrl;
+                    console.log('📁 Switched to custom character (cached)');
+                    if (components.flowParticles) components.flowParticles.updateCharacterBounds();
+                    saveState();
+                } else if (customFileInput) {
+                    customFileInput.click();
+                    console.log('📁 Awaiting custom character file pick');
+                }
+                return;
+            }
+
+            // Validate filename against CHARACTER_IMAGES array
+            const validFilename = validateCharacterImage(filename);
+
+            // Construct full S3 URL
+            const imageURL = CHARACTER_BASE_URL + validFilename;
+
+            // Show static image, hide video canvas
+            celesteImg.style.display = 'block';
+            celesteCanvas.style.display = 'none';
+            if (customFileInput) customFileInput.style.display = 'none';
+
+            // Reset image position to bottom (video Y positioning doesn't apply to character images)
+            celesteImg.style.bottom = '0';
+
+            // Update static Celeste image
+            celesteImg.src = imageURL;
+
+            // Handle image load success
+            celesteImg.onload = () => {
+                console.log(`🖼️ Character image loaded successfully: ${validFilename}`);
+            };
+
+            // Handle image load failure
+            celesteImg.onerror = () => {
+                console.error(`❌ Failed to load character: ${validFilename}`);
+
+                // Construct fallback URL (default character)
+                const fallbackURL = CHARACTER_BASE_URL + DEFAULT_CHARACTER_IMAGE;
+
+                // Prevent infinite loop if default also fails
+                if (celesteImg.src !== fallbackURL) {
+                    console.log('🔄 Falling back to default character');
+                    celesteImg.src = fallbackURL;
+                } else {
+                    console.error('❌ Default character also failed to load - check S3 configuration');
+                }
+            };
+
+            // Update dropdown selection (in case called from console)
+            if (selectElement && selectElement.value !== validFilename) {
+                selectElement.value = validFilename;
+            }
+
+            console.log(`✅ Character image set to: ${validFilename}`);
+
+            // Update flow particles character bounds
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            // Auto-save state to localStorage and URL
+            saveState();
+        }
+
+        function loadCustomCharacterFile(file) {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = () => {
+                customCharacterDataUrl = reader.result;
+                setCharacterImage('__CUSTOM__');
+                console.log(`📁 Custom character loaded (${file.name}, ${file.size} bytes)`);
+            };
+            reader.onerror = () => {
+                console.warn('⚠️ Failed to read custom character file');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Expose to window for console access
+        window.setCharacterImage = setCharacterImage;
+        window.loadCustomCharacterFile = loadCustomCharacterFile;
+
+        /**
+         * Sets the character image size as percentage of canvas height
+         * @param {number} percent - Size percentage (50-300)
+         */
+        function setCharacterSize(percent) {
+            if (percent < CHARACTER_SIZE_MIN || percent > CHARACTER_SIZE_MAX) {
+                console.warn(`⚠️ Size must be between ${CHARACTER_SIZE_MIN}% and ${CHARACTER_SIZE_MAX}%`);
+                return;
+            }
+
+            const celesteImg = document.getElementById('celeste-image');
+            const celesteCanvas = document.getElementById('celeste-canvas');
+            const { height: canvasH } = getCanvasDimensions();
+            const newHeight = (canvasH * percent) / 100;
+
+            // Apply to both static image and video canvas
+            celesteImg.style.height = `${newHeight}px`;
+            if (celesteCanvas) celesteCanvas.style.height = `${newHeight}px`;
+
+            // Update slider and label
+            const slider = document.getElementById('char-size-slider');
+            const label = document.getElementById('char-size-label');
+            if (slider) slider.value = percent;
+            if (label) label.textContent = `${percent}%`;
+
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            console.log(`✅ Character size set to ${percent}% (${newHeight}px)`);
+            saveState();
+        }
+
+        window.setCharacterSize = setCharacterSize;
+
+        /**
+         * Sets the character image Y offset as percentage of canvas height
+         * @param {number} percent - Y offset percentage (-50 to 50, negative = up, positive = down)
+         */
+        function setCharacterY(percent) {
+            if (percent < CHARACTER_Y_MIN || percent > CHARACTER_Y_MAX) {
+                console.warn(`⚠️ Y offset must be between ${CHARACTER_Y_MIN}% and ${CHARACTER_Y_MAX}%`);
+                return;
+            }
+
+            const celesteImg = document.getElementById('celeste-image');
+            const celesteCanvas = document.getElementById('celeste-canvas');
+            const { height: canvasH } = getCanvasDimensions();
+            const offsetPx = -(canvasH * percent) / 100;
+
+            // Apply to both static image and video canvas
+            celesteImg.style.bottom = `${offsetPx}px`;
+            if (celesteCanvas) celesteCanvas.style.bottom = `${offsetPx}px`;
+
+            // Update slider and label
+            const slider = document.getElementById('char-y-slider');
+            const label = document.getElementById('char-y-label');
+            if (slider) slider.value = percent;
+            if (label) label.textContent = `${percent}%`;
+
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            console.log(`✅ Character Y offset set to ${percent}% (bottom: ${offsetPx}px)`);
+            saveState();
+        }
+
+        window.setCharacterY = setCharacterY;
+
+        /**
+         * Sets the glow color by applying CSS filter
+         * @param {string} colorKey - Color key from GLOW_COLORS object (e.g., 'purple', 'cyan')
+         */
+        function setGlowColor(colorKey) {
+            // Validate color key against GLOW_COLORS object
+            const validColorKey = validateGlowColor(colorKey);
+
+            // Get RGBA color value
+            const rgba = GLOW_COLORS[validColorKey];
+
+            // Construct filter with double drop-shadow for depth
+            const glowFilter = `drop-shadow(0 0 ${GLOW_BLUR_SIZE}px ${rgba}) drop-shadow(0 0 ${GLOW_SPREAD}px ${rgba})`;
+
+            // Apply glow to static Celeste image
+            const celesteImg = document.getElementById('celeste-image');
+            celesteImg.style.filter = glowFilter;
+
+            // Apply glow to video canvas (for animated mode)
+            const celesteCanvas = document.getElementById('celeste-canvas');
+            celesteCanvas.style.filter = glowFilter;
+
+            // Update dropdown selection (in case called from console)
+            const selectElement = document.getElementById('glow-color-select');
+            if (selectElement && selectElement.value !== validColorKey) {
+                selectElement.value = validColorKey;
+            }
+
+            console.log(`✅ Glow color set to: ${validColorKey} (${rgba})`);
+
+            // Update flow particles glow color
+            if (components.flowParticles) {
+                components.flowParticles.setGlowColor(validColorKey);
+            }
+
+            // Auto-save state to localStorage and URL
+            saveState();
+        }
+
+        // Expose to window for console access
+        window.setGlowColor = setGlowColor;
+
+        /**
+         * Sets the layout mode (thumbnail or hero)
+         * @param {string} mode - 'thumbnail' or 'hero'
+         */
+        function setLayoutMode(mode) {
+            const validMode = LAYOUT_MODES.includes(mode) ? mode : DEFAULT_LAYOUT_MODE;
+            const container = document.getElementById('thumbnail-container');
+            const selectElement = document.getElementById('layout-mode-select');
+            const logoBanner = document.getElementById('logo-banner');
+
+            // Clean slate — remove all mode marker classes
+            container.classList.remove('hero-mode', 'iconography-mode');
+
+            if (validMode === 'hero') {
+                container.classList.add('hero-mode');
+                if (logoBanner) {
+                    logoBanner.style.right = '';
+                    logoBanner.style.left = '';
+                    logoBanner.style.transform = '';
+                }
+            } else if (validMode === 'iconography') {
+                // Reuse hero-mode centering rules + add our own marker
+                container.classList.add('hero-mode', 'iconography-mode');
+                if (logoBanner) {
+                    logoBanner.style.right = '';
+                    logoBanner.style.left = '';
+                    logoBanner.style.transform = '';
+                }
+            } else {
+                // thumbnail mode
+                if (logoBanner) {
+                    logoBanner.style.right = '-110px';
+                    logoBanner.style.left = '';
+                    logoBanner.style.transform = '';
+                }
+            }
+
+            // Activate / deactivate the iconography SVG + controls
+            if (components.iconography) {
+                components.iconography.setActive(validMode === 'iconography');
+                if (validMode === 'iconography') {
+                    components.iconography.resize(
+                        parseInt(document.getElementById('thumbnail-container').style.width)  || 1920,
+                        parseInt(document.getElementById('thumbnail-container').style.height) || 1080
+                    );
+                }
+            }
+
+            if (selectElement && selectElement.value !== validMode) {
+                selectElement.value = validMode;
+            }
+
+            console.log(`✅ Layout mode set to: ${validMode}`);
+            saveState();
+        }
+
+        window.setLayoutMode = setLayoutMode;
+
+        /**
+         * Sets the canvas aspect ratio and resizes all layers
+         * @param {string} ratio - Key from ASPECT_RATIOS (e.g., '16:9', '4:5')
+         */
+        function setAspectRatio(ratio) {
+            const validRatio = ASPECT_RATIOS[ratio] ? ratio : DEFAULT_ASPECT_RATIO;
+            const { width, height } = ASPECT_RATIOS[validRatio];
+            const selectElement = document.getElementById('aspect-ratio-select');
+
+            // Update CSS custom properties — cascades to all var(--canvas-w/h) rules
+            document.documentElement.style.setProperty('--canvas-w', `${width}px`);
+            document.documentElement.style.setProperty('--canvas-h', `${height}px`);
+
+            // Update canvas container dimensions
+            const container = document.getElementById('thumbnail-container');
+            container.style.width = `${width}px`;
+            container.style.height = `${height}px`;
+
+            // Update html/body dimensions
+            document.documentElement.style.width = `${width}px`;
+            document.documentElement.style.height = `${height}px`;
+            document.documentElement.style.maxWidth = `${width}px`;
+            document.documentElement.style.maxHeight = `${height}px`;
+            document.body.style.width = `${width}px`;
+            document.body.style.height = `${height}px`;
+            document.body.style.maxWidth = `${width}px`;
+            document.body.style.maxHeight = `${height}px`;
+
+            // Update animated component layers
+            const layers = document.querySelectorAll('#animated-components, .component-layer, #grid-layer, #corrupted-text-layer, #diamond-layer, #flow-particles-layer');
+            layers.forEach(layer => {
+                layer.style.width = `${width}px`;
+                layer.style.height = `${height}px`;
+                layer.style.maxWidth = `${width}px`;
+                layer.style.maxHeight = `${height}px`;
+            });
+
+            // Update seamless background layers
+            const bgLayers = document.querySelectorAll('.seamless-background, .seamless-vignette, .seamless-tint-purple');
+            bgLayers.forEach(layer => {
+                layer.style.width = `${width}px`;
+                layer.style.height = `${height}px`;
+            });
+
+            // Resize grid overlay SVG if it exists
+            if (components.grid && components.grid.element) {
+                components.grid.element.style.width = `${width}px`;
+                components.grid.element.style.height = `${height}px`;
+                components.grid.element.setAttribute('width', String(width));
+                components.grid.element.setAttribute('height', String(height));
+            }
+
+            // Update corrupted text overlay canvas
+            if (components.corruptedText) {
+                components.corruptedText.resize(width, height);
+            }
+
+            // Update flow particles bounds
+            if (components.flowParticles) {
+                components.flowParticles.updateCharacterBounds();
+            }
+
+            // Update iconography SVG composition (full rebuild at new dimensions)
+            if (components.iconography) {
+                components.iconography.resize(width, height);
+            }
+
+            // Resize overlay canvas bitmaps so warning/lewd-frame draw at the
+            // current aspect ratio instead of stretching a fixed 1920×1080 bitmap.
+            const warningCanvas = document.getElementById('warning-overlay-canvas');
+            if (warningCanvas) {
+                warningCanvas.width  = width;
+                warningCanvas.height = height;
+                if (warningState.enabled && warningAssetsReady) drawWarningCanvas();
+            }
+            const lewdCanvas = document.getElementById('lewd-frame-canvas');
+            if (lewdCanvas) {
+                lewdCanvas.width  = width;
+                lewdCanvas.height = height;
+                if (lewdFrameState.enabled) drawLewdFrame(lewdCanvas, lewdFrameState);
+            }
+
+            // Calculate preview scale to fit viewport
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
+            const scaleX = viewportWidth / width;
+            const scaleY = viewportHeight / height;
+            const scale = Math.min(scaleX, scaleY, 1); // Never scale up, only down
+
+            const wrapper = document.getElementById('preview-wrapper');
+            if (wrapper) {
+                wrapper.style.transform = `scale(${scale})`;
+            }
+
+            // Update viewport meta tag
+            const viewportMeta = document.querySelector('meta[name="viewport"]');
+            if (viewportMeta) {
+                viewportMeta.setAttribute('content', `width=${width}, height=${height}`);
+            }
+
+            // Update dropdown
+            if (selectElement && selectElement.value !== validRatio) {
+                selectElement.value = validRatio;
+            }
+
+            console.log(`✅ Aspect ratio set to: ${validRatio} (${width}x${height})`);
+            saveState();
+        }
+
+        window.setAspectRatio = setAspectRatio;
+
+        function toggleAnimations() {
+            animationsPaused = !animationsPaused;
+            if (animationsPaused) {
+                if (components.corruptedText) components.corruptedText.stop();
+                if (components.grid) components.grid.stop();
+                if (components.diamond) components.diamond.stop();
+                if (components.flowParticles) components.flowParticles.stop();
+                console.log('⏸️ Animations paused');
+            } else {
+                if (components.corruptedText) components.corruptedText.play();
+                if (components.grid) components.grid.play();
+                if (components.diamond) components.diamond.play();
+                if (components.flowParticles) components.flowParticles.play();
+                console.log('▶️ Animations resumed');
+            }
+        }
+
+        /**
+         * Toggle flow particles on/off
+         */
+        function toggleFlowParticles(enabled) {
+            if (!components.flowParticles) {
+                console.warn('⚠️ FlowParticles component not initialized');
+                return;
+            }
+
+            CONFIG.flowParticles.enabled = enabled;
+
+            if (enabled) {
+                components.flowParticles.play();
+                console.log('✅ Flow particles enabled');
+            } else {
+                components.flowParticles.stop();
+                console.log('⏸️ Flow particles disabled');
+            }
+
+            saveState();
+        }
+        window.toggleFlowParticles = toggleFlowParticles;
+
+        /**
+         * Set flow particle density (0-100%)
+         */
+        function setFlowDensity(percent) {
+            if (!components.flowParticles) return;
+
+            const density = Math.max(0, Math.min(100, parseInt(percent) || 50));
+            components.flowParticles.setDensity(density);
+            CONFIG.flowParticles.density = density;
+
+            // Update display
+            const valueSpan = document.getElementById('flow-density-value');
+            if (valueSpan) {
+                valueSpan.textContent = `${density}%`;
+            }
+
+            console.log(`✅ Flow density set to: ${density}%`);
+            saveState();
+        }
+        window.setFlowDensity = setFlowDensity;
+
+        /**
+         * Set flow particle speed (0-100%)
+         */
+        function setFlowSpeed(percent) {
+            if (!components.flowParticles) return;
+
+            const speed = Math.max(0, Math.min(100, parseInt(percent) || 50));
+            components.flowParticles.setSpeed(speed);
+            CONFIG.flowParticles.speed = speed;
+
+            // Update display
+            const valueSpan = document.getElementById('flow-speed-value');
+            if (valueSpan) {
+                valueSpan.textContent = `${speed}%`;
+            }
+
+            console.log(`✅ Flow speed set to: ${speed}%`);
+            saveState();
+        }
+        window.setFlowSpeed = setFlowSpeed;
+
+        function applyTextChanges() {
+            const titleInput = document.getElementById('title-input');
+            const subtitleInput = document.getElementById('subtitle-input');
+
+            // Empty input → hide that line. Non-empty → set & show.
+            // setTitle / setSubtitle handle the empty case internally.
+            const titleText = titleInput.value.replace(/\\n/g, '<br>').replace(/<br>/gi, '<br>');
+            setTitle(titleText);
+            setSubtitle(subtitleInput.value);
+
+            console.log('✅ Text changes applied');
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // STATE PERSISTENCE - INPUT VALIDATION
+        // ═══════════════════════════════════════════════════════════════
+
+        // Validation constants
+        const CANVAS_HEIGHT = 1080;
+        const MAX_TITLE_LENGTH = 200;
+        const MAX_SUBTITLE_LENGTH = 100;
+        const ALLOWED_IMAGE_DOMAINS = [
+            's3.whykusanagi.xyz',
+            'whykusanagi.xyz',
+            'i.imgur.com'
+        ];
+
+        // Celeste mode validation
+        const VALID_CELESTE_MODES = ['video', 'static'];
+        const DEFAULT_CELESTE_MODE = 'static';
+
+        // Celeste video positioning constraints
+        const DEFAULT_CELESTE_VIDEO_Y = 0;
+        const CELESTE_VIDEO_Y_MIN = 0;
+        const CELESTE_VIDEO_Y_MAX = 50;
+
+        const DEFAULT_CELESTE_VIDEO_SIZE = 100;
+        const CELESTE_VIDEO_SIZE_MIN = 100;
+        const CELESTE_VIDEO_SIZE_MAX = 1000;
+
+        // Subject positioning constraints
+        const DEFAULT_SUBJECT_SIZE = 100;
+        const SUBJECT_SIZE_MIN = 10;
+        const SUBJECT_SIZE_MAX = 150;
+
+        const DEFAULT_SUBJECT_POSITION = 50;
+        const SUBJECT_POSITION_MIN = 0;
+        const SUBJECT_POSITION_MAX = 100;
+
+        // Flow particles constraints
+        const DEFAULT_FLOW_PARTICLES_ENABLED = false;
+        const FLOW_PARTICLES_DENSITY_MIN = 0;
+        const FLOW_PARTICLES_DENSITY_MAX = 100;
+        const FLOW_PARTICLES_DENSITY_DEFAULT = 50;
+        const FLOW_PARTICLES_SPEED_MIN = 0;
+        const FLOW_PARTICLES_SPEED_MAX = 100;
+        const FLOW_PARTICLES_SPEED_DEFAULT = 50;
+
+        // Character selection constants
+        const CHARACTER_BASE_URL = 'https://s3.whykusanagi.xyz/tools/thumbnail-generator/assets/characters/';
+
+        const CHARACTER_IMAGES = [
+            'Abyssal_Conquest.png',
+            'Abyssal_Conquest2k.png',
+            'bodycon_standing_trans.png',
+            'Celeste_Legs.png',
+            'celeste_demonic_slut_trans.png',
+            'celeste_shimiko_cosplay_upper_trans.png',
+            'celeste_skimpy_pierced_dress_trans.png',
+            'CelesteNinkoroBunny_trans.png',
+            'dongtan_style_trans.png',
+            'dongtan_style_nsfw_trans.png',
+            'doroseggstrans.png',
+            'high_quality_demon_queen_full_trans.png',
+            'lewd_magical_girl_back_detailed.png',
+            'lewd_magical_girl_front_detailed.png',
+            'magia_baiser_cosplay_trans.png',
+            'nurse_celeste_trans.png',
+            'nurse_celeste_nsfw_trans.png',
+            'race_queen_owari_cosplay_trans.png',
+            'recluse_witch_cosplay_trans.png',
+            'sexy_cow_outfit.png',
+            'sexy_kirara_cosplay_trans.png',
+            'skimpy_wedding_outfit_trans.png',
+            'slutty_swimsuit_trans.png',
+            'summer_doro_cosplay_trans.png',
+            'velvet_maid_trans.png',
+            'witch_transparent.png',
+            // Tarot Cards
+            'tarot_cards/bikini_maid_trans.png',
+            'tarot_cards/bodycon_laying_side_trans.png',
+            'tarot_cards/celeste_cow_bikini_trans.png',
+            'tarot_cards/celeste_shimakaze_card_trans.png',
+            'tarot_cards/devil_sister_illustration_trans.png',
+            'tarot_cards/naked_shower_scene_trans.png',
+            'tarot_cards/sacrifical_bride_outfit_trans.png',
+            'tarot_cards/sexmas_bunny_celeste_trans.png',
+            'tarot_cards/sexy_nurse_celeste_trans.png',
+            'tarot_cards/sexy_race_queen_celeste_trans.png',
+            'tarot_cards/shimiko_outfit_celeste_trans.png',
+            'tarot_cards/skimpy_swimsuit_trans.png',
+            'tarot_cards/slave_gear_trans.png',
+            'tarot_cards/slutty_jk_cat_trans.png',
+            'tarot_cards/tentacle_gaming_chair_trans.png',
+            // Headshots (expressions)
+            'headshots/awake.png',
+            'headshots/bust.png',
+            'headshots/cat_face.png',
+            'headshots/consider.png',
+            'headshots/coom.png',
+            'headshots/dame.png',
+            'headshots/disgust.png',
+            'headshots/excited.png',
+            'headshots/gasm.png',
+            'headshots/glare.png',
+            'headshots/heart.png',
+            'headshots/lick.png',
+            'headshots/OxO.png',
+            'headshots/pant.png',
+            'headshots/postgasm.png',
+            'headshots/pout.png',
+            'headshots/shocked.png',
+            'headshots/shy.png',
+            'headshots/sleepy.png',
+            'headshots/teasing.png',
+            'headshots/wow.png',
+            'headshots/yawn.png',
+        ];
+
+        const DEFAULT_CHARACTER_IMAGE = 'Celeste_Legs.png';
+
+        // Glow color constants (corrupted theme palette)
+        const GLOW_COLORS = {
+            purple: 'rgba(139, 92, 246, 0.8)',
+            magenta: 'rgba(236, 72, 153, 0.8)',
+            black: 'rgba(0, 0, 0, 0.8)',
+            cyan: 'rgba(6, 182, 212, 0.8)',
+            yellow: 'rgba(234, 179, 8, 0.8)',
+            red: 'rgba(239, 68, 68, 0.8)'
+        };
+
+        const DEFAULT_GLOW_COLOR = 'purple';
+
+        // Layout mode constants
+        const LAYOUT_MODES = ['thumbnail', 'hero', 'iconography'];
+        const STAR_DENSITY_KEYS = ['low', 'med', 'high'];
+        const ICON_MANDORLA_SHAPES = ['mandorla', 'circle'];
+        const DEFAULT_LAYOUT_MODE = 'thumbnail';
+
+        // Aspect ratio constants
+        const ASPECT_RATIOS = {
+            '16:9':  { width: 1920, height: 1080 },
+            '2:1':   { width: 1920, height: 960  },
+            '1:1':   { width: 1920, height: 1920 },
+            '4:5':   { width: 1920, height: 2400 },
+            '9:16':  { width: 1080, height: 1920 },
+        };
+        const DEFAULT_ASPECT_RATIO = '16:9';
+
+        // Character image size/position constants
+        const DEFAULT_CHARACTER_SIZE = 100;   // percentage
+        const CHARACTER_SIZE_MIN = 50;
+        const CHARACTER_SIZE_MAX = 300;
+        const DEFAULT_CHARACTER_Y = 0;        // percentage offset
+        const CHARACTER_Y_MIN = -50;
+        const CHARACTER_Y_MAX = 50;
+
+        // Glow effect specifications (fixed values matching video glow)
+        const GLOW_BLUR_SIZE = 30;   // px - inner glow radius
+        const GLOW_SPREAD = 60;      // px - outer glow radius
+
+        /**
+         * Sanitizes title input by removing dangerous HTML while allowing <br> tags
+         * @param {string} input - Raw title text from user input
+         * @returns {string} Sanitized title (max 200 chars), empty string if input is falsy
+         */
+        function sanitizeTitle(input) {
+            if (!input) return '';
+
+            return input
+                .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove scripts
+                .replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '') // Remove iframes
+                .replace(/on\w+\s*=/gi, '') // Remove event handlers (onclick, onerror, etc)
+                .replace(/<(?!\/?br\b)[^>]+>/gi, '') // Only allow <br> tags
+                .substring(0, MAX_TITLE_LENGTH); // Max length limit
+        }
+
+        /**
+         * Sanitizes subtitle input by removing HTML angle brackets
+         * @param {string} input - Raw subtitle text from user input
+         * @returns {string} Sanitized subtitle (max 100 chars), empty string if input is falsy
+         */
+        function sanitizeSubtitle(input) {
+            if (!input) return '';
+
+            return input
+                .replace(/[<>]/g, '') // Remove angle brackets
+                .substring(0, MAX_SUBTITLE_LENGTH); // Max length limit
+        }
+
+        /**
+         * Validates image URL against whitelist of trusted domains
+         * @param {string} url - Image URL to validate
+         * @returns {string} Validated URL if safe, empty string if invalid or untrusted
+         */
+        function validateImageURL(url) {
+            if (!url) return '';
+
+            try {
+                const parsed = new URL(url);
+
+                // Whitelist trusted domains only
+                if (!ALLOWED_IMAGE_DOMAINS.includes(parsed.hostname)) {
+                    console.warn('⚠️ Subject URL from untrusted domain blocked:', parsed.hostname);
+                    return '';
+                }
+
+                // Only allow HTTPS
+                if (parsed.protocol !== 'https:') {
+                    console.warn('⚠️ Non-HTTPS subject URL blocked');
+                    return '';
+                }
+
+                return url;
+            } catch (e) {
+                console.warn('⚠️ Invalid subject URL blocked:', url);
+                return '';
+            }
+        }
+
+        /**
+         * Validates numeric value is within specified range
+         * @param {string|number} value - Value to validate
+         * @param {number} min - Minimum allowed value
+         * @param {number} max - Maximum allowed value
+         * @param {number} defaultValue - Fallback value if validation fails
+         * @returns {number} Validated number or defaultValue if out of range/invalid
+         */
+        function validateNumber(value, min, max, defaultValue) {
+            const num = parseFloat(value);
+            if (isNaN(num) || num < min || num > max) {
+                return defaultValue;
+            }
+            return num;
+        }
+
+        /**
+         * Validates character image filename against CHARACTER_IMAGES array
+         * @param {string} filename - Filename to validate (e.g., 'dongtan_style_trans.png') or '__VIDEO__'
+         * @returns {string} Valid filename, '__VIDEO__', or DEFAULT_CHARACTER_IMAGE
+         */
+        function validateCharacterImage(filename) {
+            if (!filename) return DEFAULT_CHARACTER_IMAGE;
+
+            // Allow video mode
+            if (filename === '__VIDEO__') return '__VIDEO__';
+
+            // Check if filename exists in CHARACTER_IMAGES array
+            if (!CHARACTER_IMAGES.includes(filename)) {
+                console.warn('⚠️ Invalid character image:', filename);
+                return DEFAULT_CHARACTER_IMAGE;
+            }
+
+            return filename;
+        }
+
+        /**
+         * Validates glow color key against GLOW_COLORS object
+         * @param {string} colorKey - Color key to validate (e.g., 'purple', 'cyan')
+         * @returns {string} Valid color key or DEFAULT_GLOW_COLOR
+         */
+        function validateGlowColor(colorKey) {
+            if (!colorKey) return DEFAULT_GLOW_COLOR;
+
+            // Check if color exists in GLOW_COLORS object
+            if (!GLOW_COLORS[colorKey]) {
+                console.warn('⚠️ Invalid glow color:', colorKey);
+                return DEFAULT_GLOW_COLOR;
+            }
+
+            return colorKey;
+        }
+
+        // ============================================
+        // STATE PERSISTENCE - URL PARAMETER HANDLING
+        // ============================================
+
+        /**
+         * Parses and validates state from URL query parameters
+         * @returns {Object|null} Validated state object, or null if no parameters present
+         */
+        function parseURLParams() {
+            const params = new URLSearchParams(window.location.search);
+
+            // Return null if no params (will fall back to localStorage)
+            if (params.toString() === '') return null;
+
+            console.log('📥 Loading state from URL parameters');
+
+            return {
+                title: sanitizeTitle(params.get('title') || ''),
+                subtitle: sanitizeSubtitle(params.get('subtitle') || ''),
+                celesteMode: VALID_CELESTE_MODES.includes(params.get('celesteMode'))
+                    ? params.get('celesteMode')
+                    : DEFAULT_CELESTE_MODE,
+                celesteVideoY: validateNumber(params.get('celesteVideoY'), CELESTE_VIDEO_Y_MIN, CELESTE_VIDEO_Y_MAX, DEFAULT_CELESTE_VIDEO_Y),
+                celesteVideoSize: validateNumber(params.get('celesteVideoSize'), CELESTE_VIDEO_SIZE_MIN, CELESTE_VIDEO_SIZE_MAX, DEFAULT_CELESTE_VIDEO_SIZE),
+                subjectUrl: validateImageURL(params.get('subjectUrl') || ''),
+                subjectSize: validateNumber(params.get('subjectSize'), SUBJECT_SIZE_MIN, SUBJECT_SIZE_MAX, DEFAULT_SUBJECT_SIZE),
+                subjectPosition: validateNumber(params.get('subjectPosition'), SUBJECT_POSITION_MIN, SUBJECT_POSITION_MAX, DEFAULT_SUBJECT_POSITION),
+                characterImage: validateCharacterImage(params.get('characterImage') || ''),
+                characterSize: validateNumber(params.get('characterSize'), CHARACTER_SIZE_MIN, CHARACTER_SIZE_MAX, DEFAULT_CHARACTER_SIZE),
+                characterY: validateNumber(params.get('characterY'), CHARACTER_Y_MIN, CHARACTER_Y_MAX, DEFAULT_CHARACTER_Y),
+                glowColor: validateGlowColor(params.get('glowColor') || ''),
+                // Flow particles parameters
+                flowParticlesEnabled: params.get('flowParticlesEnabled') === 'true',
+                flowParticlesDensity: validateNumber(
+                    params.get('flowParticlesDensity'),
+                    FLOW_PARTICLES_DENSITY_MIN,
+                    FLOW_PARTICLES_DENSITY_MAX,
+                    FLOW_PARTICLES_DENSITY_DEFAULT
+                ),
+                flowParticlesSpeed: validateNumber(
+                    params.get('flowParticlesSpeed'),
+                    FLOW_PARTICLES_SPEED_MIN,
+                    FLOW_PARTICLES_SPEED_MAX,
+                    FLOW_PARTICLES_SPEED_DEFAULT
+                ),
+                // Layout and aspect ratio
+                layoutMode: LAYOUT_MODES.includes(params.get('layoutMode'))
+                    ? params.get('layoutMode')
+                    : DEFAULT_LAYOUT_MODE,
+                aspectRatio: ASPECT_RATIOS[params.get('aspectRatio')]
+                    ? params.get('aspectRatio')
+                    : DEFAULT_ASPECT_RATIO,
+                // Iconography
+                iconElements:      params.get('iconElements'),       // comma string or null
+                iconPhrases:       params.get('iconPhrases'),        // "n,n,n" or null
+                iconStarDensity:   params.get('iconStarDensity'),    // 'low'|'med'|'high' or null
+                iconMandorlaShape: params.get('iconMandorlaShape'),  // 'mandorla'|'circle' or null
+                iconLabelTop:      params.get('iconLabelTop'),       // string or null
+                iconLabelBottom:   params.get('iconLabelBottom'),    // string or null
+                iconTextScale:     params.get('iconTextScale'),      // "0.5".."2" or null
+                iconLogoPosition:  params.get('iconLogoPosition'),   // 'center'|'corners' or null
+                iconFitCircle:     params.get('iconFitCircle'),      // '1' or null
+            };
+        }
+
+        // ============================================
+        // STATE PERSISTENCE - READING CURRENT STATE
+        // ============================================
+
+        /**
+         * Reads current character image filename from DOM
+         * @returns {string} Current character filename
+         */
+        function getCurrentCharacterImage() {
+            const celesteImg = document.getElementById('celeste-image');
+            const celesteCanvas = document.getElementById('celeste-canvas');
+
+            // Check if video mode is active (canvas visible, image hidden)
+            const canvasVisible = celesteCanvas && celesteCanvas.style.display !== 'none';
+            const imageHidden = celesteImg && celesteImg.style.display === 'none';
+
+            if (canvasVisible && imageHidden) {
+                return '__VIDEO__';
+            }
+
+            // Extract filename from static image src
+            const src = celesteImg.src || '';
+
+            // Extract filename from full URL
+            // Example: https://s3.whykusanagi.xyz/.../dongtan_style_trans.png -> dongtan_style_trans.png
+            if (src.includes(CHARACTER_BASE_URL)) {
+                const filename = src.replace(CHARACTER_BASE_URL, '');
+                return filename || DEFAULT_CHARACTER_IMAGE;
+            }
+
+            // If src doesn't match expected pattern, return default
+            return DEFAULT_CHARACTER_IMAGE;
+        }
+
+        /**
+         * Reads current glow color key from DOM filter style
+         * @returns {string} Current glow color key
+         */
+        function getCurrentGlowColor() {
+            const celesteImg = document.getElementById('celeste-image');
+            const filter = celesteImg.style.filter || '';
+
+            // Parse RGBA value from filter string
+            // Example: "drop-shadow(0px 0px 30px rgba(6, 182, 212, 0.8)) ..."
+            const rgbaMatch = filter.match(/rgba\(([^)]+)\)/);
+            if (!rgbaMatch) return DEFAULT_GLOW_COLOR;
+
+            const rgba = `rgba(${rgbaMatch[1]})`;
+
+            // Find matching color key in GLOW_COLORS
+            for (const [key, value] of Object.entries(GLOW_COLORS)) {
+                if (value === rgba) {
+                    return key;
+                }
+            }
+
+            // No match found, return default
+            return DEFAULT_GLOW_COLOR;
+        }
+
+        function _iconographyStateField(key) {
+            const s = components.iconography && components.iconography.state;
+            return s ? s[key] : undefined;
+        }
+
+        /**
+         * Reads current thumbnail state from DOM
+         * @returns {Object} Current state object with all settings
+         */
+        function getCurrentState() {
+            // Read title and subtitle from DOM
+            const title = document.getElementById('main-title').innerHTML;
+            const subtitle = document.getElementById('subtitle').textContent;
+
+            // Determine if using video or static mode by checking canvas display
+            const canvas = document.getElementById('celeste-canvas');
+            const celesteMode = canvas.style.display === 'block' ? 'video' : 'static';
+
+            // Read Celeste video Y positioning from canvas bottom style
+            // Converts negative pixels back to percentage (e.g., "-54px" → 5%)
+            const bottomStyle = canvas.style.bottom || '0px';
+            const bottomPx = parseInt(bottomStyle, 10) || 0;
+            const celesteVideoY = Math.abs(bottomPx / CANVAS_HEIGHT * 100);
+
+            // Read Celeste video size from canvas height style
+            // Converts pixels to percentage of base 1080px (e.g., "2376px" → 220%)
+            const heightStyle = canvas.style.height || '1080px';
+            const heightPx = parseInt(heightStyle, 10) || CANVAS_HEIGHT;
+            const celesteVideoSize = Math.round((heightPx / CANVAS_HEIGHT) * 100);
+
+            // Read subject settings
+            const subjectImg = document.getElementById('subject-image');
+            const subjectUrl = subjectImg.classList.contains('visible') && subjectImg.src
+                ? subjectImg.src
+                : '';
+
+            // Parse subject size from maxHeight style (e.g., "70%" → 70)
+            const subjectSize = subjectUrl
+                ? parseInt(subjectImg.style.maxHeight, 10) || 100
+                : 100;
+
+            // Parse subject position from left style (e.g., "50%" → 50)
+            const subjectPosition = subjectUrl
+                ? parseInt(subjectImg.style.left, 10) || 50
+                : 50;
+
+            return {
+                title,
+                subtitle,
+                celesteMode,
+                celesteVideoY: Math.round(celesteVideoY * 10) / 10, // Round to 1 decimal
+                celesteVideoSize,
+                subjectUrl,
+                subjectSize,
+                subjectPosition,
+                characterImage: getCurrentCharacterImage(),
+                warningScreen: { ...warningState },
+                lewdFrame: {
+                    ...lewdFrameState,
+                    phrases: lewdFrameState.phrases.slice(),
+                },
+                characterSize: parseInt(document.getElementById('char-size-slider')?.value) || DEFAULT_CHARACTER_SIZE,
+                characterY: parseInt(document.getElementById('char-y-slider')?.value) || DEFAULT_CHARACTER_Y,
+                glowColor: getCurrentGlowColor(),
+                // Flow particles state
+                flowParticlesEnabled: CONFIG.flowParticles.enabled,
+                flowParticlesDensity: CONFIG.flowParticles.density,
+                flowParticlesSpeed: CONFIG.flowParticles.speed,
+                // Layout and aspect ratio state
+                layoutMode: (function() {
+                    const cl = document.getElementById('thumbnail-container').classList;
+                    if (cl.contains('iconography-mode')) return 'iconography';
+                    if (cl.contains('hero-mode')) return 'hero';
+                    return 'thumbnail';
+                })(),
+                aspectRatio: document.getElementById('aspect-ratio-select')?.value || DEFAULT_ASPECT_RATIO,
+                // Iconography state
+                iconElements:      _iconographyStateField('elements'),
+                iconPhrases:       _iconographyStateField('phraseIdx'),
+                iconStarDensity:   _iconographyStateField('starDensity'),
+                iconMandorlaShape: _iconographyStateField('mandorlaShape'),
+                iconLabelTop:      _iconographyStateField('labelTop'),
+                iconLabelBottom:   _iconographyStateField('labelBottom'),
+                iconTextScale:     _iconographyStateField('textScale'),
+                iconLogoPosition:  _iconographyStateField('logoPosition'),
+                iconFitCircle:     _iconographyStateField('fitCircle'),
+            };
+        }
+
+        /**
+         * Updates browser address bar with current state using history.replaceState
+         * @param {Object} state - State object to encode in URL
+         */
+        function updateURL(state) {
+            const params = new URLSearchParams();
+
+            // Only add non-default/non-empty values to keep URL clean
+            if (state.title) params.set('title', state.title);
+            if (state.subtitle) params.set('subtitle', state.subtitle);
+            if (state.celesteMode && state.celesteMode !== DEFAULT_CELESTE_MODE) params.set('celesteMode', state.celesteMode);
+            if (state.celesteVideoY) params.set('celesteVideoY', state.celesteVideoY);
+            if (state.celesteVideoSize && state.celesteVideoSize !== DEFAULT_CELESTE_VIDEO_SIZE) params.set('celesteVideoSize', state.celesteVideoSize);
+            if (state.subjectUrl) {
+                params.set('subjectUrl', state.subjectUrl);
+                if (state.subjectSize !== DEFAULT_SUBJECT_SIZE) params.set('subjectSize', state.subjectSize);
+                if (state.subjectPosition !== DEFAULT_SUBJECT_POSITION) params.set('subjectPosition', state.subjectPosition);
+            }
+
+            // Character selection parameters (skip defaults to keep URL clean)
+            if (state.characterImage && state.characterImage !== DEFAULT_CHARACTER_IMAGE) {
+                params.set('characterImage', state.characterImage);
+            }
+            if (state.characterSize && state.characterSize !== DEFAULT_CHARACTER_SIZE) {
+                params.set('characterSize', state.characterSize);
+            }
+            if (state.characterY && state.characterY !== DEFAULT_CHARACTER_Y) {
+                params.set('characterY', state.characterY);
+            }
+            if (state.glowColor && state.glowColor !== DEFAULT_GLOW_COLOR) {
+                params.set('glowColor', state.glowColor);
+            }
+
+            // Flow particles (skip defaults to keep URL clean)
+            if (state.flowParticlesEnabled !== undefined && state.flowParticlesEnabled !== DEFAULT_FLOW_PARTICLES_ENABLED) {
+                params.set('flowParticlesEnabled', state.flowParticlesEnabled);
+            }
+            if (state.flowParticlesDensity !== undefined && state.flowParticlesDensity !== FLOW_PARTICLES_DENSITY_DEFAULT) {
+                params.set('flowParticlesDensity', state.flowParticlesDensity);
+            }
+            if (state.flowParticlesSpeed !== undefined && state.flowParticlesSpeed !== FLOW_PARTICLES_SPEED_DEFAULT) {
+                params.set('flowParticlesSpeed', state.flowParticlesSpeed);
+            }
+
+            // Layout and aspect ratio (skip defaults to keep URL clean)
+            if (state.layoutMode && state.layoutMode !== DEFAULT_LAYOUT_MODE) {
+                params.set('layoutMode', state.layoutMode);
+            }
+            if (state.aspectRatio && state.aspectRatio !== DEFAULT_ASPECT_RATIO) {
+                params.set('aspectRatio', state.aspectRatio);
+            }
+
+            // Iconography (skip defaults to keep URL clean)
+            if (state.iconElements) {
+                const enabled = Object.entries(state.iconElements)
+                    .filter(([, v]) => v).map(([k]) => k).join(',');
+                const ICON_ELEMENTS_DEFAULT = 'frame,mandorla,arcs,rings,text,stars';
+                if (enabled !== ICON_ELEMENTS_DEFAULT) params.set('iconElements', enabled);
+            }
+            if (state.iconPhrases) {
+                const idxs = `${state.iconPhrases.outer | 0},${state.iconPhrases.middle | 0},${state.iconPhrases.inner | 0}`;
+                if (idxs !== '0,0,0') params.set('iconPhrases', idxs);
+            }
+            if (state.iconStarDensity && state.iconStarDensity !== 'med') {
+                params.set('iconStarDensity', state.iconStarDensity);
+            }
+            if (state.iconMandorlaShape && state.iconMandorlaShape !== 'mandorla') {
+                params.set('iconMandorlaShape', state.iconMandorlaShape);
+            }
+            if (state.iconLabelTop && state.iconLabelTop !== '⚠ CELESTE ⚠') {
+                params.set('iconLabelTop', state.iconLabelTop);
+            }
+            if (state.iconLabelBottom && state.iconLabelBottom !== 'CORRUPTED.ARCHIVE') {
+                params.set('iconLabelBottom', state.iconLabelBottom);
+            }
+            if (state.iconTextScale !== undefined && state.iconTextScale !== null) {
+                const v = Number(state.iconTextScale);
+                if (!Number.isNaN(v) && v !== 2) params.set('iconTextScale', v.toFixed(1));
+            }
+            if (state.iconLogoPosition && state.iconLogoPosition !== 'center') {
+                params.set('iconLogoPosition', state.iconLogoPosition);
+            }
+            if (state.iconFitCircle) {
+                params.set('iconFitCircle', '1');
+            }
+
+            const newURL = params.toString()
+                ? `${window.location.pathname}?${params.toString()}`
+                : window.location.pathname;
+
+            history.replaceState(null, '', newURL);
+            console.log('🔗 URL updated:', newURL);
+        }
+
+        /**
+         * Saves current state to localStorage and updates URL
+         */
+        function saveState() {
+            try {
+                const state = getCurrentState();
+                localStorage.setItem('thumbnailGeneratorState', JSON.stringify(state));
+                updateURL(state);
+                console.log('💾 State saved:', state);
+            } catch (e) {
+                console.error('❌ Failed to save state:', e);
+                // Fail gracefully - page still works, just doesn't persist
+            }
+        }
+
+        /**
+         * Loads state from URL parameters or localStorage and applies to UI
+         */
+        function loadState() {
+            try {
+                // Priority 1: URL parameters (for OBS)
+                const urlState = parseURLParams();
+
+                // Priority 2: localStorage (for refresh)
+                let storedState = null;
+                try {
+                    const stored = localStorage.getItem('thumbnailGeneratorState');
+                    if (stored) {
+                        storedState = JSON.parse(stored);
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Failed to parse localStorage state:', e);
+                }
+
+                // Use URL state if available, otherwise localStorage
+                const state = urlState || storedState;
+
+                // No saved state - use existing defaults
+                if (!state) {
+                    console.log('ℹ️ No saved state found, using defaults');
+                    return;
+                }
+
+                console.log('📂 Loading state:', state);
+
+                // Apply state using existing functions.
+                // Use !== undefined so saved empty strings still apply (hides the line).
+                if (state.title !== undefined) setTitle(state.title);
+                if (state.subtitle !== undefined) setSubtitle(state.subtitle);
+
+                // Apply Celeste mode
+                if (state.celesteMode) {
+                    toggleCelesteAnimation(state.celesteMode === 'video');
+                }
+
+                // Apply Celeste positioning (only if video mode or values are non-default)
+                if (state.celesteVideoY !== undefined && state.celesteVideoY !== DEFAULT_CELESTE_VIDEO_Y) {
+                    setCelesteVideoY(state.celesteVideoY);
+                }
+                if (state.celesteVideoSize !== undefined && state.celesteVideoSize !== DEFAULT_CELESTE_VIDEO_SIZE) {
+                    setCelesteVideoSize(state.celesteVideoSize);
+                }
+
+                // Apply subject if present
+                if (state.subjectUrl) {
+                    setSubject(state.subjectUrl);
+
+                    // Wait for subject to load before applying size/position
+                    const subjectImg = document.getElementById('subject-image');
+                    const applySubjectSettings = () => {
+                        if (state.subjectSize && state.subjectSize !== DEFAULT_SUBJECT_SIZE) {
+                            setSubjectSize(state.subjectSize);
+                        }
+                        if (state.subjectPosition !== undefined && state.subjectPosition !== DEFAULT_SUBJECT_POSITION) {
+                            setSubjectPosition(state.subjectPosition);
+                        }
+                    };
+
+                    // Apply immediately if already loaded, otherwise wait
+                    if (subjectImg.complete) {
+                        applySubjectSettings();
+                    } else {
+                        subjectImg.addEventListener('load', applySubjectSettings, { once: true });
+                    }
+                }
+
+                // Restore warning-overlay state (if saved).
+                if (state.warningScreen && typeof state.warningScreen === 'object') {
+                    const w = state.warningScreen;
+                    const textInputIds = {
+                        topBanner:    'warning-top-input',
+                        bossName:     'warning-boss-input',
+                        bottomBanner: 'warning-bottom-input',
+                    };
+                    for (const key of Object.keys(textInputIds)) {
+                        if (typeof w[key] === 'string') {
+                            warningState[key] = w[key];
+                            const input = document.getElementById(textInputIds[key]);
+                            if (input) input.value = warningState[key];
+                        }
+                    }
+                    if (typeof w.colorTheme === 'string' && WARNING_COLOR_THEMES[w.colorTheme]) {
+                        warningState.colorTheme = w.colorTheme;
+                        const select = document.getElementById('warning-color-select');
+                        if (select) select.value = w.colorTheme;
+                    }
+                    if (typeof w.enabled === 'boolean') {
+                        // setWarningEnabled toggles canvas + sub-panel + checkbox.
+                        setWarningEnabled(w.enabled);
+                    } else {
+                        drawWarningCanvas();
+                    }
+                }
+
+                // Restore lewd-frame state (if saved).
+                if (state.lewdFrame && typeof state.lewdFrame === 'object') {
+                    const lf = state.lewdFrame;
+                    if (typeof lf.nsfw === 'boolean')        lewdFrameState.nsfw = lf.nsfw;
+                    if (typeof lf.showPhrases === 'boolean') lewdFrameState.showPhrases = lf.showPhrases;
+                    if (typeof lf.glow === 'boolean')        lewdFrameState.glow = lf.glow;
+                    if (typeof lf.colorPreset === 'string' && LEWD_FRAME_COLOR_PRESETS[lf.colorPreset]) {
+                        lewdFrameState.colorPreset = lf.colorPreset;
+                    }
+                    if (Number.isFinite(lf.fontSize))     lewdFrameState.fontSize     = lf.fontSize;
+                    if (Number.isFinite(lf.cornerRadius)) lewdFrameState.cornerRadius = lf.cornerRadius;
+                    if (Number.isFinite(lf.inset))        lewdFrameState.inset        = lf.inset;
+                    if (Array.isArray(lf.phrases) && lf.phrases.every(p => typeof p === 'string')) {
+                        lewdFrameState.phrases = lf.phrases.slice();
+                    } else {
+                        // Older shape (object or array-of-objects) — ignore and re-roll on enable.
+                        lewdFrameState.phrases = [];
+                    }
+                    // Sync UI controls to restored state.
+                    const nsfwCb     = document.getElementById('lewd-frame-nsfw-checkbox');
+                    const showCb     = document.getElementById('lewd-frame-show-phrases-checkbox');
+                    const glowCb     = document.getElementById('lewd-frame-glow-checkbox');
+                    const colorSel   = document.getElementById('lewd-frame-color-select');
+                    const fontRange  = document.getElementById('lewd-frame-fontsize-slider');
+                    const radiusRange= document.getElementById('lewd-frame-radius-slider');
+                    const insetRange = document.getElementById('lewd-frame-inset-slider');
+                    if (nsfwCb)      nsfwCb.checked    = lewdFrameState.nsfw;
+                    if (showCb)      showCb.checked    = lewdFrameState.showPhrases;
+                    if (glowCb)      glowCb.checked    = lewdFrameState.glow;
+                    if (colorSel)    colorSel.value    = lewdFrameState.colorPreset;
+                    if (fontRange)   fontRange.value   = String(lewdFrameState.fontSize);
+                    if (radiusRange) radiusRange.value = String(lewdFrameState.cornerRadius);
+                    if (insetRange)  insetRange.value  = String(lewdFrameState.inset);
+                    const fDisp = document.getElementById('lewd-frame-fontsize-display');
+                    const rDisp = document.getElementById('lewd-frame-radius-display');
+                    const iDisp = document.getElementById('lewd-frame-inset-display');
+                    if (fDisp) fDisp.textContent = String(lewdFrameState.fontSize);
+                    if (rDisp) rDisp.textContent = String(lewdFrameState.cornerRadius);
+                    if (iDisp) iDisp.textContent = String(lewdFrameState.inset);
+                    if (typeof lf.enabled === 'boolean') {
+                        setLewdFrameEnabled(lf.enabled);
+                    } else {
+                        drawLewdFrameCanvas();
+                    }
+                }
+
+                // Load character image if present
+                if (state.characterImage) {
+                    setCharacterImage(state.characterImage);
+                }
+
+                // Load character size and Y offset
+                if (state.characterSize && state.characterSize !== DEFAULT_CHARACTER_SIZE) {
+                    setCharacterSize(state.characterSize);
+                }
+                if (state.characterY && state.characterY !== DEFAULT_CHARACTER_Y) {
+                    setCharacterY(state.characterY);
+                }
+
+                // Load glow color if present
+                if (state.glowColor) {
+                    setGlowColor(state.glowColor);
+                }
+
+                // Load flow particles settings
+                if (state.flowParticlesEnabled !== undefined) {
+                    CONFIG.flowParticles.enabled = state.flowParticlesEnabled;
+                    const checkbox = document.getElementById('flow-particles-toggle');
+                    if (checkbox) {
+                        checkbox.checked = state.flowParticlesEnabled;
+                    }
+                    if (components.flowParticles) {
+                        if (state.flowParticlesEnabled) {
+                            components.flowParticles.enable();
+                        } else {
+                            components.flowParticles.disable();
+                        }
+                    }
+                }
+
+                if (state.flowParticlesDensity !== undefined) {
+                    CONFIG.flowParticles.density = state.flowParticlesDensity;
+                    const slider = document.getElementById('flow-density-slider');
+                    const valueDisplay = document.getElementById('flow-density-value');
+                    if (slider) {
+                        slider.value = state.flowParticlesDensity;
+                    }
+                    if (valueDisplay) {
+                        valueDisplay.textContent = state.flowParticlesDensity + '%';
+                    }
+                    if (components.flowParticles) {
+                        components.flowParticles.setDensity(state.flowParticlesDensity);
+                    }
+                }
+
+                if (state.flowParticlesSpeed !== undefined) {
+                    CONFIG.flowParticles.speed = state.flowParticlesSpeed;
+                    const slider = document.getElementById('flow-speed-slider');
+                    const valueDisplay = document.getElementById('flow-speed-value');
+                    if (slider) {
+                        slider.value = state.flowParticlesSpeed;
+                    }
+                    if (valueDisplay) {
+                        valueDisplay.textContent = state.flowParticlesSpeed + '%';
+                    }
+                    if (components.flowParticles) {
+                        components.flowParticles.setSpeed(state.flowParticlesSpeed);
+                    }
+                }
+
+                // Load layout mode
+                if (state.layoutMode) {
+                    setLayoutMode(state.layoutMode);
+                }
+
+                // Load aspect ratio
+                if (state.aspectRatio) {
+                    setAspectRatio(state.aspectRatio);
+                }
+
+                // Restore iconography state
+                if (components.iconography) {
+                    const ico = components.iconography;
+                    if (state.iconElements) {
+                        const enabled = typeof state.iconElements === 'string'
+                            ? new Set(state.iconElements.split(','))
+                            : new Set(Object.entries(state.iconElements).filter(([, v]) => v).map(([k]) => k));
+                        const all = ['frame','mandorla','arcs','rings','text','stars'];
+                        for (const k of all) ico.state.elements[k] = enabled.has(k);
+                    }
+                    if (state.iconPhrases) {
+                        const [o, m, i] = typeof state.iconPhrases === 'string'
+                            ? state.iconPhrases.split(',').map(n => parseInt(n, 10) || 0)
+                            : [state.iconPhrases.outer | 0, state.iconPhrases.middle | 0, state.iconPhrases.inner | 0];
+                        const max = (arr, idx) => Math.min(Math.max(0, idx), (arr || []).length - 1);
+                        ico.state.phraseIdx.outer  = max(ico.phrases.outer,  o);
+                        ico.state.phraseIdx.middle = max(ico.phrases.middle, m);
+                        ico.state.phraseIdx.inner  = max(ico.phrases.inner,  i);
+                    }
+                    if (state.iconStarDensity && STAR_DENSITY_KEYS.includes(state.iconStarDensity)) {
+                        ico.state.starDensity = state.iconStarDensity;
+                    }
+                    if (state.iconMandorlaShape && ICON_MANDORLA_SHAPES.includes(state.iconMandorlaShape)) {
+                        ico.state.mandorlaShape = state.iconMandorlaShape;
+                    }
+                    if (state.iconLabelTop)    ico.state.labelTop    = state.iconLabelTop;
+                    if (state.iconLabelBottom) ico.state.labelBottom = state.iconLabelBottom;
+                    if (state.iconTextScale !== undefined && state.iconTextScale !== null) {
+                        const v = Number(state.iconTextScale);
+                        if (!Number.isNaN(v)) ico.state.textScale = Math.min(3, Math.max(0.5, v));
+                    }
+                    if (state.iconLogoPosition && ['center', 'corners'].includes(state.iconLogoPosition)) {
+                        ico.state.logoPosition = state.iconLogoPosition;
+                    }
+                    if (state.iconFitCircle !== undefined && state.iconFitCircle !== null) {
+                        // URL form is '1'/'0' string; localStorage form is boolean
+                        ico.state.fitCircle = state.iconFitCircle === true ||
+                                              state.iconFitCircle === '1' ||
+                                              state.iconFitCircle === 1;
+                    }
+
+                    // Sync UI controls to restored state
+                    const setIfPresent = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
+                    const checkIfPresent = (id, val) => { const el = document.getElementById(id); if (el) el.checked = !!val; };
+                    checkIfPresent('icon-toggle-frame',    ico.state.elements.frame);
+                    checkIfPresent('icon-toggle-mandorla', ico.state.elements.mandorla);
+                    checkIfPresent('icon-toggle-arcs',     ico.state.elements.arcs);
+                    checkIfPresent('icon-toggle-rings',    ico.state.elements.rings);
+                    checkIfPresent('icon-toggle-text',     ico.state.elements.text);
+                    checkIfPresent('icon-toggle-stars',    ico.state.elements.stars);
+                    setIfPresent('icon-phrase-outer',     String(ico.state.phraseIdx.outer));
+                    setIfPresent('icon-phrase-middle',    String(ico.state.phraseIdx.middle));
+                    setIfPresent('icon-phrase-inner',     String(ico.state.phraseIdx.inner));
+                    setIfPresent('icon-star-density',     ico.state.starDensity);
+                    setIfPresent('icon-mandorla-shape',   ico.state.mandorlaShape);
+                    setIfPresent('icon-label-top',        ico.state.labelTop);
+                    setIfPresent('icon-label-bottom',     ico.state.labelBottom);
+                    setIfPresent('icon-text-scale',       String(ico.state.textScale));
+                    setIfPresent('icon-logo-position',    ico.state.logoPosition);
+                    checkIfPresent('icon-toggle-fit-circle', ico.state.fitCircle);
+                    const scaleRO = document.getElementById('icon-text-scale-readout');
+                    if (scaleRO) scaleRO.textContent = `${Number(ico.state.textScale).toFixed(1)}×`;
+
+                    // Re-apply container-level classes (logo position + fit-circle)
+                    if (typeof ico._applyLogoPosition === 'function') ico._applyLogoPosition();
+                    if (typeof ico._applyFitCircle === 'function')    ico._applyFitCircle();
+
+                    // Rebuild SVG to reflect restored state
+                    ico._rebuild();
+                }
+
+                // Ensure character images are at bottom: 0 (video positioning doesn't apply to images)
+                const celesteImg = document.getElementById('celeste-image');
+                if (celesteImg && celesteImg.style.display !== 'none') {
+                    celesteImg.style.bottom = '0';
+                }
+
+                // If loaded from localStorage (not URL), update URL to match
+                if (!urlState && storedState) {
+                    updateURL(storedState);
+                }
+
+            } catch (e) {
+                console.error('❌ Failed to load state:', e);
+                // Fail gracefully - page uses defaults
+            }
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // KEYBOARD CONTROLS
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('keydown', (e) => {
+            // Check for Ctrl+C or Cmd+C (Mac)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'c' || e.key === 'C')) {
+                e.preventDefault(); // Prevent default copy behavior
+                const controlsOverlay = document.getElementById('controls-overlay');
+                controlsOverlay.classList.toggle('visible');
+            }
+            // Check for Ctrl+E or Cmd+E (Mac)
+            if ((e.ctrlKey || e.metaKey) && (e.key === 'e' || e.key === 'E')) {
+                e.preventDefault(); // Prevent default browser behavior
+                exportThumbnail();
+            }
+        });
+
+        // ═══════════════════════════════════════════════════════════════
+        // INITIALIZATION
+        // ═══════════════════════════════════════════════════════════════
+
+        async function initialize() {
+            console.log('🎬 YouTube Thumbnail Generator - Starting...');
+            console.log('📋 Keyboard shortcuts:');
+            console.log('   Ctrl+C (Cmd+C on Mac) - Toggle controls menu');
+            console.log('   Ctrl+E (Cmd+E on Mac) - Export thumbnail as PNG');
+            console.log('');
+            console.log('📋 Console commands:');
+            console.log('   exportThumbnail() - Download thumbnail as PNG');
+            console.log('   setTitle("Your Text") - Change main title');
+            console.log('   setSubtitle("Your Text") - Change subtitle');
+            console.log('   setSubject("image_url") - Add character/object in foreground');
+            console.log('   setSubjectSize(percent) - Resize subject (10-150% of canvas height)');
+            console.log('   setSubjectPosition(percent) - Position subject horizontally (0=left, 50=center, 100=right)');
+            console.log('   clearSubject() - Remove subject from scene');
+            console.log('   toggleAnimations() - Pause/resume animations');
+            console.log('   toggleCelesteAnimation(true/false) - Switch between animated video (true) and static image (false)');
+            console.log('   setCelesteVideoSize(percent) - Scale video size (100-1000%, anchored center bottom)');
+            console.log('   cleanupComponents() - Destroy all components (free memory)');
+            console.log('   reinitComponents() - Reinitialize animations');
+            console.log('');
+            console.log('💡 Example usage:');
+            console.log('   setSubject("https://example.com/character.png")');
+            console.log('   setSubjectSize(90) // Make subject 90% of canvas height');
+            console.log('   setSubjectPosition(25) // Position subject on left side');
+            console.log('   setCelesteVideoSize(500) // Scale video to 500% to show only legs');
+
+            // Initialize input fields with current values
+            const titleElement = document.getElementById('main-title');
+            const subtitleElement = document.getElementById('subtitle');
+            const titleInput = document.getElementById('title-input');
+            const subtitleInput = document.getElementById('subtitle-input');
+
+            if (titleElement && titleInput) {
+                titleInput.value = titleElement.innerHTML;
+            }
+            if (subtitleElement && subtitleInput) {
+                subtitleInput.value = subtitleElement.textContent;
+            }
+
+            // Initialize animated components
+            await initComponents();
+
+            console.log('✅ Thumbnail generator ready!');
+            console.log('💡 Select character/video from dropdown or use URL parameters.');
+
+            // Load saved state after all components are ready
+            // Small delay to ensure all existing initialization is complete
+            setTimeout(() => {
+                loadState();
+            }, 100);
+        }
+
+        // Make functions globally available
+        window.exportThumbnail = exportThumbnail;
+        window.setTitle = setTitle;
+        window.setSubtitle = setSubtitle;
+        window.setSubject = setSubject;
+        window.setSubjectSize = setSubjectSize;
+        window.setSubjectPosition = setSubjectPosition;
+        window.clearSubject = clearSubject;
+        window.toggleAnimations = toggleAnimations;
+        window.toggleCelesteAnimation = toggleCelesteAnimation;
+        window.setCelesteVideoSize = setCelesteVideoSize;
+        window.setCelesteVideoY = setCelesteVideoY;
+        window.applyTextChanges = applyTextChanges;
+        window.cleanupComponents = cleanupComponents;
+        window.reinitComponents = initComponents;
+        window.flowParticles = null; // Will be set after init
+
+        // Start on DOM ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initialize);
+        } else {
+            initialize();
+        }
+
+        // Cleanup on unload
+        window.addEventListener('beforeunload', () => {
+            cleanupComponents();
+        });
+    </script>
+</body>
+</html>

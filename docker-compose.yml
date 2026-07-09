@@ -1,0 +1,35 @@
+# Docker Compose configuration for whykusanagi portfolio site
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: whykusanagi-site
+
+    ports:
+      - "8000:8000"
+      - "5001:5000"
+
+    environment:
+      # Celeste agent credentials (set via environment or .env file)
+      CELESTE_AGENT_KEY: "${CELESTE_AGENT_KEY}"
+      CELESTE_AGENT_ID: "${CELESTE_AGENT_ID}"
+      CELESTE_AGENT_BASE_URL: "${CELESTE_AGENT_BASE_URL}"
+
+    volumes:
+      # Mount local directory for hot-reloading during development
+      - .:/app
+      # Exclude node_modules from mount (use container's version)
+      - /app/node_modules
+
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8000', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+    restart: unless-stopped

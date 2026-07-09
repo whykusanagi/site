@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1080, height=1920">
+    <title>Neo-Deco Shrine - Portrait (1080×1920)</title>
+    <style>
+        :root {
+            --accent-color: #D4AF37; /* Gold */
+            --deco-black: #0A0A0F;
+            --accent-glow: rgba(212, 175, 55, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+
+        body {
+            position: relative;
+            overflow: hidden;
+            background: var(--deco-black);
+            /* Portrait canvas: 1080×1920 (9:16 ratio) */
+            width: 1080px;
+            height: 1920px;
+        }
+
+        /* Scale down if viewport is smaller */
+        @media (max-width: 1080px) {
+            body {
+                width: 100vw;
+                height: calc(100vw * 1920 / 1080);
+            }
+        }
+
+        @media (max-height: 1920px) {
+            body {
+                width: calc(100vh * 1080 / 1920);
+                height: 100vh;
+            }
+        }
+
+        /* Geometric Grid Background */
+        .geometric-grid {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            opacity: 0.15;
+        }
+
+        .geometric-grid::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image:
+                repeating-linear-gradient(90deg,
+                    transparent,
+                    transparent 60px,
+                    var(--accent-color) 60px,
+                    var(--accent-color) 62px
+                ),
+                repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 60px,
+                    var(--accent-color) 60px,
+                    var(--accent-color) 62px
+                );
+        }
+
+        /* Solar Eclipse - SVG-based for proper export */
+        .solar-eclipse {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 2;
+        }
+
+        .eclipse-core {
+            filter: drop-shadow(0 0 40px var(--accent-glow))
+                    drop-shadow(0 0 80px var(--accent-glow));
+        }
+
+        .eclipse-ring {
+            filter: drop-shadow(0 0 30px var(--accent-glow));
+        }
+
+        /* Eclipse Rays */
+        .eclipse-rays {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+        }
+
+        .eclipse-rays polygon {
+            fill: var(--accent-color);
+            opacity: 0.5;
+            filter: drop-shadow(0 0 4px var(--accent-glow));
+        }
+
+        /* Sunburst Pattern */
+        .sunburst {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 4;
+        }
+
+        .sunburst polygon {
+            fill: var(--accent-color);
+            opacity: 0.25;
+        }
+
+        /* Halo Pattern (Broken Arcs) */
+        .halo-pattern {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 5;
+        }
+
+        .halo-pattern path,
+        .halo-pattern circle {
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        /* Cat Silhouette - removed */
+
+        /* Art Deco Frame */
+        .deco-frame {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        .deco-frame rect,
+        .deco-frame polygon {
+            filter: drop-shadow(0 0 5px var(--accent-glow));
+        }
+
+        /* Dot Array - top decoration */
+        .dot-array {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            position: absolute;
+            top: 3%;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 80;
+        }
+
+        .dot-array .dot {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Character placeholder */
+        .character-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 450px;
+            height: 1200px;
+            background: rgba(128, 128, 128, 0.2);
+            border: 3px dashed rgba(255, 255, 255, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
+            font-size: 20px;
+            z-index: 10;
+            backdrop-filter: blur(3px);
+        }
+
+        /* Character image */
+        .character-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 450px;
+            max-height: 1200px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            z-index: 10;
+        }
+
+        /* Mode indicator */
+        .mode-indicator {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            background: rgba(0, 100, 100, 0.8);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 14px;
+            z-index: 10000;
+            pointer-events: none;
+        }
+
+        /* Controls overlay */
+        #controls-overlay {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.95);
+            border: 3px solid var(--accent-color);
+            border-radius: 10px;
+            padding: 30px;
+            z-index: 10001;
+            display: none;
+            box-shadow: 0 0 30px var(--accent-glow);
+            max-height: 80vh;
+            overflow-y: auto;
+            max-width: 90vw;
+        }
+
+        #controls-overlay.visible {
+            display: block;
+        }
+
+        .control-button {
+            background: linear-gradient(135deg, var(--accent-color), var(--accent-glow));
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            color: #FFFFFF;
+            padding: 12px 24px;
+            margin: 8px;
+            font-size: 16px;
+            font-family: monospace;
+            cursor: pointer;
+            border-radius: 5px;
+            text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+            transition: all 0.3s ease;
+        }
+
+        .control-button:hover {
+            box-shadow: 0 0 20px var(--accent-glow);
+            transform: scale(1.05);
+        }
+
+        .info-text {
+            color: var(--accent-color);
+            font-size: 14px;
+            margin: 10px 0;
+            text-align: center;
+        }
+
+        .controls-title {
+            color: var(--accent-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 22px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        /* Occult Elements */
+        .occult-layer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .pentagram {
+            position: absolute;
+            opacity: 0.4;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        .mystical-circle {
+            position: absolute;
+            border-radius: 50%;
+            border: 2px solid var(--accent-color);
+            opacity: 0.3;
+            filter: drop-shadow(0 0 8px var(--accent-glow));
+        }
+
+        .alchemical-symbol {
+            position: absolute;
+            font-size: 50px;
+            color: var(--accent-color);
+            opacity: 0.5;
+            filter: drop-shadow(0 0 10px var(--accent-glow));
+        }
+
+        .eye-of-providence {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0.5;
+            filter: drop-shadow(0 0 15px var(--accent-glow));
+        }
+    </style>
+</head>
+<body>
+    <!-- Mode indicator -->
+    <div class="mode-indicator" id="modeIndicator">Portrait 1080×1920 | Gold Theme</div>
+
+    <!-- Controls Overlay (Press 'C' to toggle) -->
+    <div id="controls-overlay">
+        <h2 class="controls-title">🎴 Neo-Deco Shrine - Portrait Controls</h2>
+        <div class="info-text">Press 'C' to toggle this menu | Press 'E' to export PNG</div>
+        <div style="text-align: center;">
+            <button class="control-button" onclick="exportPNG()">📸 Export PNG</button>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <label class="control-button" style="cursor: pointer;">
+                🖼️ Upload Character Image
+                <input type="file" id="character-upload" accept="image/*" style="display: none;" onchange="handleFileUpload(event)">
+            </label>
+            <button class="control-button" onclick="clearCharacter()">🗑️ Clear Character</button>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <button class="control-button" onclick="switchTheme('gold')">✨ Gold Theme</button>
+            <button class="control-button" onclick="switchTheme('pink')">💗 Pink Theme</button>
+            <button class="control-button" onclick="switchTheme('cyan')">💎 Cyan Theme</button>
+            <button class="control-button" onclick="switchTheme('purple')">🔮 Purple Theme</button>
+        </div>
+        <div style="text-align: center; margin-top: 15px;">
+            <button class="control-button" onclick="toggleTentacles()">🐙 Toggle Tentacles</button>
+        </div>
+        <div class="info-text" style="margin-top: 20px;">
+            <strong>Console Commands:</strong><br>
+            exportPNG() - Download as PNG (1080×1920)<br>
+            setCharacter("url") - Load character image from URL<br>
+            setCharacterSize(percent) - Resize character (50-150%)<br>
+            clearCharacter() - Remove character image<br>
+            switchTheme("gold"|"pink"|"cyan"|"purple") - Change theme<br>
+            generateEclipseRays(count) - Regenerate eclipse rays<br>
+            generateSunburst(count) - Regenerate sunburst pattern<br>
+            toggleTentacles() - Show/hide animated tentacles<br>
+            regenerateTentacles(count) - Regenerate tentacles (default: 16)
+        </div>
+    </div>
+
+    <!-- BB-09: Geometric Grid Background -->
+    <div class="geometric-grid"></div>
+
+    <!-- Solar Eclipse (Filled Circle + Outer Ring) - SVG for proper export -->
+    <svg class="solar-eclipse" viewBox="0 0 1080 1920">
+        <g transform="translate(540, 960)">
+            <!-- Eclipse Core (filled circle) - 976px diameter (150% increase) -->
+            <circle class="eclipse-core"
+                    cx="0" cy="0" r="488"
+                    fill="var(--accent-color)"
+                    opacity="0.4"/>
+
+            <!-- Eclipse Ring (outline only) - 1276px diameter (150% increase) -->
+            <circle class="eclipse-ring"
+                    cx="0" cy="0" r="638"
+                    fill="none"
+                    stroke="var(--accent-color)"
+                    stroke-width="6"
+                    opacity="0.6"/>
+        </g>
+    </svg>
+
+    <!-- Eclipse Rays (From Circle Edge) -->
+    <svg class="eclipse-rays" viewBox="0 0 1080 1920">
+        <g transform="translate(540, 960)" id="eclipse-rays-group">
+            <!-- Generated by JavaScript -->
+        </g>
+    </svg>
+
+    <!-- Outer Sunburst -->
+    <svg class="sunburst" viewBox="0 0 1080 1920">
+        <g transform="translate(540, 960)" id="sunburst-rays">
+            <!-- Generated by JavaScript -->
+        </g>
+    </svg>
+
+    <!-- Halo Pattern (Broken Arcs) -->
+    <svg class="halo-pattern" viewBox="0 0 1080 1920">
+        <g transform="translate(540, 1060)">
+            <!-- Main halo arc -->
+            <path d="M -300,0 A 300,300 0 1,1 300,0"
+                  fill="none"
+                  stroke="var(--accent-color)"
+                  stroke-width="25"
+                  opacity="0.7"/>
+
+            <!-- Fragment arcs -->
+            <path d="M -350,-100 A 350,350 0 0,1 -250,-200"
+                  fill="none"
+                  stroke="var(--accent-color)"
+                  stroke-width="15"
+                  opacity="0.5"/>
+
+            <path d="M 250,-200 A 350,350 0 0,1 350,-100"
+                  fill="none"
+                  stroke="var(--accent-color)"
+                  stroke-width="15"
+                  opacity="0.5"/>
+
+            <path d="M -200,100 A 250,250 0 0,0 200,100"
+                  fill="none"
+                  stroke="var(--accent-color)"
+                  stroke-width="12"
+                  opacity="0.4"/>
+
+            <!-- Floating circles -->
+            <circle cx="-320" cy="-50" r="15" fill="var(--accent-color)" opacity="0.6"/>
+            <circle cx="320" cy="-50" r="12" fill="none" stroke="var(--accent-color)" stroke-width="3" opacity="0.6"/>
+            <circle cx="0" cy="-250" r="8" fill="var(--accent-color)" opacity="0.4"/>
+            <circle cx="-180" cy="80" r="10" fill="var(--accent-color)" opacity="0.5"/>
+            <circle cx="180" cy="80" r="10" fill="none" stroke="var(--accent-color)" stroke-width="2" opacity="0.5"/>
+        </g>
+    </svg>
+
+    <!-- Cat Silhouette - removed per user request -->
+
+    <!-- Art Deco Frame -->
+    <svg class="deco-frame" viewBox="0 0 1080 1920">
+        <!-- Corner ornaments -->
+        <rect x="30" y="30" width="150" height="3" fill="var(--accent-color)" opacity="0.8"/>
+        <rect x="30" y="30" width="3" height="150" fill="var(--accent-color)" opacity="0.8"/>
+
+        <rect x="900" y="30" width="150" height="3" fill="var(--accent-color)" opacity="0.8"/>
+        <rect x="1047" y="30" width="3" height="150" fill="var(--accent-color)" opacity="0.8"/>
+
+        <rect x="30" y="1887" width="150" height="3" fill="var(--accent-color)" opacity="0.8"/>
+        <rect x="30" y="1740" width="3" height="150" fill="var(--accent-color)" opacity="0.8"/>
+
+        <rect x="900" y="1887" width="150" height="3" fill="var(--accent-color)" opacity="0.8"/>
+        <rect x="1047" y="1740" width="3" height="150" fill="var(--accent-color)" opacity="0.8"/>
+
+        <!-- Stars in corners -->
+        <polygon points="100,60 105,75 120,75 108,83 112,98 100,90 88,98 92,83 80,75 95,75"
+                 fill="var(--accent-color)" opacity="0.8"/>
+        <polygon points="980,60 985,75 1000,75 988,83 992,98 980,90 968,98 972,83 960,75 975,75"
+                 fill="var(--accent-color)" opacity="0.8"/>
+        <polygon points="100,1860 105,1875 120,1875 108,1883 112,1898 100,1890 88,1898 92,1883 80,1875 95,1875"
+                 fill="var(--accent-color)" opacity="0.8"/>
+        <polygon points="980,1860 985,1875 1000,1875 988,1883 992,1898 980,1890 968,1898 972,1883 960,1875 975,1875"
+                 fill="var(--accent-color)" opacity="0.8"/>
+    </svg>
+
+    <!-- Dot Array -->
+    <div class="dot-array">
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+        <div class="dot"></div>
+    </div>
+
+    <!-- Occult Elements Layer -->
+    <div class="occult-layer">
+        <!-- Pentagrams -->
+        <svg class="pentagram" style="top: 12%; left: 8%; width: 70px; height: 70px;" viewBox="0 0 100 100">
+            <path d="M 50,5 L 38,38 L 5,38 L 30,57 L 20,90 L 50,70 L 80,90 L 70,57 L 95,38 L 62,38 Z"
+                  fill="none" stroke="var(--accent-color)" stroke-width="2"/>
+        </svg>
+
+        <svg class="pentagram" style="top: 12%; right: 8%; width: 70px; height: 70px;" viewBox="0 0 100 100">
+            <path d="M 50,5 L 38,38 L 5,38 L 30,57 L 20,90 L 50,70 L 80,90 L 70,57 L 95,38 L 62,38 Z"
+                  fill="none" stroke="var(--accent-color)" stroke-width="2"/>
+        </svg>
+
+        <!-- Eye of Providence -->
+        <svg class="eye-of-providence" style="top: 8%; left: 50%; transform: translateX(-50%);" viewBox="0 0 100 100">
+            <path d="M 50,10 L 90,80 L 10,80 Z" fill="none" stroke="var(--accent-color)" stroke-width="3"/>
+            <ellipse cx="50" cy="50" rx="15" ry="10" fill="none" stroke="var(--accent-color)" stroke-width="2"/>
+            <circle cx="50" cy="50" r="5" fill="var(--accent-color)"/>
+            <line x1="50" y1="30" x2="50" y2="20" stroke="var(--accent-color)" stroke-width="2"/>
+            <line x1="60" y1="35" x2="65" y2="28" stroke="var(--accent-color)" stroke-width="1.5"/>
+            <line x1="40" y1="35" x2="35" y2="28" stroke="var(--accent-color)" stroke-width="1.5"/>
+        </svg>
+
+        <!-- Alchemical symbols -->
+        <div class="alchemical-symbol" style="top: 25%; left: 10%;" title="Fire">🜂</div>
+        <div class="alchemical-symbol" style="top: 25%; right: 10%;" title="Water">🜄</div>
+        <div class="alchemical-symbol" style="bottom: 25%; left: 10%;" title="Earth">🜃</div>
+        <div class="alchemical-symbol" style="bottom: 25%; right: 10%;" title="Air">🜁</div>
+
+        <!-- Mystical circles -->
+        <div class="mystical-circle" style="top: 35%; left: 15%; width: 80px; height: 80px;"></div>
+        <div class="mystical-circle" style="top: 35%; right: 15%; width: 80px; height: 80px;"></div>
+        <div class="mystical-circle" style="bottom: 35%; left: 15%; width: 80px; height: 80px;"></div>
+        <div class="mystical-circle" style="bottom: 35%; right: 15%; width: 80px; height: 80px;"></div>
+
+        <!-- Crescent moons -->
+        <svg style="position: absolute; top: 45%; left: 5%; width: 40px; height: 40px; opacity: 0.4;" viewBox="0 0 100 100">
+            <path d="M 50,10 A 30,30 0 1,0 50,90 A 40,40 0 1,1 50,10 Z" fill="var(--accent-color)"/>
+        </svg>
+        <svg style="position: absolute; top: 45%; right: 5%; width: 40px; height: 40px; opacity: 0.4;" viewBox="0 0 100 100">
+            <path d="M 50,10 A 30,30 0 1,0 50,90 A 40,40 0 1,1 50,10 Z" fill="var(--accent-color)" transform="scale(-1, 1) translate(-100, 0)"/>
+        </svg>
+    </div>
+
+    <!-- Animated Tentacles Canvas (Behind Character) -->
+    <canvas id="tentacles-canvas" style="
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 6;
+        pointer-events: none;
+    "></canvas>
+
+    <!-- Character Placeholder -->
+    <div class="character-placeholder">
+        Character Image Here<br>
+        <small style="margin-top: 10px; opacity: 0.7;">(1080×1920 Portrait)</small>
+    </div>
+
+    <script>
+        // Generate eclipse rays radiating from center (triangular/wedge shaped)
+        function generateEclipseRays(count = 30) {
+            const container = document.getElementById('eclipse-rays-group');
+            container.innerHTML = '';
+            const angleStep = 360 / count;
+
+            for (let i = 0; i < count; i++) {
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const length = 300 + Math.random() * 100;
+                const baseWidth = 12; // Width at base (center)
+
+                // Create triangular wedge shape
+                // Point 1: Left base corner
+                // Point 2: Right base corner
+                // Point 3: Tip at end
+                const points = `
+                    -${baseWidth / 2},0
+                    ${baseWidth / 2},0
+                    0,-${length}
+                `;
+
+                polygon.setAttribute('points', points.trim());
+                polygon.setAttribute('transform', `rotate(${i * angleStep})`);
+
+                container.appendChild(polygon);
+            }
+        }
+
+        // Generate sunburst rays from center outward (triangular/wedge shaped)
+        function generateSunburst(count = 40) {
+            const container = document.getElementById('sunburst-rays');
+            container.innerHTML = '';
+            const angleStep = 360 / count;
+
+            for (let i = 0; i < count; i++) {
+                const polygon = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+                const length = 800 + Math.random() * 200;
+                const baseWidth = 18; // Larger base for outer sunburst
+
+                // Create triangular wedge shape
+                const points = `
+                    -${baseWidth / 2},0
+                    ${baseWidth / 2},0
+                    0,-${length}
+                `;
+
+                polygon.setAttribute('points', points.trim());
+                polygon.setAttribute('transform', `rotate(${i * angleStep})`);
+
+                container.appendChild(polygon);
+            }
+        }
+
+        // Initialize patterns
+        generateEclipseRays(30);
+        generateSunburst(40);
+
+        // ═══════════════════════════════════════════════════════════════
+        // ANIMATED TENTACLES (From Ominous Temple Building Block)
+        // ═══════════════════════════════════════════════════════════════
+
+        const tentaclesCanvas = document.getElementById('tentacles-canvas');
+        const tentaclesCtx = tentaclesCanvas.getContext('2d');
+        let tentaclesTime = 0;
+        let tentaclesAnimationFrame = null;
+
+        // Set canvas size
+        function resizeTentaclesCanvas() {
+            tentaclesCanvas.width = 1080;
+            tentaclesCanvas.height = 1920;
+        }
+        resizeTentaclesCanvas();
+
+        // Tentacle data structure
+        const tentacles = [];
+        let tentacleCount = 16; // Increased from 12
+
+        // Initialize tentacles (radiating from bottom)
+        function initTentacles() {
+            tentacles.length = 0;
+            const centerX = 540; // Center of 1080px canvas
+            const bottomY = 1920; // Bottom of canvas
+
+            for (let i = 0; i < tentacleCount; i++) {
+                // Distribute evenly across bottom with symmetry
+                const normalizedPos = (i / (tentacleCount - 1)) - 0.5; // -0.5 to 0.5
+
+                // Base X position along bottom (with slight randomization)
+                const baseX = centerX + normalizedPos * 900 + (Math.random() - 0.5) * 40;
+                const baseY = bottomY - Math.random() * 30; // Slight variation at bottom edge
+
+                // Angle pointing upward and slightly outward (creating fan/radiating effect)
+                // Center tentacles point straight up, edge tentacles angle outward
+                const baseAngle = Math.PI * 0.5; // 90 degrees (straight up)
+                const spreadAngle = normalizedPos * Math.PI * 0.35; // ±63 degrees spread
+                const angle = baseAngle + spreadAngle + (Math.random() - 0.5) * 0.15;
+
+                // Larger tentacles with more variation
+                const isCenterTentacle = Math.abs(normalizedPos) < 0.2;
+                const lengthMultiplier = isCenterTentacle ? 1.5 : 1.0; // Center tentacles longer
+
+                tentacles.push({
+                    baseX: baseX,
+                    baseY: baseY,
+                    angle: angle,
+                    length: (400 + Math.random() * 250) * lengthMultiplier, // Much longer
+                    segments: 20, // More segments for smoother curves
+                    phase: Math.random() * Math.PI * 2,
+                    speed: 0.2 + Math.random() * 0.3, // Slower, more deliberate
+                    thickness: 14 + Math.random() * 10, // Thicker tentacles
+                    isMajor: isCenterTentacle || Math.random() > 0.7 // Some are "major" tentacles
+                });
+            }
+        }
+
+        // Draw single tentacle with writhing animation (Art Deco style)
+        function drawTentacle(tentacle) {
+            const writhePhase = tentacle.phase + tentaclesTime * tentacle.speed;
+            const points = [];
+
+            // Build tentacle segments
+            for (let i = 0; i <= tentacle.segments; i++) {
+                const segmentRatio = i / tentacle.segments;
+
+                // Writhing increases away from base (more subtle for Art Deco aesthetic)
+                const writheIntensity = Math.max(0, (segmentRatio - 0.25) / 0.75);
+                const writheX = Math.sin(writhePhase + segmentRatio * Math.PI * 2) * (15 + segmentRatio * 25) * writheIntensity;
+                const writheY = Math.cos(writhePhase * 1.2 + segmentRatio * Math.PI * 2.5) * 10 * writheIntensity;
+
+                if (i === 0) {
+                    // Base point - fixed at bottom
+                    points.push({ x: tentacle.baseX, y: tentacle.baseY, ratio: segmentRatio });
+                } else {
+                    // Extending upward with slight curve
+                    const x = tentacle.baseX - Math.cos(tentacle.angle + segmentRatio * 0.4) * segmentRatio * tentacle.length + writheX;
+                    const y = tentacle.baseY - Math.sin(tentacle.angle + segmentRatio * 0.2) * segmentRatio * tentacle.length + writheY;
+                    points.push({ x, y, ratio: segmentRatio });
+                }
+            }
+
+            // Get accent color
+            const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+
+            // Parse hex to RGB for gradient
+            const hex = accentColor.replace('#', '');
+            const r = parseInt(hex.substr(0, 2), 16);
+            const g = parseInt(hex.substr(2, 2), 16);
+            const b = parseInt(hex.substr(4, 2), 16);
+
+            // Draw base glow/anchor
+            tentaclesCtx.save();
+            const gradient = tentaclesCtx.createRadialGradient(
+                tentacle.baseX, tentacle.baseY, 0,
+                tentacle.baseX, tentacle.baseY, tentacle.thickness * 2
+            );
+            gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.4)`);
+            gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
+            tentaclesCtx.fillStyle = gradient;
+            tentaclesCtx.beginPath();
+            tentaclesCtx.arc(tentacle.baseX, tentacle.baseY, tentacle.thickness * 2, 0, Math.PI * 2);
+            tentaclesCtx.fill();
+            tentaclesCtx.restore();
+
+            // Draw main tentacle body with gradient opacity
+            tentaclesCtx.save();
+            tentaclesCtx.strokeStyle = accentColor;
+            tentaclesCtx.lineCap = 'round';
+            tentaclesCtx.lineJoin = 'round';
+            tentaclesCtx.shadowBlur = 20;
+            tentaclesCtx.shadowColor = accentColor;
+
+            // Draw with decreasing opacity toward tip
+            for (let i = 0; i < points.length - 1; i++) {
+                const segmentOpacity = 0.5 * (1 - points[i].ratio * 0.6);
+                tentaclesCtx.globalAlpha = segmentOpacity;
+                tentaclesCtx.lineWidth = tentacle.thickness * (1 - points[i].ratio * 0.75);
+
+                tentaclesCtx.beginPath();
+                tentaclesCtx.moveTo(points[i].x, points[i].y);
+                tentaclesCtx.lineTo(points[i + 1].x, points[i + 1].y);
+                tentaclesCtx.stroke();
+            }
+            tentaclesCtx.restore();
+
+            // Draw Art Deco geometric accents along tentacle
+            if (tentacle.isMajor) {
+                tentaclesCtx.save();
+                tentaclesCtx.strokeStyle = accentColor;
+                tentaclesCtx.fillStyle = accentColor;
+                tentaclesCtx.globalAlpha = 0.3;
+                tentaclesCtx.lineWidth = 1.5;
+
+                for (let i = 3; i < points.length - 2; i += 4) {
+                    const point = points[i];
+                    const size = tentacle.thickness * 0.6 * (1 - point.ratio * 0.5);
+
+                    // Draw diamond/rhombus shapes
+                    tentaclesCtx.beginPath();
+                    tentaclesCtx.moveTo(point.x, point.y - size);
+                    tentaclesCtx.lineTo(point.x + size * 0.6, point.y);
+                    tentaclesCtx.lineTo(point.x, point.y + size);
+                    tentaclesCtx.lineTo(point.x - size * 0.6, point.y);
+                    tentaclesCtx.closePath();
+                    tentaclesCtx.stroke();
+                }
+                tentaclesCtx.restore();
+            } else {
+                // Draw circles/orbs for non-major tentacles
+                tentaclesCtx.save();
+                tentaclesCtx.fillStyle = accentColor;
+                tentaclesCtx.globalAlpha = 0.25;
+
+                for (let i = 2; i < points.length - 1; i += 3) {
+                    const point = points[i];
+                    const radius = tentacle.thickness * 0.35 * (1 - point.ratio * 0.6);
+                    tentaclesCtx.beginPath();
+                    tentaclesCtx.arc(point.x, point.y, radius, 0, Math.PI * 2);
+                    tentaclesCtx.fill();
+                }
+                tentaclesCtx.restore();
+            }
+
+            // Draw energy particles flowing up major tentacles
+            if (tentacle.isMajor && Math.random() > 0.7) {
+                tentaclesCtx.save();
+                const particlePos = Math.random();
+                const pIndex = Math.floor(particlePos * points.length);
+                if (points[pIndex]) {
+                    const point = points[pIndex];
+                    tentaclesCtx.fillStyle = accentColor;
+                    tentaclesCtx.globalAlpha = 0.6;
+                    tentaclesCtx.shadowBlur = 10;
+                    tentaclesCtx.shadowColor = accentColor;
+                    tentaclesCtx.beginPath();
+                    tentaclesCtx.arc(point.x, point.y, 3, 0, Math.PI * 2);
+                    tentaclesCtx.fill();
+                }
+                tentaclesCtx.restore();
+            }
+        }
+
+        // Animate tentacles
+        function animateTentacles() {
+            tentaclesCtx.clearRect(0, 0, tentaclesCanvas.width, tentaclesCanvas.height);
+
+            tentaclesTime += 0.016; // ~60fps
+
+            // Draw all tentacles
+            tentacles.forEach(tentacle => drawTentacle(tentacle));
+
+            tentaclesAnimationFrame = requestAnimationFrame(animateTentacles);
+        }
+
+        // Start tentacle animation
+        initTentacles();
+        animateTentacles();
+
+        // Update mode indicator
+        function updateModeIndicator() {
+            const indicator = document.getElementById('modeIndicator');
+            const width = Math.round(document.body.offsetWidth);
+            const height = Math.round(document.body.offsetHeight);
+            const theme = getComputedStyle(document.documentElement).getPropertyValue('--accent-color').trim();
+            const themeName = theme === '#D4AF37' || theme === 'rgb(212, 175, 55)' ? 'Gold' : 'Custom';
+
+            indicator.textContent = `Portrait ${width}×${height} | ${themeName} Theme`;
+        }
+
+        updateModeIndicator();
+        window.addEventListener('resize', updateModeIndicator);
+
+        // ═══════════════════════════════════════════════════════════════
+        // EXPORT FUNCTIONALITY
+        // ═══════════════════════════════════════════════════════════════
+
+        async function exportPNG() {
+            console.log('📸 Exporting PNG...');
+
+            try {
+                // Hide controls overlay and mode indicator during export
+                const controls = document.getElementById('controls-overlay');
+                const indicator = document.getElementById('modeIndicator');
+                const tentaclesCanvasEl = document.getElementById('tentacles-canvas');
+                const wasVisible = controls.classList.contains('visible');
+                const wasTentaclesVisible = tentaclesCanvasEl && tentaclesCanvasEl.style.display !== 'none';
+
+                controls.classList.remove('visible');
+                indicator.style.display = 'none';
+
+                // Pause tentacle animation during export (capture single frame)
+                if (tentaclesAnimationFrame) {
+                    cancelAnimationFrame(tentaclesAnimationFrame);
+                }
+
+                // Load html2canvas if not already loaded
+                if (!window.html2canvas) {
+                    console.log('📦 Loading html2canvas from CDN...');
+                    await loadHtml2Canvas();
+                }
+
+                const html2canvas = window.html2canvas;
+                if (!html2canvas) {
+                    throw new Error('html2canvas failed to load');
+                }
+
+                // Store original styles
+                const htmlEl = document.documentElement;
+                const bodyEl = document.body;
+                const originalHtmlStyles = {
+                    display: htmlEl.style.display,
+                    alignItems: htmlEl.style.alignItems,
+                    justifyContent: htmlEl.style.justifyContent,
+                    background: htmlEl.style.background
+                };
+                const originalBodyStyles = {
+                    width: bodyEl.style.width,
+                    height: bodyEl.style.height,
+                    transform: bodyEl.style.transform,
+                    position: bodyEl.style.position,
+                    overflow: bodyEl.style.overflow
+                };
+
+                // Force exact dimensions for export (override media queries)
+                htmlEl.style.display = 'block';
+                htmlEl.style.alignItems = 'unset';
+                htmlEl.style.justifyContent = 'unset';
+                htmlEl.style.background = 'transparent';
+                htmlEl.style.overflow = 'visible'; // Ensure nothing is clipped
+                bodyEl.style.width = '1080px';
+                bodyEl.style.height = '1920px';
+                bodyEl.style.transform = 'none';
+                bodyEl.style.position = 'relative';
+                bodyEl.style.overflow = 'visible'; // Ensure all elements are captured
+
+                // Scale up elements for export (SVG and fixed-size CSS elements)
+                const characterImg = document.querySelector('.character-image');
+                const pentagrams = document.querySelectorAll('.pentagram');
+                const eyeOfProvidence = document.querySelector('.eye-of-providence');
+                const alchemicalSymbols = document.querySelectorAll('.alchemical-symbol');
+                const mysticalCircles = document.querySelectorAll('.mystical-circle');
+                const crescentMoons = document.querySelectorAll('.occult-layer > svg:not(.pentagram):not(.eye-of-providence)');
+                const dots = document.querySelectorAll('.dot');
+
+                let originalImgStyles = null;
+                const originalOccultStyles = [];
+                const originalDotStyles = [];
+                const exportScale = 2;
+
+                // Scale character image
+                if (characterImg) {
+                    originalImgStyles = {
+                        maxWidth: characterImg.style.maxWidth,
+                        maxHeight: characterImg.style.maxHeight,
+                        width: characterImg.style.width,
+                        height: characterImg.style.height
+                    };
+
+                    const currentMaxWidth = characterImg.style.maxWidth || '450px';
+                    const currentMaxHeight = characterImg.style.maxHeight || '1200px';
+                    const newMaxWidth = parseInt(currentMaxWidth) * exportScale;
+                    const newMaxHeight = parseInt(currentMaxHeight) * exportScale;
+
+                    characterImg.style.maxWidth = `${newMaxWidth}px`;
+                    characterImg.style.maxHeight = `${newMaxHeight}px`;
+
+                    console.log(`🖼️ Scaled character image: ${currentMaxWidth}×${currentMaxHeight} → ${newMaxWidth}×${newMaxHeight}`);
+                }
+
+                // Scale pentagrams
+                pentagrams.forEach(pentagram => {
+                    const original = {
+                        width: pentagram.style.width,
+                        height: pentagram.style.height
+                    };
+                    originalOccultStyles.push({ element: pentagram, styles: original });
+
+                    const currentWidth = parseInt(pentagram.style.width);
+                    const currentHeight = parseInt(pentagram.style.height);
+                    pentagram.style.width = `${currentWidth * exportScale}px`;
+                    pentagram.style.height = `${currentHeight * exportScale}px`;
+                });
+
+                // Scale Eye of Providence
+                if (eyeOfProvidence) {
+                    const original = {
+                        width: eyeOfProvidence.style.width,
+                        height: eyeOfProvidence.style.height
+                    };
+                    originalOccultStyles.push({ element: eyeOfProvidence, styles: original });
+
+                    const currentWidth = parseInt(getComputedStyle(eyeOfProvidence).width);
+                    const currentHeight = parseInt(getComputedStyle(eyeOfProvidence).height);
+                    eyeOfProvidence.style.width = `${currentWidth * exportScale}px`;
+                    eyeOfProvidence.style.height = `${currentHeight * exportScale}px`;
+                }
+
+                // Scale alchemical symbols
+                alchemicalSymbols.forEach(symbol => {
+                    const original = {
+                        fontSize: symbol.style.fontSize
+                    };
+                    originalOccultStyles.push({ element: symbol, styles: original });
+
+                    const currentSize = parseInt(getComputedStyle(symbol).fontSize);
+                    symbol.style.fontSize = `${currentSize * exportScale}px`;
+                });
+
+                // Scale mystical circles
+                mysticalCircles.forEach(circle => {
+                    const original = {
+                        width: circle.style.width,
+                        height: circle.style.height
+                    };
+                    originalOccultStyles.push({ element: circle, styles: original });
+
+                    const currentWidth = parseInt(circle.style.width);
+                    const currentHeight = parseInt(circle.style.height);
+                    circle.style.width = `${currentWidth * exportScale}px`;
+                    circle.style.height = `${currentHeight * exportScale}px`;
+                });
+
+                // Scale crescent moons
+                crescentMoons.forEach(moon => {
+                    const original = {
+                        width: moon.style.width,
+                        height: moon.style.height
+                    };
+                    originalOccultStyles.push({ element: moon, styles: original });
+
+                    const currentWidth = parseInt(moon.style.width);
+                    const currentHeight = parseInt(moon.style.height);
+                    moon.style.width = `${currentWidth * exportScale}px`;
+                    moon.style.height = `${currentHeight * exportScale}px`;
+                });
+
+                // Scale dots
+                dots.forEach(dot => {
+                    const original = {
+                        width: dot.style.width,
+                        height: dot.style.height
+                    };
+                    originalDotStyles.push({ element: dot, styles: original });
+
+                    const currentSize = parseInt(getComputedStyle(dot).width);
+                    dot.style.width = `${currentSize * exportScale}px`;
+                    dot.style.height = `${currentSize * exportScale}px`;
+                });
+
+                console.log(`🔮 Scaled ${originalOccultStyles.length} occult elements and ${originalDotStyles.length} dots`);
+
+                // Wait a moment for styles to apply
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                // Wait for styles and positioning to stabilize
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                console.log('📐 Capturing at 1080×1920 with 2× scale...');
+                console.log('📏 Body dimensions:', bodyEl.offsetWidth, '×', bodyEl.offsetHeight);
+
+                // Check if top elements are visible
+                const testEye = document.querySelector('.eye-of-providence');
+                if (testEye) {
+                    const rect = testEye.getBoundingClientRect();
+                    console.log('👁️ Eye position:', {
+                        top: rect.top,
+                        left: rect.left,
+                        width: rect.width,
+                        height: rect.height,
+                        visible: rect.top >= 0 && rect.left >= 0
+                    });
+                }
+
+                // Export canvas - scale: 1 since we manually scaled the image
+                const canvas = await html2canvas(document.body, {
+                    width: 1080,
+                    height: 1920,
+                    windowWidth: 1080,
+                    windowHeight: 1920,
+                    x: 0,
+                    y: 0,
+                    scrollX: 0,
+                    scrollY: 0,
+                    backgroundColor: '#0A0A0F', // Use solid background instead of transparent
+                    scale: exportScale, // Higher scale for better quality
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    removeContainer: true
+                });
+
+                console.log(`✅ Canvas captured: ${canvas.width}×${canvas.height}`);
+
+                // Restore original styles
+                Object.assign(htmlEl.style, originalHtmlStyles);
+                Object.assign(bodyEl.style, originalBodyStyles);
+
+                // Restore character image styles
+                if (characterImg && originalImgStyles) {
+                    Object.assign(characterImg.style, originalImgStyles);
+                }
+
+                // Restore occult elements
+                originalOccultStyles.forEach(({ element, styles }) => {
+                    Object.assign(element.style, styles);
+                });
+
+                // Restore dots
+                originalDotStyles.forEach(({ element, styles }) => {
+                    Object.assign(element.style, styles);
+                });
+
+                // Download
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                    link.download = `neo-deco-shrine-portrait-${timestamp}.png`;
+                    link.href = url;
+                    document.body.appendChild(link);
+                    link.click();
+
+                    setTimeout(() => {
+                        document.body.removeChild(link);
+                        URL.revokeObjectURL(url);
+                        console.log('✅ Export complete! Image size:', (blob.size / 1024 / 1024).toFixed(2), 'MB');
+                    }, 100);
+                });
+
+                // Restore controls and indicator if they were visible
+                if (wasVisible) {
+                    setTimeout(() => controls.classList.add('visible'), 200);
+                }
+                indicator.style.display = 'block';
+
+                // Resume tentacle animation if it was visible
+                if (wasTentaclesVisible && !tentaclesAnimationFrame) {
+                    animateTentacles();
+                }
+
+            } catch (error) {
+                console.error('❌ Export failed:', error);
+                alert('Export failed. Check console for details.');
+            }
+        }
+
+        async function loadHtml2Canvas() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';
+                script.onload = resolve;
+                script.onerror = reject;
+                document.head.appendChild(script);
+            });
+        }
+
+        // ═══════════════════════════════════════════════════════════════
+        // CHARACTER IMAGE CONTROL
+        // ═══════════════════════════════════════════════════════════════
+
+        window.setCharacter = (url) => {
+            const placeholder = document.querySelector('.character-placeholder');
+            const existingImg = document.querySelector('.character-image');
+
+            if (existingImg) {
+                existingImg.remove();
+            }
+
+            if (!url) {
+                clearCharacter();
+                return;
+            }
+
+            const img = document.createElement('img');
+            img.className = 'character-image';
+            img.alt = 'Character';
+            img.crossOrigin = 'anonymous';
+
+            img.onload = () => {
+                placeholder.style.display = 'none';
+                document.body.appendChild(img);
+                console.log(`✅ Character loaded: ${url}`);
+            };
+
+            img.onerror = () => {
+                console.error(`❌ Failed to load character: ${url}`);
+            };
+
+            img.src = url;
+        };
+
+        window.clearCharacter = () => {
+            const existingImg = document.querySelector('.character-image');
+            const placeholder = document.querySelector('.character-placeholder');
+
+            if (existingImg) {
+                existingImg.remove();
+            }
+            placeholder.style.display = 'flex';
+            console.log('✅ Character cleared');
+        };
+
+        window.setCharacterSize = (percent) => {
+            const img = document.querySelector('.character-image');
+            if (!img) {
+                console.warn('⚠️ No character loaded. Use setCharacter() first.');
+                return;
+            }
+
+            if (percent < 50 || percent > 150) {
+                console.warn('⚠️ Size must be between 50% and 150%');
+                return;
+            }
+
+            const baseWidth = 450;
+            const baseHeight = 1200;
+            img.style.maxWidth = `${baseWidth * (percent / 100)}px`;
+            img.style.maxHeight = `${baseHeight * (percent / 100)}px`;
+            console.log(`✅ Character size set to ${percent}%`);
+        };
+
+        // Handle file upload from local file system
+        window.handleFileUpload = (event) => {
+            const file = event.target.files[0];
+            if (!file) {
+                return;
+            }
+
+            // Check if it's an image file
+            if (!file.type.startsWith('image/')) {
+                console.error('❌ Please select an image file');
+                alert('Please select an image file (PNG, JPG, WEBP, etc.)');
+                return;
+            }
+
+            // Read file as data URL (bypasses CORS completely)
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const dataUrl = e.target.result;
+                setCharacter(dataUrl);
+                console.log(`✅ Character loaded from file: ${file.name} (${(file.size / 1024 / 1024).toFixed(2)}MB)`);
+            };
+            reader.onerror = () => {
+                console.error('❌ Failed to read file');
+                alert('Failed to read file. Please try again.');
+            };
+            reader.readAsDataURL(file);
+        };
+
+        // ═══════════════════════════════════════════════════════════════
+        // KEYBOARD CONTROLS
+        // ═══════════════════════════════════════════════════════════════
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'c' || e.key === 'C') {
+                const controls = document.getElementById('controls-overlay');
+                controls.classList.toggle('visible');
+            }
+            if (e.key === 'e' || e.key === 'E') {
+                exportPNG();
+            }
+        });
+
+        // Theme switching
+        window.switchTheme = (colorOrName) => {
+            const themeMap = {
+                'gold': '#D4AF37',
+                'pink': '#FF1493',
+                'cyan': '#00FFFF',
+                'purple': '#8B5CF6'
+            };
+
+            const color = themeMap[colorOrName.toLowerCase()] || colorOrName;
+            document.documentElement.style.setProperty('--accent-color', color);
+
+            const r = parseInt(color.slice(1, 3), 16);
+            const g = parseInt(color.slice(3, 5), 16);
+            const b = parseInt(color.slice(5, 7), 16);
+            document.documentElement.style.setProperty('--accent-glow', `rgba(${r}, ${g}, ${b}, 0.6)`);
+
+            console.log(`✅ Theme changed to: ${color}`);
+            updateModeIndicator();
+        };
+
+        // Tentacle controls
+        window.toggleTentacles = () => {
+            const canvas = document.getElementById('tentacles-canvas');
+            if (canvas.style.display === 'none') {
+                canvas.style.display = 'block';
+                if (!tentaclesAnimationFrame) {
+                    animateTentacles();
+                }
+                console.log('✅ Tentacles enabled');
+            } else {
+                canvas.style.display = 'none';
+                if (tentaclesAnimationFrame) {
+                    cancelAnimationFrame(tentaclesAnimationFrame);
+                    tentaclesAnimationFrame = null;
+                }
+                console.log('✅ Tentacles disabled');
+            }
+        };
+
+        window.regenerateTentacles = (count) => {
+            if (count) {
+                tentacleCount = count;
+            }
+            initTentacles();
+            console.log(`✅ Regenerated ${tentacles.length} tentacles`);
+        };
+
+        // Make exportPNG globally accessible
+        window.exportPNG = exportPNG;
+
+        console.log(`
+╔═══════════════════════════════════════════════════════╗
+║   NEO-DECO SHRINE - PORTRAIT MODE (1080×1920)        ║
+╚═══════════════════════════════════════════════════════╝
+
+📱 Portrait-only canvas for tarot cards and social media
+
+🎮 KEYBOARD SHORTCUTS:
+   C - Toggle controls menu
+   E - Export as PNG (1080×1920)
+
+📋 CONSOLE COMMANDS:
+
+// Theme switching
+switchTheme("pink");     // Hot pink neon
+switchTheme("gold");     // Metallic gold (default)
+switchTheme("cyan");     // Cyberpunk cyan
+switchTheme("purple");   // Mystical purple
+switchTheme("#FF6B6B");  // Custom hex color
+
+// Character image control
+setCharacter("https://s3.whykusanagi.xyz/art/character.png");
+setCharacterSize(120);   // 50-150%
+clearCharacter();        // Remove character
+
+// Pattern regeneration
+generateEclipseRays(50); // More eclipse rays (default: 30)
+generateSunburst(60);    // More outer rays (default: 40)
+
+// Animated tentacles (Art Deco style, radiating from bottom)
+toggleTentacles();       // Show/hide tentacles
+regenerateTentacles(20); // Change tentacle count (default: 16)
+
+// Export
+exportPNG();             // Download as PNG
+
+✨ Canvas: 1080×1920 (9:16 ratio)
+   Perfect for: Instagram Stories, TikTok, Tarot Cards, Social Media Posts
+        `);
+    </script>
+</body>
+</html>

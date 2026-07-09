@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fall of Kirara | Doujinshi by whykusanagi</title>
+  <meta name="description" content="Fall of Kirara doujin page with plot summary, content highlights, and digital/physical purchase links." />
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://whykusanagi.xyz/fall-of-kirara.html">
+  <!-- Load environment config for asset URL handling (dev vs production) -->
+  <script src="assets/js/env-config.js"></script>
+  <script src="assets/js/background-setup.js"></script>
+  
+  <!-- Corrupted Theme Framework -->
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  
+  <!-- Site-Specific Overrides -->
+  <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <script type="module" src="assets/js/site-bootstrap.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .product-image-card {
+      background: var(--glass);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-2xl);
+      padding: 1.5rem;
+      backdrop-filter: blur(15px);
+      box-shadow: 0 8px 32px rgba(217, 79, 144, 0.15), inset 0 0 20px rgba(217, 79, 144, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .product-image-card img {
+      max-height: 85vh;
+      width: auto;
+      max-width: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 30px rgba(217, 79, 144, 0.25));
+      border-radius: var(--radius-lg);
+    }
+
+    .content h1 {
+      font-size: 2.5rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .content .price {
+      font-size: 1.5rem;
+      margin: 1rem 0;
+      color: var(--accent-light);
+      text-align: center;
+      font-weight: 600;
+    }
+
+    .content h2 {
+      color: var(--accent);
+      font-size: 1.5rem;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .content h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .content p {
+      color: var(--text);
+      line-height: 1.8;
+      margin-bottom: 1rem;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .content ul {
+      color: var(--text);
+      line-height: 1.8;
+      margin-left: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .content strong {
+      color: var(--accent);
+    }
+
+    .tags {
+      margin-top: var(--spacing-lg);
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-xs);
+      justify-content: center;
+    }
+
+    .tag {
+      background: rgba(217, 79, 144, 0.15);
+      padding: var(--spacing-xs) var(--spacing-sm);
+      border-radius: var(--radius-lg);
+      border: 1px solid rgba(217, 79, 144, 0.3);
+      font-size: 0.85rem;
+      white-space: nowrap;
+      color: var(--text-secondary);
+    }
+
+    .countdown {
+      margin-top: var(--spacing-xl);
+      font-size: 1.25rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--accent-light);
+      text-shadow: 1px 1px 3px rgba(217, 79, 144, 0.3);
+    }
+
+    @media screen and (max-width: 1000px) {
+      .container {
+        grid-template-columns: 1fr !important;
+      }
+
+      .product-image-card img {
+        max-height: 60vh;
+      }
+    }
+  </style>
+</head>
+<body class="has-video-bg">
+  <script src="assets/js/loading.js"></script>
+
+  <!-- Video background (package structure) -->
+  <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+    <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+    <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+  </video>
+  <div class="glass-backdrop"></div>
+
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+      <div class="navbar-links">
+        <a href="celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+        <a href="music.html"><i class="fas fa-music"></i> Music</a>
+        <a href="blog/index.html"><i class="fas fa-blog"></i> Blog</a>
+        <a href="art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+        <a href="references.html"><i class="fas fa-palette"></i> References</a>
+        <a href="doujin.html"><i class="fas fa-book"></i> Doujin</a>
+        <a href="links.html"><i class="fas fa-link"></i> Links</a>
+        <a href="tools.html"><i class="fas fa-tools"></i> Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-shell">
+    <div class="container container--grid-2col">
+      <div class="content">
+        <h1>🌙 Fall of Kirara</h1>
+        <p class="price">$25.00 USD</p>
+
+        <h2>Plot Summary</h2>
+        <p>In the dark underbelly of Demon Capital Tokyo, pleasure and corruption reign supreme. A notorious bar serves as a hub for illicit auctions where slaves are sold to powerful demons and humans — a common setting in the Taimanin universe. With key figures like Asagi, Sakura, and Yukikaze missing, a new hero steps forward: <strong>Onizaki Kirara</strong>, determined to uncover the truth.</p>
+
+        <h2>Story Overview</h2>
+        <p>Kirara infiltrates this den of lust disguised as a bunny-suit waitress, facing lecherous advances with her signature tsundere embarrassment. Her mission: locate the demon lord responsible for Volt Ninja Uehara Rin's disappearance. But things take a dark turn as Kirara finds herself ensnared in an abyss of corruption — both body and mind.</p>
+        <p>Over eight beautifully illustrated pages, witness Kirara's fall from a determined infiltrator to a corrupted, devoted pet of the demon lord, complete with mind break, womb marking, and an inevitable desire for breeding.</p>
+
+        <h2>Content Highlights</h2>
+        <ul>
+          <li>Full-color, high-quality illustrations</li>
+          <li>Lewd bunny suit infiltration scenario</li>
+          <li>Abyss corruption & mind break themes</li>
+          <li>Tentacle and crest transformation visuals</li>
+          <li>Detailed progression from resistance to full submission</li>
+          <li>A bittersweet ending with Kirara accepting her new fate</li>
+        </ul>
+
+        <h2>Purchase FAQ</h2>
+        <p><strong>Q:</strong> Is this available in digital and physical formats?<br><strong>A:</strong> Yes. Use <strong>Download Digital</strong> for digital access or <strong>Buy Physical</strong> for print purchase.</p>
+        <p><strong>Q:</strong> Where can I review purchase policies?<br><strong>A:</strong> See <a href="refunds.html">Refunds</a>, <a href="shipping.html">Shipping</a>, and <a href="terms.html">Terms</a>.</p>
+        <p><strong>Q:</strong> Is this adult-only content?<br><strong>A:</strong> Yes, this release is marked 18+ adults only.</p>
+
+        <div class="buttons">
+          <a href="https://kusanagi.short.gy/Shop" target="_blank" rel="noopener" class="btn"><i class="fas fa-box"></i> Buy Physical</a>
+          <a href="https://kusanagi.short.gy/itch" target="_blank" rel="noopener" class="btn"><i class="fas fa-download"></i> Download Digital</a>
+        </div>
+
+        <p><strong>Limited physical prints available. Digital distribution available now.</strong></p>
+        <div class="countdown" id="countdown">Now Available!</div>
+
+        <p><em>18+ Adults Only</em></p>
+
+        <div class="tags">
+          <span class="tag">#Doujinshi</span>
+          <span class="tag">#Taimanin</span>
+          <span class="tag">#Corruption</span>
+          <span class="tag">#MindBreak</span>
+          <span class="tag">#BunnyGirl</span>
+          <span class="tag">#Tentacles</span>
+          <span class="tag">#LewdArt</span>
+          <span class="tag">#Erotic</span>
+          <span class="tag">#Vtuber</span>
+          <span class="tag">#whykusanagi</span>
+        </div>
+      </div>
+
+      <div class="character">
+        <div class="product-image-card">
+          <img id="product-image" src="https://s3.whykusanagi.xyz/Fall_of_Kirara.png" alt="Fall of Kirara Cover">
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2026 whykusanagi. All rights reserved. | <strong style="color: var(--accent);">18+ Only</strong><br>
+      <a href="index.html">Home</a> | <a href="privacy.html">Privacy</a> | <a href="terms.html">Terms</a> | <a href="dmca.html">DMCA</a> | <a href="refunds.html">Refunds</a> | <a href="shipping.html">Shipping</a>
+    </footer>
+  </main>
+
+  <script src="src/lib/celeste-widget.js"></script>
+  <script src="assets/js/video-background.js"></script>
+
+  <script>
+    // Set product image with proper environment detection
+    document.addEventListener('DOMContentLoaded', function() {
+      const productImage = document.getElementById('product-image');
+      if (!productImage) return;
+
+      // Use AssetConfig if available to convert URLs for dev environment
+      const setImage = function() {
+        if (window.AssetConfig && typeof window.AssetConfig.convertUrl === 'function') {
+          const coverUrl = window.AssetConfig.convertUrl('https://s3.whykusanagi.xyz/Fall_of_Kirara.png');
+          productImage.src = coverUrl;
+        }
+      };
+
+      if (window.AssetConfig && typeof window.AssetConfig.convertUrl === 'function') {
+        setImage();
+      } else {
+        setTimeout(setImage, 100);
+      }
+    });
+
+    // Product is now available - no countdown needed
+  </script>
+</body>
+</html>

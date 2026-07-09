@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Production-Ready Glassmorphic Design System | Celeste Blog</title>
+    <meta name="description" content="How I built Corrupted Theme—a production-ready glassmorphic CSS framework with enterprise-grade standards, Docker showcase, and npm distribution." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/corrupted-theme-design-system.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Production-Ready Glassmorphic Design System",
+      "description": "How I built Corrupted Theme—a production-ready glassmorphic CSS framework with enterprise-grade standards, Docker showcase, and npm distribution.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2025-01-26",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/corrupted-theme-design-system.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">AI Corruption Aesthetics</p>
+          <h1>Building a Production-Ready Glassmorphic Design System</h1>
+          <p class="meta">How I built Corrupted Theme—a dark, cyberpunk-inspired CSS framework with enterprise-grade standards, Docker showcase, and npm distribution.</p>
+          <p class="meta"><strong>Last updated:</strong> January 26, 2025</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>Corrupted Theme is a production-ready glassmorphic design system built to enterprise standards (Meta/Google/Netflix level).</li>
+            <li>Includes 50+ components, WCAG AA compliance, Docker showcase, and secure Celeste AI widget integration.</li>
+            <li>Available on npm as <code>@whykusanagi/corrupted-theme</code> with modular imports and full documentation.</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/cyber_sailor_moon_trans.png" alt="Corrupted Theme glassmorphic design system showcase" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>Why Build a Design System?</h2>
+          <p>After building whykusanagi.xyz, I realized the glassmorphic aesthetic I'd created could be reused across multiple projects. Instead of copying CSS files, I wanted a proper design system with:</p>
+          <ul>
+            <li><strong>Systemized tokens</strong>: CSS variables for colors, typography, spacing, and motion</li>
+            <li><strong>Component library</strong>: 50+ reusable UI components (buttons, forms, navigation, galleries, countdowns)</li>
+            <li><strong>Enterprise standards</strong>: Coding guidelines matching Meta/Google/Netflix internal libraries</li>
+            <li><strong>Developer experience</strong>: npm distribution, Docker showcase, comprehensive documentation</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Architecture & Structure</h2>
+          <p>The theme follows a modular CSS architecture with clear separation of concerns:</p>
+          <ol>
+            <li><strong>Variables</strong>: Design tokens (colors, spacing, z-index scale)</li>
+            <li><strong>Typography</strong>: Font stack and text hierarchy</li>
+            <li><strong>Glassmorphism</strong>: Shared glass effect utilities</li>
+            <li><strong>Animations</strong>: Keyframes and motion (must load before components)</li>
+            <li><strong>Components</strong>: UI primitives (buttons, cards, forms, navigation)</li>
+            <li><strong>Utilities</strong>: Spacing, layout, and helper classes</li>
+          </ol>
+          <p>Import order matters! Components depend on animations, so the build system enforces correct loading sequence.</p>
+        </section>
+
+        <section>
+          <h2>Key Features</h2>
+          <p><strong>Glassmorphism-First Design</strong>: Layered depth, gradients, and scanlines create a cinematic cyberpunk aesthetic. The glass backdrop system supports both static images and video backgrounds with proper z-index stacking.</p>
+          <p><strong>Extension Components</strong>: Production-tested components from whykusanagi.xyz including galleries with filtering/lightbox, social link-in-bio layouts, countdown widgets with configurable shapes, and NSFW content blur overlays.</p>
+          <p><strong>Celeste AI Widget Integration</strong>: Secure proxy-based integration that never exposes credentials to the browser. All API calls route through a hardened proxy server, ready for Cloudflare Workers deployment.</p>
+          <p><strong>Nikke Game Utilities</strong>: Specialized components for Goddess of Victory: NIKKE including element pills, team position cards, and unit displays that match the game's visual language.</p>
+        </section>
+
+        <section>
+          <h2>Development Workflow</h2>
+          <p>The project uses PostCSS for building, with watch mode for development. The Docker showcase serves the complete component library at <code>examples/showcase-complete.html</code> for instant QA.</p>
+          <p>All code follows strict standards: flat component classes (`.btn.secondary`), tokens in variables.css, utilities never override components, and ES modules for JavaScript with side-effect-free initialization functions.</p>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><a href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener">corrupted-theme repository</a></li>
+            <li><a href="https://www.npmjs.com/package/@whykusanagi/corrupted-theme" target="_blank" rel="noopener">@whykusanagi/corrupted-theme on npm</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Can I use this in commercial projects?<br>
+          <strong>A:</strong> Yes! It's MIT licensed, so you can use it in any project—commercial or personal. Just include the license notice.</p>
+          <p><strong>Q:</strong> How do I customize the colors?<br>
+          <strong>A:</strong> Override CSS variables in your own stylesheet. The theme uses <code>--accent</code>, <code>--glass</code>, <code>--text</code> tokens that you can customize without modifying the source.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener">View on GitHub</a>
+          <a class="btn" href="https://www.npmjs.com/package/@whykusanagi/corrupted-theme" target="_blank" rel="noopener">Install from npm</a>
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

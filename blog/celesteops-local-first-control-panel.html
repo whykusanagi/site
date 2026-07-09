@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>I Built My Own Task Manager Instead of Opening Obsidian | Celeste Blog</title>
+    <meta name="description" content="CelesteOps is a local-first macOS control panel that shares one SQLite backlog with Claude, Codex, and Cursor over MCP — specs out of git, paired clients, signed releases." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celesteops-local-first-control-panel.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/celesteops-local-first-control-panel.html">
+    <meta property="og:title" content="I Built My Own Task Manager Instead of Opening Obsidian">
+    <meta property="og:description" content="CelesteOps: a local-first macOS control panel that shares one SQLite backlog with Claude, Codex, and Cursor over MCP. Specs out of git, paired clients, signed releases.">
+    <meta property="og:image" content="https://s3.whykusanagi.xyz/optimized_assets/celesteops_today_ghub.png">
+    <meta property="og:site_name" content="whykusanagi">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/celesteops-local-first-control-panel.html">
+    <meta name="twitter:title" content="I Built My Own Task Manager Instead of Opening Obsidian">
+    <meta name="twitter:description" content="A local-first creator control panel that shares one SQLite backlog with every agent over MCP. Specs out of git, paired clients you can revoke, signed releases.">
+    <meta name="twitter:image" content="https://s3.whykusanagi.xyz/optimized_assets/celesteops_today_ghub.png">
+    <meta name="twitter:site" content="@whykusanagi">
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "I Built My Own Task Manager Instead of Opening Obsidian",
+      "description": "CelesteOps is a local-first macOS control panel that shares one SQLite backlog with Claude, Codex, and Cursor over MCP — specs out of git, paired clients, signed releases.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-06-02",
+      "image": "https://s3.whykusanagi.xyz/optimized_assets/celesteops_today_ghub.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celesteops-local-first-control-panel.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tools</p>
+          <h1>I Built My Own Task Manager Instead of Opening Obsidian</h1>
+          <p class="meta">A local-first control panel where my agents and I share one backlog: specs out of git but still queryable, paired clients you can revoke, and a signed macOS release.</p>
+        </header>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/optimized_assets/celesteops_today_ghub.png" alt="CelesteOps Today view: the daily P1 cap, daily-note / daily-brief / backup controls, and a Pending Review queue of specs waiting on sign-off" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+        </section>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>One local backlog, every agent.</strong> A single SQLite file on disk, wired into Claude Code, Claude Desktop, Cursor, Codex, and celeste-cli over MCP. No sync service in the middle.</li>
+            <li><strong>Specs live outside the repo.</strong> Plans and specs are stored as documents tagged to a repo by metadata, not by file path — durable across context resets, queryable by the next agent, and out of your git history.</li>
+            <li><strong>Pairing, not blind localhost trust.</strong> Every client enrolls with a six-digit code and gets its own revocable token. A random website hitting <code>127.0.0.1</code> gets a 401.</li>
+            <li><strong>Signed and shippable.</strong> A PGP-signed macOS build plus a drop-in agent skill, headed for a public distribution repo when the stable release lands.</li>
+          </ul>
+        </section>
+
+        <section>
+          <p>Most people would tell you to just use Obsidian. Drop your tasks in a vault, sprinkle some plugins on top, call it done. And sure, that works.</p>
+          <p>But what's the fun in that?</p>
+          <p>So I built CelesteOps instead: a local-first control panel for everything I run as a creator. It tracks tasks, a content pipeline, a stream calendar, milestones, scheduled posts, and a pile of markdown notes. One macOS app. One SQLite file on disk. One database wired into every agent I run over MCP.</p>
+          <p>What matters sits under the dashboard. The agents and I share one backlog, so we never wind up with five private copies that drift apart by Thursday.</p>
+        </section>
+
+        <section>
+          <h2>The actual problem</h2>
+          <p>I have agents drafting specs, writing code, triaging GitHub issues, and queuing posts on my behalf. They need somewhere durable to put that work so I can review it before it ships. They also need somewhere the next agent can read it back.</p>
+          <p>Slack, GitHub, and Notion all solve a version of this. They also come with auth boundaries, rate limits, and a network round trip for every read. When the work is happening on my laptop, routing the coordination layer through someone else's servers felt backwards.</p>
+          <p>CelesteOps keeps the loop local. Every task, note, and spec lives in <code>celeste_ops.db</code> on my machine. One MCP server reads and writes it. The desktop UI reads and writes the same file. An agent creates a task over MCP, and a couple seconds later it appears in the sidebar. No sync service in the middle.</p>
+        </section>
+
+        <section>
+          <h2>The spec problem</h2>
+          <p>This is the one that actually pushed me to build it.</p>
+          <p>You write a spec or an implementation plan, and where does it go?</p>
+          <p>Commit it to the repo and you get half-formed thinking in your git history, plans that go stale the day after you write them, and sometimes private strategy you'd rather not ship in public. Leave it out of the repo and it lives nowhere. The moment an agent's context window resets, the plan is gone. A subagent spun up to handle one slice of the work has no idea the plan ever existed, so it re-derives the same decisions or drifts from them.</p>
+          <p>CelesteOps gives that work a home outside the tree. A spec or plan gets written as a document tagged to the repo by metadata, not by file path: <code>repo: celeste-cli</code>, <code>folder: celeste-cli/specs</code>, <code>review_status: in-review</code>. The next agent reads it back by querying that metadata. The next session picks up where the last one stopped. A subagent asks "what's the current plan for X" and gets the real answer instead of a guess.</p>
+          <p>That's the abstraction I kept failing to name: tasks, specs, plans, and docs live in a tagged metadata structure any agent can query, sitting <em>alongside</em> the repo instead of <em>inside</em> it. The git tree stays clean. The plan stays durable. And I still hold the approve button.</p>
+        </section>
+
+        <section>
+          <h2>Many agents, one backlog</h2>
+          <p>It's not just one assistant. The MCP server speaks standard MCP, so Claude Code, Claude Desktop, Cursor, Codex, and celeste-cli all connect to the same database at the same time. Claude Desktop gets a one-click <code>.mcpb</code> extension; the rest wire up through a small config. I can point one agent at a GitHub repo to triage issues and file tasks, hand content iteration to another, and let a third draft specs.</p>
+          <p>They're not just reading the same list. When one of them changes something in repo A that touches repo B, it files a task tagged for repo B, and the next agent working there picks it up. The backlog doubles as a message board between agents, so a decision made in one session survives into the next one in a different repo with a different model.</p>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/optimized_assets/celesteops_projects_ghub.png" alt="The CelesteOps Projects rollup: every repo the agents touch, each card showing open-task, P0, AI-owned, doc, and pending-review counts" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <p>The Projects view is where that pays off. Every repo on one screen, each card showing what's open, what's blocking, how much an agent owns, and how many reviews are waiting on me. The server exposes 56 tools to drive all of it: create a task, move content through the pipeline, attach a doc to a task, schedule a post, generate the morning brief. When any agent asks "what needs attention," the answer comes from the real backlog. I can see what's in flight, what is blocked, and which tasks are mine to clear.</p>
+        </section>
+
+        <section>
+          <h2>Pairing an agent, not trusting the network</h2>
+          <p>A local app that opens an HTTP port has a problem people forget: a web page you visit can also reach <code>127.0.0.1</code>. Loopback is not a wall. So I stopped treating "it came from localhost" as a reason to trust a request, and I treat the API as if it were public.</p>
+          <p>Every LLM client pairs with CelesteOps the way you pair a Bluetooth device. You open <strong>Settings &rarr; Connections</strong>, the app shows a six-digit code on a live countdown, and the client enrolls with it before it lapses. Regenerate it any time. Claude Code, Claude Desktop, Cursor, Codex, celeste-cli: each gets its own token, <code>cops_</code> followed by 256 bits of random. The token is stored as a SHA-256 hash, never in plaintext, and shown to the client exactly once. The pairing code is the consent: a client that knows it lands approved, and from then on the Connections panel lets me revoke it, rotate it, or set an expiry, the same way I approve a spec.</p>
+          <p>After enrollment, every request carries that token, and the server checks the token, the Origin, and the Host before it touches the database. A website with no code and no token gets a 401, even if it guesses the port. The app's own UI skips all of this with a token minted fresh in memory each launch, so I never approve myself. Secrets like the R2 key and the backup password sit encrypted at rest behind a macOS Keychain key, and the API hands back a "configured: true" boolean instead of the value.</p>
+        </section>
+
+        <section>
+          <h2>What it tracks</h2>
+          <p>The sidebar splits into four bands:</p>
+          <ul>
+            <li><strong>Today / Inbox</strong> — top P1 tasks (hard-capped at three a day), what's overdue, what just became unblocked, and a one-click daily brief.</li>
+            <li><strong>Tasks / Notes / Projects / Content</strong> — a filterable task list with real dependencies, markdown notes with folders and backlinks, a cross-repo rollup, and a content pipeline that runs idea &rarr; outline &rarr; record &rarr; edit &rarr; publish &rarr; repurpose.</li>
+            <li><strong>Calendar</strong> — stream days, milestones, and scheduled social posts in month / week / day views.</li>
+            <li><strong>Settings</strong> — backup config, the Connections panel, and defaults.</li>
+          </ul>
+          <p>Tasks carry a <code>blocked_by</code> list, so "implement the thing" stays quiet until "write the spec" is signed off and marked done. The Tasks view splits three ways: Active for the working list, Archive for what's done, and a dependency Graph that draws the blocker chains so I can see what's gating what. Repo and tag filters autocomplete from the tasks I already have. The Inbox surfaces work the moment its blockers clear, <code>&#8984;K</code> runs full-text search (SQLite FTS5) across everything and jumps me straight to the hit, and the rest behaves like a real Mac app: a native menu bar, <code>&#8984;S</code> and <code>&#8984;P</code> in the editor.</p>
+        </section>
+
+        <section>
+          <h2>The review workflow is the point</h2>
+          <p>An agent drafts a spec or a plan as a markdown document and flags it <code>in-review</code>. In the Notes tab that document grows two buttons: <strong>Approve</strong> and <strong>Mark Modified</strong>. One click flips its status and stamps the time.</p>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/optimized_assets/celesteops_notes_review_ghub.png" alt="The CelesteOps Notes tab mid-review: this very blog draft sitting in-review with Approve and Mark Modified buttons, the folder sidebar grouping specs and plans on the left" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <p>The agent polls for that timestamp and picks up where I left off. I sign off on a spec, the task it blocks moves to done, and the next task slides into my Inbox on its own. If I reopen a spec I'd already approved and change it, the doc flips itself back to "modified," so the agent re-reads before acting on a stale plan. I review in plain English. The plumbing handles itself.</p>
+          <p>The screenshot above is this post: I drafted it in Celeste's voice, filed it as a document in-review, and I'm reading it back in the same tab where I sign off on everything else. The agents wrote the v1.10 sprint specs overnight. I get to them with coffee.</p>
+        </section>
+
+        <section>
+          <h2>Local-first, but not stranded</h2>
+          <p>Everything lives on disk and runs offline. No account, no cloud dependency to boot the app.</p>
+          <p>When I do want a safety net, backups go to a Cloudflare R2 bucket. Each backup is a zip of the database and exports, encrypted with AES-256-GCM from a password I set, with a SHA-256 hash of the plaintext stored alongside it so a restore can verify the data came back intact. The zip strips the secret fields out of settings before it leaves the machine, and every backup gets its own random salt. Off-site copies, still encrypted, still mine. I click <strong>Backup now</strong>, or an agent calls <code>backup_run_manual</code>, and it's handled.</p>
+        </section>
+
+        <section>
+          <h2>What ships, and where</h2>
+          <p>The app's source stays in a private repo. The part you actually run lives in a separate public distribution repo, <code>github.com/whykusanagi/celeste-ops</code>. Inside it: the signed macOS app, a pure-Node MCP shim that forwards all 56 tools to the running app, an installer that finds your clients and wires them up, the one-click Claude Desktop extension, the 56-tool reference, and a drop-in skill. The license is proprietary, free to download and run against your own app.</p>
+          <p>While CelesteOps is in testing, every build is a macOS app bundle signed with my own PGP key. An Apple Developer signed release is a maybe for later, once it's ready to leave testing. The download should carry one signature and no other:</p>
+          <pre><code>whykusanagi &lt;me@whykusanagi.xyz&gt;
+9404 90EF 09DA 3132 2BF7 FD83 8758 49AB 1D54 1C55</code></pre>
+          <p>You verify it before you trust it:</p>
+          <pre><code>gpg --verify checksums.txt.asc checksums.txt   # expect "Good signature"
+shasum -a 256 -c checksums.txt                 # expect "OK"</code></pre>
+          <p>Good signature plus OK means the zip is authentic and untampered. The running app's build-info panel shows the live version, channel, hash, and signing status, with a link to the verify steps. The trade-off for skipping Apple notarization is a one-time Gatekeeper prompt on first launch, which the verify doc walks you through.</p>
+          <p>Connecting a client is one command after you grab a pairing code from Settings &rarr; Connections:</p>
+          <pre><code>bun run install:mcp --pair &lt;code&gt;</code></pre>
+          <p>The installer detects your Claude Code, Claude Desktop, Cursor, Codex, or celeste-cli config and writes the token in. The drop-in skill, <code>celesteops-tasks</code>, then teaches the agent how to work the board: find a project's open tasks, file one with the right area and priority, leave a note tagged for another repo's agent. Drop it in and the agent knows the workflow instead of me re-explaining it every session.</p>
+        </section>
+
+        <section>
+          <h2>The stack</h2>
+          <ul>
+            <li><strong>Electrobun</strong> — a Bun-powered desktop runtime, a lighter take on Electron</li>
+            <li><strong>Bun + <code>bun:sqlite</code></strong> — the only runtime, no Node</li>
+            <li><strong>React 19</strong> for the UI, <strong>SQLite FTS5</strong> for search</li>
+            <li><strong><code>@whykusanagi/corrupted-theme</code></strong> for the look: VT323 and Space Mono, glass panels, CRT scanlines. It glows in the dark like it should.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Where this goes</h2>
+          <p>CelesteOps is at 1.0.2 and runs my actual day. The release path is built: signed bundles, verify docs, an installer, and a public distribution repo for the artifacts and the skills. These are testing builds for now; I'm weighing whether to call it a stable version, because the out-of-tree spec store and the shared-backlog-over-MCP pattern feel useful beyond my own setup. Run more than one agent and you hit the same wall: you need durable coordination, clean repos, paired clients you can revoke, and a human still holding the approve button.</p>
+          <p>Could I have used Obsidian? Probably. But then I wouldn't have a control panel that talks to all my agents, makes each one pair before it gets in, keeps their specs out of git but still queryable, signs its own releases, encrypts its own backups, and matches the rest of the abyss.</p>
+          <p>What's the fun in that?</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Isn't this just Obsidian with extra steps?<br>
+          <strong>A:</strong> Obsidian is a lovely vault for <em>you</em>. CelesteOps is a shared backlog for you <em>and</em> the agents working on your behalf. The difference is the loop: an agent files a spec over MCP, I approve it in the Notes tab, the task it was blocking unblocks itself, and the next agent picks it up. A notes app doesn't have an approve button that other processes are waiting on.</p>
+
+          <p><strong>Q:</strong> If it runs a server on localhost, can a random website I visit poke at my data?<br>
+          <strong>A:</strong> No, and that was the whole point of the security pass. Loopback isn't a trust boundary — a web page can absolutely reach <code>127.0.0.1</code> — so the API treats itself as public. Every client pairs with a six-digit code and carries its own token, the server checks the token plus Origin plus Host on every request, and an un-paired website gets a flat 401. Secrets stay encrypted behind the macOS Keychain and never come back out of the API.</p>
+
+          <p><strong>Q:</strong> Can I download it yet?<br>
+          <strong>A:</strong> Yes. The distribution repo, <code>github.com/whykusanagi/celeste-ops</code>, hosts a PGP-signed macOS build you verify with <code>gpg</code> and <code>shasum</code>, the MCP agent kit, and a drop-in skill so your agents know the workflow on day one. These are testing builds for now, so check the signature before you run it. The app's own source stays private; only the release page and kit are public.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+          <a class="btn" href="../links.html#discord">Join Community</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

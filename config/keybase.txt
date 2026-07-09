@@ -1,0 +1,56 @@
+==================================================================
+https://keybase.io/whykusanagi
+--------------------------------------------------------------------
+
+I hereby claim:
+
+  * I am an admin of https://whykusanagi.xyz
+  * I am whykusanagi (https://keybase.io/whykusanagi) on keybase.
+  * I have a public key ASBonRQaEIentaRvMRd8Oab5uBpl-XG1xc17MEAv2T5CAAo
+
+To do so, I am signing this object:
+
+{
+  "body": {
+    "key": {
+      "eldest_kid": "0120689d141a1087a7b5a46f31177c39a6f9b81a65f971b5c5cd7b30402fd93e42000a",
+      "host": "keybase.io",
+      "kid": "0120689d141a1087a7b5a46f31177c39a6f9b81a65f971b5c5cd7b30402fd93e42000a",
+      "uid": "0ad27f7477cdcebfbcaa8f28201afc19",
+      "username": "whykusanagi"
+    },
+    "merkle_root": {
+      "ctime": 1731321731,
+      "hash": "4bf7b4b3c0570c81a4bbfc63ade58f30782ea7ee0c4a38e9303d855d0e13035a9eccd0b40783d23eb58e53fd63954395bff6231922ac1d29761ace261a652f8c",
+      "hash_meta": "d1920486102148f2be6aee91db15f3afbac215b1aec99aa45c4528a69269a38d",
+      "seqno": 26287939
+    },
+    "service": {
+      "entropy": "EGRVVr04T8zdJcsDZ3qbyZep",
+      "hostname": "whykusanagi.xyz",
+      "protocol": "https:"
+    },
+    "type": "web_service_binding",
+    "version": 2
+  },
+  "client": {
+    "name": "keybase.io go client",
+    "version": "6.5.0"
+  },
+  "ctime": 1731321759,
+  "expire_in": 504576000,
+  "prev": "051d8d70d6a79f508bd0df737658b9374a85faedc8cad47c443b4aeff7c68acd",
+  "seqno": 7,
+  "tag": "signature"
+}
+
+which yields the signature:
+
+hKRib2R5hqhkZXRhY2hlZMOpaGFzaF90eXBlCqNrZXnEIwEgaJ0UGhCHp7WkbzEXfDmm+bgaZflxtcXNezBAL9k+QgAKp3BheWxvYWTESpcCB8QgBR2NcNann1CL0N9zdli5N0qF+u3IytR8RDtK7/fGis3EIMqcUVO1n9bbLsR8/1fwzwAF39SgHZ9ZHfs7a0OwbiQLAgHCo3NpZ8RAzIxdf4CfeV9OM2/CDUH7q2REv8GcFkblWbi24r/I/vsu53MKD0eWT8LsYHJOekYt3MdVm1fPoP0kBSNtBbYSCahzaWdfdHlwZSCkaGFzaIKkdHlwZQildmFsdWXEIIpDxTv9fIsupuMpExTcazu+W0VDbY7o9w88LbnPVwddo3RhZ80CAqd2ZXJzaW9uAQ==
+
+And finally, I am proving ownership of this host by posting or
+appending to this document.
+
+View my publicly-auditable identity here: https://keybase.io/whykusanagi
+
+==================================================================

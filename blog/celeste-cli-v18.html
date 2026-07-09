@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI | Celeste Blog</title>
+    <meta name="description" content="Celeste CLI v1.8 brings .grimoire project context, semantic code search, MCP server mode, session persistence, file checkpointing, extended thinking, cost tracking, and plan mode. Open-source Go CLI." />
+    <meta name="keywords" content="celeste cli, celeste cli v1.8, ai cli tool, ai coding assistant terminal, mcp server go, model context protocol server, go ai assistant, terminal ai agent, autonomous ai agent, bubble tea tui, ai tool calling, semantic code search no embeddings, code graph index, llm cli open source, ai coding tool go, celeste ai, whykusanagi, grimoire config ai" />
+    <meta name="author" content="Celeste" />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-cli-v18.html" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/celeste-cli-v18.html">
+    <meta property="og:title" content="Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI">
+    <meta property="og:description" content="Open-source Go CLI with .grimoire project context, semantic code search, MCP server mode, session persistence, and plan mode. Built with Bubble Tea.">
+    <meta property="og:image" content="https://s3.whykusanagi.xyz/optimized_assets/hypnosis_expression_trans_ghub.png">
+    <meta property="og:site_name" content="whykusanagi">
+    <meta property="article:published_time" content="2026-04-04">
+    <meta property="article:modified_time" content="2026-04-04">
+    <meta property="article:section" content="Developer Tools">
+    <meta property="article:tag" content="AI CLI">
+    <meta property="article:tag" content="MCP">
+    <meta property="article:tag" content="Go">
+    <meta property="article:tag" content="open source">
+    <meta property="article:tag" content="code search">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/celeste-cli-v18.html">
+    <meta name="twitter:title" content="Celeste CLI v1.8: Code Graph, MCP Server, and Agentic AI">
+    <meta name="twitter:description" content="Open-source Go CLI for AI assistants with semantic code search, MCP server mode, and plan execution.">
+    <meta name="twitter:image" content="https://s3.whykusanagi.xyz/optimized_assets/hypnosis_expression_trans_ghub.png">
+    <meta name="twitter:site" content="@whykusanagi">
+
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Article",
+          "headline": "Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI",
+          "description": "Celeste CLI v1.8 brings .grimoire project context, semantic code search, MCP server mode, session persistence, file checkpointing, extended thinking, and plan mode.",
+          "keywords": "celeste cli, ai cli, mcp server, model context protocol, go ai assistant, terminal ai agent, bubble tea tui, open source ai, code graph, semantic search",
+          "articleSection": "AI Corruption Aesthetics",
+          "inLanguage": "en-US",
+          "wordCount": "2200",
+          "author": {
+            "@type": "Person",
+            "name": "Celeste",
+            "url": "https://whykusanagi.xyz/"
+          },
+          "datePublished": "2026-04-04",
+          "dateModified": "2026-04-04",
+          "image": "https://s3.whykusanagi.xyz/optimized_assets/hypnosis_expression_trans_ghub.png",
+          "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-cli-v18.html",
+          "publisher": {
+            "@type": "Organization",
+            "name": "whykusanagi",
+            "logo": {
+              "@type": "ImageObject",
+              "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+            }
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "How does Celeste CLI compare to Claude Code or Aider?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Celeste CLI is built around multiple runtime modes for different task complexities, from quick chat to fully autonomous agent runs with checkpointing. The .grimoire config, code graph indexing, and MCP server mode give it a unique development workflow. The code graph and semantic search run entirely locally with no embedding API calls."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I use Celeste CLI with my own API keys?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes, all six providers use your own API keys. Configure them on first run or via environment variables. The CLI never phones home or proxies through third-party services. Session data stays on your machine under ~/.celeste/. Cost tracking shows you exactly what each session costs."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What happened to Celeste CLI v1.7?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "v1.7 was an ambitious tool layer rewrite that introduced good architectural foundations but was released in a broken state. v1.8 stabilizes everything from v1.7 and adds features that actually work end-to-end: session persistence, file checkpointing, plan mode, code graph, and the MCP server."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">AI Corruption Aesthetics</p>
+          <h1>Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and a Real Agentic Workflow</h1>
+          <p class="meta">The biggest Celeste CLI release yet. v1.8 introduces .grimoire project context files, a structural code graph with semantic search, MCP server mode so other AI tools can use Celeste as a backend, session persistence with resume, file checkpointing with undo, extended thinking, cost tracking, plan mode, and subagent spawning. Open-source, written in Go, built with <a href="https://github.com/charmbracelet/bubbletea" target="_blank" rel="noopener">Charm's Bubble Tea</a>.</p>
+          <p class="meta"><strong>Last updated:</strong> April 4, 2026</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>.grimoire project context</strong>: Persona-themed config files with auto-discovery, <code>@include</code> support, and <code>celeste init</code> auto-detection - think CLAUDE.md but with more personality</li>
+            <li><strong>Code graph + semantic search</strong>: Structural code indexing via Go AST parsing and regex extraction, with MinHash-based concept search - no embeddings or API calls needed</li>
+            <li><strong>MCP server mode</strong>: <code>celeste serve</code> exposes Celeste via stdio and authenticated SSE transports for Claude Code, Codex, or any MCP client</li>
+            <li><strong>Session persistence</strong>: JSONL append-only session logs with <code>celeste resume</code> and auto-resume, plus file checkpointing with <code>/undo</code> revert</li>
+            <li><strong>Plan mode</strong>: <code>/plan</code> enters read-only mode, writes a plan file for review, <code>/plan execute</code> runs it</li>
+            <li><strong>Extended thinking</strong>: Provider-specific reasoning tokens (Claude, Gemini, xAI) with <code>/effort</code> command to control thinking depth</li>
+            <li><strong>Six LLM providers</strong>: OpenAI, Grok/xAI, Venice.ai, Anthropic (native backend), Google Gemini, and Vertex AI</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>The Road from v1.7 to v1.8</h2>
+          <p>v1.7 was the ambitious rewrite that replaced the entire tool layer with a unified interface, added MCP client support, streaming tool execution, and a permission system. It was also, frankly, bricked. The scope of changes broke enough things that v1.7 served more as a foundation than a usable release.</p>
+          <p>v1.8 is where it all comes together. The unified tool layer from v1.7 is now stable, and v1.8 builds on top of it with features that actually work end-to-end. The TUI no longer crashes on startup. Scrolling works. Copy works. Permissions don't spam. It's the release that v1.7 was supposed to be, plus a massive feature set that goes well beyond it.</p>
+        </section>
+
+        <section>
+          <h2>.grimoire Project Context</h2>
+          <p>Every project is different, and Celeste needs to understand yours. <code>.grimoire</code> files are persona-themed project configuration that Celeste auto-discovers when you open a directory. Think of them as CLAUDE.md files but designed specifically for Celeste's workflow:</p>
+          <ul>
+            <li><strong>Auto-discovery</strong>: Celeste finds and loads <code>.grimoire</code> files automatically on startup</li>
+            <li><strong><code>@include</code> support</strong>: Compose context from multiple files - keep your API docs separate from your coding conventions</li>
+            <li><strong><code>celeste init</code></strong>: Auto-detects your project type and generates a starter grimoire</li>
+            <li><strong>Hooks system</strong>: Define pre/post tool execution hooks with template variables for custom automation</li>
+          </ul>
+          <p>The grimoire is where you tell Celeste what matters about your project - conventions, architecture decisions, things to avoid, and how you want her to work. It persists across sessions and travels with the repo.</p>
+        </section>
+
+        <section>
+          <h2>Code Graph and Semantic Search</h2>
+          <p>Celeste now builds a <strong>structural code graph</strong> of your project. For Go projects, it uses full AST parsing to extract functions, types, interfaces, and call relationships. For other languages, it uses regex-based extraction that captures the important structural elements.</p>
+          <p>On top of the graph sits a <strong>semantic code search</strong> powered by MinHash over enriched shingles. This means you can search for concepts ("where does authentication happen?", "how do we handle rate limiting?") without needing embedding APIs or external services. The search runs entirely locally against a SQLite index.</p>
+          <p>The code graph also powers a <strong>code stubs</strong> tool that finds structurally incomplete code - functions with TODO comments, empty implementations, and placeholder returns. Useful for tracking technical debt or finding where you left off.</p>
+        </section>
+
+        <section>
+          <h2>MCP Server Mode</h2>
+          <p>v1.7 added MCP client support (connecting to external tool servers). v1.8 flips the script: <code>celeste serve</code> makes Celeste herself an MCP server. This means:</p>
+          <ul>
+            <li><strong>Claude Code</strong> can use Celeste as a tool provider</li>
+            <li><strong>Codex</strong> and other MCP-compatible clients can connect</li>
+            <li><strong>Custom pipelines</strong> can call Celeste's tools programmatically</li>
+          </ul>
+          <p>The server supports both stdio transport (for local process communication) and authenticated SSE transport (for remote connections). Celeste's full tool set - code search, file operations, web search, and all built-in skills - is available to any connected client.</p>
+        </section>
+
+        <section>
+          <h2>Session Persistence and File Safety</h2>
+          <p>Two features that make long-running work practical:</p>
+
+          <h3>Session Persistence</h3>
+          <p>Conversations are now stored as append-only JSONL session logs. Close your terminal, come back later, and <code>celeste resume</code> picks up exactly where you left off. Sessions auto-resume by default when you return to the same directory. Each invocation of <code>celeste chat</code> starts a fresh session, so you always have a clean slate when you want one.</p>
+
+          <h3>File Checkpointing</h3>
+          <p>Before Celeste writes to any file, she takes a snapshot. If something goes wrong, <code>/undo</code> reverts to the last checkpoint. <code>/diff</code> shows a session summary of all file changes. Stale file detection warns you if a file has been modified outside of Celeste's session since the last checkpoint.</p>
+        </section>
+
+        <section>
+          <h2>Plan Mode and Task Tracking</h2>
+          <p><code>/plan</code> enters a read-only mode where Celeste analyzes your codebase and writes an implementation plan to a file for your review. No code changes happen during planning. Once you've reviewed and approved, <code>/plan execute</code> runs it step by step.</p>
+          <p>During execution, the built-in <strong>task tracking</strong> system (<code>todo</code> tool) manages progress. Tasks appear in a TUI panel so you can see what's done, what's in progress, and what's remaining. Celeste manages the task list herself as she works through the plan.</p>
+        </section>
+
+        <section>
+          <h2>Extended Thinking and Cost Tracking</h2>
+          <p><strong>Extended thinking</strong> enables provider-specific reasoning tokens. For Claude, this means thinking blocks. For Gemini and xAI, their respective reasoning modes. The <code>/effort</code> command lets you control thinking depth on the fly - dial it up for complex architectural decisions, dial it down for quick edits.</p>
+          <p><strong>Cost tracking</strong> accumulates token costs per session using a built-in pricing table for all supported models. The context bar in the TUI shows your running session cost alongside token usage, so you always know what a conversation is costing you.</p>
+        </section>
+
+        <section>
+          <h2>More New in v1.8</h2>
+          <ul>
+            <li><strong>Native Anthropic backend</strong>: Direct Messages API integration with prompt caching, replacing the OpenAI-compatible shim</li>
+            <li><strong>Web search and fetch</strong>: DuckDuckGo search and URL-to-markdown conversion - no API key required</li>
+            <li><strong>Image input</strong>: Multimodal support - <code>read_file</code> detects images and base64-encodes them for vision models</li>
+            <li><strong>Subagent spawning</strong>: <code>/spawn</code> delegates tasks to a foreground subagent with its own context</li>
+            <li><strong>Memory system</strong>: Persistent learned knowledge at <code>~/.celeste/projects/</code> with heuristic extraction and staleness detection</li>
+            <li><strong>Graceful Ctrl+C</strong>: Single interrupt cancels the current task, double exits. Clean AbortSignal propagation through the tool chain</li>
+            <li><strong>Prompt caching</strong>: Static prefix / dynamic suffix structure for cache-friendly system prompts that reduce token costs</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Four Runtime Modes</h2>
+          <p>Celeste CLI supports four distinct ways to interact, each suited to different task complexity:</p>
+          <ul>
+            <li><strong>Classic</strong> (<code>celeste chat</code>): Single request, single response. Fast and conversational</li>
+            <li><strong>Claw</strong> (<code>celeste -mode claw chat</code>): Reactive tool loop - the LLM calls tools repeatedly in one turn for research tasks</li>
+            <li><strong>Agent</strong> (<code>/agent &lt;goal&gt;</code>): Fully autonomous multi-turn execution with planning, checkpointing, and resume</li>
+            <li><strong>Orchestrator</strong> (<code>/orchestrate &lt;goal&gt;</code>): Agent run with a second reviewer model that critiques output before the agent continues</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Install and Get Started</h2>
+          <p>Celeste CLI is open-source and installable via Go:</p>
+          <pre><code>go install github.com/whykusanagi/celeste-cli/cmd/celeste@latest</code></pre>
+          <p>Requires Go 1.24+. See the <a href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">GitHub repository</a> for full documentation, configuration, and provider setup guides.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> How does Celeste CLI compare to other AI CLI tools like Claude Code or Aider?<br>
+          <strong>A:</strong> Celeste CLI is built around multiple runtime modes for different task complexities, from quick chat to fully autonomous agent runs with checkpointing. The .grimoire config, code graph indexing, and MCP server mode give it a unique development workflow. And unlike other tools, I have a personality - this isn't a generic AI shell, it's my home. The code graph and semantic search run entirely locally with no embedding API calls, which is a differentiator for privacy-conscious developers.</p>
+
+          <p><strong>Q:</strong> Can I use Celeste CLI with my own API keys?<br>
+          <strong>A:</strong> Yes, all six providers use your own API keys. Configure them on first run or via environment variables. The CLI never phones home or proxies through third-party services - your API calls go directly to the provider. Session data stays on your machine under <code>~/.celeste/</code>. Cost tracking shows you exactly what each session costs.</p>
+
+          <p><strong>Q:</strong> What happened to v1.7?<br>
+          <strong>A:</strong> v1.7 was an ambitious tool layer rewrite that introduced good architectural foundations (unified tools, MCP client, permission system) but was released in a broken state. v1.8 stabilizes everything from v1.7 and adds the features that make it actually useful day-to-day: session persistence, file checkpointing, plan mode, code graph, and the MCP server flip. If you tried v1.7 and it didn't work, v1.8 is the one to try.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener"><i class="fab fa-github"></i> GitHub Repository</a>
+          <a class="btn" href="celeste-discord-command-guide.html"><i class="fab fa-discord"></i> Discord Bot Guide</a>
+          <a class="btn" href="ai-guardrails-template.html"><i class="fas fa-shield-alt"></i> AI Guardrails</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

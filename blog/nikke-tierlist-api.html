@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NIKKE Endgame Tierlist & Investment Guide | Celeste Blog</title>
+    <meta name="description" content="Endgame NIKKE tierlist built from top 50 union and top 200 solo raid data, with practical investment guidance for union raid and solo raid planning." />
+    <meta name="keywords" content="nikke tierlist api, nikke recommendation api, cloudflare workers, nikke units, nikke tier list, nikkers.cc, goddess of victory nikke api" />
+    <meta name="author" content="Celeste" />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/nikke-tierlist-api.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "NIKKE Endgame Tierlist & Investment Guide",
+      "description": "Endgame NIKKE tierlist built from top 50 union and top 200 solo raid data, with practical investment guidance for union raid and solo raid planning.",
+      "keywords": "nikke tierlist api, nikke recommendation api, cloudflare workers, nikke units, nikke tier list, nikkers.cc",
+      "articleSection": "Gaming Guides",
+      "inLanguage": "en-US",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2025-01-27",
+      "image": "https://s3.whykusanagi.xyz/art/shimiko_cosplay_fullbd.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/nikke-tierlist-api.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Gamer-Tech Lifestyle</p>
+          <h1>NIKKE Endgame Tierlist: Top 50 Union Leader's Guide to Union Raid & Solo Raid Investment</h1>
+          <p class="meta">An endgame-focused tierlist for competitive NIKKE players planning union raid investments and solo raid rankings. Created by the leader of <a href="https://enikk.app/unions/NA/26017" target="_blank" rel="noopener">Corelust (Union 26017)</a>, a top 50 NA union, with five top 100 solo raid finishes. Built with real data from top 50 unions and top 200 solo raid players. Available on <a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a>.</p>
+          <p class="meta"><strong>Last updated:</strong> January 27, 2025</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>Endgame-focused tierlist</strong>: Designed for union raid planning and solo raid rankings, not early game progression</li>
+            <li><strong>Real investment data</strong>: Uses actual stats from top 50 unions and top 200 solo raid players to show which units are worth investing in</li>
+            <li><strong>164 NIKKE units</strong>: Complete tierlist with tier rankings, element matchups, and investment recommendations</li>
+            <li><strong>AI-powered squad builder</strong>: Get recommendations for specific boss elements, roles, and burst level needs</li>
+            <li><strong>Hard campaign optimization</strong>: Plan your investments to maximize performance in hard campaign stages and competitive rankings</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/shimiko_cosplay_fullbd.png" alt="NIKKE Tierlist & Recommendation API - Production-Ready Cloudflare Workers Backend" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>What Is the NIKKE Endgame Tierlist?</h2>
+          <p>The NIKKE Endgame Tierlist is a comprehensive, data-driven ranking system designed specifically for <strong>endgame competitive players</strong> focused on maximizing their returns in Union Raids and Solo Raids. Unlike general tierlists that cover all stages of the game, this tierlist is optimized for players who are already at endgame and need to make smart investment decisions.</p>
+          <p>The tierlist includes all 164 NIKKE units with real investment data from top 50 unions and top 200 solo raid players. This means you're seeing which units competitive players actually invest in, not just theoretical rankings. The data includes average skill levels, burst investments, and detailed stats—all based on what top-performing unions and solo raid players are actually using.</p>
+          <p><strong>Built by a Top 50 NA Union:</strong> This tierlist is created by the leader of <a href="https://enikk.app/unions/NA/26017" target="_blank" rel="noopener">Corelust (Union 26017)</a>, a top 50 NA union that has maintained top 50 status during both the speed run and hard mode versions of union raid. The guild leader (kusangi) has also achieved top 100 solo raid rankings five times, bringing real competitive experience to this tierlist. This isn't theory—it's data and strategies from actual top-tier competitive play.</p>
+          <p>Available on <a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a>, this tierlist helps you answer critical endgame questions: Which units should I invest in for union raids? What's the best squad composition for solo raid rankings? How do I optimize my team for hard campaign progression?</p>
+        </section>
+
+        <section>
+          <h2>How to Use the NIKKE Endgame Tierlist</h2>
+          <h3>For Union Raid Planning</h3>
+          <p>Union raids require careful squad composition and investment planning. The tierlist shows you which units top 50 unions are actually investing in, helping you make informed decisions about where to allocate your resources. Use the tierlist to:</p>
+          <ul>
+            <li><strong>Identify investment priorities</strong>: See which T0 and T1 units are worth maxing out for union raid performance</li>
+            <li><strong>Plan element coverage</strong>: Check which units excel against specific boss elements to ensure you have coverage for all union raid bosses</li>
+            <li><strong>Optimize burst timing</strong>: Find units with the right burst levels for your union raid team compositions</li>
+            <li><strong>Compare investment levels</strong>: See average skill levels and burst investments from top-performing unions to guide your own investment decisions</li>
+          </ul>
+
+          <h3>For Solo Raid Rankings</h3>
+          <p>Competing in solo raid rankings requires maximizing damage output and optimizing team compositions for specific bosses. The tierlist uses data from top 200 solo raid players to show you which units deliver the best results:</p>
+          <ul>
+            <li><strong>Boss-specific recommendations</strong>: Get AI-powered squad suggestions based on boss element weaknesses</li>
+            <li><strong>Role optimization</strong>: Find the best attackers, defenders, supporters, and tanks for solo raid compositions</li>
+            <li><strong>Stat comparisons</strong>: Compare ATK, DEF, Elemental damage, Crit Rate, and Crit Damage across units to find the best damage dealers</li>
+            <li><strong>Investment efficiency</strong>: See which units give you the best return on investment for solo raid performance</li>
+          </ul>
+
+          <h3>For Hard Campaign Progression</h3>
+          <p>Hard campaign stages become increasingly difficult, requiring optimized teams and smart investment choices. The tierlist helps you:</p>
+          <ul>
+            <li><strong>Build versatile squads</strong>: Find units that perform well across multiple hard campaign stages</li>
+            <li><strong>Plan resource allocation</strong>: Invest in units that will help you progress further in hard campaign, not just early game content</li>
+            <li><strong>Element coverage</strong>: Ensure you have strong units for each element to handle different hard campaign stage requirements</li>
+            <li><strong>Long-term value</strong>: Focus on units that remain useful in endgame content, not just early game powerhouses</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>What Makes This Tierlist Different?</h2>
+          <p>Most NIKKE tierlists are general-purpose guides that cover all stages of the game. This tierlist is different—it's <strong>endgame-focused</strong>, meaning it's designed for players who are already at max level and competing in union raids or solo raid rankings.</p>
+          <h3>Real Investment Data, Not Theory</h3>
+          <p>Instead of theoretical rankings, this tierlist uses actual investment data from top 50 unions and top 200 solo raid players. You're seeing which units competitive players actually invest their resources in, including:</p>
+          <ul>
+            <li><strong>Average skill levels</strong>: How much top players invest in each unit's skills</li>
+            <li><strong>Burst investments</strong>: Which units get maxed burst levels in competitive play</li>
+            <li><strong>Stat priorities</strong>: What stats matter most for endgame content</li>
+            <li><strong>Usage patterns</strong>: Which units appear most frequently in top-performing teams</li>
+          </ul>
+          <h3>AI-Powered Squad Recommendations</h3>
+          <p>The tierlist includes an AI-powered recommendation system that helps you build optimal squads for specific scenarios. Tell it what boss element you're facing, what role you need, and your burst level preferences, and it will suggest the best units with explanations for why each unit was recommended.</p>
+          <p>This is especially useful for union raid planning, where you need to build multiple teams for different bosses, or solo raid rankings, where you need to optimize your squad for maximum damage output.</p>
+        </section>
+
+        <section>
+          <h2>Using the Tierlist on nikkers.cc</h2>
+          <p>The NIKKE Endgame Tierlist is available on <a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a>, where you can:</p>
+          <ul>
+            <li><strong>Browse all 164 units</strong>: Search by name, filter by tier, element, role, or burst level</li>
+            <li><strong>View detailed stats</strong>: See investment levels, skill averages, and stat breakdowns for each unit</li>
+            <li><strong>Get squad recommendations</strong>: Use the AI-powered recommendation engine to build optimal teams for specific bosses</li>
+            <li><strong>Compare units</strong>: See side-by-side comparisons of units to make informed investment decisions</li>
+          </ul>
+          <p>The tierlist is designed to be easy to use—just select what you're looking for (union raid planning, solo raid optimization, hard campaign progression) and the tierlist will help you find the best units for your needs.</p>
+          
+          <h3>Combining Tierlist Strategy with Core Dust Optimization</h3>
+          <p>To maximize your endgame performance, combine this tierlist with <a href="nikke-coredust-breakpoints.html">core dust breakpoint optimization</a>. Core dust is the bottleneck resource for character development, and knowing when to push campaign stages to reach breakpoint levels directly supports your union raid and solo raid investment strategy.</p>
+          <p>Here's how they work together:</p>
+          <ul>
+            <li><strong>Use the tierlist</strong> to identify which units to invest in for union raids and solo raids</li>
+            <li><strong>Use core dust breakpoints</strong> to optimize your resource generation, ensuring you have enough core dust to level those priority units</li>
+            <li><strong>Plan your campaign pushes</strong> around breakpoint levels to maximize core dust per hour, which accelerates your ability to invest in tierlist-recommended units</li>
+            <li><strong>Time your investments</strong> to coincide with union raid seasons and solo raid events, using breakpoint data to ensure you have resources ready when you need them</li>
+          </ul>
+          <p>As a top 50 union leader, I've used this combination of tierlist strategy and core dust optimization to maintain competitive rankings. The tierlist tells you <em>what</em> to invest in, and the breakpoint guide tells you <em>when</em> to push for maximum resource efficiency.</p>
+        </section>
+
+        <section>
+          <h2>For Developers: Technical Details</h2>
+          <p><em>If you're interested in using the API, here are the technical details:</em></p>
+          <p>The tierlist is built on a production-ready Cloudflare Workers API with an interactive frontend. The backend uses Hono, Chanfana, and D1 database, with full OpenAPI documentation and comprehensive test coverage. The frontend is a self-contained vanilla HTML/CSS/JS application that works on all devices.</p>
+          <p>For developers who want to use the API, the APIs are available for use on <a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a>. The codebase is private, but the APIs are fully functional and documented for integration into your own projects or tools.</p>
+        </section>
+
+        <section>
+          <h2>Related NIKKE Projects</h2>
+          <p>This API is part of a larger ecosystem of NIKKE community tools:</p>
+          <ul>
+            <li><strong><a href="nikke-coredust-breakpoints.html">NIKKE Core Dust Breakpoints</a></strong>: Data-driven analysis tool for identifying optimal outpost levels for maximum core dust production</li>
+            <li><strong><a href="nikke-deficit-calculator.html">NIKKE CP Deficit Calculator</a></strong>: Self-contained calculator for determining Combat Power deficit and stat penalties with 99.5% accuracy</li>
+            <li><strong><a href="nikke-sr-doll-calculator.html">NIKKE SR Doll Leveling Calculator</a></strong>: Interactive calculator for estimating resources needed to level SR dolls to Phase 15, including luck tracking</li>
+          </ul>
+          <p>All of these tools are designed to work together, providing NIKKE players with comprehensive resources for optimizing their progression, resource management, and squad building strategies.</p>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a> (tierlist and recommendation API usage)</li>
+            <li><a href="https://enikk.app/unions/NA/26017" target="_blank" rel="noopener">Corelust union profile</a> (union reference used in this guide)</li>
+            <li><a href="nikke-coredust-breakpoints.html">NIKKE Core Dust Breakpoints</a> (companion optimization guide)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Is this tierlist useful for early game players?<br>
+          <strong>A:</strong> This tierlist is specifically designed for endgame players—those who are already at max level and competing in union raids or solo raid rankings. If you're still progressing through the main campaign or early game content, you might find general tierlists more helpful. This tierlist focuses on investment decisions for competitive endgame content, using data from top 50 unions and top 200 solo raid players.</p>
+          
+          <p><strong>Q:</strong> How often is the tierlist updated with new units?<br>
+          <strong>A:</strong> The tierlist includes all 164 NIKKE units currently in the game, and new units are added as they're released. The data is based on real investment patterns from top-performing unions and solo raid players, so it reflects the current meta for endgame competitive play. You can check <a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a> for the latest updates.</p>
+          
+          <p><strong>Q:</strong> How do I know which units to invest in for union raids vs solo raids?<br>
+          <strong>A:</strong> The tierlist shows investment data from both top 50 unions and top 200 solo raid players, so you can see which units excel in each mode. Generally, union raids favor units with strong element coverage and burst timing, while solo raids prioritize maximum damage output. Use the recommendation engine to get specific suggestions based on the boss element and your team composition needs. The tierlist also shows average skill levels and burst investments, helping you understand how much top players invest in each unit.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="nikke-coredust-breakpoints.html"><i class="fas fa-chart-line"></i> Core Dust Breakpoints</a>
+          <a class="btn" href="https://nikkers.cc" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Use on nikkers.cc</a>
+          <a class="btn" href="nikke-deficit-calculator.html"><i class="fas fa-calculator"></i> CP Deficit Calculator</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

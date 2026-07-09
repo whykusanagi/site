@@ -1,0 +1,427 @@
+{
+  "celeste": {
+    "name": "Celeste",
+    "image": "art/Celeste_Vel_Icon.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "original"
+  },
+  "kirara": {
+    "name": "Kirara",
+    "image": "art/Fall_of_Kirara.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "original"
+  },
+  "bastard-hero": {
+    "name": "Bastard Hero",
+    "image": "art/bastard_hero.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "original"
+  },
+  "abyssal-conquest": {
+    "name": "Abyssal Conquest",
+    "image": "tools/thumbnail-generator/assets/characters/Abyssal_Conquest.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "abyssal-conquest-2k": {
+    "name": "Abyssal Conquest 2K",
+    "image": "tools/thumbnail-generator/assets/characters/Abyssal_Conquest2k.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "bodycon-standing": {
+    "name": "Bodycon Standing",
+    "image": "tools/thumbnail-generator/assets/characters/bodycon_standing_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "celeste-legs": {
+    "name": "Celeste Legs",
+    "image": "tools/thumbnail-generator/assets/characters/Celeste_Legs.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "celeste-demonic": {
+    "name": "Celeste Demonic",
+    "image": "tools/thumbnail-generator/assets/characters/celeste_demonic_slut_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "celeste-shimiko-cosplay": {
+    "name": "Shimiko Cosplay",
+    "image": "tools/thumbnail-generator/assets/characters/celeste_shimiko_cosplay_upper_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "celeste-pierced-dress": {
+    "name": "Pierced Dress",
+    "image": "tools/thumbnail-generator/assets/characters/celeste_skimpy_pierced_dress_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "celeste-ninkoro-bunny": {
+    "name": "Ninkoro Bunny",
+    "image": "tools/thumbnail-generator/assets/characters/CelesteNinkoroBunny_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "dongtan-style": {
+    "name": "Dongtan Style",
+    "image": "tools/thumbnail-generator/assets/characters/dongtan_style_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "dongtan-style-nsfw": {
+    "name": "Dongtan Style NSFW",
+    "image": "tools/thumbnail-generator/assets/characters/dongtan_style_nsfw_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "doroseggs": {
+    "name": "Doroseggs",
+    "image": "tools/thumbnail-generator/assets/characters/doroseggstrans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "demon-queen": {
+    "name": "Demon Queen",
+    "image": "tools/thumbnail-generator/assets/characters/high_quality_demon_queen_full_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "magical-girl-back": {
+    "name": "Magical Girl (Back)",
+    "image": "tools/thumbnail-generator/assets/characters/lewd_magical_girl_back_detailed.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "magical-girl-front": {
+    "name": "Magical Girl (Front)",
+    "image": "tools/thumbnail-generator/assets/characters/lewd_magical_girl_front_detailed.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "magia-baiser-cosplay": {
+    "name": "Magia Baiser Cosplay",
+    "image": "tools/thumbnail-generator/assets/characters/magia_baiser_cosplay_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "nurse-celeste": {
+    "name": "Nurse Celeste",
+    "image": "tools/thumbnail-generator/assets/characters/nurse_celeste_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "nurse-celeste-nsfw": {
+    "name": "Nurse Celeste NSFW",
+    "image": "tools/thumbnail-generator/assets/characters/nurse_celeste_nsfw_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "race-queen": {
+    "name": "Race Queen",
+    "image": "tools/thumbnail-generator/assets/characters/race_queen_owari_cosplay_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "recluse-witch": {
+    "name": "Recluse Witch",
+    "image": "tools/thumbnail-generator/assets/characters/recluse_witch_cosplay_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "sexy-cow": {
+    "name": "Cow Outfit",
+    "image": "tools/thumbnail-generator/assets/characters/sexy_cow_outfit.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "kirara-cosplay": {
+    "name": "Kirara Cosplay",
+    "image": "tools/thumbnail-generator/assets/characters/sexy_kirara_cosplay_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "wedding-outfit": {
+    "name": "Wedding Outfit",
+    "image": "tools/thumbnail-generator/assets/characters/skimpy_wedding_outfit_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "swimsuit": {
+    "name": "Swimsuit",
+    "image": "tools/thumbnail-generator/assets/characters/slutty_swimsuit_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "summer-doro-cosplay": {
+    "name": "Summer Doro Cosplay",
+    "image": "tools/thumbnail-generator/assets/characters/summer_doro_cosplay_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "velvet-maid": {
+    "name": "Velvet Maid",
+    "image": "tools/thumbnail-generator/assets/characters/velvet_maid_trans.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "witch": {
+    "name": "Witch",
+    "image": "tools/thumbnail-generator/assets/characters/witch_transparent.png",
+    "objectPosition": "center top",
+    "rotation": 0,
+    "category": "fullbody"
+  },
+  "tarot-bikini-maid": {
+    "name": "Tarot: Bikini Maid",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/bikini_maid_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-bodycon": {
+    "name": "Tarot: Bodycon",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/bodycon_laying_side_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-cow-bikini": {
+    "name": "Tarot: Cow Bikini",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/celeste_cow_bikini_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-shimakaze": {
+    "name": "Tarot: Shimakaze",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/celeste_shimakaze_card_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-devil-sister": {
+    "name": "Tarot: Devil Sister",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/devil_sister_illustration_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-shower": {
+    "name": "Tarot: Shower Scene",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/naked_shower_scene_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-sacrificial-bride": {
+    "name": "Tarot: Sacrificial Bride",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/sacrifical_bride_outfit_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-sexmas-bunny": {
+    "name": "Tarot: Sexmas Bunny",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/sexmas_bunny_celeste_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-nurse": {
+    "name": "Tarot: Nurse",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/sexy_nurse_celeste_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-race-queen": {
+    "name": "Tarot: Race Queen",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/sexy_race_queen_celeste_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-shimiko": {
+    "name": "Tarot: Shimiko",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/shimiko_outfit_celeste_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-swimsuit": {
+    "name": "Tarot: Swimsuit",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/skimpy_swimsuit_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-slave-gear": {
+    "name": "Tarot: Slave Gear",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/slave_gear_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-jk-cat": {
+    "name": "Tarot: JK Cat",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/slutty_jk_cat_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "tarot-tentacle-chair": {
+    "name": "Tarot: Tentacle Chair",
+    "image": "tools/thumbnail-generator/assets/characters/tarot_cards/tentacle_gaming_chair_trans.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "tarot"
+  },
+  "headshot-awake": {
+    "name": "Expression: Awake",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/awake.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-bust": {
+    "name": "Expression: Bust",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/bust.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-cat-face": {
+    "name": "Expression: Cat Face",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/cat_face.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-consider": {
+    "name": "Expression: Consider",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/consider.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-dame": {
+    "name": "Expression: Dame",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/dame.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-excited": {
+    "name": "Expression: Excited",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/excited.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-gasm": {
+    "name": "Expression: Gasm",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/gasm.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-glare": {
+    "name": "Expression: Glare",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/glare.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-lick": {
+    "name": "Expression: Lick",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/lick.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-oxo": {
+    "name": "Expression: OxO",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/OxO.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-postgasm": {
+    "name": "Expression: Postgasm",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/postgasm.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-pout": {
+    "name": "Expression: Pout",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/pout.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-shocked": {
+    "name": "Expression: Shocked",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/shocked.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-shy": {
+    "name": "Expression: Shy",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/shy.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-teasing": {
+    "name": "Expression: Teasing",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/teasing.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "headshot-wow": {
+    "name": "Expression: Wow",
+    "image": "tools/thumbnail-generator/assets/characters/headshots/wow.png",
+    "objectPosition": "center center",
+    "rotation": 0,
+    "category": "headshot"
+  },
+  "none": {
+    "name": "No Character",
+    "image": null,
+    "category": "utility"
+  }
+}

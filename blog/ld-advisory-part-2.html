@@ -1,0 +1,1001 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>// ADVISORY :: LDPLAYER PART 2 — INSIDE THE BUNDLE</title>
+<meta name="description" content="Twelve days after the LD Cloud bucket disclosure. What's inside the LDPlayer bundle: MobTech SDK with documented broken encryption, Tencent Bugly, hardcoded test endpoints, and an Android image stuck at the 2019-07-05 security patch level.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="canonical" href="https://whykusanagi.xyz/blog/ld-advisory-part-2.html">
+
+<!-- ───── corrupted-theme CSS (locally hosted; site CSP blocks unpkg) ───── -->
+<link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+
+<!-- Display font -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+  /* ───── advisory layout (extends theme, doesn't override) ───── */
+  body {
+    font-family: 'Space Mono', ui-monospace, monospace;
+    background: var(--bg, #0a0a0f);
+    color: var(--text, #e8e8f0);
+    margin: 0;
+    min-height: 100vh;
+  }
+
+  .advisory-shell{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(1rem, 3vw, 2.5rem);
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ─── system banner ─── */
+  .sysbar{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: .75rem 1.5rem;
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .12em;
+    color: var(--accent-light);
+    padding: .65rem 1.1rem;
+    margin-bottom: var(--spacing-lg);
+    border: 1px dashed var(--border);
+    background: var(--glass-darker);
+    border-radius: var(--radius-md);
+  }
+  .sysbar .dot{
+    display: inline-block; width: 9px; height: 9px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    margin-right: .55rem;
+    animation: pulse 1.4s infinite;
+  }
+  .sysbar .err{ color: var(--accent); font-weight: 700; }
+  .sysbar .ok { color: #8be57a; }
+
+  /* ─── masthead ─── */
+  .masthead{
+    text-align: left;
+    margin-bottom: var(--spacing-lg);
+    padding: clamp(1.2rem, 3vw, 2rem);
+    border-radius: var(--radius-md);
+    background: var(--glass-darker);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before{
+    content: '';
+    position: absolute; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 2px,
+      rgba(217, 79, 144, 0.04) 2px,
+      rgba(217, 79, 144, 0.04) 3px
+    );
+    pointer-events: none;
+  }
+  .masthead-tag{
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .2em;
+    color: var(--accent);
+    margin-bottom: .4rem;
+    text-transform: uppercase;
+  }
+  .masthead h1{
+    font-family: 'VT323', monospace;
+    font-size: clamp(2rem, 5vw, 3.4rem);
+    line-height: 1.05;
+    margin: 0 0 .6rem 0;
+    color: var(--text);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .masthead h1 .accent{ color: var(--accent); }
+  .masthead .lede{
+    font-size: .95rem;
+    line-height: 1.55;
+    color: var(--text-muted);
+    margin: .5rem 0 0;
+    max-width: 65ch;
+  }
+  .masthead .meta{
+    margin-top: 1rem;
+    display: flex; flex-wrap: wrap; gap: .5rem .9rem;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .08em;
+    color: var(--accent-light);
+  }
+  .masthead .meta span{
+    padding: .15rem .55rem;
+    border: 1px solid var(--border);
+    background: rgba(0,0,0,.25);
+    border-radius: var(--radius-sm, 4px);
+  }
+
+  /* ─── section blocks ─── */
+  .panel{
+    padding: clamp(1rem, 2.5vw, 1.6rem);
+    margin-bottom: var(--spacing-md);
+    border-radius: var(--radius-md);
+    background: var(--glass-darker);
+    border: 1px solid var(--border);
+  }
+  .panel h2{
+    font-family: 'VT323', monospace;
+    font-size: 1.6rem;
+    letter-spacing: .08em;
+    margin: 0 0 .9rem 0;
+    color: var(--accent-light);
+    text-transform: uppercase;
+    display: flex; align-items: center; gap: .6rem;
+  }
+  .panel h2::before{
+    content: '▍';
+    color: var(--accent);
+  }
+  .panel h3{
+    font-family: 'VT323', monospace;
+    font-size: 1.2rem;
+    letter-spacing: .08em;
+    margin: 1.2rem 0 .4rem 0;
+    color: var(--text);
+    text-transform: uppercase;
+  }
+  .panel p{
+    font-size: .92rem;
+    line-height: 1.65;
+    margin: .5rem 0;
+    color: var(--text);
+  }
+  .panel p.muted{ color: var(--text-muted); }
+  .panel strong{ color: var(--accent-light); font-weight: 700; }
+  .panel a{
+    color: var(--accent-light);
+    text-decoration: underline;
+    text-decoration-color: var(--accent);
+    text-underline-offset: 2px;
+  }
+  .panel a:hover{
+    color: var(--accent);
+  }
+
+  .panel ul, .panel ol{
+    padding-left: 1.2rem;
+    margin: .5rem 0;
+  }
+  .panel li{
+    font-size: .92rem;
+    line-height: 1.65;
+    margin: .35rem 0;
+    color: var(--text);
+  }
+  .panel li::marker{ color: var(--accent); }
+
+  .panel pre{
+    background: rgba(0,0,0,.45);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 4px);
+    padding: .75rem .95rem;
+    overflow-x: auto;
+    font-family: 'Space Mono', ui-monospace, monospace;
+    font-size: .85rem;
+    line-height: 1.5;
+    color: var(--accent-light);
+    margin: .8rem 0;
+  }
+  .panel pre code{
+    background: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ─── evidence grid ─── */
+  .evidence-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: .8rem;
+    margin: .8rem 0 .3rem;
+  }
+  .evidence-item{
+    padding: .8rem .9rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(0,0,0,.25);
+  }
+  .evidence-item .num{
+    font-family: 'VT323', monospace;
+    font-size: 1.8rem;
+    line-height: 1;
+    color: var(--accent);
+    display: block;
+  }
+  .evidence-item .label{
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .08em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-top: .25rem;
+    display: block;
+  }
+  .evidence-item .desc{
+    font-size: .85rem;
+    line-height: 1.5;
+    color: var(--text);
+    margin-top: .4rem;
+  }
+
+  /* ─── action checklist ─── */
+  .action-list{
+    list-style: none;
+    padding: 0;
+    margin: .6rem 0 0;
+    counter-reset: step;
+  }
+  .action-list li{
+    counter-increment: step;
+    padding: .7rem .9rem .7rem 3rem;
+    margin: .5rem 0;
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(0,0,0,.25);
+    position: relative;
+    font-size: .92rem;
+    line-height: 1.55;
+  }
+  .action-list li::before{
+    content: '0' counter(step);
+    position: absolute;
+    left: .85rem; top: 50%;
+    transform: translateY(-50%);
+    font-family: 'VT323', monospace;
+    font-size: 1.5rem;
+    color: var(--accent);
+    letter-spacing: .04em;
+  }
+
+  /* ─── callout ─── */
+  .callout{
+    padding: 1rem 1.1rem;
+    margin: 1rem 0;
+    border-left: 3px solid var(--accent);
+    background: rgba(217, 79, 144, 0.08);
+    border-radius: 0 var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
+  }
+  .callout-title{
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .1em;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin: 0 0 .35rem 0;
+  }
+  .callout p{ margin: .3rem 0; font-size: .9rem; }
+
+  /* ─── source link ─── */
+  .source-block{
+    display: flex; flex-wrap: wrap; gap: .8rem; align-items: center;
+    padding: 1rem 1.1rem;
+    margin-bottom: var(--spacing-md);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--glass-darker);
+  }
+  .source-block .label{
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .12em;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .source-block a{
+    color: var(--accent-light);
+    text-decoration: none;
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .04em;
+    padding: .3rem .7rem;
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(217, 79, 144, 0.08);
+    transition: var(--transition);
+  }
+  .source-block a:hover{
+    background: var(--accent);
+    color: var(--bg);
+    box-shadow: 0 0 14px rgba(217, 79, 144, 0.5);
+  }
+
+  /* ─── response grid ─── */
+  .response-grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: .8rem;
+    margin: .6rem 0 .3rem;
+  }
+  @media (min-width: 720px){
+    .response-grid{ grid-template-columns: 1fr 1fr; }
+  }
+  .response-cell{
+    padding: .9rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm, 4px);
+    background: rgba(0,0,0,.25);
+  }
+  .response-cell h4{
+    font-family: 'VT323', monospace;
+    font-size: 1.15rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    margin: 0 0 .5rem 0;
+    color: var(--accent-light);
+    display: flex;
+    align-items: baseline;
+    gap: .5rem;
+  }
+  .response-cell .status{
+    font-family: 'VT323', monospace;
+    font-size: .85rem;
+    letter-spacing: .08em;
+    padding: .1rem .4rem;
+    border-radius: 3px;
+  }
+  .response-cell .status.silent{
+    color: var(--accent);
+    background: rgba(217, 79, 144, 0.15);
+    border: 1px solid var(--accent);
+  }
+  .response-cell .status.acted{
+    color: #8be57a;
+    background: rgba(139, 229, 122, 0.1);
+    border: 1px solid #8be57a;
+  }
+  .response-cell .status.deflected{
+    color: #f5b942;
+    background: rgba(245, 185, 66, 0.1);
+    border: 1px solid #f5b942;
+  }
+  .response-cell p{
+    font-size: .88rem;
+    line-height: 1.55;
+    margin: .3rem 0;
+    color: var(--text);
+  }
+
+  /* ─── blockquote (for verbatim ticket response) ─── */
+  blockquote{
+    margin: .8rem 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--text-muted);
+    background: rgba(0,0,0,.25);
+    border-radius: 0 var(--radius-sm, 4px) var(--radius-sm, 4px) 0;
+    font-size: .9rem;
+    line-height: 1.6;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+  blockquote p{ margin: .3rem 0; font-size: inherit; }
+
+  /* ─── footer ─── */
+  .advisory-foot{
+    margin-top: var(--spacing-lg);
+    padding: 1rem 1.1rem;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 1rem;
+    letter-spacing: .1em;
+    color: var(--text-muted);
+    border-top: 1px dashed var(--border);
+  }
+  .advisory-foot .accent{ color: var(--accent); }
+  .advisory-foot a{ color: var(--accent-light); text-decoration: none; }
+
+  /* small print code-like spans */
+  code, .mono{
+    font-family: 'Space Mono', ui-monospace, monospace;
+    font-size: .85em;
+    padding: .1rem .35rem;
+    background: rgba(0,0,0,.35);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    color: var(--accent-light);
+  }
+</style>
+</head>
+
+<body>
+
+<!-- glass-backdrop is a fixed background overlay; sits behind everything -->
+<div class="glass-backdrop"></div>
+
+<div class="advisory-shell">
+
+  <!-- ─────── SYSTEM BANNER ─────── -->
+  <div class="sysbar">
+    <span><span class="dot"></span>SIGNAL :: <span class="err">PERSISTENT</span></span>
+    <span>SEV :: <span class="err">HIGH</span></span>
+    <span>SCOPE :: LDPLAYER (LOCAL INSTALL)</span>
+    <span>STATUS :: <span class="err">UNREMEDIATED // T+12 DAYS</span></span>
+  </div>
+
+  <!-- ─────── MASTHEAD ─────── -->
+  <header class="masthead">
+    <div class="masthead-tag">// SECURITY ADVISORY — PART 2</div>
+    <h1>
+      <span
+        class="corrupted-multilang"
+        data-english="INSIDE THE BUNDLE"
+        data-romaji="BANDORU NO NAKAMI"
+        data-katakana="バンドル ノ ナカミ"
+        data-kanji="バンドルの中身"
+      >INSIDE THE BUNDLE</span><br>
+      <span class="accent">LDPLAYER // PART 2</span>
+    </h1>
+    <p class="lede">
+      Twelve days after the disclosure. What I found when I went deeper, what
+      the operator has and hasn't done, and what you should do tonight. The
+      buckets are closed. Most of the parties I notified are silent. In the
+      meantime I went into the local LDPlayer bundle itself — three system
+      images, eight months apart — to answer the question Part 1 left
+      hanging: when you install the local emulator, what does it phone home?
+    </p>
+    <div class="meta">
+      <span>TIMELINE :: T+12 DAYS</span>
+      <span>BUILDS ANALYSED :: 3</span>
+      <span>FINDING :: MOBTECH SDK</span>
+      <span>CORROB :: CITIZEN LAB (2025-02)</span>
+    </div>
+  </header>
+
+  <!-- ─────── PART 1 SOURCE LINK ─────── -->
+  <div class="source-block">
+    <span class="label">// PART 1 ::</span>
+    <a href="https://x.com/whyKusanagi/status/2054696585238651089" target="_blank" rel="noopener">
+      x.com/whyKusanagi/status/2054696585238651089 ↗
+    </a>
+  </div>
+
+  <!-- ─────── RECAP ─────── -->
+  <section class="panel">
+    <h2>The Short Version</h2>
+    <p>
+      The operator behind the LDPlayer Android emulator, the LD Cloud
+      streaming service, and the LDShop account marketplace was leaving
+      twenty-three publicly listable cloud storage buckets exposed. Inside
+      those buckets were database backups, admin bastion-host dumps, and
+      several hundred video recordings of users entering their credentials
+      into games on LD's cloud product.
+    </p>
+    <p>
+      Twelve days have passed. The buckets are closed. Most of the parties I
+      notified are silent. <strong>This post is about what's inside the
+      software the operator has been shipping unchanged the entire time —
+      and about the operator's twelve days of public silence.</strong>
+    </p>
+  </section>
+
+  <!-- ─────── HOW THE DISCLOSURE WENT DOWN ─────── -->
+  <section class="panel">
+    <h2>How the Disclosure Went Down</h2>
+    <p>
+      The bucket list originated on a Telegram channel called
+      <strong>mainleakflow</strong>. <strong>@NTE_WL</strong> reposted it to X
+      on May 13 in a thread with screenshots:
+    </p>
+    <p>
+      <a href="https://x.com/NTE_WL/status/2054655640434348255" target="_blank" rel="noopener">
+        x.com/NTE_WL/status/2054655640434348255 ↗
+      </a>
+    </p>
+    <p>That post is where I first saw it.</p>
+    <p>
+      Another X user, <strong>@nozomi_clips</strong>, publicly pressed @NTE_WL
+      for direct proof that the screenshots actually linked to LD. It was a
+      reasonable challenge. An email list and a nine-minute video do not, on
+      their own, prove a connection.
+    </p>
+    <p>
+      @NTE_WL replied at 1:10 PM on May 13 with two
+      <strong>pre-signed Huawei OBS URLs</strong> pointing at specific files
+      inside LD's buckets. That reply hit 68.4K views before the signed URLs
+      expired roughly six hours later.
+    </p>
+  </section>
+
+  <!-- ─────── SIGNED URLS ─────── -->
+  <section class="panel">
+    <h2>The Signed URLs Deserve a Beat</h2>
+    <p>
+      A public-listing misconfiguration is one kind of problem. Pre-signed OBS
+      URLs are a different kind, because they require both the cloud
+      account's <strong>access key ID</strong> and its
+      <strong>matching secret</strong> to generate.
+    </p>
+    <p>
+      So whoever produced those URLs had more than visibility into publicly
+      listable buckets. They had full LD-account cloud credentials.
+    </p>
+    <p>That points to one of two things:</p>
+    <ol>
+      <li><strong>A credential compromise.</strong> Keys leaked through a code repository, another exposed system, or insider exfiltration.</li>
+      <li><strong>Insider access</strong> to LD's cloud account at the source.</li>
+    </ol>
+    <p>
+      Either reading is more severe than "they left a bucket public." Either
+      reading should have triggered an internal incident response on LD's
+      side, independently of the public-listing problem.
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">// Live IOC</div>
+      <p>
+        The access key ID embedded in those signed URLs is now a public
+        indicator of compromise. Masked here as <code>O5UJ...CQPD</code>. The
+        full value is in @NTE_WL's post for anyone who needs it. <strong>Until
+        LD rotates that key, anyone with the matching secret can keep
+        producing signed URLs against any bucket on the same account.</strong>
+        The Huawei lockdown only blocks anonymous listing. It does not
+        invalidate credentialed access.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────── WHAT HAPPENED NEXT ─────── -->
+  <section class="panel">
+    <h2>What Happened Next</h2>
+    <p>
+      I verified the contents independently and posted Part 1 the same
+      evening. Disclosure emails went to Huawei Cloud abuse, Kuro Games,
+      HoYoverse, and Yostar, plus a separate Have I Been Pwned submission.
+    </p>
+    <p>
+      @NTE_WL later confirmed publicly that the buckets had been locked down:
+    </p>
+    <p>
+      <a href="https://x.com/NTE_WL/status/2054940524369379498" target="_blank" rel="noopener">
+        x.com/NTE_WL/status/2054940524369379498 ↗
+      </a>
+    </p>
+    <p>
+      Timestamped 8:02 AM, May 14. That puts the bucket lockdown at roughly
+      nineteen hours after @NTE_WL's public verification proof, and a similar
+      window after Part 1 went out. Fast turnaround. Almost certainly Huawei
+      Cloud's abuse team acting on the disclosure email I sent the same
+      evening.
+    </p>
+  </section>
+
+  <!-- ─────── QUESTION PART 1 DIDN'T ANSWER ─────── -->
+  <section class="panel">
+    <h2>The Question Part 1 Didn't Answer</h2>
+    <p>
+      Part 1 was about <strong>LD Cloud</strong>. That is the streaming
+      product, the one where the Android instance runs on LD's servers and you
+      receive a video stream back. LD Cloud has a relatively small user base.
+    </p>
+    <p>
+      The product almost everyone in the gacha community uses is the
+      <strong>local LDPlayer emulator</strong>. The one you download to your
+      PC and run yourself. The user base there is tens of millions.
+    </p>
+    <p>
+      So: when you install LDPlayer locally on your machine, what does it
+      phone home about? Is that telemetry going to the same operator whose
+      cloud buckets just leaked?
+    </p>
+    <p>
+      To answer it, I looked inside the actual Android image that LDPlayer
+      ships. <strong>Three different versions, captured eight months apart:</strong>
+    </p>
+    <ul>
+      <li>The <strong>offline installer</strong> LDPlayer's CDN has been serving since September 2025</li>
+      <li>A <strong>clean Windows install</strong> from earlier this year</li>
+      <li><strong>LDPlayer 9.5.11.1</strong>, the current public release, dated May 6</li>
+    </ul>
+    <p>
+      That last one matters on its own. It dropped seven days before the
+      bucket disclosure, and it is still the most recent thing LDPlayer has
+      shipped publicly. As of writing, twenty days later, no new version has
+      appeared.
+    </p>
+  </section>
+
+  <!-- ─────── CORRECTION FROM PART 1 ─────── -->
+  <section class="panel">
+    <h2>A Correction From Part 1</h2>
+    <p>I want to flag something I got wrong before going further.</p>
+    <p>
+      In Part 1 I hypothesised that LDPlayer ships with
+      <strong>Sogou Pinyin</strong> pre-installed. Sogou is the Chinese
+      keyboard app with a long, documented telemetry history. If it had been
+      the default keyboard inside LDPlayer, every keystroke any user typed
+      into any app, including game password fields, would have hit Sogou
+      first. That was the IME-keylogger theory in Part 1.
+    </p>
+    <p><strong>It turns out that is not what LDPlayer ships.</strong></p>
+    <p>
+      The default Chinese input method inside the LDPlayer Android image is
+      <strong>Google's open-source PinyinIME</strong>, not Sogou. I confirmed
+      this in all three system images.
+    </p>
+    <p>
+      If you never went and installed Sogou yourself through LDAppStore, that
+      specific path is not active for you. Users who did install Sogou are
+      still in scope for the IME-keylogger concern. Users who never touched
+      it are not.
+    </p>
+    <p class="muted">
+      That correction narrows the affected group on one axis. The replacement
+      findings are bigger.
+    </p>
+  </section>
+
+  <!-- ─────── WHAT IS INSIDE LDPLAYER ─────── -->
+  <section class="panel">
+    <h2>What Is Actually Inside LDPlayer</h2>
+    <p>
+      When you install LDPlayer, the Android image laid down on your machine
+      comes with a system app called <strong>LDAppStore</strong>. This is
+      LD's own app marketplace.
+    </p>
+    <p>The important detail is the privilege tier it runs at.</p>
+    <p>
+      Android groups apps into tiers. Normal apps you install from Google
+      Play run in a sandbox with limited permissions. System apps that ship
+      inside the OS image run with much broader access.
+      <strong>LDAppStore is in that second tier.</strong> It can install
+      other apps silently, read device identifiers ordinary apps cannot
+      reach, and self-grant permissions without prompting you.
+    </p>
+    <p>
+      Bundled inside LDAppStore is a third-party Chinese analytics SDK
+      called <strong>MobTech</strong>.
+    </p>
+
+    <div class="callout">
+      <div class="callout-title">// The Main Finding</div>
+      <p>
+        LDAppStore — a system-tier app shipping in every LDPlayer install —
+        bundles MobTech, an analytics SDK with documented broken encryption
+        and unauthenticated TLS. The pathway is active for every user with
+        LDPlayer installed, including users who never touched Sogou.
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────── CITIZEN LAB ─────── -->
+  <section class="panel">
+    <h2>The Citizen Lab Corroboration</h2>
+    <p>MobTech is not an unknown quantity.</p>
+    <p>
+      In February 2025, the <strong>Citizen Lab</strong> research group at
+      the University of Toronto published a detailed analysis of MobTech as
+      part of their writeup of network security issues in the RedNote app
+      (Xiaohongshu):
+    </p>
+    <p>
+      <a href="https://citizenlab.ca/2025/02/network-security-issues-in-rednote/" target="_blank" rel="noopener">
+        citizenlab.ca/2025/02/network-security-issues-in-rednote/ ↗
+      </a>
+    </p>
+    <p>
+      They documented exactly what data MobTech collects, how it transmits
+      it, and the security properties of that transmission. Their findings:
+    </p>
+    <ul>
+      <li>The SDK sends HTTP POST requests to <code>hxxps://devc[.]zztfly[.]com/dinfo</code></li>
+      <li>The payload contains your device's <strong>MAC address</strong>, available <strong>storage</strong>, <strong>RAM</strong>, <strong>screen size</strong>, and <strong>device model</strong></li>
+      <li>The payload is encrypted with AES</li>
+    </ul>
+    <p>Which sounds fine, until you read the next sentence.</p>
+    <p>The encryption key is hardcoded into the SDK as the bytestring:</p>
+    <pre><code>sdk.commonap.sdk</code></pre>
+    <p>That is not a typo.</p>
+    <p>
+      The <strong>same encryption key</strong> is in <strong>every copy</strong>
+      of the SDK that ships in <strong>any app</strong>. Anyone with a copy of
+      the SDK can decrypt anyone else's payloads.
+    </p>
+    <p>
+      In the RedNote builds Citizen Lab analysed, TLS was used but
+      <strong>without certificate validation</strong>. Anyone sitting on the
+      network path could intercept or substitute the traffic.
+    </p>
+  </section>
+
+  <!-- ─────── SAME SDK IN LDAPPSTORE ─────── -->
+  <section class="panel">
+    <h2>The Same SDK Is In LDAppStore</h2>
+    <p>Same endpoint cluster. Same encryption pattern. Same broken design.</p>
+    <p>
+      <strong>If you have LDPlayer installed on your machine, your device
+      fingerprint is being shipped to a Chinese analytics collector under
+      encryption that is technically present but functionally absent.</strong>
+    </p>
+    <p class="muted">That is the main finding. The rest is context.</p>
+  </section>
+
+  <!-- ─────── REST OF SURVEILLANCE SURFACE ─────── -->
+  <section class="panel">
+    <h2>The Rest of the Surveillance Surface</h2>
+    <p>The same LDAppStore also ships with:</p>
+    <ul>
+      <li><strong>Tencent's Bugly</strong> crash-reporting library</li>
+      <li><strong>Sentry</strong>, a second crash reporter</li>
+      <li>Hardcoded URLs for two telemetry collectors: <code>middledata[.]ldmnq[.]com</code> and <code>middledata[.]ldplayer[.]net</code></li>
+      <li>Aliyun cloud storage buckets in <strong>Hangzhou</strong> and <strong>Singapore</strong></li>
+      <li>Hardcoded URLs to LD's <strong>pre-production and test environments</strong>, left in production code (test endpoints typically have weaker authentication than production)</li>
+    </ul>
+    <p>The most recent release, 9.5.11.1, adds:</p>
+    <ul>
+      <li>A global <strong>Tencent Cloud instant messaging SDK</strong> with login endpoints across eight regions</li>
+      <li><strong>Google AdMob</strong> ad serving</li>
+    </ul>
+    <p>
+      Individually, none of these is unusual for a Chinese consumer app.
+      Together, on a privileged system app shipping to tens of millions of
+      installs, the picture is: a wide and increasing telemetry surface, an
+      operator who has demonstrated they will leave sensitive infrastructure
+      publicly listable, and a third-party SDK with documented broken
+      encryption.
+    </p>
+  </section>
+
+  <!-- ─────── UNPATCHED OS ─────── -->
+  <section class="panel">
+    <h2>And One More Thing: An Unpatched Operating System</h2>
+    <p>The bundled Android version is 9 (Pie), released in 2018.</p>
+    <p>
+      The security patch level inside the image is dated
+      <strong>2019-07-05</strong>.
+    </p>
+    <p>
+      That is almost seven years of accumulated Android security fixes that
+      the LDPlayer base image has not received. Every monthly Android
+      security bulletin since July 2019 applies to anything running inside
+      the LDPlayer VM.
+    </p>
+    <p class="muted">
+      That is independent of the telemetry question. It is just an unpatched
+      operating system that has been unpatched for a long time.
+    </p>
+  </section>
+
+  <!-- ─────── WHAT I AM NOT CLAIMING ─────── -->
+  <section class="panel">
+    <h2>What I Am Not Claiming</h2>
+    <p>
+      I did not intercept MobTech traffic to verify what gets sent. The
+      description above rests on Citizen Lab's analysis, which I am citing
+      rather than reproducing.
+    </p>
+    <p>
+      I am not claiming intent on LD's part. The either-or framing from Part 1
+      still applies: either deliberate harvesting infrastructure that someone
+      forgot to lock down, or a catastrophic misconfiguration on top of an
+      otherwise legitimate operations platform. The new findings here do not
+      push that question one way or the other. They show the scale and
+      surface of the data the operator handles, regardless of intent.
+    </p>
+  </section>
+
+  <!-- ─────── 12 DAYS LATER: RESPONSES ─────── -->
+  <section class="panel">
+    <h2>Twelve Days Later: Who Responded</h2>
+
+    <div class="response-grid">
+      <div class="response-cell">
+        <h4>LD (Operator) <span class="status silent">SILENT</span></h4>
+        <p>No statement on the operator's X account. No incident notice on their blog at <code>hxxps://www[.]ldshop[.]gg/tw/blog</code>. Only operator-adjacent response: messages from a moderator in LDShop's public Discord claiming they were "hacked by a competitor," no evidence offered.</p>
+        <p>No explanation of why user session recordings, database backups, and bastion-host dumps were in publicly listable cloud storage. No customer notification. No apology. No scope statement.</p>
+      </div>
+
+      <div class="response-cell">
+        <h4>LDPlayer Software <span class="status silent">UNCHANGED</span></h4>
+        <p>Most recent release: <strong>9.5.11.1</strong>, dated May 6 — seven days before disclosure. Twelve days after disclosure, no new release. The LDAppStore binary inside the current release is <strong>byte-for-byte identical</strong> (same SHA-256) to the March release. The defensive update a security-conscious vendor would push has not arrived.</p>
+      </div>
+
+      <div class="response-cell">
+        <h4>Kuro Games <span class="status deflected">DEFLECTED</span></h4>
+        <p>Only game company that responded. Issued May 15 via a Wuthering Waves player ticket, treating the issue as a third-party-recharge customer service complaint rather than a credential exposure incident. Risk put on the user.</p>
+      </div>
+
+      <div class="response-cell">
+        <h4>HoYoverse / Yostar / Hypergryph <span class="status silent">SILENT</span></h4>
+        <p>No public response. No internal acknowledgement. HoYoverse received the disclosure at their published privacy contact; Yostar at both account-contact webform and Arknights support. Both addresses accepted delivery. Neither has produced a follow-up.</p>
+      </div>
+
+      <div class="response-cell">
+        <h4>Huawei Cloud <span class="status acted">ACTED</span></h4>
+        <p>No reply from the cloud abuse address, but the buckets were locked down by 8:02 AM May 14 — roughly twenty-four hours after Part 1 went out. All twenty-three previously-listable buckets now return <code>403 Access Denied</code> to anonymous listing. The cleanest reading is that Huawei acted on the abuse report.</p>
+      </div>
+
+      <div class="response-cell">
+        <h4>Summary <span class="status silent">1 of 4</span></h4>
+        <p>One of four game publishers responded, and that response was a deflection. Three publishers said nothing. The cloud provider acted but did not communicate. The operator has been completely silent in public and has shipped no defensive update to their software in nineteen days.</p>
+      </div>
+    </div>
+
+    <h3>The Kuro Response, Verbatim</h3>
+    <blockquote>
+      <p>Dear Rover,</p>
+      <p>This platform you used is an unofficial third-party recharge channel. We do not provide investigation, compensation or handling support for any issues arising from unofficial platforms, and all related risks shall be borne by yourself. Please only use official authorized channels for recharging in the future to protect your account safety and property rights.</p>
+      <p>If you have any other questions about official services, please feel free to contact us.</p>
+      <p>Best Regards,<br>Kuro Games Support Team</p>
+    </blockquote>
+    <p>
+      It does not commit Kuro to checking player login histories for sessions
+      tied to LDPlayer device fingerprints, forcing password resets on
+      potentially exposed accounts, or addressing the architectural concern
+      that players entering Wuthering Waves credentials inside a recorded LD
+      Cloud session had those credentials physically transit LD's servers in
+      plaintext. Consistent with the ticket being routed to general support
+      rather than to whoever inside Kuro handles security disclosures.
+    </p>
+  </section>
+
+  <!-- ─────── ACTION CHECKLIST ─────── -->
+  <section class="panel">
+    <h2>What You Should Do — Tonight</h2>
+    <p>
+      If you have ever used <strong>LDPlayer, LD Cloud, LDShop, EasyFun,
+      FunPass, FunPG, LDYunOS</strong>, or anything routed through
+      <code>oslink.io</code>:
+    </p>
+    <ol class="action-list">
+      <li>
+        <strong>Rotate every game and account password</strong> you have
+        entered while using any of these. Specifically the ones named in the
+        original disclosure: Genshin Impact, Wuthering Waves, Neverness to
+        Everness, Arknights and Arknights: Endfield, Honkai: Star Rail,
+        Zenless Zone Zero, plus any payment or storefront login.
+      </li>
+      <li>
+        <strong>Turn on two-factor authentication</strong> on those accounts.
+        Prefer an authenticator app or hardware security key over SMS. SMS-
+        based 2FA is better than nothing but it is the weakest option.
+      </li>
+      <li>
+        <strong>Review login history and active sessions</strong> in each
+        game's account portal. Revoke any session you do not recognise.
+      </li>
+      <li>
+        If you reused those passwords anywhere else,
+        <strong>rotate them there too</strong>.
+      </li>
+      <li>
+        <strong>Stop using LDPlayer</strong> until the operator publicly
+        explains what they collect, why, and demonstrates that the collection
+        has been corrected. The cost of switching to a different Android
+        emulator for a few weeks is one evening. The cost of staying on a
+        product whose operator will not acknowledge a documented credential
+        exposure is unbounded.
+      </li>
+      <li>
+        <strong>Watch your card and bank statements</strong> over the next
+        several weeks if you ran any subscription, top-up, or in-game purchase
+        through any of these.
+      </li>
+      <li>
+        <strong>Sign up for free notifications</strong> at
+        <a href="https://haveibeenpwned.com/NotifyMe" target="_blank" rel="noopener">haveibeenpwned.com/NotifyMe</a>
+        with the email address you used in any LD product. When the leaked
+        databases get formally ingested by HIBP, you will get an automated
+        email and can check whether you were in the affected set without
+        ever needing to touch the raw data yourself.
+      </li>
+    </ol>
+  </section>
+
+  <!-- ─────── WHY ADVICE DIDN'T CHANGE ─────── -->
+  <section class="panel">
+    <h2>Why the Advice Didn't Change but the Reasoning Did</h2>
+    <p>
+      The IME-keylogger pathway I described in Part 1 was a hypothesis, and
+      it only applies to users who actively installed Sogou through
+      LDAppStore.
+    </p>
+    <p>
+      The bigger and broader risk, for everyone with LDPlayer installed
+      (including users who never went near Sogou), is that the bundled
+      LDAppStore ships device telemetry to a third-party SDK that an
+      independent research lab has documented as having broken encryption
+      and unauthenticated TLS.
+    </p>
+    <p>
+      That risk has been present for months. The current public LDPlayer
+      release still ships it unchanged.
+    </p>
+  </section>
+
+  <!-- ─────── BROADER PATTERN ─────── -->
+  <section class="panel">
+    <h2>The Broader Pattern</h2>
+    <p>
+      LDPlayer is one of the most widely used Android emulators in the gacha
+      community. Anyone who plays Chinese gacha titles on PC, anyone who
+      uses an emulator to multi-account, anyone who switched to an emulator
+      because their phone could not handle the game, has touched this
+      product. The user base is much larger than the cloud streaming service
+      that was the subject of Part 1.
+    </p>
+    <p>LD's response over the past twelve days:</p>
+    <ul>
+      <li>Silence on their own channels</li>
+      <li>No defensive software update</li>
+      <li>No customer notification</li>
+    </ul>
+    <p>Kuro's response: tell affected players the risk is on them.</p>
+    <p>The other three game publishers: nothing.</p>
+
+    <div class="callout">
+      <div class="callout-title">// The Pattern</div>
+      <p>
+        The bucket exposure could be a single misconfiguration. The third-
+        party SDK with broken encryption is upstream of LD, not LD's fault
+        directly. The unpatched Android version is an industry-wide problem
+        with emulator vendors. Each of those, individually, has a non-
+        malicious explanation. <strong>The pattern that holds them together
+        — a vendor who handles credential-adjacent data at scale and
+        consistently treats user safety as a lower priority than shipping
+        features — is what should drive your decision about whether to keep
+        this product installed.</strong>
+      </p>
+    </div>
+  </section>
+
+  <!-- ─────── SOURCES ─────── -->
+  <section class="panel">
+    <h2>Sources</h2>
+    <ul>
+      <li><strong>Part 1</strong> of this investigation: <a href="https://x.com/whyKusanagi/status/2054696585238651089" target="_blank" rel="noopener">x.com/whyKusanagi/status/2054696585238651089</a></li>
+      <li>Original disclosure on the <strong>mainleakflow</strong> Telegram channel. Surfaced to me via @NTE_WL on X: <a href="https://x.com/NTE_WL/status/2054655640434348255" target="_blank" rel="noopener">x.com/NTE_WL/status/2054655640434348255</a></li>
+      <li>@NTE_WL's follow-up with two pre-signed Huawei OBS URLs as proof of access, in response to @nozomi_clips's challenge. Posted 1:10 PM May 13, 68.4K views. The access key ID embedded in those URLs is in @NTE_WL's thread in full; masked here as <code>O5UJ...CQPD</code>. Treat that key as a live IOC until LD confirms rotation.</li>
+      <li>@NTE_WL's confirmation that the buckets were locked down, timestamped 8:02 AM May 14: <a href="https://x.com/NTE_WL/status/2054940524369379498" target="_blank" rel="noopener">x.com/NTE_WL/status/2054940524369379498</a></li>
+      <li><strong>Citizen Lab</strong>, <em>Network Security Issues in RedNote</em>, February 2025. MobTech analysis in the third-party SDKs section: <a href="https://citizenlab.ca/2025/02/network-security-issues-in-rednote/" target="_blank" rel="noopener">citizenlab.ca/2025/02/network-security-issues-in-rednote/</a></li>
+      <li><strong>Android Security Bulletin</strong> index, for context on what a 2019-07-05 patch level means in CVE coverage: <a href="https://source.android.com/docs/security/bulletin" target="_blank" rel="noopener">source.android.com/docs/security/bulletin</a></li>
+      <li><strong>LDPlayer's published version history</strong> page, to verify the May 6 release of 9.5.11.1 and the absence of any newer release: <code>hxxps://www[.]ldplayer[.]net/other/version-history-and-release-notes[.]html</code></li>
+      <li>The three SHA-256-verified LDPlayer system images and the LDAppStore APK extracts are preserved in an immutable evidence bundle, available to verified researchers, regulators, or journalists on request.</li>
+    </ul>
+    <p class="muted">
+      A more technical companion writeup covering the forensic methodology
+      (signing-cert fingerprints, partition analysis, byte-level APK
+      comparisons across the three builds, the complete telemetry endpoint
+      catalogue with DNS resolutions, and the disk artifacts produced) is
+      available on request for anyone who wants the underlying evidence
+      rather than the narrative.
+    </p>
+  </section>
+
+  <!-- ─────── FOOTER ─────── -->
+  <footer class="advisory-foot">
+    <span class="accent">//</span>
+    PART 2 OF AN ONGOING DISCLOSURE — NOT LEGAL ADVICE
+    <span class="accent">//</span>
+    PART 1 :: <a href="https://x.com/whyKusanagi/status/2054696585238651089">@whyKusanagi</a>
+    <span class="accent">//</span>
+  </footer>
+
+</div>
+
+<!-- ───── corrupted-theme JS (auto-glitches .corrupted-multilang; jsdelivr is whitelisted in site CSP) ───── -->
+<script src="https://cdn.jsdelivr.net/npm/@whykusanagi/corrupted-theme@0.2.0/src/lib/corrupted-text.js"></script>
+
+</body>
+</html>

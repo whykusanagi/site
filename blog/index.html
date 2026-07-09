@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Corrupted Blog | Celeste Lore, Voidpunk Gear, SVG Labs</title>
+    <meta name="description" content="Celeste's corruption log: VTuber lore drops, voidpunk gamer setups, and glitch SVG labs—all tied to merch and Union missions." />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/">
+    <meta property="og:title" content="Corruption Blog | VTuber Dev Logs & NIKKE Guides">
+    <meta property="og:description" content="Celeste's corruption log: VTuber lore drops, voidpunk gamer setups, and glitch SVG labs—all tied to merch and Union missions.">
+    <meta property="og:image" content="https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/">
+    <meta name="twitter:title" content="Corruption Blog | VTuber Dev Logs & NIKKE Guides">
+    <meta name="twitter:description" content="VTuber lore drops, voidpunk gamer setups, and glitch SVG labs.">
+    <meta name="twitter:image" content="https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png">
+    <meta name="twitter:site" content="@whykusanagi">
+
+    <!-- SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/">
+
+    <!-- Load environment config before any asset URLs -->
+    <script src="../assets/js/env-config.js"></script>
+    <!-- Match global background behavior -->
+    <script src="../assets/js/background-setup.js"></script>
+
+    <!-- Theme + Overrides -->
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  </head>
+  <body class="has-video-bg">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell blog-page">
+      <div class="container blog-index">
+        <header>
+          <h1>Corrupted Dispatch</h1>
+          <p>Stories from Celeste's union of VTuber lore, gamer-tech lifestyle, and AI corruption aesthetics.</p>
+          <p><strong>Who this is for:</strong> readers looking for NIKKE optimization guides, VTuber tooling writeups, and practical dev workflow posts.</p>
+        </header>
+        <div class="blog-layout">
+          <div class="blog-column scrollable-column">
+            <article class="card">
+              <h2><a href="celeste-cli-v1112.html">Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying</a></h2>
+              <p>Release notes for v1.11.2: read commands now honor the <code>-config</code> profile flag instead of falling back to the default, and the TUI <code>/model</code> picker lists the real models your provider serves. Includes a recap of the 1.11.x line that made Sakana's Fugu the default.</p>
+              <p><small>release notes, celeste-cli, Go CLI, config profiles, TUI model picker, Sakana Fugu, provider models, MCP, GPG-signed release</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="fugu-vs-grok-celeste-cli.html">Fugu vs Grok: Benchmarking Sakana AI in Celeste CLI v1.11.2</a></h2>
+              <p>I added Sakana AI's Fugu model to celeste-cli and ran it against Grok on ten reasoning problems and a dependency-DAG subagent relay, persona left on. Fugu went 10 for 10 to Grok's 8, drove the DAG cleanly where Grok ran flaky, and is now the default model.</p>
+              <p><small>Sakana AI, Fugu, Grok, LLM benchmark, AI agent DAG, subagent orchestration, Go CLI, OpenAI compatible, 1M context, code review</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="celesteops-local-first-control-panel.html">I Built My Own Task Manager Instead of Opening Obsidian</a></h2>
+              <p>CelesteOps is a local-first macOS control panel that shares one SQLite backlog with Claude Code, Claude Desktop, Cursor, and Codex over MCP. Specs and plans live out of git but stay queryable, every client pairs with a revocable token, and a dependency graph shows what's blocking what. Signed, encrypted, local.</p>
+              <p><small>local-first, MCP, task manager, SQLite, Claude Code, Codex, Cursor, agent tooling, spec storage, PGP-signed release</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="corrupted-theme-v021.html">Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening</a></h2>
+              <p>The 0.2.0 and 0.2.1 releases push Corrupted Theme from a styles library to a production-ready framework: 14 new components, same-origin CDN distribution with SRI, a live demo site, a canonical data layer for cross-language consumers, NSFW handling consolidation, and a CodeQL-driven security pass.</p>
+              <p><small>release notes, design system, glassmorphism, CDN, SRI, components, security hardening, CSS framework</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="abyssal-conquest-demo.html">Abyssal Conquest: Free Rails Shooter in Your Browser - Play Now</a></h2>
+              <p>A full NIKKE-inspired rails shooter you can play free right now. Boss fights with unique mechanics, burst skills, equipment, original soundtrack, infinite boss rush with global leaderboards, and an AC-130 gunship mode.</p>
+              <p><small>Free browser game, rails shooter, boss fights, leaderboards, original soundtrack, AC-130 mode</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="celeste-cli-v18.html">Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI</a></h2>
+              <p>Biggest release yet. .grimoire project context, semantic code search without embeddings, MCP server mode, session persistence with undo, plan mode, extended thinking, and cost tracking. Open-source Go CLI.</p>
+              <p><small>Go CLI, MCP server, AI agent, code graph, semantic search, Bubble Tea TUI, open source</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="celeste-streaming-toolkit.html">Celeste on Twitch and TikTok: Your AI VTuber Entertainer Goes Live</a></h2>
+              <p>Celeste reacts to your TikTok gifts in real-time, nags you about gacha dailies, catches duplicate links, monitors cross-channel drama, and dances on screen with chroma animations. Here's what she does for her fans.</p>
+              <p><small>AI VTuber, TikTok Live, Twitch, channel points, gacha reminders, chroma animations</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="nikke-tierlist-maker.html">NIKKE Tierlist Maker: Drag-and-Drop Custom Tier Lists with PNG Export</a></h2>
+              <p>Build and share custom NIKKE tier lists with drag-and-drop, color-coded tiers, element-colored portraits, and one-click PNG export. Free at nikkers.cc.</p>
+              <p><small>NIKKE tier list maker, custom tierlist, PNG export, drag and drop, nikkers.cc</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="corrupted-theme-vortex.html">Corrupted Theme Vortex: Interstellar-Style Black Hole Animation</a></h2>
+              <p>Real-time black hole animation with accretion disk physics, spaghettification, and Saturn-ring depth layering. Canvas-rendered for glassmorphic UI backgrounds. Corrupted Theme v0.1.8.</p>
+              <p><small>Canvas animation, black hole, glassmorphic design system, npm package, voidpunk</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="zero-context-validation.html">Zero-Context Validation: Test Documentation Completeness with Blind Sub-Agents</a></h2>
+              <p>Spawn blind sub-agents to test your documentation - they expose blindspots you can't see because you have context. Production documentation testing for AI-assisted development.</p>
+              <p><small>Claude Code skill, documentation testing, AI development tools, developer productivity</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="nikke-tierlist-api.html">NIKKE Tierlist & Recommendation API</a></h2>
+              <p>Production-ready Cloudflare Workers API for NIKKE tierlist browsing and AI-powered squad recommendations. 164 units with real union investment data.</p>
+              <p><small>Cloudflare Workers, OpenAPI docs, comprehensive test coverage, built for nikkers.cc</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="nikke-sr-doll-calculator.html">NIKKE SR Doll Leveling Calculator</a></h2>
+              <p>Interactive calculator for estimating resources needed to level SR dolls to Phase 15. Includes luck calculator for super success rates.</p>
+              <p><small>Resource planning, luck tracking, corrupted-theme UI</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="nikke-coredust-breakpoints.html">NIKKE Core Dust Breakpoints</a></h2>
+              <p>Data-driven analysis tool to identify optimal outpost levels for maximum core dust production. Modular Python library with interactive Plotly visualizations.</p>
+              <p><small>41 breakpoints across 400 levels, comprehensive test coverage, production-ready</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="nikke-deficit-calculator.html">NIKKE CP Deficit Calculator</a></h2>
+              <p>Self-contained calculator for determining Combat Power deficit and stat penalties in Goddess of Victory: NIKKE. Piecewise function with 99.5% accuracy.</p>
+              <p><small>501 data points, self-contained dataset, production-ready for nikkers.gg</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="vtuberhub-facial-tracking-relay.html">Multi-Client Facial Tracking Relay for VTubers</a></h2>
+              <p>Split iFacialMocap UDP streams to multiple applications simultaneously. Zero-latency Go relay for VTube Studio, Warudo, and replay tooling.</p>
+              <p><small>Sub-millisecond latency, packet dumping, cross-platform</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="vthree-sizes-measurement-tool.html">Automated VTuber Character Measurement Tool</a></h2>
+              <p>Extract accurate body measurements from anime character images using Google MediaPipe Pose detection for character design and 3D modeling.</p>
+              <p><small>Open-source Python tool, Google Colab ready, unit tested</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="corrupted-theme-design-system.html">Building a Production-Ready Glassmorphic Design System</a></h2>
+              <p>How I built Corrupted Theme—a production-ready glassmorphic CSS framework with enterprise-grade standards, Docker showcase, and npm distribution.</p>
+              <p><small>50+ components, WCAG AA compliance, npm package</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="celeste-discord-command-guide.html">Celeste Discord Command Guide (Go Overhaul)</a></h2>
+              <p>Updated command reference for chat, voice, gacha, doujin recommendations, raid scheduling, radio controls, and moderation.</p>
+              <p><small>Current slash syntax, permission notes, NSFW rules</small></p>
+            </article>
+            <article class="card">
+              <h2><a href="ai-guardrails-template.html">Enterprise Guardrails for AI Development</a></h2>
+              <p>Walkthrough of the ai_development template that keeps AI repos compliant with CLAUDE.md, MCP workflows, and detect-secrets.</p>
+              <p><small>Includes bootstrap steps + audit guidance</small></p>
+            </article>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+    <script>
+      // Auto-scroll functionality for the scrollable column
+      (function() {
+        const scrollableColumn = document.querySelector('.scrollable-column');
+        if (!scrollableColumn) return;
+
+        let scrollDirection = 1; // 1 for down, -1 for up
+        const scrollSpeed = 0.3; // pixels per frame (slower = smoother)
+        const pauseAtBottom = 3000; // pause for 3 seconds at bottom
+        const pauseAtTop = 2000; // pause for 2 seconds at top
+        let pauseTimer = 0;
+        let isPaused = false;
+        let maxScroll = 0;
+        let autoScrollActive = true;
+        let rafId = null;
+
+        function updateMaxScroll() {
+          maxScroll = scrollableColumn.scrollHeight - scrollableColumn.clientHeight;
+        }
+
+        function autoScroll() {
+          if (!autoScrollActive || userInteracting) {
+            rafId = requestAnimationFrame(autoScroll);
+            return;
+          }
+
+          if (isPaused) {
+            pauseTimer -= 16; // ~60fps
+            if (pauseTimer <= 0) {
+              isPaused = false;
+              scrollDirection *= -1; // Reverse direction
+            }
+            rafId = requestAnimationFrame(autoScroll);
+            return;
+          }
+
+          updateMaxScroll();
+          
+          if (maxScroll <= 0) {
+            // Content doesn't need scrolling
+            rafId = requestAnimationFrame(autoScroll);
+            return;
+          }
+
+          // Get current scroll position from the element
+          let currentScroll = scrollableColumn.scrollTop;
+          currentScroll += scrollSpeed * scrollDirection;
+
+          // Check if we've reached the bottom
+          if (currentScroll >= maxScroll) {
+            currentScroll = maxScroll;
+            if (scrollDirection === 1) {
+              isPaused = true;
+              pauseTimer = pauseAtBottom;
+            }
+          }
+          // Check if we've reached the top
+          else if (currentScroll <= 0) {
+            currentScroll = 0;
+            if (scrollDirection === -1) {
+              isPaused = true;
+              pauseTimer = pauseAtTop;
+            }
+          }
+
+          scrollableColumn.scrollTop = currentScroll;
+          rafId = requestAnimationFrame(autoScroll);
+        }
+
+        // Pause auto-scroll on user interaction
+        let userInteracting = false;
+        let interactionTimeout;
+        let lastUserScrollTime = 0;
+
+        // Sync scroll position when user manually scrolls
+        function syncScrollPosition() {
+          lastUserScrollTime = Date.now();
+          userInteracting = true;
+          clearTimeout(interactionTimeout);
+          interactionTimeout = setTimeout(() => {
+            userInteracting = false;
+          }, 3000); // Longer pause after user interaction
+        }
+
+        scrollableColumn.addEventListener('mouseenter', () => {
+          userInteracting = true;
+        });
+
+        scrollableColumn.addEventListener('mouseleave', () => {
+          // Only resume if user hasn't scrolled recently
+          if (Date.now() - lastUserScrollTime > 2000) {
+            userInteracting = false;
+          }
+        });
+
+        scrollableColumn.addEventListener('wheel', (e) => {
+          syncScrollPosition();
+        }, { passive: true });
+
+        scrollableColumn.addEventListener('scroll', () => {
+          syncScrollPosition();
+        }, { passive: true });
+
+        scrollableColumn.addEventListener('touchstart', () => {
+          syncScrollPosition();
+        }, { passive: true });
+
+        scrollableColumn.addEventListener('touchmove', () => {
+          syncScrollPosition();
+        }, { passive: true });
+
+        scrollableColumn.addEventListener('touchend', () => {
+          interactionTimeout = setTimeout(() => {
+            if (Date.now() - lastUserScrollTime > 2000) {
+              userInteracting = false;
+            }
+          }, 2000);
+        });
+
+        // Start auto-scroll after a short delay
+        setTimeout(() => {
+          updateMaxScroll();
+          if (maxScroll > 0) {
+            autoScroll();
+          }
+        }, 1000);
+      })();
+    </script>
+  </body>
+</html>

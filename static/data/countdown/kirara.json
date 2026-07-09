@@ -1,0 +1,32 @@
+{
+  "title": "Manga Launch Countdown:",
+  "eventDate": "2025-04-01T04:00:00-07:00",
+  "completedMessage": "Now Available!",
+  "character": {
+    "image": "Fall_of_Kirara.png",
+    "background": {
+      "color": "radial-gradient(circle, rgba(139, 92, 246, 0.4) 10%, rgba(217, 79, 144, 0.6) 60%)",
+      "borderColor": "#3a2555"
+    },
+    "overlay": {
+      "image": "Tentacle_Foil.png",
+      "position": "behind",
+      "animation": "float"
+    }
+  },
+  "popup": {
+    "message": "📚✨ Love spicy manga? <br> Don't miss my first-ever manga —<br><strong>Fall of Kirara!</strong><br>💜 Pre-order now and be part of the corruption!<br>🛒 <a href=\"https://kusanagi.short.gy/Shop\" target=\"_blank\" style=\"color:#e86ca8;\">Physical</a> | 💻 <a href=\"https://kusanagi.short.gy/itch\" target=\"_blank\" style=\"color:#e86ca8;\">Digital</a>",
+    "frequency": 10000,
+    "duration": 5000,
+    "colors": {
+      "bg": null,
+      "border": null,
+      "text": null
+    }
+  },
+  "colors": {
+    "primary": "#3a2555",
+    "accent": "#d94f90"
+  }
+}
+

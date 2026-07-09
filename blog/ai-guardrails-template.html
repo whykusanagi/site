@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Building Enterprise Guardrails for AI Development | Celeste Blog</title>
+    <meta name="description" content="How the ai_development guardrails template enforces Meta/Google/Netflix-level standards for AI-led repos using CLAUDE.md, .cursorrules, and MCP workflows." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/ai-guardrails-template.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Building Enterprise Guardrails for AI Development",
+      "description": "How the ai_development guardrails template enforces Meta/Google/Netflix-level standards for AI-led repos using CLAUDE.md, .cursorrules, and MCP workflows.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2025-01-26",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/ai-guardrails-template.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">AI Guardrails</p>
+          <h1>Building Enterprise Guardrails for AI Development</h1>
+          <p class="meta">How the ai_development template keeps humans and AI in sync with policy parity, MCP workflows, and audit-friendly automation.</p>
+          <p class="meta"><strong>Last updated:</strong> January 26, 2025</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>ai_development ships a guardrail starter kit that locks policy, branching rules, and MCP workflows into every repo.</li>
+            <li>Bootstrap scripts generate CLAUDE.md + .cursorrules, detect-secrets baselines, Dockerfiles, and pre-commit hooks.</li>
+            <li>Mermaid-ready docs, ADR templates, and MCP verification make it blog-ready for showcasing enterprise AI ops.</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/cute_headshot_transparent.png" alt="Enterprise AI guardrails template - professional tech aesthetic" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>What Problems Does It Solve?</h2>
+          <p>Most AI repos fail because policy lives in scattered docs, secrets leak via sloppy .gitignore files, and no one records how MCP deployments were performed. The guardrail template fixes that by forcing:</p>
+          <ul>
+            <li><strong>Policy parity</strong> – the same CLAUDE.md drives humans and agents.</li>
+            <li><strong>Context-safe delivery</strong> – branch naming, small commits, and ADRs are pre-baked.</li>
+            <li><strong>Secret hygiene</strong> – `.secrets/` baselines plus detect-secrets in pre-commit.</li>
+            <li><strong>Audit-friendly ops</strong> – docs/architecture.md and docs/testing.md include Mermaid placeholders and manual test flows.</li>
+          </ul>
+          <p>Because the project is self-documented with shields.io badges and onboarding checklists (<a href="https://github.com/whykusanagi/ai_development">source</a>), it already meets the blog criteria.</p>
+        </section>
+
+        <section>
+          <h2>Bootstrap Flow</h2>
+          <ol>
+            <li>Copy <code>CLAUDE.md</code>, <code>.cursorrules</code>, and <code>bootstrap.py</code> into the new repo before inviting AI assistants.</li>
+            <li>Run <code>python bootstrap.py</code>, <code>pip install -r requirements.txt</code>, <code>make setup</code>, and <code>make gen-config</code>.</li>
+            <li>Install pre-commit hooks and generate the detect-secrets baseline.</li>
+            <li>Register MCP credentials (DigitalOcean, AWS, Azure, Cloudflare) so <code>list_mcp_resources → deploy → get logs</code> can run without rewiring.</li>
+            <li>Capture screenshots/logs the first time you apply the template—that evidence feeds compliance audits.</li>
+          </ol>
+        </section>
+
+        <section>
+          <h2>What’s in the Template?</h2>
+          <p>The repo includes a FastAPI starter, TS/CSS helpers, pytest scaffolding, and scripts for smoke tests plus config generation. Documentation already covers architecture diagrams, environment variables, testing flows, and storage procedures. It’s designed so every new repo begins with the same enterprise baselines instead of reinventing governance.</p>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><a href="https://github.com/whykusanagi/ai_development" target="_blank" rel="noopener">ai_development repository</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Do I always need MCP credentials to use this template?<br>
+          <strong>A:</strong> You can run it locally without them, but MCP checks will fail. Capture that exception in your ADR and add credentials later—the guardrails expect full coverage.</p>
+          <p><strong>Q:</strong> Can I skip detect-secrets if my repo is private?<br>
+          <strong>A:</strong> Nope. The template enforces secret hygiene for every repo, public or private. Regenerate the baseline if it’s noisy, don’t disable it.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/ai_development" target="_blank" rel="noopener">View Guardrails Repo</a>
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+          <a class="btn" href="../links.html#discord">Join Community</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

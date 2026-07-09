@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NIKKE SR Doll Calculator: Resource Planning Guide | Celeste Blog</title>
+    <meta name="description" content="Interactive calculator for estimating resources needed to level SR dolls to Phase 15 in NIKKE. Includes luck calculator for super success rates." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/nikke-sr-doll-calculator.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "NIKKE SR Doll Calculator: Resource Planning Guide",
+      "description": "Interactive calculator for estimating resources needed to level SR dolls to Phase 15 in Goddess of Victory: NIKKE. Includes luck calculator for super success rates.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2025-01-27",
+      "image": "https://s3.whykusanagi.xyz/art/Transparent_Bunny.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/nikke-sr-doll-calculator.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-newspaper"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Gamer-Tech Lifestyle</p>
+          <h1>NIKKE SR Doll Leveling Calculator: Resource Planning & Luck Tracker</h1>
+          <p class="meta">Interactive calculator with luck tracking to estimate resources and super success rates for leveling SR dolls to Phase 15</p>
+          <p class="meta"><strong>Last updated:</strong> January 27, 2025</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>Interactive resource calculator</strong> for planning SR doll leveling from Phase 1 to Phase 15</li>
+            <li><strong>Luck calculator feature</strong> compares your actual kit usage against worst-case scenario (no super successes)</li>
+            <li><strong>Beautiful UI</strong> integrated with corrupted-theme glassmorphic design system</li>
+            <li><strong>Real-time chart updates</strong> with Chart.js visualization showing cumulative EXP and kit requirements</li>
+            <li><strong>Production-ready</strong> for deployment on nikkers.gg with modular architecture</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/Transparent_Bunny.png" alt="NIKKE SR Doll Leveling Calculator" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>What Is the SR Doll Leveling Calculator?</h2>
+          <p>Leveling SR dolls in Goddess of Victory: NIKKE requires careful resource planning. Each phase from 1 to 15 needs specific amounts of EXP and resource kits (Blue, Purple, and Gold). The SR Doll Leveling Calculator helps players visualize exactly how many resources they'll need to reach their target phase, making it easier to plan resource allocation and budget accordingly.</p>
+          <p>But here's where it gets interesting: the calculator also includes a <strong>luck tracker</strong> that compares your actual kit usage against the worst-case scenario (never getting a super success). This helps you understand just how lucky—or unlucky—you were with super success procs during your leveling journey!</p>
+        </section>
+
+        <section>
+          <h2>Key Features</h2>
+          <h3>Interactive Resource Visualization</h3>
+          <p>The calculator features an interactive Chart.js bar chart that shows:</p>
+          <ul>
+            <li><strong>Cumulative EXP requirements</strong> for each phase (3,000 EXP per phase)</li>
+            <li><strong>Blue kit requirements</strong> (20 EXP per kit, worst-case)</li>
+            <li><strong>Purple kit requirements</strong> (50 EXP per kit, worst-case)</li>
+            <li><strong>Gold kit requirements</strong> (100 EXP per kit, worst-case)</li>
+          </ul>
+          <p>Use the slider to select your target phase (1-15), and the chart updates in real-time to show cumulative resource requirements up to that phase.</p>
+
+          <h3>Luck Calculator: How Lucky Were You?</h3>
+          <p>The luck calculator is a unique feature that helps you understand your super success rate. Here's how it works:</p>
+          <ol>
+            <li><strong>Enter your actual kit usage</strong>: Input how many Blue, Purple, and Gold kits you actually used to reach SR15</li>
+            <li><strong>Compare against worst-case</strong>: The calculator compares your usage against the worst-case scenario (2,250 Blue, 900 Purple, 450 Gold kits if you never got a super success)</li>
+            <li><strong>Get your luck percentage</strong>: See how much luckier (or unluckier) you were compared to the worst-case scenario</li>
+          </ol>
+          <p><strong>Super Success Mechanics:</strong></p>
+          <ul>
+            <li>Each kit has a 10% chance for a "super success" that doubles the EXP gained</li>
+            <li>Worst-case scenario assumes you never get a super success (extremely rare, but statistically possible)</li>
+            <li>Most players will see some super successes, making their actual kit usage lower than worst-case</li>
+          </ul>
+          <p>The luck calculator uses a weighted formula that accounts for the different EXP values of each kit type, giving you an accurate overall luck percentage.</p>
+        </section>
+
+        <section>
+          <h2>How It Works</h2>
+          <p>The calculator uses a modular architecture with clear separation of concerns:</p>
+          
+          <div class="formula-display">
+            <code>Total EXP = 3,000 × Target Phase</code>
+          </div>
+
+          <h3>Resource Calculations</h3>
+          <ul>
+            <li><strong>Per Phase EXP</strong>: 3,000 EXP required for each phase (1-15)</li>
+            <li><strong>Total for SR15</strong>: 45,000 EXP cumulative</li>
+            <li><strong>Kit EXP Values (worst-case)</strong>:
+              <ul>
+                <li>Blue Kit: 20 EXP</li>
+                <li>Purple Kit: 50 EXP</li>
+                <li>Gold Kit: 100 EXP</li>
+              </ul>
+            </li>
+          </ul>
+
+          <h3>Luck Calculation Formula</h3>
+          <p>The luck calculator uses a weighted approach to calculate overall luck percentage:</p>
+          <div class="formula-display">
+            <code>Luck % = ((Worst-Case Kits - Actual Kits) / Worst-Case Kits) × 100</code>
+          </div>
+          <p>Kits are weighted by their EXP value (Blue=1, Purple=2.5, Gold=5) to ensure accurate overall luck calculation across different kit types.</p>
+        </section>
+
+        <section>
+          <h2>Corrupted Theme Integration</h2>
+          <p>The calculator is fully integrated with the <a href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener">corrupted-theme</a> design system for a consistent, glassmorphic UI that matches nikkers.gg. The design features:</p>
+          <ul>
+            <li><strong>Glassmorphic Design</strong>: Frosted glass effects with backdrop blur</li>
+            <li><strong>Video Background</strong>: Optional animated background (can be disabled)</li>
+            <li><strong>Responsive Layout</strong>: Mobile-first design that works on all devices</li>
+            <li><strong>Color-Coded Luck Levels</strong>: Visual indicators for very lucky, lucky, somewhat lucky, neutral, and unlucky results</li>
+            <li><strong>Smooth Animations</strong>: Transitions and pulse effects for lucky results</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Usage</h2>
+          <ol>
+            <li><strong>Open the calculator</strong> in your web browser (no installation required)</li>
+            <li><strong>Select your target phase</strong> using the slider (1-15)</li>
+            <li><strong>View resource requirements</strong> in the interactive chart</li>
+            <li><strong>After leveling</strong>, enter your actual kit usage in the luck calculator</li>
+            <li><strong>See your luck percentage</strong> and how many kits you saved compared to worst-case</li>
+          </ol>
+          <p>The calculator is self-contained and works offline after the initial load. All data is stored in JSON format for easy updates without code changes.</p>
+        </section>
+
+        <section>
+          <h2>Technical Architecture</h2>
+          <p>The calculator uses a clean, modular architecture:</p>
+          <ul>
+            <li><strong>SRDollCalculator Class</strong>: Core business logic for calculations and chart management</li>
+            <li><strong>Chart.js Integration</strong>: Interactive bar and line charts for visualization</li>
+            <li><strong>Data-Driven Design</strong>: Resource data stored in JSON for easy maintenance</li>
+            <li><strong>Event-Driven Updates</strong>: Debounced slider updates for smooth performance</li>
+            <li><strong>Input Validation</strong>: Graceful error handling for invalid inputs</li>
+          </ul>
+          <p>The codebase is well-documented with JSDoc comments and includes unit tests for core calculator logic.</p>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><a href="https://github.com/whykusanagi/nikke_sr_doll_calc" target="_blank" rel="noopener">nikke_sr_doll_calc repository</a></li>
+            <li><a href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener">corrupted-theme design system</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> How accurate is the worst-case scenario?<br>
+          <strong>A:</strong> The worst-case scenario (no super successes) is extremely rare but statistically possible. Most players will see some super successes during their leveling journey, making their actual kit usage lower than worst-case. The luck calculator helps you understand exactly how much luck you had!</p>
+          
+          <p><strong>Q:</strong> Should I only use one type of kit?<br>
+          <strong>A:</strong> The calculator shows requirements for all three kit types. You can use any combination of Blue, Purple, and Gold kits—the luck calculator will account for the different EXP values of each type when calculating your overall luck percentage.</p>
+          
+          <p><strong>Q:</strong> Does the calculator account for game updates?<br>
+          <strong>A:</strong> The resource data is stored in JSON format, making it easy to update if game mechanics change. However, the current values are based on the current understanding of game mechanics and may need adjustment if the game updates resource requirements.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/nikke_sr_doll_calc" target="_blank" rel="noopener"><i class="fab fa-github"></i> View on GitHub</a>
+          <a class="btn" href="../tools.html"><i class="fas fa-tools"></i> Browse Tech Tools</a>
+          <a class="btn" href="nikke-deficit-calculator.html"><i class="fas fa-calculator"></i> CP Deficit Calculator</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

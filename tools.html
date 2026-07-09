@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tools & Utilities | whykusanagi</title>
+  <meta name="description" content="Interactive utilities from whykusanagi including countdown presets, a Union Raid boss HP calculator, and wallpaper links." />
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://whykusanagi.xyz/tools.html">
+  <!-- Load environment config for asset URL handling (dev vs production) -->
+  <script src="assets/js/env-config.js"></script>
+  <!-- Background image setup (uses env-config for URL conversion) -->
+  <script src="assets/js/background-setup.js"></script>
+  
+  <!-- Corrupted Theme Framework -->
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  
+  <!-- Site-Specific Overrides -->
+  <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <script type="module" src="assets/js/site-bootstrap.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .tool-card {
+      animation: fadeIn 0.6s ease-out;
+    }
+
+    .tool-card:nth-child(2) { animation-delay: 0.1s; }
+    .tool-card:nth-child(3) { animation-delay: 0.2s; }
+  </style>
+</head>
+<body class="has-video-bg">
+  <script src="assets/js/loading.js"></script>
+
+  <!-- Video background (package structure) -->
+  <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+    <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+    <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+  </video>
+  <div class="glass-backdrop"></div>
+
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+      <div class="navbar-links">
+        <a href="celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+        <a href="music.html"><i class="fas fa-music"></i> Music</a>
+        <a href="blog/index.html"><i class="fas fa-blog"></i> Blog</a>
+        <a href="art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+        <a href="references.html"><i class="fas fa-palette"></i> References</a>
+        <a href="doujin.html"><i class="fas fa-book"></i> Doujin</a>
+        <a href="links.html"><i class="fas fa-link"></i> Links</a>
+        <a href="tools.html" class="active"><i class="fas fa-tools"></i> Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-shell">
+    <div class="container container--grid-2col">
+      <div class="content">
+        <h1 style="font-size: 2.5rem; color: var(--accent); margin-bottom: 1rem; text-align: center;">Tools & Utilities</h1>
+        <p class="intro">A collection of interactive utilities used across this site: event countdown presets, Union Raid boss HP checks, and wallpaper links.</p>
+        <h2 style="margin-top: 1.5rem;">Who This Is For</h2>
+        <ul style="margin-left: 1.5rem; line-height: 1.8;">
+          <li>Players tracking event dates and release windows.</li>
+          <li>Union Raid players estimating remaining boss HP after team runs.</li>
+          <li>Community members looking for official wallpaper releases.</li>
+        </ul>
+
+        <div class="tools-grid" style="margin-top: 2rem;">
+        <div class="tool-card glass-card" style="border-top:2px solid #d94f90;">
+          <div class="tool-icon"><i class="fas fa-terminal"></i></div>
+          <h3>Celeste CLI</h3>
+          <p>Graph-powered code intelligence for AI development. MinHash + BM25 semantic search, tree-sitter TypeScript parsing, LSH sub-linear queries, structural code review, and direct MCP tools for Claude Code.</p>
+          <a href="celeste-cli-presentation.html" class="tool-button">View Pitch Deck</a>
+        </div>
+
+        <div class="tool-card glass-card">
+          <div class="tool-icon"><i class="fas fa-hourglass-end"></i></div>
+          <h3>Countdown Timer</h3>
+          <p>Load preset countdown configurations and override them with URL parameters for event, date, title, theme, shape, character, and overlay.</p>
+          <a href="countdown.html" class="tool-button">Open Timer</a>
+        </div>
+
+        <div class="tool-card glass-card">
+          <div class="tool-icon"><i class="fas fa-calculator"></i></div>
+          <h3>Union Raid Calculator</h3>
+          <p>Enter level, boss, and player damage values to calculate remaining HP and visualize total damage contribution.</p>
+          <a href="union_calc.html" class="tool-button">Open Calculator</a>
+        </div>
+
+        <div class="tool-card glass-card">
+          <div class="tool-icon"><i class="fas fa-image"></i></div>
+          <h3>Wallpapers</h3>
+          <p>Download high-quality wallpapers featuring character art and designs. Multiple resolutions available for all devices.</p>
+          <a href="wallpapers.html" class="tool-button">View Wallpapers</a>
+        </div>
+      </div>
+
+      <section style="margin-top: 2rem;">
+        <h2>Quick FAQ</h2>
+        <p><strong>Q:</strong> Where does countdown data come from?<br><strong>A:</strong> Presets load from JSON files in <code>static/data/countdown/</code>, with optional URL overrides.</p>
+        <p><strong>Q:</strong> Does the Union Raid calculator use local data?<br><strong>A:</strong> Yes, boss HP values are loaded from <code>boss.json</code> on this site.</p>
+        <p><strong>Q:</strong> Where should I go for policy details before purchases?<br><strong>A:</strong> See <a href="refunds.html">Refunds</a>, <a href="shipping.html">Shipping</a>, and <a href="terms.html">Terms</a>.</p>
+      </section>
+      </div>
+
+      <div class="character">
+        <img src="https://s3.whykusanagi.xyz/art/MousePad/full-body.png" alt="Celeste full-body illustration">
+      </div>
+    </div>
+
+    <footer>
+      &copy; 2026 whykusanagi. All rights reserved. | <strong style="color: var(--accent);">18+ Only</strong><br>
+      <a href="privacy.html">Privacy</a> | <a href="terms.html">Terms</a> | <a href="dmca.html">DMCA</a> | <a href="refunds.html">Refunds</a> | <a href="shipping.html">Shipping</a>
+    </footer>
+  </main>
+
+  <script src="src/lib/celeste-widget.js"></script>
+  <script src="assets/js/video-background.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "corrupted": {
+    "name": "Corrupted Default",
+    "colors": {
+      "title": "#f5f1f8",
+      "countdown": "#e86ca8",
+      "background": "#140c28",
+      "border": "#3a2555",
+      "accent": "#d94f90"
+    }
+  },
+  "abyss": {
+    "name": "Deep Abyss",
+    "colors": {
+      "title": "#e86ca8",
+      "countdown": "#f5f1f8",
+      "background": "#0a0514",
+      "border": "#b61b70",
+      "accent": "#d94f90"
+    }
+  },
+  "sakura": {
+    "name": "Sakura Bloom",
+    "colors": {
+      "title": "#f5f1f8",
+      "countdown": "#ff6b9d",
+      "background": "#1a0f28",
+      "border": "#e86ca8",
+      "accent": "#e86ca8"
+    }
+  }
+}

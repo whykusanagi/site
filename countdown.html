@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Countdown Widget | whykusanagi</title>
+    <meta name="description" content="Embeddable countdown widget with JSON presets and URL parameter overrides for event, theme, character, overlay, shape, date, and title." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/countdown.html">
+    
+  <!-- Load environment config FIRST -->
+    <script src="assets/js/env-config.js"></script>
+    
+  <!-- Corrupted Theme Framework (for CSS variables) -->
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    
+    <script type="module" src="assets/js/site-bootstrap.js"></script>
+    <!-- Countdown Widget Styles -->
+    <link rel="stylesheet" href="assets/css/countdown-widget.css">
+</head>
+<body>
+  <!-- Widget container always visible -->
+  <div id="countdown-widget" style="max-width: 980px; margin: 0 auto; padding: 2rem 1rem;"></div>
+
+  <!-- Documentation only shown when no URL params are present -->
+  <main id="countdown-docs" style="max-width: 980px; margin: 0 auto; padding: 0 1rem 2rem;">
+    <h1 style="color: var(--accent); margin-bottom: 0.75rem;">Countdown Widget</h1>
+    <p style="margin-bottom: 1rem;">This page renders the site countdown component using JSON presets from <code>static/data/countdown/</code> plus optional URL overrides.</p>
+
+    <h2>Quick Start</h2>
+    <ul style="margin-left: 1.5rem; line-height: 1.8;">
+      <li><code>?event=kirara</code> loads <code>kirara.json</code>.</li>
+      <li><code>?event=bastard-hero</code> loads <code>bastard-hero.json</code>.</li>
+      <li><code>?event=default</code> loads the generic template preset.</li>
+    </ul>
+
+    <h2>Common URL Parameters</h2>
+    <p style="line-height: 1.8;">Use <code>event</code>, <code>theme</code>, <code>character</code>, <code>overlay</code>, <code>shape</code>, <code>date</code>, and <code>title</code>. URL parameters override values from the JSON file.</p>
+
+    <h2>Quick FAQ</h2>
+    <p><strong>Q:</strong> Where are preset files stored?<br><strong>A:</strong> In <code>static/data/countdown/</code>.</p>
+    <p><strong>Q:</strong> Can I test alternate shapes quickly?<br><strong>A:</strong> Yes. Use presets like <code>test-circle</code>, <code>test-hexagon</code>, <code>test-star</code>, and <code>test-heart</code>.</p>
+    <p><strong>Q:</strong> What if a URL value is invalid?<br><strong>A:</strong> Invalid preset values fall back to defaults.</p>
+  </main>
+  <script>
+    // Hide docs when URL has countdown params (widget-only mode)
+    if (window.location.search.length > 0) {
+      document.getElementById('countdown-docs').style.display = 'none';
+    }
+  </script>
+
+    <script src="assets/js/json-asset-loader.js"></script>
+    <script type="module">
+      import { initCountdown } from './assets/js/countdown-widget.js';
+      initCountdown();
+    </script>
+</body>
+</html>

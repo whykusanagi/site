@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste Discord Bot Command Guide (Go Overhaul) | Celeste Blog</title>
+    <meta name="description" content="Updated guide to Celeste's current Discord slash commands after the Go overhaul, including chat, voice, gacha, doujin recommendations, raid scheduling, radio controls, and NSFW verification." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-discord-command-guide.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Celeste Discord Bot Command Guide (Go Overhaul)",
+      "description": "Updated guide to Celeste's current Discord slash commands after the Go overhaul, including chat, voice, gacha, doujin recommendations, raid scheduling, radio controls, and NSFW verification.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-02-08",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-discord-command-guide.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Discord AI Companion</p>
+          <h1>Celeste Discord Bot Command Guide (Go Overhaul)</h1>
+          <p class="meta">Current slash command reference based on the overhauled Go bot implementation.</p>
+          <p class="meta"><strong>Last updated:</strong> February 8, 2026</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li>Celeste now ships a focused command set centered on chat, voice, game workflows, and moderation.</li>
+            <li>The current slash command list is 12 top-level commands, with subcommands for <code>/voice</code> and <code>/radio</code>.</li>
+            <li>Older command names from prior builds are no longer canonical for this bot revision.</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/CelesteNinkoroBunny.png" alt="Celeste AI Discord Bot character illustration" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>Why This Matters</h2>
+          <p>When command names change, old guides become misleading fast. This page now mirrors the live command registry from the overhauled Go bot so server admins and community members can rely on one accurate reference.</p>
+        </section>
+
+        <section>
+          <h2>Current Slash Commands</h2>
+          <ul>
+            <li><strong>Core chat:</strong> <code>/ask question:&lt;text&gt;</code>, <code>/ping</code>, <code>/help</code>, <code>/info</code>, <code>/invite</code>.</li>
+            <li><strong>Voice assistant:</strong> <code>/voice join</code>, <code>/voice leave</code>, <code>/voice status</code>.</li>
+            <li><strong>NIKKE gacha:</strong> <code>/gacha pull_type:single|multi</code>.</li>
+            <li><strong>Doujin recommendations (NSFW channels only):</strong> <code>/recommend_terms</code>, <code>/recommend_title</code>, <code>/recommend_semantic</code>.</li>
+            <li><strong>Union raid scheduling:</strong> <code>/schedule_raid thursday:&lt;M/D&gt; friday:&lt;M/D&gt;</code> (creates Thu/Fri/Sat announcement posts).</li>
+            <li><strong>Verification:</strong> <code>/check_nsfw</code> (administrator-only).</li>
+            <li><strong>Radio controls:</strong> <code>/radio start</code>, <code>/radio stop</code>, <code>/radio status</code>.</li>
+          </ul>
+          <p>Celeste also supports mention-based chat: ping the bot in a message for natural conversation without slash syntax.</p>
+        </section>
+
+        <section>
+          <h2>Operational Notes</h2>
+          <p><strong>NSFW recommendation commands</strong> are rejected outside NSFW channels. <strong>/check_nsfw</strong> requires administrator permissions and expects specific server roles/channels (like <code>Verified</code>, <code>suspected</code>, and a moderator log channel).</p>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><code>celeste-discord-bot/go/internal/discord/commands.go</code> (slash command definitions)</li>
+            <li><code>celeste-discord-bot/go/internal/discord/handlers.go</code> (command routing and behavior)</li>
+            <li><code>celeste-discord-bot/go/internal/discord/doujin_handler.go</code>, <code>raid_scheduler.go</code>, <code>verification.go</code> (command-specific rules)</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Does Celeste need admin permissions for everything?<br>
+          <strong>A:</strong> No. Most commands are public; <code>/check_nsfw</code> is explicitly administrator-gated.</p>
+          <p><strong>Q:</strong> Where are the audit logs?<br>
+          <strong>A:</strong> Self-hosted deployments write command audit logs to <code>go/logs/command_audit.log</code>.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="../celeste.html">Chat with Celeste</a>
+          <a class="btn" href="../links.html#discord">Join Community</a>
+          <a class="btn" href="index.html">More Blog Posts</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>

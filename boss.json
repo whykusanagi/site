@@ -1,0 +1,82 @@
+[
+    {
+        "Stages":1,
+        "Sunbather":"36000000",
+        "Stout":"50000000",
+        "Chatterbox":"82000000",
+        "Rebuild Spook":"36000000",
+        "Storm Bringer":"112000000"
+    },
+    {
+        "Stages":2,
+        "Sunbather":"72000000",
+        "Stout":"99000000",
+        "Chatterbox":"183000000",
+        "Rebuild Spook":"72000000",
+        "Storm Bringer":"251000000"
+    },
+    {
+        "Stages":3,
+        "Sunbather":"180000000",
+        "Stout":"247000000",
+        "Chatterbox":"406000000",
+        "Rebuild Spook":"180000000",
+        "Storm Bringer":"558000000"
+    },
+    {
+        "Stages":4,
+        "Sunbather":"180000000",
+        "Stout":"247000000",
+        "Chatterbox":"406000000",
+        "Rebuild Spook":"180000000",
+        "Storm Bringer":"558000000"
+    },
+    {
+        "Stages":5,
+        "Sunbather":"359000000",
+        "Stout":"493000000",
+        "Chatterbox":"1135000000",
+        "Rebuild Spook":"359000000",
+        "Storm Bringer":"1561000000"
+    },
+    {
+        "Stages":6,
+        "Sunbather":"798000000",
+        "Stout":"1097000000",
+        "Chatterbox":"1128000000",
+        "Rebuild Spook":"798000000",
+        "Storm Bringer":"1552000000"
+    },
+    {
+        "Stages":7,
+        "Sunbather":"798000000",
+        "Stout":"1097000000",
+        "Chatterbox":"1128000000",
+        "Rebuild Spook":"798000000",
+        "Storm Bringer":"1552000000"
+    },
+    {
+        "Stages":8,
+        "Sunbather":"1091000000",
+        "Stout":"1500000000",
+        "Chatterbox":"1570000000",
+        "Rebuild Spook":"1091000000",
+        "Storm Bringer":"2159000000"
+    },
+    {
+        "Stages":9,
+        "Sunbather":"1091000000",
+        "Stout":"1500000000",
+        "Chatterbox":"1570000000",
+        "Rebuild Spook":"1091000000",
+        "Storm Bringer":"2159000000"
+    },
+    {
+        "Stages":10,
+        "Sunbather":"1091000000",
+        "Stout":"1500000000",
+        "Chatterbox":"1570000000",
+        "Rebuild Spook":"1091000000",
+        "Storm Bringer":"2159000000"
+    }
+]

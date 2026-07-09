@@ -1,0 +1,1446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Celeste CLI v1.11.2 — Graph-Powered Code Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080f;--sur:#111118;--sur2:#13131f;
+  --bdr:#1e1b2e;--bdr2:#2a2440;
+  --pk:#d94f90;--pkdim:rgba(217,79,144,0.09);--pkglow:rgba(217,79,144,0.28);
+  --pu:#8b5cf6;--pudim:rgba(139,92,246,0.09);--puglow:rgba(139,92,246,0.28);
+  --dp:#6d28d9;
+  --txt:#f0ecf8;--txt2:#7a7085;--txt3:#3a3050;
+  --grn:#10b981;--red:#ef4444;--amb:#f59e0b;--cy:#0891b2;
+  --wht:#ffffff;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--txt);overflow:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(139,92,246,0.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+.deck{width:100vw;height:100vh;position:relative;z-index:1;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:34px 54px 46px;opacity:0;transition:opacity .26s ease;overflow-y:auto;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:var(--bdr2) transparent;}
+.slide.active{display:flex;opacity:1;}
+.slide>*{min-height:0;}
+.slide::-webkit-scrollbar{width:5px;}
+.slide::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:3px;}
+/* header */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--bdr);}
+.sl{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--pk);font-weight:500;}
+.sc{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--txt2);}
+/* typography */
+.h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,52px);line-height:1.05;letter-spacing:-.02em;color:var(--wht);}
+.h1 em{color:var(--pk);font-style:normal;}
+.h2{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(20px,2.2vw,29px);line-height:1.1;letter-spacing:-.015em;color:var(--wht);}
+.ey{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--pk);font-weight:500;}
+.bt{font-size:16px;line-height:1.62;color:var(--txt2);font-weight:400;}
+.mn{font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);}
+/* cards */
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:18px;}
+.ct{font-family:'Syne',sans-serif;font-weight:600;font-size:16px;color:var(--wht);margin-bottom:6px;}
+.cb{font-size:15px;line-height:1.6;color:var(--txt2);}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+/* stat grid */
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.stat-card{background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:20px 14px;display:flex;flex-direction:column;gap:6px;}
+.stat-card.ft{background:var(--pkdim);border-color:var(--pkglow);}
+.sn{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,2.8vw,40px);color:var(--pk);line-height:1;}
+.slb{font-size:14px;color:var(--txt2);line-height:1.4;}
+/* tables */
+.dt{width:100%;border-collapse:collapse;font-size:15px;}
+.dt thead th{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt2);padding:10px 12px;text-align:left;border-bottom:1px solid var(--bdr);}
+.dt tbody td{padding:10px 12px;border-bottom:1px solid var(--bdr);color:var(--txt2);line-height:1.5;vertical-align:top;}
+.dt tbody tr:last-child td{border-bottom:none;}
+.dt tbody tr:hover td{background:var(--sur2);}
+.dt td.str{color:var(--wht);font-weight:500;}
+.dt td.win{color:var(--pk);font-family:'DM Mono',monospace;font-size:13px;}
+.dt td.ok{color:var(--grn);font-family:'DM Mono',monospace;font-size:13px;}
+.dt td.muted{color:var(--txt3);font-family:'DM Mono',monospace;font-size:13px;}
+/* checklist */
+.cl{display:flex;flex-direction:column;gap:8px;}
+.ci{display:flex;gap:8px;align-items:flex-start;font-size:15px;color:var(--txt2);line-height:1.5;}
+.ci::before{content:'✓';color:var(--grn);font-size:13px;font-weight:700;margin-top:2px;flex-shrink:0;}
+/* diagram wrapper */
+.dw{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;overflow:hidden;}
+.dw svg{display:block;width:100%;height:100%;}
+/* badge pills */
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.04em;}
+.badge-pk{background:var(--pkdim);color:var(--pk);border:1px solid var(--pkglow);}
+.badge-pu{background:var(--pudim);color:var(--pu);border:1px solid var(--puglow);}
+.badge-grn{background:rgba(16,185,129,.1);color:var(--grn);border:1px solid rgba(16,185,129,.25);}
+.badge-red{background:rgba(239,68,68,.1);color:var(--red);border:1px solid rgba(239,68,68,.25);}
+.badge-amb{background:rgba(245,158,11,.1);color:var(--amb);border:1px solid rgba(245,158,11,.25);}
+.badge-cy{background:rgba(8,145,178,.1);color:var(--cy);border:1px solid rgba(8,145,178,.25);}
+/* tm-item */
+.tm-item{font-family:'DM Mono',monospace;font-size:13px;color:var(--txt2);}
+.tm-item span{display:block;color:var(--txt);margin-top:3px;font-size:14px;font-family:'DM Sans',sans-serif;}
+/* terminal mockup */
+.term{background:#0a0a12;border:1px solid var(--bdr2);border-radius:8px;padding:14px 18px;font-family:'DM Mono',monospace;font-size:14px;line-height:1.7;}
+.term .prompt{color:var(--pk);}
+.term .cmd{color:var(--txt);}
+.term .out{color:var(--txt2);}
+.term .key{color:var(--pu);}
+.term .val{color:var(--grn);}
+/* nav */
+.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:200;background:var(--sur);border:1px solid var(--bdr);border-radius:40px;padding:7px 14px;}
+.nav-btn{background:transparent;border:none;color:var(--txt2);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:color .15s;}
+.nav-btn:hover{color:var(--pk);}
+.nav-dots{display:flex;gap:5px;align-items:center;}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--bdr2);cursor:pointer;transition:all .2s;border:none;}
+.nav-dot.active{background:var(--pk);width:14px;border-radius:3px;}
+.presenter{position:fixed;bottom:20px;right:54px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase;z-index:100;}
+/* bottom accent bar */
+.bar-bot{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pk),var(--pu),transparent);}
+
+@media(max-height:820px){
+  .slide{padding:22px 42px 34px;}
+  .sh{margin-bottom:12px;padding-bottom:8px;}
+  .h1{font-size:clamp(26px,3.2vw,42px);}
+  .h2{font-size:clamp(18px,1.9vw,24px);}
+  .bt{font-size:14px;}
+  .cb{font-size:13px;}
+  .ci{font-size:13px;}
+  .stat-card{padding:14px 12px;}
+  .sn{font-size:clamp(22px,2.4vw,34px);}
+  .card{padding:14px;}
+}
+@media(max-width:1100px){
+  .slide{padding:24px 34px 32px;}
+}
+@media print{
+  html,body{overflow:visible!important;background:#08080f;height:auto;}
+  body::before{display:none;}
+  .deck{width:auto;height:auto;}
+  .slide{position:relative;inset:auto;display:flex!important;opacity:1!important;
+         page-break-after:always;break-after:page;
+         width:297mm;height:210mm;padding:12mm 14mm;overflow:hidden;}
+  .slide:last-child{page-break-after:auto;}
+  .nav,.presenter,.scan-wipe{display:none!important;}
+  /* Scale the hero graph + circle to fit within print page bounds */
+  .print-hero{
+    width:300px!important;height:300px!important;
+    right:10mm!important;top:50%!important;
+    transform:translateY(-50%)!important;
+  }
+  .print-hero svg{width:100%!important;height:100%!important;}
+  .print-hero > div[style*="border-radius"]{
+    width:220px!important;height:220px!important;
+    box-shadow:none!important;border-width:1px!important;
+  }
+  .print-hero > div[style*="border-radius"] img{
+    width:240px!important;top:-6px!important;
+  }
+  .bar-bot{display:none!important;}
+  @page{size:A4 landscape;margin:0;}
+}
+/* Glitch effect on title text */
+@keyframes glitch1 { 0%,93%,100% { clip-path:none; transform:none; } 94% { clip-path:polygon(0 15%,100% 15%,100% 35%,0 35%); transform:translateX(-5px); } 96% { clip-path:polygon(0 60%,100% 60%,100% 78%,0 78%); transform:translateX(5px); } }
+@keyframes glitch2 { 0%,90%,100% { clip-path:none; transform:none; } 91% { clip-path:polygon(0 25%,100% 25%,100% 45%,0 45%); transform:translateX(7px); } 93% { clip-path:polygon(0 65%,100% 65%,100% 80%,0 80%); transform:translateX(-7px); } }
+.glitch { position:relative; display:inline-block; }
+.glitch::before, .glitch::after { content:attr(data-text); position:absolute; inset:0; pointer-events:none; }
+.glitch::before { color:var(--pk); animation:glitch1 9s infinite; mix-blend-mode:screen; }
+.glitch::after { color:var(--pu); animation:glitch2 12s infinite; mix-blend-mode:screen; }
+/* Scan wipe bar */
+@keyframes scanWipe { from { top:-4px; opacity:0.7; } to { top:100%; opacity:0; } }
+.scan-wipe { position:fixed; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--pk),var(--pu),transparent); animation:scanWipe 6s ease-in-out infinite; pointer-events:none; z-index:300; }
+/* Blinking cursor */
+@keyframes blink { 50% { opacity:0; } }
+.cursor::after { content:'_'; animation:blink 1s step-end infinite; color:var(--pk); }
+</style>
+</head>
+<body>
+<div class="scan-wipe"></div>
+<div class="deck">
+
+<!-- ══ 01 TITLE ══ -->
+<div class="slide active" id="s1" style="overflow:visible;">
+  <div class="sh"><span class="sl">Celeste CLI &middot; v1.11.2</span><span class="sc">01 / 13</span></div>
+
+  <!-- Graph + Celeste circle — absolutely positioned on the slide canvas, NOT in flex flow -->
+  <div class="print-hero" style="position:absolute;right:30px;top:50%;transform:translateY(-50%);width:540px;height:540px;z-index:2;pointer-events:none;">
+    <svg viewBox="-380 -380 760 760" style="position:absolute;inset:0;width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="0" cy="0" r="350" fill="none" stroke="#8b5cf6" stroke-width=".5" opacity=".08"/>
+      <circle cx="0" cy="0" r="290" fill="none" stroke="#d94f90" stroke-width=".6" opacity=".12"/>
+      <circle cx="0" cy="0" r="230" fill="none" stroke="#d94f90" stroke-width=".7" opacity=".15"/>
+      <line x1="0" y1="0" x2="-300" y2="-190" stroke="#d94f90" stroke-width="1.2" opacity=".25"/>
+      <line x1="0" y1="0" x2="-330" y2="20" stroke="#8b5cf6" stroke-width="1" opacity=".2"/>
+      <line x1="0" y1="0" x2="-280" y2="230" stroke="#d94f90" stroke-width="1" opacity=".2"/>
+      <line x1="0" y1="0" x2="200" y2="-290" stroke="#8b5cf6" stroke-width="1" opacity=".18"/>
+      <line x1="0" y1="0" x2="300" y2="-80" stroke="#d94f90" stroke-width="1.2" opacity=".22"/>
+      <line x1="0" y1="0" x2="270" y2="210" stroke="#8b5cf6" stroke-width="1" opacity=".18"/>
+      <line x1="0" y1="0" x2="-190" y2="-300" stroke="#6d28d9" stroke-width=".8" opacity=".14"/>
+      <line x1="0" y1="0" x2="90" y2="310" stroke="#6d28d9" stroke-width=".8" opacity=".12"/>
+      <line x1="0" y1="0" x2="-100" y2="320" stroke="#6d28d9" stroke-width=".8" opacity=".12"/>
+      <line x1="0" y1="0" x2="310" y2="290" stroke="#6d28d9" stroke-width=".7" opacity=".1"/>
+      <line x1="-300" y1="-190" x2="-190" y2="-300" stroke="#3a3050" stroke-width=".6" opacity=".1"/>
+      <line x1="-330" y1="20" x2="-300" y2="-190" stroke="#3a3050" stroke-width=".5" opacity=".08"/>
+      <line x1="-280" y1="230" x2="-100" y2="320" stroke="#3a3050" stroke-width=".5" opacity=".08"/>
+      <line x1="300" y1="-80" x2="200" y2="-290" stroke="#3a3050" stroke-width=".5" opacity=".08"/>
+      <line x1="270" y1="210" x2="310" y2="290" stroke="#3a3050" stroke-width=".5" opacity=".08"/>
+      <circle cx="-300" cy="-190" r="16" fill="#08080f" stroke="#d94f90" stroke-width="1.5" opacity=".6"/>
+      <circle cx="-300" cy="-190" r="3.5" fill="#d94f90" opacity=".4"/>
+      <text x="-300" y="-212" text-anchor="middle" font-size="9" fill="#d94f90" opacity=".5" font-family="'DM Mono',monospace">コード検索</text>
+      <circle cx="-330" cy="20" r="14" fill="#08080f" stroke="#8b5cf6" stroke-width="1.4" opacity=".55"/>
+      <circle cx="-330" cy="20" r="3" fill="#8b5cf6" opacity=".35"/>
+      <text x="-330" y="2" text-anchor="middle" font-size="9" fill="#8b5cf6" opacity=".4" font-family="'DM Mono',monospace">グラフ</text>
+      <circle cx="-280" cy="230" r="14" fill="#08080f" stroke="#d94f90" stroke-width="1.4" opacity=".55"/>
+      <circle cx="-280" cy="230" r="3" fill="#d94f90" opacity=".35"/>
+      <text x="-280" y="250" text-anchor="middle" font-size="9" fill="#d94f90" opacity=".4" font-family="'DM Mono',monospace">レビュー</text>
+      <circle cx="-190" cy="-300" r="10" fill="#08080f" stroke="#6d28d9" stroke-width="1.2" opacity=".4"/>
+      <text x="-190" y="-314" text-anchor="middle" font-size="8" fill="#6d28d9" opacity=".3" font-family="'DM Mono',monospace">shinguru</text>
+      <circle cx="200" cy="-290" r="12" fill="#08080f" stroke="#8b5cf6" stroke-width="1.3" opacity=".5"/>
+      <text x="200" y="-306" text-anchor="middle" font-size="9" fill="#8b5cf6" opacity=".4" font-family="'DM Mono',monospace">索引</text>
+      <circle cx="300" cy="-80" r="16" fill="#08080f" stroke="#d94f90" stroke-width="1.5" opacity=".6"/>
+      <circle cx="300" cy="-80" r="3.5" fill="#d94f90" opacity=".4"/>
+      <text x="300" y="-100" text-anchor="middle" font-size="9" fill="#d94f90" opacity=".5" font-family="'DM Mono',monospace">魔導書</text>
+      <circle cx="270" cy="210" r="13" fill="#08080f" stroke="#8b5cf6" stroke-width="1.3" opacity=".5"/>
+      <text x="270" y="230" text-anchor="middle" font-size="9" fill="#8b5cf6" opacity=".4" font-family="'DM Mono',monospace">エージェント</text>
+      <circle cx="-100" cy="320" r="9" fill="#08080f" stroke="#6d28d9" stroke-width="1" opacity=".35"/>
+      <text x="-100" y="336" text-anchor="middle" font-size="8" fill="#3a3050" font-family="'DM Mono',monospace">記憶</text>
+      <circle cx="90" cy="310" r="9" fill="#08080f" stroke="#6d28d9" stroke-width="1" opacity=".35"/>
+      <text x="90" y="326" text-anchor="middle" font-size="8" fill="#3a3050" font-family="'DM Mono',monospace">LSH</text>
+      <circle cx="310" cy="290" r="9" fill="#08080f" stroke="#6d28d9" stroke-width="1" opacity=".3"/>
+      <text x="310" y="306" text-anchor="middle" font-size="8" fill="#3a3050" font-family="'DM Mono',monospace">討論</text>
+      <circle cx="-220" cy="-90" r="1.8" fill="#d94f90" opacity=".08"/>
+      <circle cx="160" cy="-170" r="1.5" fill="#8b5cf6" opacity=".06"/>
+      <circle cx="-170" cy="130" r="1.5" fill="#6d28d9" opacity=".06"/>
+      <circle cx="200" cy="100" r="1.8" fill="#d94f90" opacity=".06"/>
+    </svg>
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;height:420px;border-radius:50%;overflow:hidden;border:2px solid rgba(139,92,246,0.3);box-shadow:0 0 40px rgba(217,79,144,0.3),0 0 80px rgba(109,40,217,0.15);z-index:1;">
+      <img src="https://s3.whykusanagi.xyz/optimized_assets/hypnosis_expression_trans_ghub.png" alt="Celeste" style="width:440px;height:auto;position:absolute;top:-10px;left:50%;transform:translateX(-50%);"/>
+    </div>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;z-index:3;max-width:580px;">
+    <div class="ey" style="margin-bottom:20px;">Open Source &middot; MIT &middot; Go 1.26+</div>
+      <div class="glitch" data-text="CELESTE CLI" style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(42px,5.5vw,72px);line-height:1.02;letter-spacing:-.03em;color:var(--wht);" id="titleMain">CELESTE<span style="color:var(--pk);"> CLI</span></div>
+      <div style="margin-top:14px;font-family:'Syne',sans-serif;font-weight:600;font-size:clamp(15px,1.6vw,20px);color:var(--pu);letter-spacing:-.01em;">Graph-Powered Code Intelligence for AI Development</div>
+      <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">
+        <span class="badge badge-pk">v1.11.2</span>
+        <span class="badge badge-pu">Go 1.26+</span>
+        <span class="badge badge-grn">MIT</span>
+        <span class="badge badge-cy">73 MB binary</span>
+        <span class="badge badge-amb">Zero runtime deps</span>
+      </div>
+      <div style="margin-top:36px;display:flex;gap:32px;flex-wrap:wrap;">
+        <div class="tm-item">Presenter<span>whykusanagi</span></div>
+        <div class="tm-item">Repository<span>github.com/whykusanagi/celeste-cli</span></div>
+        <div class="tm-item">Companion<span>celeste-for-claude &middot; celeste-stopwords</span></div>
+      </div>
+      <div style="margin-top:18px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);letter-spacing:.08em;">Character artwork by ikawasa23 &middot; x.com/ikawasa23</div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 02 MEET CELESTE ══ -->
+<div class="slide" id="s2">
+  <div class="sh"><span class="sl">The Product</span><span class="sc">02 / 13</span></div>
+  <div class="h2" style="margin-bottom:12px;">Meet Celeste</div>
+  <div style="flex:1;display:flex;gap:16px;min-height:0;">
+    <!-- Left: TUI mockup — matches real celeste TUI layout exactly -->
+    <div style="flex:1.2;display:flex;flex-direction:column;min-height:0;">
+      <div style="flex:1;display:flex;flex-direction:column;background:#0a0a12;border:1px solid var(--bdr2);border-radius:8px;overflow:hidden;font-family:'DM Mono',monospace;font-size:13px;line-height:1.5;">
+        <!-- macOS title bar -->
+        <div style="display:flex;align-items:center;gap:7px;padding:8px 14px;background:#0e0e16;border-bottom:1px solid var(--bdr);flex-shrink:0;">
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--red);"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--amb);"></div>
+          <div style="width:10px;height:10px;border-radius:50%;background:var(--grn);"></div>
+          <span style="color:var(--txt3);font-size:11px;margin-left:6px;">celeste &middot; ~/Development/grafana</span>
+        </div>
+        <!-- Header bar: ✨ Celeste CLI                    Grok • grok-4-1-fast ✓ -->
+        <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 14px;border-bottom:1px solid var(--bdr);flex-shrink:0;">
+          <span style="color:var(--pk);font-size:13px;">&#10024; Celeste CLI</span>
+          <span style="color:var(--txt3);font-size:11px;">Sakana &middot; <span style="color:var(--txt2);">fugu</span> <span style="color:var(--grn);">&#10003;</span> &middot; Press Ctrl+C to exit</span>
+        </div>
+        <!-- Chat area -->
+        <div style="flex:1;padding:10px 14px;overflow:hidden;display:flex;flex-direction:column;gap:4px;">
+          <div style="color:var(--txt2);font-size:12px;">find the auth session handling code</div>
+          <div style="margin-top:6px;padding:8px 10px;background:var(--bg);border-radius:4px;border:1px solid var(--bdr);font-size:12px;">
+            <div><span style="color:var(--pk);">1.</span> <span style="color:var(--txt);">loadUser</span> <span style="color:var(--txt3);">— features/profile/state/actions.ts:37</span> <span style="color:var(--txt3);">[14% match, edges=14]</span></div>
+            <div style="margin-top:2px;"><span style="color:var(--pk);">2.</span> <span style="color:var(--txt);">revokeUserSession</span> <span style="color:var(--txt3);">— features/profile/api.ts:31</span> <span style="color:var(--txt3);">[13% match, edges=7]</span></div>
+            <div style="margin-top:2px;"><span style="color:var(--pk);">3.</span> <span style="color:var(--txt);">loadSessions</span> <span style="color:var(--txt3);">— features/profile/api.ts:27</span> <span style="color:var(--txt3);">[14% match, edges=7]</span></div>
+          </div>
+        </div>
+        <!-- Tool progress: ✓ code_search done 0.1s -->
+        <div style="padding:3px 14px;flex-shrink:0;font-size:12px;">
+          <span style="color:var(--grn);">&#10003;</span> <span style="color:var(--pu);font-weight:600;">code_search</span> <span style="color:var(--grn);">done</span> <span style="color:var(--txt3);">0.1s</span>
+        </div>
+        <!-- Context bar: ◆ tokens: 8.4K / 1.0M ░░░░░░░ -->
+        <div style="padding:3px 14px;flex-shrink:0;font-size:11px;color:var(--txt3);border-top:1px solid var(--bdr);">
+          &#9670; tokens: 8.4K / 1.0M <span style="letter-spacing:2px;">&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;</span> 0% &nbsp;&#9474;&nbsp; compact: 0 &nbsp;&#9474;&nbsp; turn: 1
+        </div>
+        <!-- Input: ❯ Type a message or 'help'... -->
+        <div style="padding:6px 14px;flex-shrink:0;border-top:1px solid var(--bdr);">
+          <span style="color:var(--pk);">&#10095;</span> <span style="color:var(--txt3);">Type a message or 'help'...</span><span class="cursor"></span>
+        </div>
+        <!-- Skills panel -->
+        <div style="padding:8px 14px;flex-shrink:0;border-top:1px solid var(--bdr);background:rgba(139,92,246,0.03);font-size:12px;display:flex;flex-direction:column;gap:2px;">
+          <div><span style="color:var(--pu);">Skills: enabled (45 loaded)</span></div>
+          <div style="color:var(--txt2);">Backend: sakana | Model: fugu</div>
+          <div style="color:var(--grn);">Last completed: code_search</div>
+          <div style="color:var(--txt3);">Hint: type `skills` to browse available tool functions.</div>
+        </div>
+        <!-- Status bar: ● Ready (10.7s · ↑7.9k ↓184) -->
+        <div style="padding:4px 14px;flex-shrink:0;border-top:1px solid var(--bdr);background:rgba(217,79,144,0.03);font-size:12px;">
+          <span style="color:var(--grn);">&#9679;</span> <span style="color:var(--txt2);">Ready</span> <span style="color:var(--txt3);">(10.7s &middot; &#8593;7.9k &#8595;184)</span>
+        </div>
+      </div>
+    </div>
+    <!-- Right: what it is -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
+      <div class="card" style="border-top:3px solid var(--pk);">
+        <div class="ct">An Agentic AI Coding Assistant</div>
+        <div class="cb">Celeste is a standalone Go binary (54MB, zero deps) that combines a premium corruption-aesthetic TUI with graph-based code intelligence. She indexes your codebase into a persistent code graph, then serves semantic search, structural code review, and dependency analysis — locally, offline, no embeddings needed.</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--pu);">
+        <div class="ct">Built for Claude Code &amp; Cursor</div>
+        <div class="cb">Via MCP, Celeste exposes her code graph directly to Claude Code, Cursor, or any MCP client. Five direct tools (<code style="color:var(--pk);">celeste_index</code>, <code style="color:var(--pk);">celeste_code_search</code>, <code style="color:var(--pk);">celeste_code_review</code>, <code style="color:var(--pk);">celeste_code_graph</code>, <code style="color:var(--pk);">celeste_code_symbols</code>) return verbatim results with no chat-LLM round-trip.</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--grn);">
+        <div class="ct">A Companion, Not a Replacement</div>
+        <div class="cb">Celeste doesn't replace your LLM — she augments it. Claude stays in control; Celeste provides the graph intelligence. Four runtime modes: interactive Chat, autonomous Agent, DAG-orchestrated Subagents, and Orchestrator with model debate.</div>
+      </div>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 03 THE PROBLEM ══ -->
+<div class="slide" id="s3">
+  <div class="sh"><span class="sl">The Problem</span><span class="sc">03 / 13</span></div>
+  <div class="h2" style="margin-bottom:12px;">Code Search Is Broken</div>
+  <div style="flex:1;display:flex;gap:16px;min-height:0;">
+
+    <!-- LEFT: The Problem -->
+    <div style="flex:1;background:var(--sur);border:1px solid rgba(239,68,68,.3);border-top:3px solid var(--red);border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;">
+      <div style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--red);margin-bottom:16px;">What grep gives you</div>
+      <div style="display:flex;flex-direction:column;gap:14px;flex:1;">
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><line x1="3" y1="3" x2="13" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="3" x2="3" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;">Flat text matches with no call-graph context. "query" matches <code style="color:var(--red);font-family:'DM Mono',monospace;font-size:14px;">JQueryStatic</code> as #2 before any real database code.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><line x1="3" y1="3" x2="13" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="3" x2="3" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;">No way to distinguish tests from implementation. <code style="color:var(--red);font-family:'DM Mono',monospace;font-size:14px;">mockHandler</code> ranks the same as <code style="color:var(--red);font-family:'DM Mono',monospace;font-size:14px;">handleRequest</code>.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><line x1="3" y1="3" x2="13" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="3" x2="3" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;">Ubiquitous tokens ("get", "set", "error") appear in &gt;30% of symbols, polluting every result set.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><line x1="3" y1="3" x2="13" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="3" x2="3" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;">Library name pollution: jQuery decomposes into ["j","query","static"]. Framework nouns become misleading shingles.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><line x1="3" y1="3" x2="13" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/><line x1="13" y1="3" x2="3" y2="13" stroke="#ef4444" stroke-width="2" stroke-linecap="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;">Can't answer "which functions call which?" &mdash; only character-level pattern matching, no structural awareness.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: The Solution -->
+    <div style="flex:1;background:var(--sur);border:1px solid rgba(16,185,129,.3);border-top:3px solid var(--grn);border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;">
+      <div style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--grn);margin-bottom:16px;">What Celeste v1.11.2 gives you</div>
+      <div style="display:flex;flex-direction:column;gap:14px;flex:1;">
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">MinHash + BM25 fusion</strong> &mdash; 128-slot semantic fingerprint over camelCase/snake_case tokens, types, body identifiers, and doc keywords.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Structural rerank</strong> &mdash; edge density, kind boosts, and path filter automatically demote test/mock code.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Stopwords v1.0.0</strong> &mdash; statistically derived from 32 OSS repos. Filters noise before MinHash. JQueryStatic is gone.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Call-graph edges</strong> &mdash; tree-sitter CGo parses 10 languages. Understand which functions actually call which.</div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;">
+          <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">No embeddings needed</strong> &mdash; MinHash runs at parse time. Zero API calls, zero vectors stored, fully offline capable.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom: visual score bar -->
+  <div style="margin-top:12px;flex-shrink:0;">
+    <svg viewBox="0 0 700 52" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:52px;">
+      <!-- before bar -->
+      <rect x="0" y="4" width="700" height="18" rx="4" fill="#111118" stroke="#1e1b2e" stroke-width="1"/>
+      <rect x="0" y="4" width="308" height="18" rx="4" fill="rgba(239,68,68,.2)" stroke="rgba(239,68,68,.4)" stroke-width="1"/>
+      <text x="154" y="16" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#ef4444" font-family="'DM Mono',monospace" font-weight="500">BEFORE: 22 / 50 relevant</text>
+      <text x="694" y="16" text-anchor="end" dominant-baseline="central" font-size="10" fill="#3a3050" font-family="'DM Mono',monospace">44%</text>
+      <!-- after bar -->
+      <rect x="0" y="28" width="700" height="18" rx="4" fill="#111118" stroke="#1e1b2e" stroke-width="1"/>
+      <rect x="0" y="28" width="490" height="18" rx="4" fill="rgba(16,185,129,.2)" stroke="rgba(16,185,129,.4)" stroke-width="1"/>
+      <text x="245" y="40" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#10b981" font-family="'DM Mono',monospace" font-weight="500">AFTER: 35 / 50 relevant</text>
+      <text x="694" y="40" text-anchor="end" dominant-baseline="central" font-size="10" fill="#10b981" font-family="'DM Mono',monospace" font-weight="600">70% (+59%)</text>
+    </svg>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">grafana &middot; 77,420 symbols &middot; 5 queries &middot; top 10 per query</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">no embeddings &middot; no vector DB &middot; offline</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 04 CODE GRAPH SVG ══ -->
+<div class="slide" id="s4">
+  <div class="sh"><span class="sl">Code Graph</span><span class="sc">04 / 13</span></div>
+  <div class="h2" style="margin-bottom:2px;">The Code Graph</div>
+  <div style="display:flex;gap:16px;margin-bottom:4px;flex-shrink:0;align-items:baseline;">
+    <div style="flex-shrink:0;padding:6px 12px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:6px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Query</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">"find the auth session handling code"</div>
+    </div>
+    <div style="font-size:13px;color:var(--txt2);line-height:1.6;">
+      <span style="color:var(--pk);">&#9670;</span> <code style="color:var(--pk);font-family:'DM Mono',monospace;">loadUser</code> ranks #1 &mdash; it's a <strong style="color:var(--pk);">hub node</strong> with 12 edges and 4 callers<br/>
+      <span style="color:var(--cy);">&#9670;</span> Cross-cluster call to <code style="color:var(--cy);font-family:'DM Mono',monospace;">QueryBuilder</code> reveals the auth&thinsp;&#8594;&thinsp;database relationship<br/>
+      <span style="color:var(--txt3);">&#9670;</span> Test nodes (<code style="color:var(--txt3);font-family:'DM Mono',monospace;">mockHandler</code>, <code style="color:var(--txt3);font-family:'DM Mono',monospace;">assertEq</code>) automatically demoted in ranking
+    </div>
+  </div>
+  <div class="dw" style="flex:1;min-height:0;">
+    <svg viewBox="0 0 700 370" role="img" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <title>Celeste code graph showing auth, database, HTTP, and test clusters with cross-cluster call edges</title>
+      <defs>
+        <marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#3a3050"/></marker>
+        <marker id="arrpk" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#d94f90"/></marker>
+        <marker id="arrpu" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#8b5cf6"/></marker>
+        <radialGradient id="hubg" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#1a0f2e" stop-opacity="1"/>
+          <stop offset="100%" stop-color="#08080f" stop-opacity="1"/>
+        </radialGradient>
+      </defs>
+
+      <!-- cluster region backgrounds (subtle) -->
+      <ellipse cx="115" cy="130" rx="95" ry="110" fill="rgba(16,185,129,0.03)" stroke="rgba(16,185,129,0.06)" stroke-width="1"/>
+      <ellipse cx="370" cy="160" rx="100" ry="120" fill="rgba(8,145,178,0.03)" stroke="rgba(8,145,178,0.06)" stroke-width="1"/>
+      <ellipse cx="580" cy="110" rx="80" ry="85" fill="rgba(139,92,246,0.03)" stroke="rgba(139,92,246,0.06)" stroke-width="1"/>
+      <ellipse cx="580" cy="310" rx="60" ry="45" fill="rgba(58,48,80,0.04)" stroke="rgba(58,48,80,0.05)" stroke-width="1"/>
+
+      <!-- cluster labels -->
+      <text x="115" y="18" text-anchor="middle" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" letter-spacing="1.8">AUTH</text>
+      <text x="370" y="18" text-anchor="middle" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" letter-spacing="1.8">DATABASE</text>
+      <text x="580" y="18" text-anchor="middle" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" letter-spacing="1.8">HTTP</text>
+      <text x="580" y="270" text-anchor="middle" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" letter-spacing="1.2" opacity=".5">TEST (muted)</text>
+
+      <!-- ═══ EDGES (drawn before nodes so nodes overlay cleanly) ═══ -->
+
+      <!-- intra-cluster edges — auth -->
+      <line x1="80" y1="60" x2="165" y2="120" stroke="#3a3050" stroke-width="1.2" opacity=".7" marker-end="url(#arr)"/>
+      <line x1="80" y1="60" x2="48" y2="140" stroke="#3a3050" stroke-width="1.2" opacity=".7" marker-end="url(#arr)"/>
+      <line x1="165" y1="120" x2="115" y2="225" stroke="#3a3050" stroke-width="1" opacity=".5"/>
+      <line x1="48" y1="140" x2="115" y2="225" stroke="#3a3050" stroke-width="1" opacity=".5"/>
+      <line x1="80" y1="60" x2="115" y2="225" stroke="#3a3050" stroke-width="1" opacity=".4"/>
+
+      <!-- intra-cluster edges — database -->
+      <line x1="370" y1="65" x2="310" y2="155" stroke="#3a3050" stroke-width="1.2" opacity=".7" marker-end="url(#arr)"/>
+      <line x1="370" y1="65" x2="440" y2="140" stroke="#3a3050" stroke-width="1.2" opacity=".7" marker-end="url(#arr)"/>
+      <line x1="310" y1="155" x2="370" y2="230" stroke="#3a3050" stroke-width="1" opacity=".5"/>
+      <line x1="440" y1="140" x2="370" y2="230" stroke="#3a3050" stroke-width="1" opacity=".5"/>
+      <line x1="370" y1="230" x2="300" y2="280" stroke="#3a3050" stroke-width="1" opacity=".4"/>
+      <line x1="310" y1="155" x2="300" y2="280" stroke="#3a3050" stroke-width="0.9" opacity=".4"/>
+
+      <!-- intra-cluster edges — http -->
+      <line x1="560" y1="65" x2="625" y2="125" stroke="#3a3050" stroke-width="1.2" opacity=".7" marker-end="url(#arr)"/>
+      <line x1="625" y1="125" x2="535" y2="175" stroke="#3a3050" stroke-width="1" opacity=".5"/>
+      <line x1="560" y1="65" x2="535" y2="175" stroke="#3a3050" stroke-width="1" opacity=".4"/>
+
+      <!-- intra-cluster edges — test -->
+      <line x1="570" y1="295" x2="598" y2="315" stroke="#3a3050" stroke-width="0.8" opacity=".3"/>
+      <line x1="570" y1="295" x2="553" y2="330" stroke="#3a3050" stroke-width="0.8" opacity=".3"/>
+
+      <!-- cross-cluster edges (pink — key relationship indicators) -->
+      <!-- loadUser -> QueryBuilder: curved through gap between auth and database -->
+      <path d="M 135 225 Q 240 270 355 230" stroke="#d94f90" stroke-width="1.8" fill="none" opacity=".75" marker-end="url(#arrpk)"/>
+      <!-- handleRequest -> ConnectionPool: curved arc above both clusters -->
+      <path d="M 545 65 Q 470 30 385 65" stroke="#d94f90" stroke-width="1.6" fill="none" opacity=".65" marker-end="url(#arrpk)"/>
+
+      <!-- density dots (suggesting more symbols) -->
+      <circle cx="235" cy="95" r="1.5" fill="#3a3050" opacity=".18"/>
+      <circle cx="250" cy="190" r="2" fill="#3a3050" opacity=".12"/>
+      <circle cx="480" cy="200" r="1.5" fill="#3a3050" opacity=".15"/>
+      <circle cx="490" cy="95" r="1.8" fill="#3a3050" opacity=".1"/>
+      <circle cx="215" cy="280" r="1.5" fill="#3a3050" opacity=".13"/>
+      <circle cx="465" cy="260" r="2" fill="#3a3050" opacity=".1"/>
+
+      <!-- ═══ AUTH nodes ═══ -->
+      <!-- validateSession — top-left of auth cluster, label ABOVE -->
+      <circle cx="80" cy="60" r="17" fill="#08080f" stroke="#10b981" stroke-width="2"/>
+      <circle cx="80" cy="60" r="3" fill="#10b981" opacity=".8"/>
+      <text x="80" y="38" text-anchor="middle" font-size="10" fill="#10b981" font-family="'DM Mono',monospace">validateSession</text>
+
+      <!-- refreshSession — left side, label LEFT -->
+      <circle cx="48" cy="140" r="11" fill="#08080f" stroke="#10b981" stroke-width="1.4"/>
+      <circle cx="48" cy="140" r="2" fill="#10b981" opacity=".5"/>
+      <text x="30" y="143" text-anchor="end" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">refreshSession</text>
+
+      <!-- checkToken — right side of auth cluster, label RIGHT -->
+      <circle cx="165" cy="120" r="12" fill="#08080f" stroke="#10b981" stroke-width="1.5"/>
+      <circle cx="165" cy="120" r="2.5" fill="#10b981" opacity=".6"/>
+      <text x="183" y="123" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">checkToken</text>
+
+      <!-- loadUser — HUB with concentric glow rings -->
+      <circle cx="115" cy="225" r="30" fill="none" stroke="#d94f90" stroke-width="0.5" opacity=".14"/>
+      <circle cx="115" cy="225" r="22" fill="none" stroke="#d94f90" stroke-width="0.8" opacity=".28"/>
+      <circle cx="115" cy="225" r="15" fill="url(#hubg)" stroke="#d94f90" stroke-width="2.2"/>
+      <circle cx="115" cy="225" r="4" fill="#d94f90"/>
+      <text x="115" y="214" text-anchor="middle" font-size="11" fill="#d94f90" font-family="'DM Mono',monospace" font-weight="500">loadUser</text>
+      <!-- bezier callout curving DOWN-LEFT to avoid other clusters -->
+      <path d="M 100 238 Q 72 278 48 290" stroke="#d94f90" stroke-width="0.9" fill="none" opacity=".7"/>
+      <text x="46" y="306" text-anchor="end" font-size="10" fill="#d94f90" font-family="'DM Mono',monospace">12 edges &middot; 4 callers</text>
+
+      <!-- ═══ DATABASE nodes ═══ -->
+      <!-- ConnectionPool — top, label ABOVE -->
+      <circle cx="370" cy="65" r="17" fill="#08080f" stroke="#0891b2" stroke-width="2"/>
+      <circle cx="370" cy="65" r="3" fill="#0891b2" opacity=".8"/>
+      <text x="370" y="43" text-anchor="middle" font-size="10" fill="#0891b2" font-family="'DM Mono',monospace">ConnectionPool</text>
+
+      <!-- Transaction — left side, label LEFT -->
+      <circle cx="310" cy="155" r="13" fill="#08080f" stroke="#0891b2" stroke-width="1.6"/>
+      <circle cx="310" cy="155" r="2.5" fill="#0891b2" opacity=".6"/>
+      <text x="291" y="158" text-anchor="end" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">Transaction</text>
+
+      <!-- MySQLQuery — right side, label RIGHT -->
+      <circle cx="440" cy="140" r="13" fill="#08080f" stroke="#0891b2" stroke-width="1.6"/>
+      <circle cx="440" cy="140" r="2.5" fill="#0891b2" opacity=".6"/>
+      <text x="459" y="143" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">MySQLQuery</text>
+
+      <!-- QueryBuilder — bottom center, label BELOW -->
+      <circle cx="370" cy="230" r="11" fill="#08080f" stroke="#0891b2" stroke-width="1.4"/>
+      <circle cx="370" cy="230" r="2" fill="#0891b2" opacity=".5"/>
+      <text x="370" y="248" text-anchor="middle" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">QueryBuilder</text>
+
+      <!-- ExecContext — bottom-left, label BELOW -->
+      <circle cx="300" cy="280" r="10" fill="#08080f" stroke="#0891b2" stroke-width="1.3"/>
+      <text x="300" y="298" text-anchor="middle" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">ExecContext</text>
+
+      <!-- ═══ HTTP nodes ═══ -->
+      <!-- handleRequest — top, label ABOVE -->
+      <circle cx="560" cy="65" r="16" fill="#08080f" stroke="#8b5cf6" stroke-width="2"/>
+      <circle cx="560" cy="65" r="3" fill="#8b5cf6" opacity=".8"/>
+      <text x="560" y="43" text-anchor="middle" font-size="10" fill="#8b5cf6" font-family="'DM Mono',monospace">handleRequest</text>
+
+      <!-- isLocalUrl — right side, label RIGHT -->
+      <circle cx="625" cy="125" r="12" fill="#08080f" stroke="#8b5cf6" stroke-width="1.5"/>
+      <circle cx="625" cy="125" r="2.5" fill="#8b5cf6" opacity=".6"/>
+      <text x="643" y="128" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">isLocalUrl</text>
+
+      <!-- mwFromHandler — left-bottom of HTTP cluster, label LEFT -->
+      <circle cx="535" cy="175" r="12" fill="#08080f" stroke="#8b5cf6" stroke-width="1.5"/>
+      <circle cx="535" cy="175" r="2.5" fill="#8b5cf6" opacity=".6"/>
+      <text x="517" y="178" text-anchor="end" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">mwFromHandler</text>
+
+      <!-- ═══ TEST cluster (muted/dimmed) ═══ -->
+      <circle cx="570" cy="295" r="11" fill="#08080f" stroke="#3a3050" stroke-width="1.2" opacity=".45"/>
+      <text x="570" y="280" text-anchor="middle" font-size="10" fill="#3a3050" font-family="'DM Mono',monospace" opacity=".55">mockHandler</text>
+      <circle cx="598" cy="315" r="10" fill="#08080f" stroke="#3a3050" stroke-width="1.1" opacity=".4"/>
+      <text x="614" y="318" font-size="10" fill="#3a3050" font-family="'DM Mono',monospace" opacity=".5">testSetup</text>
+      <circle cx="553" cy="330" r="9" fill="#08080f" stroke="#3a3050" stroke-width="1" opacity=".35"/>
+      <text x="537" y="333" text-anchor="end" font-size="10" fill="#3a3050" font-family="'DM Mono',monospace" opacity=".45">assertEq</text>
+
+      <!-- legend row -->
+      <text x="12" y="358" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" letter-spacing="1">LEGEND</text>
+      <circle cx="66" cy="354" r="5" fill="none" stroke="#10b981" stroke-width="1.5"/>
+      <text x="76" y="358" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">function</text>
+      <circle cx="134" cy="354" r="5" fill="none" stroke="#8b5cf6" stroke-width="1.5"/>
+      <text x="144" y="358" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">interface</text>
+      <circle cx="204" cy="354" r="5" fill="none" stroke="#d94f90" stroke-width="1.5"/>
+      <text x="214" y="358" font-size="9" fill="#d94f90" font-family="'DM Mono',monospace">hub node</text>
+      <circle cx="274" cy="354" r="5" fill="none" stroke="#0891b2" stroke-width="1.5"/>
+      <text x="284" y="358" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">type/struct</text>
+      <line x1="344" y1="354" x2="364" y2="354" stroke="#d94f90" stroke-width="1.8"/>
+      <text x="369" y="358" font-size="9" fill="#d94f90" font-family="'DM Mono',monospace">cross-cluster call</text>
+      <circle cx="480" cy="354" r="5" fill="none" stroke="#3a3050" stroke-width="1" opacity=".4"/>
+      <text x="490" y="358" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" opacity=".6">test (demoted)</text>
+    </svg>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;flex-shrink:0;">
+    <span class="badge badge-pk">grafana · 57,497 symbols</span>
+    <span class="badge badge-pu">13,543 call edges</span>
+    <span class="badge badge-grn">MinHash + BM25 fusion</span>
+    <span class="badge badge-amb">Go · Python · Rust · TS · Java · C · C++ · Ruby</span>
+    <span class="badge badge-cy">graph snapshots · change impact</span>
+  </div>
+</div>
+
+<!-- ══ 05 SEARCH QUALITY ══ -->
+<div class="slide" id="s5">
+  <div class="sh"><span class="sl">Search Quality</span><span class="sc">05 / 13</span></div>
+  <div class="h2" style="margin-bottom:4px;">Precision That Ships</div>
+  <div style="padding:9px 16px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;margin-bottom:6px;display:flex;align-items:center;gap:14px;flex-shrink:0;">
+    <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--pk);">22/50 &rarr; 35/50</div>
+    <div style="font-size:15px;color:var(--txt2);">relevant results across 5 benchmark queries (top 10 per query)</div>
+    <div style="margin-left:auto;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--grn);">+59%</div>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;">
+
+    <!-- Query 1: Auth session -->
+    <div style="flex:1;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:16px 20px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <code style="font-family:'DM Mono',monospace;font-size:14px;color:var(--pk);background:var(--pkdim);padding:4px 10px;border-radius:5px;border:1px solid var(--pkglow);">authentication session token validate</code>
+        <span style="font-size:14px;color:var(--txt2);">Find the login code</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--red);">2/10</span>
+          <span style="color:var(--txt3);font-size:16px;">&#8594;</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--grn);">8/10</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;flex:1;align-items:center;">
+        <div style="flex:1;display:flex;gap:8px;align-items:flex-start;">
+          <span style="color:var(--red);font-size:15px;flex-shrink:0;margin-top:1px;">&#10007;</span>
+          <div style="font-size:15px;color:var(--txt2);line-height:1.6;">
+            #1 result was <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">JQueryStatic</code> &mdash; jQuery splits into tokens "j"+"query"+"static", false-matching the search term
+          </div>
+        </div>
+        <div style="width:1px;background:var(--bdr2);flex-shrink:0;align-self:stretch;"></div>
+        <div style="flex:1;display:flex;gap:8px;align-items:flex-start;">
+          <span style="color:var(--grn);font-size:15px;flex-shrink:0;margin-top:1px;">&#10003;</span>
+          <div style="font-size:15px;color:var(--txt2);line-height:1.6;">
+            <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">loadUser</code> <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">loadSessions</code> <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">revokeUserSession</code> &mdash; real session API. BM25 IDF broke the tie.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 2: HTTP handlers -->
+    <div style="flex:1;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:16px 20px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <code style="font-family:'DM Mono',monospace;font-size:14px;color:var(--pk);background:var(--pkdim);padding:4px 10px;border-radius:5px;border:1px solid var(--pkglow);">http request handler middleware</code>
+        <span style="font-size:14px;color:var(--txt2);">Find HTTP handlers</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--red);">0/10</span>
+          <span style="color:var(--txt3);font-size:16px;">&#8594;</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--grn);">6/10</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;flex:1;align-items:center;">
+        <div style="flex:1;display:flex;gap:8px;align-items:flex-start;">
+          <span style="color:var(--red);font-size:15px;flex-shrink:0;margin-top:1px;">&#10007;</span>
+          <div style="font-size:15px;color:var(--txt2);line-height:1.6;">
+            All 10 results from <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">mocks/server/handlers/</code> &mdash; zero production code in top 10
+          </div>
+        </div>
+        <div style="width:1px;background:var(--bdr2);flex-shrink:0;align-self:stretch;"></div>
+        <div style="flex:1;display:flex;gap:8px;align-items:flex-start;">
+          <span style="color:var(--grn);font-size:15px;flex-shrink:0;margin-top:1px;">&#10003;</span>
+          <div style="font-size:15px;color:var(--txt2);line-height:1.6;">
+            Real handlers rank first. Mocks auto-demoted via path-based test detection
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Query 3: Database code -->
+    <div style="flex:1;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:16px 20px;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+        <code style="font-family:'DM Mono',monospace;font-size:14px;color:var(--pk);background:var(--pkdim);padding:4px 10px;border-radius:5px;border:1px solid var(--pkglow);">database connection pool query</code>
+        <span style="font-size:14px;color:var(--txt2);">Find database code</span>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;">
+          <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--red);">4/10</span>
+          <span style="color:var(--txt3);font-size:16px;">&#8594;</span>
+          <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--grn);">7/10</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:14px;flex:1;align-items:center;">
+        <div style="flex:1;display:flex;gap:8px;align-items:flex-start;">
+          <span style="color:var(--red);font-size:15px;flex-shrink:0;margin-top:1px;">&#10007;</span>
+          <div style="font-size:15px;color:var(--txt2);line-height:1.6;">
+            <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">JQueryStatic</code> at rank #2 &mdash; library name decomposition polluted results
+          </div>
+        </div>
+        <div style="width:1px;background:var(--bdr2);flex-shrink:0;align-self:stretch;"></div>
+        <div style="flex:1;display:flex;gap:8px;align-items:flex-start;">
+          <span style="color:var(--grn);font-size:15px;flex-shrink:0;margin-top:1px;">&#10003;</span>
+          <div style="font-size:15px;color:var(--txt2);line-height:1.6;">
+            All data-query types: <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">ZipkinQuery</code> <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">TempoDataQuery</code> <code style="color:var(--wht);font-family:'DM Mono',monospace;font-size:14px;">QueriesTab</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom summary: what fixed it -->
+  <div style="display:flex;gap:12px;margin-top:10px;flex-shrink:0;">
+    <div style="flex:1;padding:10px 14px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">splitCamelCase fix</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">Library names like jQuery no longer decompose into misleading search tokens</div>
+    </div>
+    <div style="flex:1;padding:10px 14px;background:var(--pudim);border:1px solid var(--puglow);border-radius:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">BM25 + Stopwords</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">IDF scoring surfaces rare, meaningful tokens. 500 stop words filter noise before MinHash.</div>
+    </div>
+    <div style="flex:1;padding:10px 14px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--grn);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">Path-based test filter</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">Files in <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">mock/</code> <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">test/</code> <code style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">*_test.*</code> automatically demoted in ranking</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 06 SEARCH PIPELINE FLOW ══ -->
+<div class="slide" id="s6">
+  <div class="sh"><span class="sl">Search Pipeline</span><span class="sc">06 / 13</span></div>
+  <div class="h2" style="margin-bottom:4px;">How Search Works</div>
+  <div style="font-size:14px;color:var(--txt2);line-height:1.5;margin-bottom:6px;flex-shrink:0;">Your query enters two parallel paths. <strong style="color:var(--pu);">MinHash</strong> compares token fingerprints for structural similarity. <strong style="color:var(--pk);">BM25</strong> scores how rare and relevant each token is. The results merge via <strong style="color:var(--grn);">Reciprocal Rank Fusion</strong>, then get reranked by call-graph structure.</div>
+  <div class="dw" style="flex:1;min-height:0;">
+    <svg viewBox="0 0 700 310" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <title>Celeste search pipeline: MinHash path, BM25 path, RRF fusion, structural rerank, path filter, top-K</title>
+      <defs>
+        <marker id="mp" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#8b5cf6"/></marker>
+        <marker id="mb" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#d94f90"/></marker>
+        <marker id="mg" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#10b981"/></marker>
+        <marker id="mc" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#3a3050"/></marker>
+      </defs>
+
+      <!-- path row labels (left spine) -->
+      <text x="8" y="65" text-anchor="middle" font-size="8" fill="#8b5cf6" font-family="'DM Mono',monospace" transform="rotate(-90,8,65)" letter-spacing="1">MINHASH</text>
+      <text x="8" y="158" text-anchor="middle" font-size="8" fill="#d94f90" font-family="'DM Mono',monospace" transform="rotate(-90,8,158)" letter-spacing="1">BM25</text>
+      <text x="8" y="232" text-anchor="middle" font-size="8" fill="#10b981" font-family="'DM Mono',monospace" transform="rotate(-90,8,232)" letter-spacing="1">OUTPUT</text>
+
+      <!-- ═══ ROW 1 MINHASH PATH ═══ -->
+      <!-- Query Input -->
+      <rect x="20" y="38" width="80" height="42" rx="7" fill="#111118" stroke="#8b5cf6" stroke-width="1.6"/>
+      <text x="60" y="55" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#f0ecf8" font-weight="500" font-family="'DM Sans',sans-serif">Query</text>
+      <text x="60" y="69" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">user input</text>
+
+      <line x1="100" y1="59" x2="116" y2="59" stroke="#8b5cf6" stroke-width="1.4" marker-end="url(#mp)"/>
+
+      <rect x="118" y="38" width="90" height="42" rx="7" fill="#111118" stroke="#8b5cf6" stroke-width="1.4"/>
+      <text x="163" y="55" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#f0ecf8" font-weight="500" font-family="'DM Sans',sans-serif">splitIdent</text>
+      <text x="163" y="69" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">camel + snake</text>
+
+      <line x1="208" y1="59" x2="224" y2="59" stroke="#8b5cf6" stroke-width="1.4" marker-end="url(#mp)"/>
+
+      <rect x="226" y="38" width="94" height="42" rx="7" fill="#111118" stroke="#d94f90" stroke-width="1.6"/>
+      <text x="273" y="55" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#f0ecf8" font-weight="500" font-family="'DM Sans',sans-serif">Stopwords</text>
+      <text x="273" y="69" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#d94f90" font-family="'DM Mono',monospace">&lt;500 entries</text>
+
+      <line x1="320" y1="59" x2="336" y2="59" stroke="#8b5cf6" stroke-width="1.4" marker-end="url(#mp)"/>
+
+      <rect x="338" y="38" width="76" height="42" rx="7" fill="#111118" stroke="#8b5cf6" stroke-width="1.8"/>
+      <text x="376" y="55" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#8b5cf6" font-weight="700" font-family="'DM Sans',sans-serif">MinHash</text>
+      <text x="376" y="69" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">128 hashes</text>
+
+      <line x1="414" y1="59" x2="426" y2="59" stroke="#8b5cf6" stroke-width="1.4" marker-end="url(#mp)"/>
+
+      <rect x="428" y="34" width="80" height="50" rx="7" fill="#111118" stroke="#0891b2" stroke-width="2"/>
+      <text x="468" y="51" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#0891b2" font-weight="700" font-family="'DM Sans',sans-serif">LSH Bands</text>
+      <text x="468" y="64" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">64&times;2 config</text>
+      <text x="468" y="76" text-anchor="middle" dominant-baseline="central" font-size="8" fill="#0891b2" font-family="'DM Mono',monospace" opacity=".7">20&times; speedup</text>
+
+      <line x1="508" y1="59" x2="520" y2="59" stroke="#8b5cf6" stroke-width="1.4" marker-end="url(#mp)"/>
+
+      <rect x="522" y="38" width="76" height="42" rx="7" fill="#111118" stroke="#8b5cf6" stroke-width="1.6"/>
+      <text x="560" y="55" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#8b5cf6" font-weight="600" font-family="'DM Sans',sans-serif">Jaccard</text>
+      <text x="560" y="69" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">candidates</text>
+
+      <!-- ═══ ROW 2 BM25 PATH ═══ -->
+      <rect x="118" y="132" width="96" height="42" rx="7" fill="#111118" stroke="#d94f90" stroke-width="1.6"/>
+      <text x="166" y="149" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#f0ecf8" font-weight="500" font-family="'DM Sans',sans-serif">Token Store</text>
+      <text x="166" y="163" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">SQLite indexed</text>
+
+      <line x1="214" y1="153" x2="338" y2="153" stroke="#d94f90" stroke-width="1.4" marker-end="url(#mb)"/>
+
+      <rect x="340" y="132" width="90" height="42" rx="7" fill="#111118" stroke="#d94f90" stroke-width="1.8"/>
+      <text x="385" y="149" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#d94f90" font-weight="700" font-family="'DM Sans',sans-serif">BM25</text>
+      <text x="385" y="163" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">IDF-weighted</text>
+
+      <line x1="430" y1="153" x2="460" y2="153" stroke="#d94f90" stroke-width="1.4" marker-end="url(#mb)"/>
+
+      <!-- query-to-BM25 branch -->
+      <line x1="60" y1="80" x2="60" y2="153" stroke="#3a3050" stroke-width="1" stroke-dasharray="3,3"/>
+      <line x1="60" y1="153" x2="118" y2="153" stroke="#3a3050" stroke-width="1" stroke-dasharray="3,3" marker-end="url(#mc)"/>
+
+      <!-- ═══ MERGE: RRF ═══ -->
+      <!-- join Jaccard down to merge point -->
+      <line x1="598" y1="80" x2="598" y2="108" stroke="#10b981" stroke-width="1.4"/>
+      <!-- BM25 right to merge point -->
+      <line x1="460" y1="153" x2="598" y2="153" stroke="#d94f90" stroke-width="1.4"/>
+      <!-- vertical connector -->
+      <line x1="598" y1="108" x2="598" y2="153" stroke="#10b981" stroke-width="1.4"/>
+      <line x1="598" y1="132" x2="620" y2="132" stroke="#10b981" stroke-width="1.6" marker-end="url(#mg)"/>
+
+      <rect x="622" y="108" width="68" height="52" rx="7" fill="#111118" stroke="#10b981" stroke-width="2"/>
+      <text x="656" y="127" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#10b981" font-weight="700" font-family="'DM Sans',sans-serif">RRF</text>
+      <text x="656" y="143" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">k=60</text>
+
+      <!-- ═══ ROW 3 RERANK ═══ -->
+      <line x1="656" y1="160" x2="656" y2="192" stroke="#10b981" stroke-width="1.6" marker-end="url(#mg)"/>
+
+      <rect x="510" y="194" width="110" height="46" rx="7" fill="#111118" stroke="#10b981" stroke-width="1.8"/>
+      <text x="565" y="211" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#10b981" font-weight="600" font-family="'DM Sans',sans-serif">Struct Rerank</text>
+      <text x="565" y="227" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">edge &middot; kind &middot; tokens</text>
+      <!-- connect RRF down to Struct Rerank -->
+      <line x1="656" y1="194" x2="620" y2="194" stroke="#10b981" stroke-width="1.4"/>
+      <line x1="620" y1="194" x2="620" y2="217" stroke="#10b981" stroke-width="1.4" marker-end="url(#mg)"/>
+
+      <line x1="490" y1="217" x2="474" y2="217" stroke="#10b981" stroke-width="1.4" marker-end="url(#mg)"/>
+
+      <rect x="354" y="194" width="118" height="46" rx="7" fill="#111118" stroke="#10b981" stroke-width="1.6"/>
+      <text x="413" y="211" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#f0ecf8" font-weight="500" font-family="'DM Sans',sans-serif">Path Filter</text>
+      <text x="413" y="227" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">test/mock demotion</text>
+
+      <line x1="354" y1="217" x2="338" y2="217" stroke="#10b981" stroke-width="1.4" marker-end="url(#mg)"/>
+
+      <rect x="210" y="194" width="126" height="46" rx="7" fill="#13131f" stroke="#10b981" stroke-width="2.2"/>
+      <text x="273" y="211" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#10b981" font-weight="700" font-family="'DM Sans',sans-serif">Top-K Results</text>
+      <text x="273" y="227" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#10b981" font-family="'DM Mono',monospace">ranked &middot; scored</text>
+
+      <!-- caption -->
+      <text x="350" y="290" text-anchor="middle" font-size="9" fill="#3a3050" font-family="'DM Mono',monospace" letter-spacing="1">no embeddings &middot; no vector store &middot; no API calls at search time &middot; pure Go</text>
+    </svg>
+  </div>
+
+  <!-- Explainer row: what each stage does in plain language -->
+  <div style="display:flex;gap:10px;flex-shrink:0;margin-top:6px;">
+    <div style="flex:1;padding:10px 14px;background:var(--sur);border:1px solid var(--bdr);border-top:2px solid var(--pu);border-radius:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">MinHash Path</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">Splits identifiers by camelCase/snake_case, removes stop words, then hashes each token set into a 128-slot fingerprint. LSH band tables make lookup 20x faster than brute-force comparison.</div>
+    </div>
+    <div style="flex:1;padding:10px 14px;background:var(--sur);border:1px solid var(--bdr);border-top:2px solid var(--pk);border-radius:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">BM25 Path</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">Scores each token by how rare it is across the codebase (IDF). "session" in a query is worth more than "get" because it appears in fewer symbols. Stored in a SQLite inverted index.</div>
+    </div>
+    <div style="flex:1;padding:10px 14px;background:var(--sur);border:1px solid var(--bdr);border-top:2px solid var(--grn);border-radius:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--grn);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">Fusion + Rerank</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">RRF merges both ranked lists without needing to normalize scores. Then structural reranking boosts symbols with more call-graph edges and demotes test/mock paths.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 07 DIRECT MCP TOOLS ══ -->
+<div class="slide" id="s7">
+  <div class="sh"><span class="sl">MCP Tools</span><span class="sc">07 / 13</span></div>
+  <div class="h2" style="margin-bottom:10px;">No Middleman</div>
+  <div style="flex:1;display:flex;gap:14px;min-height:0;">
+    <div style="flex:1;min-height:0;">
+      <svg viewBox="0 0 620 270" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;" preserveAspectRatio="xMidYMid meet">
+        <defs>
+          <marker id="ra" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#ef4444"/></marker>
+          <marker id="ga2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#10b981"/></marker>
+        </defs>
+
+        <text x="150" y="16" text-anchor="middle" font-size="10" fill="#ef4444" font-family="'DM Mono',monospace" letter-spacing="1.5">BEFORE</text>
+        <text x="468" y="16" text-anchor="middle" font-size="10" fill="#10b981" font-family="'DM Mono',monospace" letter-spacing="1.5">AFTER v1.11.2</text>
+        <line x1="310" y1="6" x2="310" y2="264" stroke="#1e1b2e" stroke-width="1" stroke-dasharray="4,3"/>
+
+        <!-- BEFORE chain -->
+        <rect x="18" y="28" width="264" height="34" rx="7" fill="#111118" stroke="#ef4444" stroke-width="1.2" opacity=".7"/>
+        <text x="150" y="45" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#f0ecf8" font-family="'DM Sans',sans-serif">Claude Code</text>
+        <line x1="150" y1="62" x2="150" y2="78" stroke="#ef4444" stroke-width="1.3" opacity=".7" marker-end="url(#ra)"/>
+        <rect x="18" y="80" width="264" height="34" rx="7" fill="#111118" stroke="#ef4444" stroke-width="1.2" opacity=".7"/>
+        <text x="150" y="97" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#f0ecf8" font-family="'DM Sans',sans-serif">celeste serve</text>
+        <line x1="150" y1="114" x2="150" y2="130" stroke="#ef4444" stroke-width="1.3" opacity=".7" marker-end="url(#ra)"/>
+        <rect x="18" y="132" width="264" height="34" rx="7" fill="#111118" stroke="#ef4444" stroke-width="1.3" opacity=".75"/>
+        <text x="150" y="149" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#ef4444" font-family="'DM Sans',sans-serif">Chat LLM round-trip</text>
+        <line x1="150" y1="166" x2="150" y2="182" stroke="#ef4444" stroke-width="1.3" opacity=".7" marker-end="url(#ra)"/>
+        <rect x="18" y="184" width="264" height="34" rx="7" fill="#111118" stroke="#ef4444" stroke-width="1.2" opacity=".65"/>
+        <text x="150" y="201" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#ef4444" font-family="'DM Sans',sans-serif">LLM summarizes response</text>
+        <line x1="150" y1="218" x2="150" y2="234" stroke="#ef4444" stroke-width="1.3" opacity=".7" marker-end="url(#ra)"/>
+        <rect x="18" y="236" width="264" height="30" rx="7" fill="#180a0a" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="150" y="251" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#ef4444" font-weight="600" font-family="'DM Sans',sans-serif">truncated &middot; lossy &middot; slow</text>
+
+        <!-- AFTER chain -->
+        <rect x="326" y="28" width="280" height="34" rx="7" fill="#111118" stroke="#10b981" stroke-width="1.4"/>
+        <text x="466" y="45" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#f0ecf8" font-family="'DM Sans',sans-serif">Claude Code</text>
+        <line x1="466" y1="62" x2="466" y2="78" stroke="#10b981" stroke-width="1.5" marker-end="url(#ga2)"/>
+        <rect x="326" y="80" width="280" height="34" rx="7" fill="#111118" stroke="#10b981" stroke-width="1.4"/>
+        <text x="466" y="97" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#f0ecf8" font-family="'DM Sans',sans-serif">celeste serve (MCP)</text>
+        <line x1="466" y1="114" x2="466" y2="130" stroke="#10b981" stroke-width="1.5" marker-end="url(#ga2)"/>
+        <rect x="326" y="132" width="280" height="34" rx="7" fill="#111118" stroke="#d94f90" stroke-width="1.8"/>
+        <text x="466" y="149" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'DM Sans',sans-serif">celeste_code_search</text>
+        <line x1="466" y1="166" x2="466" y2="182" stroke="#10b981" stroke-width="1.5" marker-end="url(#ga2)"/>
+        <rect x="326" y="184" width="280" height="52" rx="7" fill="#071a0f" stroke="#10b981" stroke-width="2"/>
+        <text x="466" y="203" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#10b981" font-weight="600" font-family="'DM Sans',sans-serif">verbatim result</text>
+        <text x="466" y="220" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">no max_tokens ceiling &middot; streaming progress</text>
+      </svg>
+    </div>
+    <div style="width:215px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">5 Direct MCP Tools</div>
+      <div style="display:flex;flex-wrap:wrap;gap:5px;">
+        <span class="badge badge-pk" style="font-size:13px;">celeste_index</span>
+        <span class="badge badge-pk" style="font-size:13px;">celeste_code_search</span>
+        <span class="badge badge-pk" style="font-size:13px;">celeste_code_review</span>
+        <span class="badge badge-pk" style="font-size:13px;">celeste_code_graph</span>
+        <span class="badge badge-pk" style="font-size:13px;">celeste_code_symbols</span>
+      </div>
+      <div class="card" style="margin-top:4px;">
+        <div class="ct" style="font-size:15px;">Streaming Progress</div>
+        <div class="cb" style="font-size:14px;">Reindex notifications stream in real-time. Claude Code sees "Indexed 4,231 symbols..." as it happens.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="font-size:15px;">No LLM Round-trip</div>
+        <div class="cb" style="font-size:14px;">Direct call returns raw codegraph results. No max_tokens ceiling. No lossy summarization.</div>
+      </div>
+      <div class="card">
+        <div class="ct" style="font-size:15px;">8 Total MCP Tools</div>
+        <div class="cb" style="font-size:14px;">5 direct codegraph + 3 persona tools. Served by <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">celeste serve</code> on localhost.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 08 .GRIMOIRE ══ -->
+<div class="slide" id="s8">
+  <div class="sh"><span class="sl">.grimoire &middot; Project Memory</span><span class="sc">08 / 13</span></div>
+  <div class="h2" style="margin-bottom:10px;">Project Memory</div>
+  <div style="flex:1;display:flex;gap:14px;min-height:0;">
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="term" style="flex:1;">
+        <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--txt3);margin-bottom:10px;"># .grimoire &mdash; auto-initialized on first run, git-stamped</div>
+        <div><span class="prompt">project:</span> <span class="val">celeste-stopwords</span></div>
+        <div><span class="prompt">version:</span> <span class="val">0.1.0</span></div>
+        <div><span class="prompt">git_sha:</span> <span class="val">39cd8fe</span></div>
+        <div><span class="prompt">indexed_at:</span> <span class="val">2026-04-13T09:15:22Z</span></div>
+        <div style="margin-top:8px;"><span class="prompt">@include:</span> <span class="val">./docs/architecture.grimoire</span></div>
+        <div style="margin-top:8px;"><span class="key">memories:</span></div>
+        <div style="padding-left:16px;"><span class="out">- "Pipeline uses celeste codegraph for tokenization"</span></div>
+        <div style="padding-left:16px;"><span class="out">- "Acceptance: &lt;500 stop words, &gt;30% FP reduction"</span></div>
+        <div style="padding-left:16px;"><span class="out">- "Corpus: 32 OSS repos, Apache-2.0 or MIT only"</span></div>
+        <div style="margin-top:8px;"><span class="key">hooks:</span></div>
+        <div style="padding-left:16px;"><span class="out">pre_tool: ["go vet ./..."]</span></div>
+        <div style="padding-left:16px;"><span class="out">post_write: ["go build ./..."]</span></div>
+        <div style="margin-top:10px;color:var(--amb);font-size:13px;">&#9888; grimoire is 3 commits behind HEAD &mdash; run <span style="color:var(--pk);">celeste init</span> to refresh</div>
+      </div>
+    </div>
+    <div style="width:270px;flex-shrink:0;display:flex;flex-direction:column;gap:9px;">
+      <div class="card" style="border-left:3px solid var(--pk);">
+        <div class="ct">Memories</div>
+        <div class="cb">Persistent project facts injected into every LLM system prompt. Survive session resets. Git-stamped for provenance.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--pu);">
+        <div class="ct">Sessions</div>
+        <div class="cb">JSONL auto-save with resume. Browse and reload any past conversation. Full message history with timestamps.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--grn);">
+        <div class="ct">Checkpoints</div>
+        <div class="cb">File-level undo/revert via snapshot backup on every write. <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--grn);">/revert</code> rolls back any agent change.</div>
+      </div>
+      <div class="card" style="border-left:3px solid var(--amb);">
+        <div class="ct">@include Composition</div>
+        <div class="cb">Compose multiple .grimoire fragments. Monorepo teams split context by subsystem and merge at runtime.</div>
+      </div>
+      <div style="padding:9px 12px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;font-size:14px;color:var(--txt2);">
+        Staleness tracking warns when grimoire is older than recent commits. Auto-reinit on <code style="font-family:'DM Mono',monospace;color:var(--pk);">celeste init</code>.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 09 RUNTIME MODES ══ -->
+<div class="slide" id="s9">
+  <div class="sh"><span class="sl">Runtime Modes</span><span class="sc">09 / 13</span></div>
+  <div class="h2" style="margin-bottom:10px;">Four Ways to Work</div>
+  <div style="flex:1;display:flex;gap:9px;min-height:0;">
+    <div style="flex:1;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--cy);flex-shrink:0;"></div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Chat</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--cy);letter-spacing:.1em;">celeste chat</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Interactive with auto-looping tool calls. 50-turn safety cap.</div>
+      <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
+        <div><span class="prompt">$</span> <span class="cmd">celeste chat</span></div>
+        <div><span class="out">Celeste v1.11.2 &middot; codegraph loaded</span></div>
+        <div style="margin-top:3px;"><span class="prompt">You:</span> <span class="cmd">find database pool code</span></div>
+        <div><span class="key">[code_search]</span> <span class="val">&rarr; ConnectionPool...</span></div>
+      </div>
+    </div>
+    <div style="flex:1;background:var(--sur);border:1px solid var(--pkglow);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--pk);flex-shrink:0;"></div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Agent</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--pk);letter-spacing:.1em;">celeste agent --goal "..."</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Autonomous multi-turn with planning, file I/O, checkpointing.</div>
+      <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
+        <div><span class="prompt">$</span> <span class="cmd">celeste agent --goal "fix retry"</span></div>
+        <div><span class="key">[read_file]</span> <span class="val">retry.go</span></div>
+        <div><span class="key">[patch_file]</span> <span class="val">backoff fix applied</span></div>
+        <div><span class="key">[checkpoint]</span> <span class="val">saved</span></div>
+      </div>
+    </div>
+    <div style="flex:1;background:var(--sur);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--amb);flex-shrink:0;"></div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Subagent DAG</div>
+        <span class="badge badge-amb" style="font-size:10px;padding:2px 6px;">NEW</span>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amb);letter-spacing:.1em;">spawn_agent task_id: depends_on:</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Element-named agents (&#22320;&#28779;&#27700;&#20809;&#38343;&#39080;) with auto-detected DAG dependencies.</div>
+      <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
+        <div><span class="out">&#10003; &#12308;&#28779; hi&#12309; ch1.txt</span> <span style="color:var(--txt3);">15.6s</span></div>
+        <div><span class="out">&#10003; &#12308;&#27700; mizu&#12309; ch2.txt</span> <span style="color:var(--txt3);">31.7s</span></div>
+        <div><span class="out">&#10003; &#12308;&#22320; chi&#12309; ch3.txt</span> <span style="color:var(--txt3);">48.0s</span></div>
+        <div><span class="val">DAG: ch2&#8594;ch1, ch3&#8594;ch1,ch2</span></div>
+      </div>
+    </div>
+    <div style="flex:1;background:var(--sur);border:1px solid var(--puglow);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <div style="width:8px;height:8px;border-radius:50%;background:var(--pu);flex-shrink:0;"></div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Orchestrator</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--pu);letter-spacing:.1em;">/orchestrate &lt;goal&gt;</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Agent + reviewer model debate loop. Production-grade output.</div>
+      <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
+        <div><span class="prompt">You:</span> <span class="cmd">/orchestrate refactor auth</span></div>
+        <div><span class="key">[agent]</span> <span class="out">drafts implementation</span></div>
+        <div><span class="key">[reviewer]</span> <span class="out">finds edge case</span></div>
+        <div><span class="val">consensus: 2 rounds</span></div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:9px;padding:9px 14px;background:var(--pudim);border:1px solid var(--puglow);border-radius:8px;font-size:14px;color:var(--txt2);flex-shrink:0;">
+    <strong style="color:var(--amb);">Subagent DAG</strong> auto-detects task dependencies from goal text, sequences execution, and recovers partial results on failure. <strong style="color:var(--pu);">Orchestrator</strong> adds a debate/review loop &mdash; no other open-source CLI offers either.
+  </div>
+</div>
+
+<!-- ══ 10 TOOLS & PROVIDERS ══ -->
+<div class="slide" id="s10">
+  <div class="sh"><span class="sl">Tools &amp; Providers</span><span class="sc">10 / 13</span></div>
+  <div class="h2" style="margin-bottom:10px;">Built-In Power</div>
+  <div style="flex:1;display:flex;gap:12px;min-height:0;">
+    <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">45+ Built-in Tools &middot; 7 Categories</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;flex:1;overflow-y:auto;">
+        <!-- Dev Tools -->
+        <div class="card" style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#9881;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Dev Tools</div>
+            </div>
+            <span class="badge badge-pk" style="font-size:11px;padding:2px 7px;">15+</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
+            <code style="color:var(--pk);">bash</code> shell execution &middot; <code style="color:var(--pk);">read_file</code> <code style="color:var(--pk);">write_file</code> <code style="color:var(--pk);">patch_file</code><br/>
+            <code style="color:var(--pk);">search_files</code> regex &middot; <code style="color:var(--pk);">list_dir</code> &middot; <code style="color:var(--pk);">git_status</code> <code style="color:var(--pk);">git_log</code><br/>
+            <code style="color:var(--txt3);">permissions</code> &middot; <code style="color:var(--txt3);">spawn_agent</code> &middot; <code style="color:var(--txt3);">checkpoint</code>
+          </div>
+        </div>
+        <!-- Code Intelligence -->
+        <div class="card" style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#9670;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Code Intelligence</div>
+            </div>
+            <span class="badge badge-pu" style="font-size:11px;padding:2px 7px;">6</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
+            <code style="color:var(--pu);">code_search</code> MinHash+BM25 semantic<br/>
+            <code style="color:var(--pu);">code_review</code> structural 6-category<br/>
+            <code style="color:var(--pu);">code_graph</code> callers/callees &middot; <code style="color:var(--pu);">code_symbols</code> list<br/>
+            <code style="color:var(--txt3);">extended_thinking</code> &middot; <code style="color:var(--txt3);">code_impact</code>
+          </div>
+        </div>
+        <!-- Direct MCP -->
+        <div class="card" style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#9889;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Direct MCP</div>
+            </div>
+            <span class="badge badge-pk" style="font-size:11px;padding:2px 7px;">5</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
+            <code style="color:var(--pk);">celeste_index</code> rebuild graph<br/>
+            <code style="color:var(--pk);">celeste_code_search</code> verbatim results<br/>
+            <code style="color:var(--pk);">celeste_code_review</code> no LLM round-trip<br/>
+            <code style="color:var(--txt3);">celeste_code_graph</code> &middot; <code style="color:var(--txt3);">celeste_code_symbols</code>
+          </div>
+        </div>
+        <!-- Web -->
+        <div class="card" style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#127760;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Web</div>
+            </div>
+            <span class="badge badge-cy" style="font-size:11px;padding:2px 7px;">8</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
+            <code style="color:var(--cy);">web_search</code> &middot; <code style="color:var(--cy);">web_fetch</code> scrape pages<br/>
+            <code style="color:var(--cy);">weather</code> &middot; <code style="color:var(--cy);">currency</code> conversion<br/>
+            <code style="color:var(--txt3);">twitch_stream</code> &middot; <code style="color:var(--txt3);">youtube</code> &middot; <code style="color:var(--txt3);">qr_code</code> &middot; <code style="color:var(--txt3);">image_gen</code>
+          </div>
+        </div>
+        <!-- Crypto & Security -->
+        <div class="card" style="padding:12px 14px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#128274;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Crypto &amp; Security</div>
+            </div>
+            <span class="badge badge-amb" style="font-size:11px;padding:2px 7px;">7</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
+            <code style="color:var(--amb);">ipfs_pin</code> &middot; <code style="color:var(--amb);">alchemy</code> blockchain query<br/>
+            <code style="color:var(--amb);">wallet_monitor</code> balance tracking<br/>
+            <code style="color:var(--txt3);">hash_gen</code> &middot; <code style="color:var(--txt3);">uuid</code> &middot; <code style="color:var(--txt3);">password_gen</code> &middot; <code style="color:var(--txt3);">base64</code>
+          </div>
+        </div>
+        <!-- Audio / TTS -->
+        <div class="card" style="padding:12px 14px;border-top:2px solid var(--amb);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#127925;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Audio / TTS</div>
+            </div>
+            <span class="badge badge-amb" style="font-size:11px;padding:2px 7px;">NEW</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
+            <code style="color:var(--amb);">generate_speech</code> ElevenLabs TTS<br/>
+            <code style="color:var(--amb);">sound_effect</code> &middot; <code style="color:var(--amb);">mix</code> ffmpeg multi-track<br/>
+            <code style="color:var(--txt3);">audio_render</code> project timeline &middot; <code style="color:var(--txt3);">batch</code> &middot; Gantt viz
+          </div>
+        </div>
+        <!-- Productivity -->
+        <div class="card" style="padding:12px 14px;grid-column:span 2;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+            <div style="display:flex;align-items:center;gap:6px;">
+              <span style="font-size:14px;">&#128203;</span>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Productivity</div>
+            </div>
+            <span class="badge badge-grn" style="font-size:11px;padding:2px 7px;">4</span>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.5;color:var(--txt2);">
+            <code style="color:var(--grn);">reminders</code> scheduled alerts &middot; <code style="color:var(--grn);">notes</code> persistent scratch &middot; <code style="color:var(--grn);">todo</code> task tracking &middot; all stored locally in <code style="color:var(--txt3);">~/.celeste</code>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:7px;">
+      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">8 LLM Providers</div>
+      <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;">
+        <span style="color:var(--pk);font-size:15px;">&#9733;</span>
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);font-weight:500;">Sakana AI / Fugu</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">DEFAULT &middot; 1M context &middot; fugu</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Grok / xAI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">2M context &middot; grok-4-1-fast</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">OpenAI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">gpt-4.1-mini / gpt-4.1</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Anthropic</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">native SDK &middot; prompt caching</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Google Gemini</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">gemini-2.5-flash &middot; free tier</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Venice.ai</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">NSFW &middot; image generation</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Vertex AI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">enterprise &middot; GCP project</div></div>
+        <span class="badge badge-amb" style="font-size:13px;">&#9888;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">OpenRouter</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">multi-provider &middot; parallel fn calls</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="padding:7px 10px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">
+        Zero runtime deps &middot; 73 MB binary &middot; offline capable
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 11 ARCHITECTURE ══ -->
+<div class="slide" id="s11">
+  <div class="sh"><span class="sl">Architecture</span><span class="sc">11 / 13</span></div>
+  <div class="h2" style="margin-bottom:10px;">Under the Hood</div>
+  <div class="dw">
+    <svg viewBox="0 0 700 310" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
+      <title>Celeste CLI layered architecture: TUI, LLM Backends, Tool System, Codegraph Engine, MCP Server, Persistence</title>
+      <line x1="350" y1="46" x2="350" y2="276" stroke="#1e1b2e" stroke-width="1" stroke-dasharray="3,4" opacity=".4"/>
+
+      <!-- L1: TUI -->
+      <rect x="12" y="10" width="676" height="34" rx="7" fill="#13131f" stroke="#d94f90" stroke-width="1.8"/>
+      <rect x="12" y="10" width="5" height="34" rx="3" fill="#d94f90"/>
+      <text x="350" y="27" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'Syne',sans-serif" letter-spacing=".04em">TUI &mdash; Bubble Tea &middot; flicker-free &middot; corrupted theme &middot; markdown &middot; streaming</text>
+
+      <!-- L2: LLM Backends -->
+      <rect x="12" y="56" width="676" height="34" rx="7" fill="#13131f" stroke="#8b5cf6" stroke-width="1.6"/>
+      <rect x="12" y="56" width="5" height="34" rx="3" fill="#8b5cf6"/>
+      <text x="350" y="73" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#8b5cf6" font-weight="600" font-family="'DM Sans',sans-serif">LLM Backends (8) &mdash; Sakana &middot; Grok &middot; OpenAI &middot; Anthropic &middot; Gemini &middot; Venice &middot; Vertex &middot; OpenRouter</text>
+
+      <!-- L3: Tool System -->
+      <rect x="12" y="102" width="676" height="34" rx="7" fill="#13131f" stroke="#10b981" stroke-width="1.6"/>
+      <rect x="12" y="102" width="5" height="34" rx="3" fill="#10b981"/>
+      <text x="350" y="119" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#10b981" font-weight="600" font-family="'DM Sans',sans-serif">Tool System (40+) &mdash; Dev &middot; Web &middot; Crypto &middot; Productivity &middot; Blockchain &middot; Git &middot; Permissions</text>
+
+      <!-- L4: Codegraph Engine -->
+      <rect x="12" y="148" width="676" height="52" rx="7" fill="#13131f" stroke="#0891b2" stroke-width="1.8"/>
+      <rect x="12" y="148" width="5" height="52" rx="3" fill="#0891b2"/>
+      <text x="350" y="166" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#0891b2" font-weight="700" font-family="'Syne',sans-serif">Codegraph Engine</text>
+      <rect x="28" y="180" width="90" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
+      <text x="73" y="188" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">SQLite store</text>
+      <rect x="126" y="180" width="106" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
+      <text x="179" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">MinHash+BM25</text>
+      <rect x="240" y="180" width="86" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1.4" opacity=".9"/>
+      <text x="283" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#0891b2" font-family="'DM Mono',monospace" font-weight="500">LSH 64&times;2</text>
+      <rect x="334" y="180" width="86" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
+      <text x="377" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">tree-sitter 10L</text>
+      <rect x="428" y="180" width="100" height="16" rx="5" fill="#0a1218" stroke="#d94f90" stroke-width="1" opacity=".8"/>
+      <text x="478" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#d94f90" font-family="'DM Mono',monospace">stopwords v1.0</text>
+      <rect x="536" y="180" width="100" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
+      <text x="586" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">struct rerank</text>
+
+      <!-- L5: MCP Server -->
+      <rect x="12" y="212" width="676" height="50" rx="7" fill="#13131f" stroke="#d94f90" stroke-width="1.8"/>
+      <rect x="12" y="212" width="5" height="50" rx="3" fill="#d94f90"/>
+      <text x="350" y="228" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'Syne',sans-serif">MCP Server (8 tools)</text>
+      <rect x="28" y="242" width="124" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
+      <text x="90" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">3 persona tools</text>
+      <rect x="160" y="242" width="152" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
+      <text x="236" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#d94f90" font-family="'DM Mono',monospace">5 direct codegraph tools</text>
+      <rect x="320" y="242" width="160" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
+      <text x="400" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">streaming progress notifs</text>
+      <rect x="488" y="242" width="100" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
+      <text x="538" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">localhost server</text>
+
+      <!-- L6: Persistence -->
+      <rect x="12" y="274" width="676" height="32" rx="7" fill="#111118" stroke="#2a2440" stroke-width="1.4"/>
+      <rect x="12" y="274" width="5" height="32" rx="3" fill="#3a3050"/>
+      <text x="350" y="290" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#7a7085" font-weight="400" font-family="'DM Mono',monospace" letter-spacing=".04em">Persistence &mdash; sessions &middot; memories &middot; grimoire &middot; checkpoints &middot; codegraph.db</text>
+    </svg>
+  </div>
+</div>
+
+<!-- ══ 12 COMPETITIVE POSITIONING ══ -->
+<div class="slide" id="s12">
+  <div class="sh"><span class="sl">Competitive Positioning</span><span class="sc">12 / 13</span></div>
+  <div class="h2" style="margin-bottom:10px;">Why Celeste</div>
+  <div style="flex:1;overflow:hidden;min-height:0;">
+    <table class="dt" style="font-size:15px;">
+      <thead>
+        <tr>
+          <th style="width:190px;">Feature</th>
+          <th style="color:var(--pk);">Celeste v1.11.2</th>
+          <th>OpenClaw</th>
+          <th>gptme</th>
+          <th>Aider</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="str">Language / Runtime</td>
+          <td class="win">Go (compiled)</td>
+          <td class="muted">Node.js</td>
+          <td class="muted">Python</td>
+          <td class="muted">Python</td>
+        </tr>
+        <tr>
+          <td class="str">Deploy size</td>
+          <td class="win">73 MB binary</td>
+          <td class="muted">~393 MB + node</td>
+          <td class="muted">~150 MB + py</td>
+          <td class="muted">~80 MB + py</td>
+        </tr>
+        <tr>
+          <td class="str">Code graph</td>
+          <td class="win">MinHash + BM25 + tree-sitter (10 langs)</td>
+          <td class="muted">embeddings only</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+        </tr>
+        <tr>
+          <td class="str">Semantic search</td>
+          <td class="win">no embeddings, pure MinHash</td>
+          <td class="muted">vector DB required</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+        </tr>
+        <tr>
+          <td class="str">Code review</td>
+          <td class="win">structural (6 categories)</td>
+          <td class="muted">LLM only</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+        </tr>
+        <tr>
+          <td class="str">MCP server</td>
+          <td class="win">8 tools, 5 direct codegraph</td>
+          <td class="muted">partial</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+        </tr>
+        <tr>
+          <td class="str">Runtime modes</td>
+          <td class="win">Chat &middot; Agent &middot; DAG Subagents &middot; Orchestrator</td>
+          <td class="muted">Chat only</td>
+          <td class="muted">Chat + Agent</td>
+          <td class="muted">Chat only</td>
+        </tr>
+        <tr>
+          <td class="str">Multi-agent</td>
+          <td class="win">DAG dependencies &middot; element-named</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+        </tr>
+        <tr>
+          <td class="str">Personality</td>
+          <td class="win">Celeste (lore, grimoire)</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+          <td class="muted">none</td>
+        </tr>
+        <tr>
+          <td class="str">Embeddings needed</td>
+          <td class="ok">&#10003; none required</td>
+          <td style="color:var(--red);font-family:'DM Mono',monospace;font-size:14px;">required</td>
+          <td class="muted">n/a</td>
+          <td class="muted">n/a</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div style="margin-top:9px;padding:9px 14px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;font-size:15px;color:var(--txt2);flex-shrink:0;">
+    The only open-source AI coding tool that combines <strong style="color:var(--pk);">graph-based code intelligence</strong> (10 languages), <strong style="color:var(--amb);">DAG-orchestrated subagents</strong>, and a <strong style="color:var(--pu);">companion personality</strong> &mdash; no embeddings, no runtime deps, single binary.
+  </div>
+</div>
+
+<!-- ══ 13 CLOSING CTA ══ -->
+<div class="slide" id="s13" style="overflow:visible;">
+  <div class="sh"><span class="sl">Get Started</span><span class="sc">13 / 13</span></div>
+
+  <!-- Graph + Celeste circle — absolutely positioned, same pattern as slide 1 -->
+  <div class="print-hero" style="position:absolute;right:30px;top:50%;transform:translateY(-50%);width:540px;height:540px;z-index:2;pointer-events:none;">
+    <svg viewBox="-300 -300 600 600" style="position:absolute;inset:0;width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="0" cy="0" r="280" fill="none" stroke="#8b5cf6" stroke-width=".4" opacity=".07"/>
+      <circle cx="0" cy="0" r="220" fill="none" stroke="#d94f90" stroke-width=".5" opacity=".1"/>
+      <circle cx="0" cy="0" r="160" fill="none" stroke="#d94f90" stroke-width=".6" opacity=".13"/>
+      <line x1="0" y1="0" x2="-240" y2="-150" stroke="#d94f90" stroke-width="1" opacity=".18"/>
+      <line x1="0" y1="0" x2="-260" y2="40" stroke="#8b5cf6" stroke-width=".9" opacity=".14"/>
+      <line x1="0" y1="0" x2="-200" y2="190" stroke="#d94f90" stroke-width=".9" opacity=".14"/>
+      <line x1="0" y1="0" x2="180" y2="-230" stroke="#8b5cf6" stroke-width=".9" opacity=".12"/>
+      <line x1="0" y1="0" x2="240" y2="170" stroke="#d94f90" stroke-width="1" opacity=".12"/>
+      <circle cx="-240" cy="-150" r="12" fill="#08080f" stroke="#d94f90" stroke-width="1.2" opacity=".3"/>
+      <text x="-240" y="-166" text-anchor="middle" font-size="8" fill="#d94f90" opacity=".25" font-family="'DM Mono',monospace">検索</text>
+      <circle cx="-260" cy="40" r="10" fill="#08080f" stroke="#8b5cf6" stroke-width="1" opacity=".25"/>
+      <text x="-260" y="26" text-anchor="middle" font-size="8" fill="#8b5cf6" opacity=".2" font-family="'DM Mono',monospace">接続</text>
+      <circle cx="-200" cy="190" r="11" fill="#08080f" stroke="#d94f90" stroke-width="1" opacity=".25"/>
+      <text x="-200" y="208" text-anchor="middle" font-size="8" fill="#d94f90" opacity=".2" font-family="'DM Mono',monospace">解析</text>
+      <circle cx="180" cy="-230" r="13" fill="#08080f" stroke="#8b5cf6" stroke-width="1.2" opacity=".3"/>
+      <text x="180" y="-244" text-anchor="middle" font-size="8" fill="#8b5cf6" opacity=".25" font-family="'DM Mono',monospace">構造</text>
+      <circle cx="240" cy="170" r="10" fill="#08080f" stroke="#d94f90" stroke-width="1" opacity=".25"/>
+      <text x="240" y="158" text-anchor="middle" font-size="8" fill="#d94f90" opacity=".2" font-family="'DM Mono',monospace">知能</text>
+      <circle cx="-100" cy="-180" r="1.5" fill="#d94f90" opacity=".05"/>
+      <circle cx="80" cy="100" r="1.8" fill="#8b5cf6" opacity=".04"/>
+    </svg>
+    <div style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:420px;height:420px;border-radius:50%;overflow:hidden;border:2px solid rgba(139,92,246,0.3);box-shadow:0 0 40px rgba(217,79,144,0.3),0 0 80px rgba(109,40,217,0.15);z-index:1;">
+      <img src="https://s3.whykusanagi.xyz/optimized_assets/hypnosis_expression_trans_ghub.png" alt="Celeste" style="width:440px;height:auto;position:absolute;top:-10px;left:50%;transform:translateX(-50%);"/>
+    </div>
+  </div>
+
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;z-index:3;max-width:580px;">
+      <div class="ey" style="margin-bottom:14px;">Open Source &middot; MIT Licensed</div>
+      <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,4.8vw,60px);line-height:1.02;letter-spacing:-.03em;color:var(--wht);" id="ctaTitle">GET STARTED</div>
+      <div style="margin-top:22px;background:#0a0a12;border:1px solid var(--bdr2);border-radius:8px;padding:14px 18px;max-width:540px;">
+        <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);margin-bottom:5px;"># install</div>
+        <div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--pk);">go install github.com/whykusanagi/celeste-cli/cmd/celeste@v1.11.2</div>
+        <div style="margin-top:9px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);"># first run &middot; Sakana / Fugu (default)</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste config --init sakana</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste -config sakana config --set-key <span style="color:var(--pu);">$SAKANA_KEY</span></div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste -config sakana chat</div>
+      </div>
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:7px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge badge-pk" style="padding:2px 7px;font-size:13px;">&#8599;</span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">github.com/whykusanagi/celeste-cli</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge badge-pu" style="padding:2px 7px;font-size:13px;">&#8599;</span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">github.com/whykusanagi/celeste-for-claude</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge badge-cy" style="padding:2px 7px;font-size:13px;">&#8599;</span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">github.com/whykusanagi/celeste-stopwords <span style="color:var(--txt3);">&middot; CC BY 4.0</span></span>
+        </div>
+      </div>
+      <div style="margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;">
+        <div class="tm-item">Built by<span>whykusanagi</span></div>
+        <div class="tm-item">License<span>MIT &middot; open source</span></div>
+        <div class="tm-item">Character<span>ikawasa23</span></div>
+        <div class="tm-item">Version<span>v1.11.2 &middot; Go 1.26+</span></div>
+      </div>
+    </div>
+  <div class="bar-bot"></div>
+</div>
+
+</div><!-- /.deck -->
+
+<!-- navigation -->
+<nav class="nav" role="navigation" aria-label="Slide navigation">
+  <button class="nav-btn" id="prevBtn" aria-label="Previous slide">&#8592;</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" aria-label="Next slide">&#8594;</button>
+</nav>
+<div class="presenter">whykusanagi</div>
+
+<script>
+(function(){
+  const slides=Array.from(document.querySelectorAll('.slide'));
+  const dotsEl=document.getElementById('dots');
+  let cur=0;
+  slides.forEach(function(_,i){
+    const d=document.createElement('button');
+    d.className='nav-dot'+(i===0?' active':'');
+    d.setAttribute('aria-label','Go to slide '+(i+1));
+    d.onclick=function(){go(i);};
+    dotsEl.appendChild(d);
+  });
+  function go(n){
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur=(n+slides.length)%slides.length;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    slides[cur].scrollTop=0;
+  }
+  document.getElementById('prevBtn').onclick=function(){go(cur-1);};
+  document.getElementById('nextBtn').onclick=function(){go(cur+1);};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(cur-1);
+    if(e.key==='Home') go(0);
+    if(e.key==='End') go(slides.length-1);
+  });
+  // glitch effect on CTA title
+  const cta=document.getElementById('ctaTitle');
+  if(cta){
+    const orig='GET STARTED';
+    const gc='&#9608;&#9619;&#9618;&#9617;&#9604;&#9600;&#9632;&#9633;';
+    const glyphs=['|','/','-','\\','_'];
+    let active=false;
+    function glitch(){
+      if(active) return;
+      active=true;
+      let t=0;
+      const iv=setInterval(function(){
+        if(t++>10){clearInterval(iv);cta.textContent=orig;active=false;return;}
+        cta.textContent=orig.split('').map(function(c){
+          return c===' '?' ':(Math.random()<.18?glyphs[Math.floor(Math.random()*glyphs.length)]:c);
+        }).join('');
+      },55);
+    }
+    setInterval(glitch,4200);
+  }
+})();
+</script>
+</body>
+</html>

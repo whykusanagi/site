@@ -1,0 +1,38 @@
+{
+  "title": "Bastard Hero Launch Countdown:",
+  "eventDate": "2025-01-01T00:00:00-07:00",
+  "basicMessage": "Bastard Hero: Blood of the Abyss doujinshi launch",
+  "detailedMessage": "⚔️✨ Dark fantasy awaits! Don't miss <strong>Bastard Hero: Blood of the Abyss</strong> — a 20-page doujinshi of vengeance, lust, and betrayal! 💜 Get your copy now!<br><br>🛒 <a href=\"https://kusanagi.short.gy/Shop\" target=\"_blank\" style=\"color:#fdf3f8; text-decoration: underline;\">Physical Copy</a> | 💻 <a href=\"https://whykusanagi.itch.io/bastard-hero-blood-of-the-abyss\" target=\"_blank\" style=\"color:#fdf3f8; text-decoration: underline;\">Digital Edition</a>",
+  "completedMessage": "Now Available! Get your copy today!",
+  "style": "compact",
+  "character": {
+    "image": "bastard_hero.png",
+    "background": {
+      "type": "diamond",
+      "color": "radial-gradient(circle, rgba(139, 92, 246, 0.4) 10%, rgba(217, 79, 144, 0.6) 60%)",
+      "borderColor": "#3a2555",
+      "pattern": false
+    },
+    "overlay": {
+      "image": null,
+      "position": null,
+      "animation": null
+    }
+  },
+  "popup": {
+    "message": "⚔️✨ Dark fantasy awaits!<br>Don't miss <strong>Bastard Hero:<br>Blood of the Abyss!</strong><br>💜 20-page doujinshi of vengeance, lust, and betrayal!<br>🛒 <a href=\"https://kusanagi.short.gy/Shop\" target=\"_blank\" style=\"color:#e86ca8;\">Physical</a> | 💻 <a href=\"https://whykusanagi.itch.io/bastard-hero-blood-of-the-abyss\" target=\"_blank\" style=\"color:#e86ca8;\">Digital</a>",
+    "frequency": 10000,
+    "duration": 5000,
+    "colors": {
+      "bg": null,
+      "border": null,
+      "text": null
+    }
+  },
+  "colors": {
+    "primary": null,
+    "accent": null,
+    "text": null
+  }
+}
+

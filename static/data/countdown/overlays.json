@@ -1,0 +1,12 @@
+{
+  "tentacle": {
+    "name": "Tentacle Foil",
+    "image": "art/fall_of_kirara_cover/Tentacle_Foil.png",
+    "position": "behind",
+    "animation": "float"
+  },
+  "none": {
+    "name": "No Overlay",
+    "image": null
+  }
+}

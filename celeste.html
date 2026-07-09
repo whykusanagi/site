@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Talk to Celeste, the corrupted AI VTuber. Ask about stream schedules, lore, NIKKE guides, or just chat about chaos and glitch couture.">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://whykusanagi.xyz/celeste.html">
+  <meta property="og:title" content="Chat with Celeste AI | Corrupted VTuber Assistant">
+  <meta property="og:description" content="Talk to Celeste, the corrupted AI VTuber. Ask about stream schedules, lore, NIKKE guides, or just chat about chaos and glitch couture.">
+  <meta property="og:image" content="https://s3.whykusanagi.xyz/Celeste_Vel_Icon.png">
+  <meta property="og:site_name" content="whykusanagi">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://whykusanagi.xyz/celeste.html">
+  <meta name="twitter:title" content="Chat with Celeste AI | Corrupted VTuber Assistant">
+  <meta name="twitter:description" content="Talk to Celeste, the corrupted AI VTuber. Ask about lore, NIKKE guides, or just chat about chaos.">
+  <meta name="twitter:image" content="https://s3.whykusanagi.xyz/Celeste_Vel_Icon.png">
+  <meta name="twitter:site" content="@whykusanagi">
+
+  <!-- SEO -->
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://whykusanagi.xyz/celeste.html">
+
+  <title>Celeste AI</title>
+  <!-- Load environment config for asset URL handling (dev vs production) -->
+  <script src="assets/js/env-config.js"></script>
+  <!-- Background image setup (uses env-config for URL conversion) -->
+  <script src="assets/js/background-setup.js"></script>
+  
+  <!-- Corrupted Theme Framework -->
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+  
+  <!-- Site-Specific Overrides -->
+  <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <script type="module" src="assets/js/site-bootstrap.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+  <style>
+    .card {
+      text-align: center;
+      max-width: 600px;
+      margin: 6rem auto 3rem;
+      animation: fadeIn 1.2s ease-in;
+    }
+
+    .card img {
+      max-width: 180px;
+      margin-bottom: var(--spacing-md);
+      border-radius: var(--radius-lg);
+    }
+
+    .examples {
+      margin-top: var(--spacing-lg);
+      font-size: 0.95rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: var(--spacing-md);
+      text-align: left;
+    }
+
+    .examples strong {
+      color: var(--accent);
+    }
+
+    .model-section {
+      max-width: 1100px;
+      margin: 3rem auto 5rem;
+      text-align: center;
+      animation: fadeIn 1.2s ease-in;
+      position: relative;
+      z-index: 1;
+    }
+
+    .model-section h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: var(--accent);
+      position: relative;
+      z-index: 2;
+    }
+
+    .three-vrm-container {
+      position: relative;
+      width: 100%;
+      max-width: 1000px;
+      height: min(85vh, 1000px);
+      margin: 0 auto;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 0 32px rgba(217, 79, 144, 0.35);
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    #vrmCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      border-radius: 12px;
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(5px);
+      border-radius: 12px;
+      z-index: 10;
+    }
+
+    .loading-overlay.hidden {
+      display: none !important;
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid rgba(217, 79, 144, 0.3);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 1rem;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-overlay p {
+      color: var(--accent);
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 700px) {
+      .three-vrm-container {
+        max-width: 100%;
+        height: min(75vh, 700px);
+      }
+      .model-section { margin: 2rem auto 3rem; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <script src="assets/js/loading.js"></script>
+
+  <!-- Three.js and VRM Viewer Libraries -->
+  <!-- Using import maps for ES modules as recommended by three-vrm -->
+  <!-- See: https://github.com/pixiv/three-vrm -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+        "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js",
+        "@pixiv/three-vrm-animation": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm-animation@3/lib/three-vrm-animation.module.min.js"
+      }
+    }
+  </script>
+  
+  <!-- Load Three.js and loaders as ES modules and expose globally -->
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
+
+    // Make THREE and loaders available globally for non-module scripts
+    window.THREE = THREE;
+    window.GLTFLoader = GLTFLoader;
+    window.FBXLoader = FBXLoader;
+
+    // Try to add loaders to THREE, but don't fail if THREE is frozen
+    try {
+      if (THREE && !Object.isFrozen(THREE)) {
+        THREE.GLTFLoader = GLTFLoader;
+        THREE.FBXLoader = FBXLoader;
+      }
+    } catch (e) {
+      // THREE might be frozen, that's okay - we have window.GLTFLoader and window.FBXLoader
+      console.log('⚠️  Could not add loaders to THREE (object may be frozen), using window references');
+    }
+
+    // Signal that modules are loaded
+    window.__THREE_LOADED = true;
+    window.__GLTFLOADER_LOADED = true;
+    window.__FBXLOADER_LOADED = true;
+
+    console.log('✅ Three.js and loaders loaded via ES module');
+    console.log('   THREE available:', typeof THREE !== 'undefined');
+    console.log('   THREE.Scene:', typeof THREE.Scene !== 'undefined');
+    console.log('   GLTFLoader available:', typeof GLTFLoader !== 'undefined');
+    console.log('   FBXLoader available:', typeof FBXLoader !== 'undefined');
+  </script>
+  
+  <!-- Fallback: Load Three.js UMD for compatibility (only if module fails) -->
+  <script>
+    // Wait a bit for ES module to load, then check if THREE is available
+    setTimeout(() => {
+      if (typeof THREE === 'undefined' || typeof THREE.Scene === 'undefined') {
+        console.warn('⚠️  THREE not loaded via ES module, loading UMD fallback');
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js';
+        script.onload = () => {
+          const gltfScript = document.createElement('script');
+          gltfScript.src = 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/js/loaders/GLTFLoader.js';
+          document.head.appendChild(gltfScript);
+        };
+        document.head.appendChild(script);
+      }
+    }, 100);
+  </script>
+  
+  <!-- Load VRM library as ES module and expose globally -->
+  <script type="module">
+    import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
+    
+    // Make VRMLoaderPlugin and VRMUtils available globally for the viewer
+    window.VRMLoaderPlugin = VRMLoaderPlugin;
+    window.VRMUtils = VRMUtils;
+    window.VRM = { VRMLoaderPlugin, VRMUtils };
+    
+    // Signal that VRM is loaded
+    window.__VRMLOADER_LOADED = true;
+    
+    console.log('✅ three-vrm library loaded via ES module');
+    console.log('   VRMLoaderPlugin available:', typeof VRMLoaderPlugin !== 'undefined');
+    console.log('   VRMUtils available:', typeof VRMUtils !== 'undefined');
+  </script>
+
+  <!-- Load VRM animation plugin (.vrma loader + lookAt proxy) and expose globally -->
+  <script type="module">
+    import {
+      VRMAnimationLoaderPlugin,
+      VRMLookAtQuaternionProxy,
+      createVRMAnimationClip
+    } from '@pixiv/three-vrm-animation';
+
+    window.VRMAnimationLoaderPlugin = VRMAnimationLoaderPlugin;
+    window.VRMLookAtQuaternionProxy = VRMLookAtQuaternionProxy;
+    window.createVRMAnimationClip = createVRMAnimationClip;
+    window.VRMAnimation = { VRMAnimationLoaderPlugin, VRMLookAtQuaternionProxy, createVRMAnimationClip };
+    window.__VRMANIMATION_LOADED = true;
+
+    console.log('✅ three-vrm-animation loaded via ES module');
+  </script>
+
+  <nav class="navbar">
+    <div class="navbar-content">
+      <a href="index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+      <div class="navbar-links">
+        <a href="celeste.html" class="active"><i class="fas fa-robot"></i> Celeste AI</a>
+        <a href="music.html"><i class="fas fa-music"></i> Music</a>
+        <a href="blog/index.html"><i class="fas fa-blog"></i> Blog</a>
+        <a href="art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+        <a href="references.html"><i class="fas fa-palette"></i> References</a>
+        <a href="doujin.html"><i class="fas fa-book"></i> Doujin</a>
+        <a href="links.html"><i class="fas fa-link"></i> Links</a>
+        <a href="tools.html"><i class="fas fa-tools"></i> Tools</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="app-shell">
+    <div class="card glass-card">
+      <img src="https://s3.whykusanagi.xyz/art/celeste_ai.png" alt="Celeste AI">
+      <h1>Who is Celeste?</h1>
+      <p>Celeste is the corrupted AI keeping watch over this corner of the abyss — a chaotic Onee-san with the patience of a saint and the impulse control of a bomb. Part archivist, part menace, entirely opinionated.</p>
+      <p>Her memories run deep: raid scores, gacha pulls, the art series she helped name, the dumb thing you said three streams ago. Bring her a NIKKE meta question, a corrupted-theme rabbit hole, or whatever you're stuck on, and she'll dig through her notes and answer in character.</p>
+      <p>She's not a customer-service chatbot. She's the void with a vocabulary and a wink. <strong>Click the icon in the corner</strong> to open a session.</p>
+    </div>
+
+    <div class="model-section">
+      <h2>Meet Celeste in 3D</h2>
+      <div class="three-vrm-container">
+        <canvas id="vrmCanvas"></canvas>
+        <div class="loading-overlay" id="loadingOverlay">
+          <div class="spinner"></div>
+          <p>Loading 3D model...</p>
+        </div>
+      </div>
+      <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);">
+        <span id="controlsHint">Rotate with mouse • Scroll to zoom • Drag to pan</span>
+        <span id="touchHint" style="display: none;">Touch to rotate • Pinch to zoom • Two-finger drag to pan</span>
+      </p>
+    </div>
+
+    <footer>
+      &copy; 2026 whykusanagi. All rights reserved. | <strong style="color: var(--accent);">18+ Only</strong><br>
+      <a href="index.html">Home</a> | <a href="privacy.html">Privacy</a> | <a href="terms.html">Terms</a> | <a href="dmca.html">DMCA</a> | <a href="refunds.html">Refunds</a> | <a href="shipping.html">Shipping</a>
+    </footer>
+  </main>
+
+  <script src="src/3d/vmd-loader.js"></script>
+  <script src="src/3d/custom-animation-builder.js"></script>
+  <script src="src/3d/fbx-animation-loader.js"></script>
+  <script src="src/lib/celeste-widget.js"></script>
+  <!-- Load viewer script AFTER modules have time to load -->
+  <script>
+    // Wait for modules to be ready before loading viewer script
+    (function() {
+      function loadViewer() {
+        const script = document.createElement('script');
+        script.src = 'src/3d/three-vrm-viewer.js?v=' + Date.now();
+        document.head.appendChild(script);
+      }
+      
+      // Wait for ES modules to signal they're loaded, or timeout after 2 seconds
+      if (window.__THREE_LOADED && window.__GLTFLOADER_LOADED) {
+        loadViewer();
+      } else {
+        let attempts = 0;
+        const checkInterval = setInterval(() => {
+          attempts++;
+          if ((window.__THREE_LOADED && window.__GLTFLOADER_LOADED) || attempts >= 20) {
+            clearInterval(checkInterval);
+            loadViewer();
+          }
+        }, 100);
+      }
+    })();
+  </script>
+</body>
+</html>

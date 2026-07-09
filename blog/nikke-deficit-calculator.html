@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>NIKKE CP Deficit Calculator & Stat Penalty Guide | Celeste Blog</title>
+    <meta name="description" content="Self-contained calculator for determining Combat Power deficit and stat penalties in Goddess of Victory: NIKKE. Piecewise function with 99.5% accuracy." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/nikke-deficit-calculator.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "NIKKE CP Deficit Calculator & Stat Penalty Guide",
+      "description": "Self-contained calculator for determining Combat Power deficit and stat penalties in Goddess of Victory: NIKKE. Piecewise function with 99.5% accuracy.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2025-11-27",
+      "image": "https://s3.whykusanagi.xyz/art/measuring_transparent.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/nikke-deficit-calculator.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar">
+      <div class="navbar-content">
+        <a href="../index.html" class="navbar-logo"><i class="fas fa-home"></i> whykusanagi</a>
+        <div class="navbar-links">
+          <a href="../celeste.html"><i class="fas fa-robot"></i> Celeste AI</a>
+          <a href="../music.html"><i class="fas fa-music"></i> Music</a>
+          <a href="index.html" class="active"><i class="fas fa-blog"></i> Blog</a>
+          <a href="../art.html"><i class="fas fa-brush"></i> Art Gallery</a>
+          <a href="../references.html"><i class="fas fa-palette"></i> References</a>
+          <a href="../doujin.html"><i class="fas fa-book"></i> Doujin</a>
+          <a href="../links.html"><i class="fas fa-link"></i> Links</a>
+          <a href="../tools.html"><i class="fas fa-tools"></i> Tools</a>
+        </div>
+      </div>
+    </nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Gamer-Tech Lifestyle</p>
+          <h1>NIKKE CP Deficit Calculator: Accurate Stat Penalty Calculations</h1>
+          <p class="meta">A production-ready, self-contained calculator with 99.5% accuracy using piecewise functions and lookup tables</p>
+          <p class="meta"><strong>Last updated:</strong> November 27, 2025</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>Self-contained calculator</strong> for NIKKE CP deficit and stat penalty calculations</li>
+            <li><strong>99.5% accuracy</strong> (R² = 0.995062) using piecewise function with lookup tables</li>
+            <li><strong>501 data points</strong> included in repository for reproducibility and future model refinement</li>
+            <li><strong>Beautiful UI</strong> integrated with corrupted-theme glassmorphic design system</li>
+            <li><strong>Production-ready</strong> for deployment on nikkers.gg with no external dependencies</li>
+          </ul>
+        </section>
+
+        <section>
+          <div style="text-align: center; margin: 2rem 0;">
+            <img src="https://s3.whykusanagi.xyz/art/measuring_transparent.png" alt="NIKKE CP Deficit Calculator" style="max-width: 100%; height: auto; border-radius: 8px;" />
+          </div>
+          <h2>What Is CP Deficit and Why It Matters</h2>
+          <p>In Goddess of Victory: NIKKE, Combat Power (CP) determines your team's effectiveness in battle. When your Team CP is lower than the Stage CP (recommended CP for a stage), you receive a stat penalty that reduces your damage output, survivability, and overall performance.</p>
+          <p>The CP Deficit Calculator helps players understand exactly how much penalty they'll face at different deficit levels, allowing for better team composition decisions and resource allocation.</p>
+          <p><strong>CP Deficit Formula:</strong></p>
+          <pre><code>CP Deficit = max(0, Stage CP - Team CP) / Stage CP</code></pre>
+        </section>
+
+        <section>
+          <h2>How the Calculator Works</h2>
+          <p>The calculator uses a sophisticated <strong>piecewise function</strong> that combines lookup tables with power law formulas for maximum accuracy across all deficit ranges:</p>
+          <ul>
+            <li><strong>Low Range (&lt; 1% deficit)</strong>: Lookup table handles the initial jump (5% penalty at 0.01% deficit) with binary search and linear interpolation</li>
+            <li><strong>Main Range (1% - 48% deficit)</strong>: Power law formula with optimized coefficients (R² = 0.995062)</li>
+            <li><strong>High Range (&gt; 48% deficit)</strong>: Lookup table for accuracy at extreme values</li>
+          </ul>
+          <p><strong>Stat Penalty Formula (Main Range):</strong></p>
+          <pre><code>Stat Penalty = a × CP_Deficit^b
+where a = 1.0399570265430915
+      b = 0.478827201593444</code></pre>
+          <p>The calculator automatically loads a lookup table with 501 data points covering 0.00% to 49.91% CP deficit. If the lookup table fails to load, it gracefully falls back to the power law formula.</p>
+        </section>
+
+        <section>
+          <h2>Key Features</h2>
+          <ul>
+            <li><strong>Real-Time Calculations</strong>: Updates automatically as you type, with instant visual feedback</li>
+            <li><strong>Color-Coded Results</strong>: Green (low deficit), Yellow (minor), Orange (moderate), Red (severe) with pulse animation</li>
+            <li><strong>Input Validation</strong>: Validates CP values and provides clear error messages</li>
+            <li><strong>Responsive Design</strong>: Mobile-friendly, works on all screen sizes</li>
+            <li><strong>Self-Contained</strong>: All data files included in repository, no external dependencies</li>
+            <li><strong>Modular Architecture</strong>: Core logic separated into reusable JavaScript class</li>
+            <li><strong>Error Handling</strong>: Graceful error handling for edge cases and network failures</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Data-Driven Accuracy</h2>
+          <p>The calculator includes a complete dataset of 501 CP deficit and stat penalty data points (0.00% to 49.91% deficit). This dataset is self-contained in the repository and can be used to rebuild or refine the model in the future.</p>
+          <p><strong>Model Performance:</strong></p>
+          <ul>
+            <li><strong>R² Score</strong>: 0.995062 (99.5% variance explained)</li>
+            <li><strong>RMSE</strong>: Optimized for the main range (1% - 48% deficit)</li>
+            <li><strong>Data Points</strong>: 501 points covering the most common deficit range</li>
+            <li><strong>Reproducibility</strong>: All data files included for future model refinement</li>
+          </ul>
+          <p>The piecewise function provides excellent accuracy across all deficit ranges, with lookup tables ensuring precision at the edges where power law formulas may have slight variance.</p>
+        </section>
+
+        <section>
+          <h2>Corrupted Theme Integration</h2>
+          <p>The calculator is integrated with the <a href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener">corrupted-theme</a> design system for a consistent, glassmorphic UI that matches nikkers.gg. The design features:</p>
+          <ul>
+            <li><strong>Glassmorphic Design</strong>: Frosted glass effects with backdrop blur</li>
+            <li><strong>Video Background</strong>: Optional animated background (can be disabled)</li>
+            <li><strong>Responsive Layout</strong>: Mobile-first design that works on all devices</li>
+            <li><strong>Color System</strong>: Integrated color coding for deficit levels</li>
+            <li><strong>Animations</strong>: Smooth transitions and pulse effects for high deficits</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Usage</h2>
+          <p>Using the calculator is simple:</p>
+          <ol>
+            <li><strong>Enter Stage CP</strong>: The recommended CP for the stage you're attempting</li>
+            <li><strong>Enter Team CP</strong>: Your actual team's total CP</li>
+            <li><strong>View Results</strong>: The calculator automatically displays:
+              <ul>
+                <li>CP Deficit (as a percentage)</li>
+                <li>Stat Penalty (calculated with color coding)</li>
+              </ul>
+            </li>
+          </ol>
+          <p>The calculator works offline after the initial load, with all data files included in the repository. No build step is required—just open <code>index.html</code> in any modern web browser.</p>
+        </section>
+
+        <section>
+          <h2>Technical Architecture</h2>
+          <p>The calculator uses a modular, object-oriented architecture:</p>
+          <ul>
+            <li><strong>CPDeficitCalculator Class</strong>: Core logic for validation, calculations, and color coding</li>
+            <li><strong>UI Controller</strong>: DOM event handling and input/output management</li>
+            <li><strong>Lookup Table Loader</strong>: Asynchronous loading of 501 data points</li>
+            <li><strong>Error Handling</strong>: Graceful fallbacks if lookup table fails to load</li>
+          </ul>
+          <p>All code follows modern JavaScript standards (ES6+), with comprehensive unit tests ensuring reliability. The project is production-ready and optimized for deployment on nikkers.gg.</p>
+        </section>
+
+        <section>
+          <h2>Open Source & Reproducibility</h2>
+          <p>The calculator is fully open source with all data files included in the repository. This means:</p>
+          <ul>
+            <li><strong>Reproducible Results</strong>: Anyone can verify the calculations using the included dataset</li>
+            <li><strong>Future Refinement</strong>: The dataset can be used to rebuild or refine the model as new data becomes available</li>
+            <li><strong>Transparency</strong>: All formulas, coefficients, and data points are documented and accessible</li>
+            <li><strong>Community Contributions</strong>: Contributions welcome for improvements, bug fixes, and feature additions</li>
+          </ul>
+          <p>See the <a href="https://github.com/whykusanagi/nikke_deficit_calculator" target="_blank" rel="noopener">GitHub repository</a> for full documentation, deployment guides, and contribution guidelines.</p>
+        </section>
+
+        <section>
+          <h2>Sources</h2>
+          <ul>
+            <li><a href="https://github.com/whykusanagi/nikke_deficit_calculator" target="_blank" rel="noopener">nikke_deficit_calculator repository</a></li>
+            <li><a href="https://github.com/whykusanagi/corrupted-theme" target="_blank" rel="noopener">corrupted-theme design system</a></li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> How accurate is this calculator compared to in-game values?<br>
+          <strong>A:</strong> The calculator achieves 99.5% accuracy (R² = 0.995062) in the main range (1% - 48% deficit) using a dataset of 501 data points. However, I recommend using it as a guideline and adjusting your team composition based on your in-game experience, as game mechanics may have hidden factors or special modifiers.</p>
+          <p><strong>Q:</strong> Can I use this calculator offline?<br>
+          <strong>A:</strong> Yes! After the initial load, the calculator works completely offline. All data files are included in the repository, so you can download it and use it without an internet connection.</p>
+          <p><strong>Q:</strong> Will this work if the game updates and changes the stat penalty formula?<br>
+          <strong>A:</strong> The calculator includes the full dataset (501 data points) in the repository, so you can rebuild or refine the model if game mechanics change. The model fitting scripts are included for this purpose.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/nikke_deficit_calculator" target="_blank" rel="noopener">View on GitHub</a>
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+          <a class="btn" href="../links.html#discord">Join Community</a>
+        </section>
+      </article>
+    </main>
+    <footer>
+      &copy; 2025 whykusanagi. All rights reserved. | <a href="../privacy.html">Privacy Policy</a>
+    </footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+  </body>
+</html>
