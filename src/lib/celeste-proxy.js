@@ -46,11 +46,42 @@ function buildMessages(requestData) {
   return messages;
 }
 
+// Browser origins allowed to call the proxy. CORS is reflected only for these,
+// and requests from any other Origin are rejected — this blocks other websites
+// from abusing the paid LLM backend from a visitor's browser. Non-browser clients
+// send no Origin; rate limiting (a Cloudflare rule) is the complementary control.
+const ALLOWED_ORIGINS = [
+  'https://whykusanagi.xyz',
+  'https://www.whykusanagi.xyz',
+  'http://localhost:8000',
+  'http://127.0.0.1:8000',
+];
+
+function corsHeaders(request) {
+  const origin = request.headers.get('Origin') || '';
+  const allowed = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
+  return {
+    'Access-Control-Allow-Origin': allowed,
+    'Vary': 'Origin',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type',
+  };
+}
+
 /**
  * Handle proxy request - works in both Node.js and Cloudflare Workers
  */
 export async function handleProxyRequest(request, env) {
+  const cors = corsHeaders(request);
   try {
+    // Reject browser requests from origins not on the allowlist.
+    const reqOrigin = request.headers.get('Origin');
+    if (reqOrigin && !ALLOWED_ORIGINS.includes(reqOrigin)) {
+      return new Response(JSON.stringify({ error: 'Origin not allowed' }), {
+        status: 403,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     // Validate required environment variables
     const agentKey = env.CELESTE_AGENT_KEY || env.CELESTE_API_KEY;
     const agentId = env.CELESTE_AGENT_ID;
@@ -63,7 +94,7 @@ export async function handleProxyRequest(request, env) {
           status: 500,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -74,9 +105,7 @@ export async function handleProxyRequest(request, env) {
       return new Response(null, {
         status: 204,
         headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type'
+          ...cors
         }
       });
     }
@@ -89,7 +118,7 @@ export async function handleProxyRequest(request, env) {
           status: 405,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -106,7 +135,7 @@ export async function handleProxyRequest(request, env) {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -120,7 +149,7 @@ export async function handleProxyRequest(request, env) {
           status: 400,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -154,7 +183,7 @@ export async function handleProxyRequest(request, env) {
           status: 401,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -167,7 +196,7 @@ export async function handleProxyRequest(request, env) {
           status: 503,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -180,7 +209,7 @@ export async function handleProxyRequest(request, env) {
           status: celesteResponse.status,
           headers: {
             'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            ...cors
           }
         }
       );
@@ -192,9 +221,7 @@ export async function handleProxyRequest(request, env) {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS',
-        'Access-Control-Allow-Headers': 'Content-Type'
+        ...cors
       }
     });
 
@@ -206,7 +233,7 @@ export async function handleProxyRequest(request, env) {
         status: 500,
         headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin': '*'
+          ...cors
         }
       }
     );
