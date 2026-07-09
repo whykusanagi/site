@@ -1,0 +1,42 @@
+name: CodeQL
+
+# Static security analysis (SAST). Runs on every PR to main and on push to main,
+# plus a weekly scheduled scan. Findings surface as code-scanning alerts; when the
+# "Code scanning results / CodeQL" check is required in branch protection, new
+# high/critical alerts (e.g. js/xss-through-dom) block the merge.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: '0 6 * * 1'
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+
+jobs:
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        language: [javascript-typescript, python]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: ${{ matrix.language }}
+          queries: security-extended
+
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@v3
+        with:
+          category: "/language:${{ matrix.language }}"
