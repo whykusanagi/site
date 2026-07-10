@@ -40,6 +40,9 @@ if (!reducedMotion) {
   // cards, which would lose their navigation links if decoded.
   const targets = Array.from(candidates).filter((el) => el.children.length === 0);
 
+  // Capture every heading's real text up front, before any decode mutates it.
+  const finalTextByEl = new Map(targets.map((el) => [el, el.textContent]));
+
   // Track which elements have already been decoded so the animation fires once.
   const seen = new WeakSet();
 
@@ -49,8 +52,7 @@ if (!reducedMotion) {
       seen.add(entry.target);
 
       const el = entry.target;
-      // Capture the final readable text before any mutation.
-      const finalText = el.textContent;
+      const finalText = finalTextByEl.get(el);
 
       // .decode() is fire-and-forget. duration 700 ms matches the hero animation
       // timing set in site-bootstrap.js (TitleDecoder duration: 700).
@@ -64,4 +66,18 @@ if (!reducedMotion) {
   for (const el of targets) {
     io.observe(el);
   }
+
+  // Self-heal against a stuck-scramble bug: the shared DecryptReveal manager
+  // stop()s in-flight decodes when the tab is hidden and does NOT resume them
+  // (its start() is a no-op), so a heading caught mid-decode — e.g. a post
+  // opened in a background tab (cmd-click) — is left frozen on scrambled glyphs
+  // and never recovers (the observer has already unobserved it). Whenever the
+  // tab regains focus, restore any heading whose text drifted from its real
+  // value so it can never be left permanently unreadable.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) return;
+    for (const [el, finalText] of finalTextByEl) {
+      if (el.textContent !== finalText) el.textContent = finalText;
+    }
+  });
 }
