@@ -92,6 +92,16 @@ export async function handleProxyRequest(request, env) {
       });
     }
 
+    // Chat kill-switch: the Celeste chat is OFF by default. To bring it back
+    // online, set CHAT_ENABLED="true" and the agent secrets (CELESTE_AGENT_KEY,
+    // CELESTE_AGENT_ID, CELESTE_AGENT_BASE_URL) on the Worker.
+    if (env.CHAT_ENABLED !== 'true') {
+      return new Response(JSON.stringify({ error: 'Celeste chat is currently offline.' }), {
+        status: 503,
+        headers: { 'Content-Type': 'application/json', ...cors },
+      });
+    }
+
     // Per-IP rate limiting (native Workers rate-limit binding). Closes the
     // non-browser abuse the CORS allowlist can't — curl/scripts send no Origin.
     // Guarded so local dev (no binding) still works.
