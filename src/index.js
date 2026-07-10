@@ -49,48 +49,23 @@ export default {
         return Response.redirect('https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png', 301);
       }
 
-      // Only process requests to whykusanagi.xyz for HTML injection
-      if (!hostname.includes('whykusanagi.xyz')) {
-        return fetch(request);
-      }
+      // --- Reverse-proxy everything else to the Pages origin ---
+      // The apex is served by this Worker (not a Pages custom domain), so we
+      // fetch content from the project's pages.dev URL and serve it. This is
+      // what makes whykusanagi.xyz resolve without relying on the apex being a
+      // Pages custom domain. PAGES_ORIGIN can be overridden via env for a rebuild.
+      const PAGES_ORIGIN = env.PAGES_ORIGIN || 'https://site-45q.pages.dev';
+      const originUrl = PAGES_ORIGIN + url.pathname + url.search;
+      const response = await fetch(new Request(originUrl, request));
 
-      // Only process HTML requests
-      // Check Accept header first (browser requests usually specify text/html)
-      const accept = request.headers.get('accept') || '';
-      const isHtmlRequest = accept.includes('text/html') ||
-                           request.method === 'GET' &&
-                           (url.pathname === '/' ||
-                            url.pathname.endsWith('.html') ||
-                            !url.pathname.includes('.'));
-
-      if (!isHtmlRequest) {
-        // Pass through non-HTML requests (CSS, JS, images, etc.)
-        return fetch(request);
-      }
-
-      // Fetch the original response
-      let response = await fetch(request);
-
-      // Don't inject scripts into error responses (404, 403, 500, etc.)
-      if (!response.ok && response.status !== 304) {
-        return response;
-      }
-
-      // Check if response is HTML
+      // Only rewrite HTML responses (to add security headers); everything else
+      // (CSS/JS/images) passes through untouched.
       const contentType = response.headers.get('content-type') || '';
       if (!contentType.includes('text/html')) {
         return response;
       }
 
-      // Make response mutable by reading and rewriting it
-      let html = await response.text();
-
-      // ✅ SECURITY: Do NOT inject credentials into client-side code
-      // The /api/chat proxy endpoint handles authentication server-side
-      // Widget automatically detects production environment and uses same-origin proxy
-      // No client-side credentials needed!
-
-      // Add security headers to response
+      // Add security headers to the HTML response
       const securityHeaders = {
         'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.whykusanagi.xyz https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https://s3.whykusanagi.xyz https://i.imgur.com; media-src https://s3.whykusanagi.xyz; connect-src 'self' blob: https://s3.whykusanagi.xyz https://cloudflareinsights.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://s3.whykusanagi.xyz; frame-src https://open.spotify.com https://embed.music.apple.com; frame-ancestors 'self';",
         'X-Frame-Options': 'SAMEORIGIN',
@@ -106,9 +81,13 @@ export default {
       Object.entries(securityHeaders).forEach(([key, value]) => {
         newHeaders.set(key, value);
       });
+      // Drop hop-by-hop/encoding headers so the body isn't truncated: the origin's
+      // content-length/content-encoding no longer match after the runtime handles the stream.
+      newHeaders.delete('content-length');
+      newHeaders.delete('content-encoding');
 
-      // Return response with security headers (no HTML modification needed)
-      return new Response(html, {
+      // Return the proxied HTML with security headers
+      return new Response(response.body, {
         status: response.status,
         statusText: response.statusText,
         headers: newHeaders
@@ -118,8 +97,10 @@ export default {
       // Log error for debugging
       console.error('Celeste Worker Error:', error);
 
-      // Return original response on error (fail gracefully)
-      return fetch(request);
+      // Fail gracefully by proxying straight to the Pages origin (no header rewrite)
+      const u = new URL(request.url);
+      const origin = env.PAGES_ORIGIN || 'https://site-45q.pages.dev';
+      return fetch(new Request(origin + u.pathname + u.search, request));
     }
   },
 
