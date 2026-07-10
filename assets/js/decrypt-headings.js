@@ -19,7 +19,7 @@
  *   - Default duration: 2000 ms. We override to 700 ms to keep reveals snappy.
  */
 
-import { DecryptReveal } from './corrupted-theme/core/decrypt-reveal.js';
+import { DecryptReveal } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.1/src/core/decrypt-reveal.js';
 
 // Bail out entirely when the user prefers reduced motion.
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
