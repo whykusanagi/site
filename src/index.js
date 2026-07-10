@@ -35,11 +35,10 @@ export default {
           status: 'ok',
           service: 'Celeste Widget API Proxy',
           timestamp: Date.now() / 1000,
-          agent_id: env.CELESTE_AGENT_ID ? env.CELESTE_AGENT_ID.substring(0, 8) + '...' : 'not configured'
+          configured: Boolean(env.CELESTE_AGENT_ID && env.CELESTE_AGENT_BASE_URL)
         }), {
           headers: {
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*'
+            'Content-Type': 'application/json'
           }
         });
       }
