@@ -149,16 +149,30 @@ body.has-video-bg::after {
   border: none;
   backdrop-filter: none;
   box-shadow: none;
+  display: grid;
+  /* minmax(0,1fr) so the full-body image can't blow out its track */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
 }
 
-/* Give Celeste her own card, clearly separated from the info card above. */
+/* Give Celeste her own card, side by side with the info card (stacks on mobile). */
 .container--with-bg:has(.content > [data-ct-mandala]) > .character {
   background: var(--glass);
   border: 1px solid var(--border);
   border-radius: 20px;
   backdrop-filter: blur(15px);
-  margin-top: 2rem;
   padding: 1.5rem;
+}
+.container--with-bg:has(.content > [data-ct-mandala]) > .character img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 1000px) {
+  .container--with-bg:has(.content > [data-ct-mandala]) {
+    grid-template-columns: 1fr; /* stack info + Celeste on narrow screens */
+  }
 }
 
 .buttons {
