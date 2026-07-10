@@ -1,0 +1,52 @@
+name: Deploy Worker
+
+# Deploys the Cloudflare Worker (celeste-key-injector) via `wrangler deploy`.
+# Runs only after code has already landed on main (i.e. it passed the CodeQL
+# gate on its PR), and only when Worker-relevant files change. Manual runs are
+# available via workflow_dispatch.
+#
+# Requires two GitHub Actions secrets:
+#   CLOUDFLARE_API_TOKEN  - token with "Workers Scripts:Edit" (+ the zone for routes)
+#   CLOUDFLARE_ACCOUNT_ID - the Cloudflare account id
+# (The Worker's own secrets like CELESTE_SYSTEM_PROMPT are set with
+#  `wrangler secret put`, not here.)
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'src/**'
+      - 'wrangler.toml'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/deploy-worker.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-worker
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy Worker
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
