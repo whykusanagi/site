@@ -73,3 +73,6 @@ celeste-ops-presentation.html
 !/README.md
 # Agent config (kept local, like CLAUDE.md)
 .cursorrules
+
+# Wrangler local dev
+.wrangler/

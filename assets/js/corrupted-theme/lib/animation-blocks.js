@@ -110,7 +110,7 @@ function _hasDom() {
 function _applyLewdModeShim(Cls, opts) {
   if (opts.lewdMode !== undefined) {
     if (!Cls._warnedLewdMode) {
-      // eslint-disable-next-line no-console
+       
       console.warn(
         `${Cls.name}: 'lewdMode' is deprecated. Use 'nsfw' instead. Removed in 0.3.0.`
       );
@@ -596,9 +596,11 @@ export class TerminalBoot {
             }
             html += '<br>';
           }
+          // eslint-disable-next-line no-unsanitized/property -- options.lines is raw HTML by documented contract (⚠️ SECURITY JSDoc above; SECURITY.md trust boundary)
           this._element.innerHTML = html;
           this._rafId = _raf(animate);
         } else {
+          // eslint-disable-next-line no-unsanitized/property -- options.lines is raw HTML by documented contract (⚠️ SECURITY JSDoc above; SECURITY.md trust boundary)
           this._element.innerHTML = this.options.lines.join('<br>');
           this._timers.setTimeout(() => {
             if (this._resolve) {
@@ -649,7 +651,9 @@ export class GlitchPulse {
    * @param {Object} [options]
    * @param {number} [options.duration=1000]
    * @param {number} [options.intensity=0.5]  — max bar opacity
-   * @param {string} [options.color='#ff00ff']
+   * @param {string} [options.color='#ff00ff'] — CSS color value; values
+   *   outside the safe color charset fall back to the default (the string is
+   *   interpolated into generated markup)
    */
   constructor(container, options = {}) {
     _applyLewdModeShim(GlitchPulse, options);
@@ -658,7 +662,8 @@ export class GlitchPulse {
     this.options = {
       duration:  options.duration  || 1000,
       intensity: options.intensity || 0.5,
-      color:     options.color     || '#ff00ff',
+      color:     /^[#a-zA-Z0-9(),.%\s-]+$/.test(options.color || '')
+        ? options.color : '#ff00ff',
     };
 
     this._element   = null;
@@ -706,6 +711,7 @@ export class GlitchPulse {
               const opacity = Math.random() * this.options.intensity;
               html += `<div style="position:absolute;top:${top}%;left:0;width:100%;height:${height}%;background:${this.options.color};opacity:${opacity};"></div>`;
             }
+            // eslint-disable-next-line no-unsanitized/property -- html is built only from Math.random numbers and options.color, which the constructor validates against a safe CSS-color charset
             this._element.innerHTML = html;
           } else {
             this._element.innerHTML = '';
@@ -1054,6 +1060,7 @@ export class SystemDiagnostic {
             const lineText = lines[this._lineElements.length];
             div.textContent = lineText;
             if (showCursor && this._lineElements.length === currentLineIndex) {
+              // eslint-disable-next-line no-unsanitized/property -- options.lines is raw HTML by documented contract (⚠️ SECURITY JSDoc above; SECURITY.md trust boundary)
               div.innerHTML = lineText + '<span style="animation: blink 0.8s infinite;">█</span>';
             }
             this._element.appendChild(div);
@@ -1604,8 +1611,12 @@ export class TerminalPrompt {
 
           const command     = commands[this._currentLine];
           const displayText = command.substring(0, this._currentChar + 1);
-          this._lineElements[this._currentLine].innerHTML =
-            displayText + '<span style="animation: blink 0.5s infinite;">█</span>';
+          const lineEl = this._lineElements[this._currentLine];
+          lineEl.textContent = displayText;
+          const cursor = document.createElement('span');
+          cursor.style.animation = 'blink 0.5s infinite';
+          cursor.textContent = '█';
+          lineEl.appendChild(cursor);
 
           this._currentChar++;
           this._lastCharTime = now;
@@ -1724,3 +1735,19 @@ if (typeof module !== 'undefined' && module.exports) {
     playStaggered,
   };
 }
+
+/* ─────────────────────────────────────────────────────────────────────────
+   0.3.0 ABSORPTION — additional blocks re-exported from internal modules
+   (single import surface stays this file; implementations split by
+   provenance for reviewability: _blocks-advanced.js = 7 classes from
+   anime-blocks-advanced.js, _blocks-anime.js = 10 classes from
+   anime-blocks.js + anime-blocks-extended.js, celeste-tts-bot canonical)
+   ───────────────────────────────────────────────────────────────────────── */
+export {
+  TypingTextReveal, CircularDotsIndicator, RectangularWipe,
+  ChromaticAberrationGlitch, RotatingDiamond, GridOverlay, WaveformOscilloscope,
+} from './_blocks-advanced.js';
+export {
+  ParticleGrid, HeartPulse, ShatterGrid, WaveRipple, SpiralVortex,
+  CircularProgress, RadialBurst, DataStream, HexagonGrid, CorruptionWave,
+} from './_blocks-anime.js';
