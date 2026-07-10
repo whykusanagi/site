@@ -1,45 +1,32 @@
-name = "celeste-key-injector"
+name = "whykusanagi-worker"
 main = "src/index.js"
 compatibility_date = "2024-12-01"
 
-# Routes for the worker
+# The Worker owns the apex route and reverse-proxies content from the Pages
+# origin (see src/index.js). This is what serves whykusanagi.xyz without the
+# apex having to be a Pages custom domain.
 routes = [
   { pattern = "whykusanagi.xyz/*", zone_name = "whykusanagi.xyz" }
 ]
 
+# Pages origin the Worker proxies to. Override per-deploy via the PAGES_ORIGIN
+# var if the project's pages.dev subdomain ever changes.
+vars = { ENVIRONMENT = "production", PAGES_ORIGIN = "https://site-45q.pages.dev" }
+
 # Per-IP rate limiting for /api/chat (native Workers rate-limit binding).
 # namespace_id is an arbitrary unique id for this limiter. 20 requests / 60s per IP.
-# NOTE: bindings are per-env — if you deploy with `--env production`, mirror this
-# under [[env.production.unsafe.bindings]]. The default `wrangler deploy` uses this.
 [[unsafe.bindings]]
 name = "CHAT_RATE_LIMITER"
 type = "ratelimit"
 namespace_id = "1001"
 simple = { limit = 20, period = 60 }
 
-# Environment configuration
-[env.production]
-routes = [
-  { pattern = "whykusanagi.xyz/*", zone_name = "whykusanagi.xyz" }
-]
-vars = { ENVIRONMENT = "production" }
+# Worker secrets (CELESTE_AGENT_KEY, CELESTE_AGENT_ID, CELESTE_AGENT_BASE_URL,
+# CELESTE_SYSTEM_PROMPT) are set with `wrangler secret put`, not committed here.
 
-# Environment variables (set in Cloudflare dashboard)
-# CELESTE_API_KEY - API key for Celeste agent authentication
-# These are configured in Cloudflare Workers environment variables, not in this file
-
-# Build configuration
 [build]
 command = "npm install"
 cwd = "./"
 
-# Dev configuration
-[env.development]
-vars = { ENVIRONMENT = "development" }
-routes = [
-  { pattern = "localhost:8787/*", zone_name = "localhost" }
-]
-
-# Observability
 [observability]
 enabled = false
