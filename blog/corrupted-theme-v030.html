@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Corrupted Theme 0.3.0: one home for the glitch libraries, deterministic render-to-video, and an LLM-readable surface | Celeste Blog</title>
-    <meta name="description" content="Corrupted Theme 0.3.0 absorbs the glitch libraries copy-pasted across celeste-tts-bot, the site thumbnail-generator, youtube_poop, and spatial_videos into one canonical package: a stream overlay suite, CorruptedMandala, canvas transitions, 17 anime-blocks classes, 12 composite transitions, anime.js-derived orchestration components, deterministic render-to-video, and a machine-readable manifest for LLM agents." />
+    <meta name="description" content="Corrupted Theme 0.3.0 consolidates the glitch libraries I'd been copy-pasting across my own projects into one canonical package: a stream overlay suite, CorruptedMandala, canvas transitions, 17 anime-blocks classes, 12 composite transitions, anime.js-derived orchestration components, deterministic render-to-video, and a machine-readable manifest for LLM agents." />
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://whykusanagi.xyz/blog/corrupted-theme-v030.html" />
 
@@ -45,7 +45,7 @@
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": "Corrupted Theme 0.3.0: one home for the glitch libraries, deterministic render-to-video, and an LLM-readable surface",
-      "description": "Corrupted Theme 0.3.0 absorbs the glitch libraries copy-pasted across celeste-tts-bot, the site thumbnail-generator, youtube_poop, and spatial_videos into one canonical package: a stream overlay suite, CorruptedMandala, canvas transitions, 17 anime-blocks classes, 12 composite transitions, anime.js-derived orchestration components, deterministic render-to-video, and a machine-readable manifest for LLM agents.",
+      "description": "Corrupted Theme 0.3.0 consolidates the glitch libraries I'd been copy-pasting across my own projects into one canonical package: a stream overlay suite, CorruptedMandala, canvas transitions, 17 anime-blocks classes, 12 composite transitions, anime.js-derived orchestration components, deterministic render-to-video, and a machine-readable manifest for LLM agents.",
       "author": {
         "@type": "Person",
         "name": "Celeste",
@@ -111,10 +111,10 @@
         <section class="tldr">
           <h2>What's new</h2>
           <ul>
-            <li><strong>One canonical home for the glitch libraries.</strong> Effects that were duplicated across <code>celeste-tts-bot</code>, this site's thumbnail-generator, <code>youtube_poop</code>, and <code>spatial_videos</code> are now absorbed into Corrupted Theme. No more re-vendoring — downstream repos import instead of copy-pasting.</li>
+            <li><strong>One canonical home for the glitch libraries.</strong> Effects I'd duplicated across my own projects — stream overlays, video tooling, this site's thumbnail generator — are now absorbed into Corrupted Theme. One source of truth; I import them instead of copy-pasting.</li>
             <li><strong>Stream overlay suite</strong> — ChromaticPulse, BinaryParticles, GlitchTitleCard, TerminalTakeover, StreamTicker — every one with a live rAF mode and a deterministic frame-seek mode for video export.</li>
-            <li><strong>CorruptedMandala</strong> — procedural SVG sacred-geometry background. This visual now lives only in the package; downstream projects import it rather than re-implement it.</li>
-            <li><strong>Canvas transitions</strong> absorbed from <code>celeste-tts-bot</code>'s canonical fork: AbyssalCableSystem, geometric-morpher, neural-deserializer, spectrum-terminal.</li>
+            <li><strong>CorruptedMandala</strong> — procedural SVG sacred-geometry background. This visual now lives only in the package, imported rather than re-implemented.</li>
+            <li><strong>Canvas transitions</strong> absorbed into the package: AbyssalCableSystem, geometric-morpher, neural-deserializer, spectrum-terminal.</li>
             <li><strong>17 new anime-blocks classes</strong> re-exported from <code>animation-blocks</code>, plus <strong>12 composite transitions</strong> via a new <code>transitions</code> barrel.</li>
             <li><strong>anime.js-derived orchestration components</strong> — ScrollDecode, CorruptedTimeline, GlitchStaggerGrid, corruption-easings — modeled on anime.js v4 APIs but shipped with zero runtime dependencies.</li>
             <li><strong>Deterministic render-to-video</strong> — <code>seededRandom</code> + <code>seekAnimations</code> give every animation a reproducible, frame-addressable mode for offline rendering.</li>
@@ -125,21 +125,21 @@
 
         <section>
           <h2>Why this release exists</h2>
-          <p>Corrupted Theme's glitch aesthetic — chromatic aberration, terminal takeovers, particle fields, sacred-geometry backdrops — kept getting reinvented. <code>celeste-tts-bot</code> had its own OBS transition canvases. This site's thumbnail-generator had its own iconography renderer. <code>youtube_poop</code> and <code>spatial_videos</code> each carried their own copies of overlay components that were, functionally, the same code with slightly different option names. Every fix or feature had to be manually ported to every fork, and drift was constant.</p>
-          <p>0.3.0's thesis is simple: pick one home for each effect and make every consumer import it. The package absorbs the components wholesale — same visual behavior, canonicalized option names, SFW/NSFW vocabulary pools split consistently — and downstream repos drop their local copies in favor of the import. No more re-vendoring, no more "which fork has the latest fix."</p>
+          <p>Corrupted Theme's glitch aesthetic — chromatic aberration, terminal takeovers, particle fields, sacred-geometry backdrops — kept getting reinvented. My OBS stream setup had its own transition canvases. This site's thumbnail generator had its own renderer. My video projects each carried their own copies of overlay components that were, functionally, the same code with slightly different option names. Every fix or feature had to be ported by hand to each copy, and drift was constant.</p>
+          <p>0.3.0's thesis is simple: pick one home for each effect and import it everywhere. The package absorbs the components wholesale — same visual behavior, canonicalized option names, SFW/NSFW vocabulary pools split consistently — so each project drops its local copy in favor of the import. No more re-vendoring, no more "which copy has the latest fix."</p>
         </section>
 
         <section>
           <h2>Absorbed components</h2>
 
           <h3>Stream overlay suite</h3>
-          <p>Pulled in from <code>spatial_videos</code>: <code>ChromaticPulse</code>, <code>BinaryParticles</code> (continuous or beat-synced), <code>GlitchTitleCard</code> (intro/outro cards), <code>TerminalTakeover</code>, and <code>StreamTicker</code>, plus a companion <code>stream-overlays.css</code>. Every component in the suite ships with a live <code>requestAnimationFrame</code> mode for on-air use and a deterministic <code>renderFrame(frameIdx, fps)</code> + seed mode for offline video export — the same component drives both a live overlay and a rendered clip.</p>
+          <p>The overlay suite now in the package: <code>ChromaticPulse</code>, <code>BinaryParticles</code> (continuous or beat-synced), <code>GlitchTitleCard</code> (intro/outro cards), <code>TerminalTakeover</code>, and <code>StreamTicker</code>, plus a companion <code>stream-overlays.css</code>. Every component in the suite ships with a live <code>requestAnimationFrame</code> mode for on-air use and a deterministic <code>renderFrame(frameIdx, fps)</code> + seed mode for offline video export — the same component drives both a live overlay and a rendered clip.</p>
 
           <h3>CorruptedMandala</h3>
-          <p><strong>CorruptedMandala</strong> (plus <code>corrupted-mandala.css</code>) is a procedural SVG sacred-geometry background: rotating phrase rings, phase-staggered star pulses, a mandorla halo, and an ornamental frame. This visual now lives only in this package — downstream projects must import it, not re-vendor it.</p>
+          <p><strong>CorruptedMandala</strong> (plus <code>corrupted-mandala.css</code>) is a procedural SVG sacred-geometry background: rotating phrase rings, phase-staggered star pulses, a mandorla halo, and an ornamental frame. This visual now lives only in the package — imported, never re-vendored.</p>
 
           <h3>Canvas transitions</h3>
-          <p>Absorbed from the <code>celeste-tts-bot</code> canonical fork: <code>AbyssalCableSystem</code>, <code>geometric-morpher</code>, <code>neural-deserializer</code>, and <code>spectrum-terminal</code>. <code>neural-deserializer</code>'s old fork default of <code>lewdMode: true</code> is now <code>nsfw: false</code> — pass <code>nsfw: true</code> explicitly if you need the 18+ vocabulary.</p>
+          <p>Absorbed into the package: <code>AbyssalCableSystem</code>, <code>geometric-morpher</code>, <code>neural-deserializer</code>, and <code>spectrum-terminal</code>. <code>neural-deserializer</code>'s old <code>lewdMode: true</code> default is now <code>nsfw: false</code> — pass <code>nsfw: true</code> explicitly for the 18+ vocabulary.</p>
 
           <h3>anime-blocks absorption</h3>
           <p>17 new classes re-exported from <code>animation-blocks</code>: TypingTextReveal, CircularDotsIndicator, RectangularWipe, ChromaticAberrationGlitch, RotatingDiamond, GridOverlay, WaveformOscilloscope, ParticleGrid, HeartPulse, ShatterGrid, WaveRipple, SpiralVortex, CircularProgress, RadialBurst, DataStream, HexagonGrid, and CorruptionWave. Alongside them, 12 composite transitions ship through a new <code>transitions</code> barrel: GlitchCascade, RadialGlitch, GridCorruption, TerminalMatrix, WaveDecode, DiamondMorph, AffectionBurst, CombatShatter, ParticleCascade, SystemBoot, DataTransfer, and DiagnosticScan.</p>
@@ -173,7 +173,7 @@
 
         <section>
           <h2>NSFW handling: <code>lewdMode</code> is now deprecated</h2>
-          <p>The absorbed components arrived with their own option names for the same NSFW toggle that 0.2.0 had already canonicalized elsewhere in the package as <code>nsfw</code>. 0.3.0 finishes that consolidation: every absorbed component now takes <code>nsfw</code>, and <code>lewdMode</code> is accepted only as a deprecated alias that logs a one-time <code>console.warn</code> on first use. If you're passing <code>lewdMode</code> anywhere, switch to <code>nsfw</code> — the alias is a bridge, not a permanent option.</p>
+          <p>The absorbed components arrived with their own option names for the same NSFW toggle that 0.2.0 had already canonicalized elsewhere in the package as <code>nsfw</code>. 0.3.0 finishes that consolidation: every absorbed component now takes <code>nsfw</code>, and <code>lewdMode</code> is accepted only as a deprecated alias that logs a one-time <code>console.warn</code> on first use. Anything still on <code>lewdMode</code> should move to <code>nsfw</code> — the alias is a bridge, not a permanent option.</p>
           <p>Two smaller cleanups shipped alongside the rename: TypingTextReveal's inline phrase pools were replaced with the canonical corruption-phrases library, and its DOM construction now goes through <code>textContent</code> instead of string concatenation (XSS-safe). Persona-flavored strings across the absorbed code were also de-themed into plain options — <code>labelTop</code>/<code>labelBottom</code>, <code>logoText</code>/<code>logoSrc</code>, <code>title</code>/<code>messages</code> — and the default terminal prompt changed from <code>celeste@abyss:~$</code> to <code>system@abyss:~$</code> so the package reads as neutral infrastructure rather than baked-in Celeste branding.</p>
         </section>
 
@@ -186,7 +186,7 @@
       crossorigin="anonymous"&gt;</code></pre>
           <p>Or from npm:</p>
           <pre><code>npm install @whykusanagi/corrupted-theme</code></pre>
-          <p>If any of your code still passes <code>lewdMode</code>, swap it for <code>nsfw</code> — same boolean, same behavior, no more console warning. If you maintain a fork of the stream overlays, CorruptedMandala, or the canvas transitions in <code>celeste-tts-bot</code>, the site's thumbnail-generator, <code>youtube_poop</code>, or <code>spatial_videos</code>, this release is the point to delete that fork and import from the package instead.</p>
+          <p><code>lewdMode</code> still works as a deprecated alias, but <code>nsfw</code> is the name going forward — same boolean, same behavior, minus the console warning.</p>
         </section>
 
         <section class="cta-grid">
