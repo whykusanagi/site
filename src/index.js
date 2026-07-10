@@ -67,7 +67,7 @@ export default {
 
       // Add security headers to the HTML response
       const securityHeaders = {
-        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.whykusanagi.xyz https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https://s3.whykusanagi.xyz https://i.imgur.com; media-src https://s3.whykusanagi.xyz; connect-src 'self' blob: https://s3.whykusanagi.xyz https://cloudflareinsights.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://s3.whykusanagi.xyz; frame-src https://open.spotify.com https://embed.music.apple.com; frame-ancestors 'self';",
+        'Content-Security-Policy': "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.whykusanagi.xyz https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline' https://cdn.whykusanagi.xyz https://cdnjs.cloudflare.com https://fonts.googleapis.com; img-src 'self' data: https://s3.whykusanagi.xyz https://i.imgur.com; media-src https://s3.whykusanagi.xyz; connect-src 'self' blob: https://s3.whykusanagi.xyz https://cloudflareinsights.com; font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com https://s3.whykusanagi.xyz; frame-src https://open.spotify.com https://embed.music.apple.com; frame-ancestors 'self';",
         'X-Frame-Options': 'SAMEORIGIN',
         'X-Content-Type-Options': 'nosniff',
         'Strict-Transport-Security': 'max-age=31536000; includeSubDomains; preload',
