@@ -788,9 +788,12 @@ class CelesteAgent {
         const messageContainer = this.chatWindow.querySelector('.celeste-chat-messages');
         const messageDiv = document.createElement('div');
         messageDiv.className = `celeste-message ${sender}`;
-        messageDiv.innerHTML = `
-            <div class="celeste-message-bubble">${text}</div>
-        `;
+        // SECURITY: `text` carries untrusted content (user input AND LLM output).
+        // Render as text, never as HTML, to prevent DOM XSS (js/xss-through-dom).
+        const bubble = document.createElement('div');
+        bubble.className = 'celeste-message-bubble';
+        bubble.textContent = text;
+        messageDiv.appendChild(bubble);
         messageContainer.appendChild(messageDiv);
         messageContainer.scrollTop = messageContainer.scrollHeight;
 
