@@ -23,6 +23,6 @@
     "node": ">=18.0.0"
   },
   "dependencies": {
-    "@whykusanagi/corrupted-theme": "^0.2.1"
+    "@whykusanagi/corrupted-theme": "^0.3.0"
   }
 }
