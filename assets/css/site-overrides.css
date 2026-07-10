@@ -139,6 +139,9 @@ body.has-video-bg::after {
 [data-ct-animation="hero-boot"] {
   text-align: center;
   color: var(--accent);
+  /* Keep the terminal font the boot animation uses, so the settled title
+     doesn't snap to the theme's heading font. */
+  font-family: 'Courier New', monospace;
 }
 
 /* Kill the redundant card-in-a-card: the home wraps a glass .content inside a
