@@ -1,0 +1,2 @@
+# Favicon lives in R2 (matches the old Worker's redirect), avoids a per-page <link>.
+/favicon.ico  https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png  301
