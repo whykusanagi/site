@@ -71,6 +71,8 @@
   
   <!-- Site-Specific Overrides -->
   <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <!-- CorruptedMandala backdrop (component CSS not in theme.min.css) -->
+  <link rel="stylesheet" href="assets/css/corrupted-mandala.css">
   <script type="module" src="assets/js/site-bootstrap.js"></script>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -104,6 +106,8 @@
   <main class="app-shell">
     <div class="container container--with-bg">
     <div class="content">
+      <!-- Sacred-geometry backdrop; mounted + activated by site-bootstrap.js -->
+      <svg data-ct-mandala aria-hidden="true"></svg>
       <h1 data-ct-animation="hero-boot" style="position:relative;overflow:hidden;">whykusanagi</h1>
       <img src="https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png" alt="whykusanagi logo" class="logo">
       <p class="intro" id="glitch-intro">

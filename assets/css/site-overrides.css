@@ -117,6 +117,23 @@ body.has-video-bg::after {
   border-radius: 20px;
 }
 
+/* ========== CORRUPTED MANDALA BACKDROP (home hero) ========== */
+/* Scoped with :has() to the single .content that holds the mandala, so other
+   pages' .content is untouched. The SVG fills the card, clipped to its rounded
+   corners, sitting behind the hero text. */
+.content:has(> [data-ct-mandala]) {
+  position: relative;
+  overflow: hidden;
+}
+.content > [data-ct-mandala] {
+  z-index: 0;
+  opacity: 0.28; /* subtle — a backdrop, not the subject */
+}
+.content:has(> [data-ct-mandala]) > :not([data-ct-mandala]) {
+  position: relative;
+  z-index: 1; /* keep all hero content above the mandala */
+}
+
 .buttons {
   display: flex;
   flex-wrap: wrap;
