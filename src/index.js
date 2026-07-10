@@ -54,7 +54,7 @@ export default {
       // fetch content from the project's pages.dev URL and serve it. This is
       // what makes whykusanagi.xyz resolve without relying on the apex being a
       // Pages custom domain. PAGES_ORIGIN can be overridden via env for a rebuild.
-      const PAGES_ORIGIN = env.PAGES_ORIGIN || 'https://site-45q.pages.dev';
+      const PAGES_ORIGIN = env.PAGES_ORIGIN || 'https://whykusanagi.pages.dev';
       const originUrl = PAGES_ORIGIN + url.pathname + url.search;
       const response = await fetch(new Request(originUrl, request));
 
@@ -99,7 +99,7 @@ export default {
 
       // Fail gracefully by proxying straight to the Pages origin (no header rewrite)
       const u = new URL(request.url);
-      const origin = env.PAGES_ORIGIN || 'https://site-45q.pages.dev';
+      const origin = env.PAGES_ORIGIN || 'https://whykusanagi.pages.dev';
       return fetch(new Request(origin + u.pathname + u.search, request));
     }
   },
