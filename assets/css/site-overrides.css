@@ -117,6 +117,50 @@ body.has-video-bg::after {
   border-radius: 20px;
 }
 
+/* ========== CORRUPTED MANDALA BACKDROP (home hero) ========== */
+/* Scoped with :has() to the single .content that holds the mandala, so other
+   pages' .content is untouched. The SVG fills the card, clipped to its rounded
+   corners, sitting behind the hero text. */
+.content:has(> [data-ct-mandala]) {
+  position: relative;
+  overflow: hidden;
+}
+.content > [data-ct-mandala] {
+  z-index: 0;
+  opacity: 0.28; /* subtle — a backdrop, not the subject */
+}
+.content:has(> [data-ct-mandala]) > :not([data-ct-mandala]) {
+  position: relative;
+  z-index: 1; /* keep all hero content above the mandala */
+}
+
+/* Hero title: stay pink + centered at rest (match the boot animation) instead
+   of snapping back to the theme's left-aligned white when hero-boot restores. */
+[data-ct-animation="hero-boot"] {
+  text-align: center;
+  color: var(--accent);
+}
+
+/* Kill the redundant card-in-a-card: the home wraps a glass .content inside a
+   glass .container--with-bg. Scoped to the home (mandala present) so other
+   pages' .container--with-bg is untouched. Outer becomes a plain wrapper. */
+.container--with-bg:has(.content > [data-ct-mandala]) {
+  background: transparent;
+  border: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
+
+/* Give Celeste her own card, clearly separated from the info card above. */
+.container--with-bg:has(.content > [data-ct-mandala]) > .character {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  backdrop-filter: blur(15px);
+  margin-top: 2rem;
+  padding: 1.5rem;
+}
+
 .buttons {
   display: flex;
   flex-wrap: wrap;

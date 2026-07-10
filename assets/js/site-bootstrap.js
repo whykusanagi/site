@@ -49,6 +49,23 @@ if (document.body.classList.contains('crt-on')) {
   });
 }
 
+// === Index-only: CorruptedMandala hero backdrop ===
+// Procedural sacred-geometry SVG behind the hero card. CSS handles reduced
+// motion (freezes rings), so no JS gate needed. Gated on the mount element so
+// it never loads on pages without it.
+const mandalaEl = document.querySelector('[data-ct-mandala]');
+if (mandalaEl) {
+  import('./corrupted-theme/lib/corrupted-mandala.js').then(({ CorruptedMandala }) => {
+    new CorruptedMandala(mandalaEl, {
+      labelTop:    'WHYKUSANAGI',
+      labelBottom: 'ABYSS.SYS',
+      nsfw:        true,
+      rotationSpeed: 1,
+      starDensity: 'low', // lighter compositing load over the video + particle bg
+    }).init().setActive(true);
+  });
+}
+
 const heroEl = document.querySelector('[data-ct-animation="hero-boot"]');
 if (heroEl) {
   import('./corrupted-theme/lib/animation-blocks.js').then(async ({ TerminalBoot, TitleDecoder }) => {
