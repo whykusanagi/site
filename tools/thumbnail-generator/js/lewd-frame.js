@@ -11,9 +11,10 @@
  *      romaji / English fragments — a hidden message in the border,
  *      same vibe as the corrupted-particles effect elsewhere on the site.
  *
- * Phrase pools are trimmed/curated copies of corrupted-theme's
- * src/core/corruption-phrases.js, kept inline so this stays a static
- * asset with no build step.
+ * Phrase pools below are the offline fallback — trimmed/curated copies of
+ * corrupted-theme's corruption phrases. At load we hydrate them in place from
+ * the canonical CDN JSON (@whykusanagi/corrupted-theme/data/phrases.json) so
+ * they stay in sync without a build step; if the fetch fails we keep these.
  */
 
 // ---- Phrase pools -----------------------------------------------------------
@@ -87,6 +88,34 @@ export const LEWD_PHRASES_SFW = [
     'Boundaries blurring...',
     'Welcome to the abyss',
 ];
+
+// ---- Canonical CDN hydration ------------------------------------------------
+// corrupted-theme ships the full pools at this path. We hydrate the arrays in
+// place on load so pickLewdFramePhrases (which copies the pool each call) picks
+// up canonical phrases once resolved. Non-blocking: callers before resolution —
+// and any offline session — get the inline fallback above.
+const PHRASES_JSON_URL = 'https://cdn.whykusanagi.xyz/corrupted-theme/@latest/data/phrases.json';
+
+// phrases.json section shape: { japanese|romaji|english: { category: string[] } }
+function flattenPhraseSection(section) {
+    const out = [];
+    for (const lang of Object.values(section || {})) {
+        for (const arr of Object.values(lang || {})) {
+            if (Array.isArray(arr)) out.push(...arr);
+        }
+    }
+    return out;
+}
+
+fetch(PHRASES_JSON_URL)
+    .then((r) => (r.ok ? r.json() : Promise.reject(r.status)))
+    .then((d) => {
+        const nsfw = flattenPhraseSection(d.nsfw);
+        const sfw = flattenPhraseSection(d.sfw);
+        if (nsfw.length) { LEWD_PHRASES_NSFW.length = 0; LEWD_PHRASES_NSFW.push(...nsfw); }
+        if (sfw.length) { LEWD_PHRASES_SFW.length = 0; LEWD_PHRASES_SFW.push(...sfw); }
+    })
+    .catch(() => { /* CDN down / offline — inline fallback stays */ });
 
 // Visual separators packed between phrases so the line reads as one
 // continuous corrupted stream rather than disconnected captions.
