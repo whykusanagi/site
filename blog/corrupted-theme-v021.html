@@ -35,7 +35,7 @@
 
     <script src="../assets/js/env-config.js"></script>
     <script src="../assets/js/background-setup.js"></script>
-    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css" integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.0/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
     <link rel="stylesheet" href="../assets/css/site-overrides.css">
   <script type="module" src="../assets/js/site-bootstrap.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -159,8 +159,8 @@
           <p>Corrupted Theme now ships from a Cloudflare R2 bucket bound to two custom domains: <code>cdn.whykusanagi.xyz</code> and <code>cdn.nikkers.cc</code>. The dual-domain setup means you can pick the one that matches your site's registrable domain and load the stylesheet same-origin — no CORS preflight, no third-party CDN trust, no CSP gymnastics.</p>
           <p>Production adoption is one tag:</p>
           <pre><code>&lt;link rel="stylesheet"
-      href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css"
-      integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd"
+      href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.0/dist/theme.min.css"
+      integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd"
       crossorigin="anonymous"&gt;</code></pre>
           <p>Pinned versions are immutable — once <code>@0.2.1/</code> uploads, that path is frozen and the SRI hash will always match. A floating <code>@latest</code> route is available via a Cloudflare Worker with a KV version pointer if you want to track releases automatically. SRI hashes for every release are published in the CHANGELOG.</p>
           <p>0.2.1's headline fix is the bundle itself: 0.2.0 shipped a build that preserved <code>@import</code> statements verbatim instead of inlining them, so the CDN's <code>dist/theme.min.css</code> was effectively empty (~4 kB). 0.2.1 adds <code>postcss-import</code> to the build and the dist file is now the real 79.5 kB bundle that consumers were expecting. <code>toast.css</code> and <code>seamless-background.css</code> — previously deep-import-only — are now part of the main bundle too.</p>
@@ -223,8 +223,8 @@
           <pre><code>npm install @whykusanagi/corrupted-theme</code></pre>
           <p>Or skip the build step and load from the CDN:</p>
           <pre><code>&lt;link rel="stylesheet"
-      href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.2.1/dist/theme.min.css"
-      integrity="sha384-5TwIbFKBuga57t3wFR0Pnk6ZMMW9FnF+vQtBzW9XVjrFMdzu85JDRchgdI51mLVd"
+      href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.0/dist/theme.min.css"
+      integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd"
       crossorigin="anonymous"&gt;</code></pre>
           <p>Components import as named exports from the package:</p>
           <pre><code>import { Toast } from '@whykusanagi/corrupted-theme/toast';
