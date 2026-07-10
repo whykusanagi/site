@@ -149,6 +149,8 @@ body.has-video-bg::after {
   border: none;
   backdrop-filter: none;
   box-shadow: none;
+  /* Widen beyond the site's 1200px cap so the two cards aren't skinny. */
+  max-width: min(1600px, 94vw);
   display: grid;
   /* minmax(0,1fr) so the full-body image can't blow out its track */
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
