@@ -386,6 +386,8 @@ body.has-video-bg::after {
   box-shadow: 0 0 20px rgba(217, 79, 144, 0.2);
   display: flex;
   flex-direction: column;
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
 }
 
@@ -393,6 +395,27 @@ body.has-video-bg::after {
 .tool-card:hover {
   transform: translateY(-6px);
   box-shadow: 0 0 30px rgba(217, 79, 144, 0.4);
+}
+
+/* Cover art bleeds through the card background: set --doujin-cover per card
+   (see doujin.html). Strong at the top, masked toward the bottom so the
+   description and button stay readable. Cards without a cover are unaffected. */
+.doujin-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: var(--doujin-cover, none);
+  background-size: cover;
+  background-position: center 22%;
+  opacity: 0.22;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.1) 100%);
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.35) 55%, rgba(0, 0, 0, 0.1) 100%);
+}
+
+.doujin-card:hover::before {
+  opacity: 0.3;
 }
 
 .doujin-icon,
