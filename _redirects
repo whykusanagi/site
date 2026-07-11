@@ -1,2 +1,7 @@
 # Favicon lives in R2 (matches the old Worker's redirect), avoids a per-page <link>.
 /favicon.ico  https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png  301
+
+# Art gallery temporarily offline while the set is re-curated (2026-07-11).
+# Restore: delete these two lines + re-add the "Art Gallery" nav links.
+/art       /  302
+/art.html  /  302
