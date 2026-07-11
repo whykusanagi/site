@@ -97,28 +97,7 @@ if (heroEl) {
   });
 }
 
-// === Mobile nav hamburger (sitewide) ===
-// Theme ships .navbar-toggle + .navbar-links.active styling but no markup/JS.
-// Inject the button once per page rather than editing every navbar by hand.
-const navContent = document.querySelector('.navbar-content');
-const navLinks = navContent?.querySelector('.navbar-links');
-if (navContent && navLinks) {
-  const toggle = document.createElement('button');
-  toggle.className = 'navbar-toggle';
-  toggle.setAttribute('aria-label', 'Toggle menu');
-  toggle.setAttribute('aria-expanded', 'false');
-  toggle.innerHTML = '<span class="icon"><span></span><span></span><span></span></span>';
-  navContent.insertBefore(toggle, navLinks);
-
-  const setOpen = (open) => {
-    navLinks.classList.toggle('active', open);
-    toggle.classList.toggle('active', open);
-    toggle.setAttribute('aria-expanded', String(open));
-  };
-  toggle.addEventListener('click', () => setOpen(!navLinks.classList.contains('active')));
-  // Collapse after tapping a destination.
-  navLinks.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
-}
+// Mobile nav hamburger now lives in assets/js/nav.js (which owns the shared navbar).
 
 // === links.html-only: ClockWidget ===
 const clockEl = document.getElementById('clock-widget');
