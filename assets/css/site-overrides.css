@@ -548,7 +548,7 @@ body.has-video-bg::after {
   margin-top: 2rem;
 }
 
-/* Single wide column blog layout - centered */
+/* Blog index — featured newest post + 2-up card grid, centered */
 .blog-layout {
   display: flex;
   justify-content: center;
@@ -557,41 +557,21 @@ body.has-video-bg::after {
 
 .blog-column {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
   gap: 1.5rem;
-  max-width: 1400px;
+  max-width: 1160px;
   width: 100%;
 }
 
+/* Newest post (always first — the list self-sorts) spans full width as a feature. */
+.blog-column > .card:first-child {
+  grid-column: 1 / -1;
+}
+
+/* The post grid flows in normal page scroll — no nested scroll box. */
 .scrollable-column {
-  max-height: calc(100vh - 300px);
-  overflow-y: auto;
   overflow-x: hidden;
-  padding-right: 1rem;
-  scroll-behavior: smooth;
-  /* Improve scrolling performance */
-  -webkit-overflow-scrolling: touch;
-  will-change: scroll-position;
-}
-
-/* Custom scrollbar for scrollable column */
-.scrollable-column::-webkit-scrollbar {
-  width: 8px;
-}
-
-.scrollable-column::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 4px;
-}
-
-.scrollable-column::-webkit-scrollbar-thumb {
-  background: rgba(217, 79, 144, 0.5);
-  border-radius: 4px;
-  transition: background 0.3s ease;
-}
-
-.scrollable-column::-webkit-scrollbar-thumb:hover {
-  background: rgba(217, 79, 144, 0.7);
 }
 
 .blog-index .card-grid {
