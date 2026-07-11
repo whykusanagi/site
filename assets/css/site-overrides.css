@@ -300,6 +300,11 @@ body.has-video-bg::after {
   color: var(--text);
 }
 
+/* Portrait tiles crop from the top so character faces stay in frame. */
+.gallery-item.portrait img {
+  object-position: center top;
+}
+
 /* ========== SOCIAL LINKS (Linktree Style) ========== */
 /* Styles are now in corrupted-theme/extensions.css */
 /* Using .social-links-container, .profile-avatar, .profile-name, .link-item */

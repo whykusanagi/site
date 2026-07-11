@@ -96,7 +96,9 @@
 
       data.forEach(item => {
         const div = document.createElement("div");
-        div.className = "gallery-item";
+        // `portrait` gives the theme's uniform 3/4 aspect + object-fit:cover so
+        // the grid reads as one system instead of ragged native-size tiles.
+        div.className = "gallery-item portrait";
         div.setAttribute("data-tags", item.tags.join(" "));
 
         const img = document.createElement("img");
