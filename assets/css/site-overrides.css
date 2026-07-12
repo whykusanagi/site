@@ -799,3 +799,7 @@ body.has-video-bg::after {
 
 
 
+
+/* Shared footer (injected by nav.js) — replaces per-page inline footer markup. */
+.footer-badge { color: var(--accent); }
+.footer-links { margin-top: 0.4rem; }
