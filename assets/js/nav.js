@@ -1,13 +1,14 @@
 /**
- * Shared site navbar — single source of truth.
+ * Shared site chrome (navbar + footer) — single source of truth.
  *
- * Each page carries an empty `<nav class="navbar" data-site-nav></nav>` mount;
- * this script fills it with the canonical links, marks the current page active,
- * and wires the mobile hamburger. Root-relative hrefs so it works from any depth
- * (root pages and /blog/ posts alike). Edit the LINKS array to change the nav
- * everywhere at once.
+ * Each page carries empty mounts: `<nav class="navbar" data-site-nav></nav>` and
+ * `<footer data-site-footer></footer>`. This script fills the nav with the
+ * canonical links (marking the current page active, wiring the mobile hamburger)
+ * and the footer with the copyright + legal links (year computed at runtime).
+ * Root-relative hrefs so it works from any depth (root pages and /blog/ posts).
+ * Edit the LINKS array (nav) or the footer block below to change them everywhere.
  *
- * Theme (corrupted-theme) provides all .navbar* styling; this only builds markup.
+ * Theme (corrupted-theme) provides the navbar and footer styling; this builds markup.
  */
 (function () {
   const LINKS = [
@@ -57,6 +58,22 @@
   };
   toggle.addEventListener('click', () => setOpen(!links.classList.contains('active')));
   links.addEventListener('click', (e) => { if (e.target.closest('a')) setOpen(false); });
+
+  // === Shared footer ===
+  // Pages carry an empty `<footer data-site-footer></footer>` mount. Year is
+  // computed at runtime so it never goes stale.
+  const footerMount = document.querySelector('[data-site-footer]');
+  if (footerMount) {
+    const footer = document.createElement('footer');
+    footer.innerHTML =
+      '<p>&copy; ' + new Date().getFullYear() + ' whykusanagi. All rights reserved. ' +
+        '<strong class="footer-badge">18+ Only</strong></p>' +
+      '<p class="footer-links">' +
+        '<a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · ' +
+        '<a href="/dmca.html">DMCA</a> · <a href="/refunds.html">Refunds</a> · <a href="/shipping.html">Shipping</a>' +
+      '</p>';
+    footerMount.replaceWith(footer);
+  }
 
   // Deploy safety net: a previously-cached site-bootstrap.js injected its own
   // hamburger, which duplicates the toggle during the cache window. Once
