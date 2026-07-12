@@ -20,6 +20,11 @@
     <!-- Countdown Widget Styles -->
     <link rel="stylesheet" href="assets/css/countdown-widget.css">
     <style>
+      /* Docs (direct) view: normal document flow. countdown-widget.css sets
+         <body> to flex-center for the OBS widget, which would scatter the nav /
+         docs / footer into a row — only keep that centering in overlay mode. */
+      body:not(.overlay-mode) { display: block; }
+
       /* OBS overlay mode (?params present): strip the site chrome + background so
          the widget renders transparent for a browser source. */
       body.overlay-mode { background: transparent !important; }
