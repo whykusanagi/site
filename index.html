@@ -28,40 +28,62 @@
   <link rel="canonical" href="https://whykusanagi.xyz/">
 
   <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "whykusanagi and Celeste",
-    "alternateName": "草薙 (Kusanagi) and Celeste",
-    "url": "https://whykusanagi.xyz/",
-    "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
-    "jobTitle": [
-      "Virtual Streamer",
-      "Digital Artist",
-      "Content Creator"
-    ],
-    "description": "whykusanagi and Celeste are twin creators publishing stream content, art projects, tools, lore, and doujin releases.",
-    "knowsAbout": [
-      "streaming",
-      "digital art",
-      "creative tools",
-      "doujin projects",
-      "character lore"
-    ],
-    "sameAs": [
-      "https://twitch.tv/whykusanagi",
-      "https://www.tiktok.com/@whykusanagi",
-      "https://youtube.com/@whykusanagi",
-      "https://twitter.com/whykusanagi",
-      "https://discord.gg/uCG766xfnB",
-      "https://www.pixiv.net/en/users/34391885"
-    ],
-    "brand": {
-      "@type": "Brand",
-      "name": "WHYKUSANAGI Glitch Couture",
-      "logo": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": "https://whykusanagi.xyz/#whykusanagi",
+      "name": "whykusanagi",
+      "alternateName": [
+        "Kusanagi",
+        "草薙"
+      ],
+      "url": "https://whykusanagi.xyz/",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "jobTitle": [
+        "Virtual Streamer",
+        "Digital Artist",
+        "Content Creator"
+      ],
+      "description": "whykusanagi is a virtual streamer, digital artist, and content creator making stream content, NIKKE tools and guides, the corrupted-theme design system, and doujin releases, alongside his corrupted-AI VTuber Celeste.",
+      "knowsAbout": [
+        "VTubing",
+        "live streaming",
+        "digital art",
+        "NIKKE (Goddess of Victory)",
+        "AI tools",
+        "web development",
+        "doujin"
+      ],
+      "sameAs": [
+        "https://www.twitch.tv/whykusanagi",
+        "https://youtube.com/@whykusanagi",
+        "https://twitter.com/whykusanagi",
+        "https://www.tiktok.com/@whykusanagi",
+        "https://www.github.com/whykusanagi",
+        "https://www.pixiv.net/en/users/34391885",
+        "https://discord.gg/uCG766xfnB"
+      ]
+    },
+    {
+      "@type": "Person",
+      "@id": "https://whykusanagi.xyz/#celeste",
+      "name": "Celeste",
+      "alternateName": "CelesteAI",
+      "url": "https://whykusanagi.xyz/celeste.html",
+      "image": "https://s3.whykusanagi.xyz/Celeste_Vel_Icon.png",
+      "description": "Celeste is whykusanagi's corrupted-AI demon Onee-san and VTuber.",
+      "creator": {
+        "@id": "https://whykusanagi.xyz/#whykusanagi"
+      },
+      "sameAs": [
+        "https://open.spotify.com/artist/1zxJS4bTXkQANH1dzcfKh1",
+        "https://music.apple.com/us/artist/celesteai/1895699799"
+      ]
     }
-  }
+  ]
+}
   </script>
   <!-- Load environment config FIRST before any asset URLs are parsed -->
   <script src="assets/js/env-config.js"></script>
