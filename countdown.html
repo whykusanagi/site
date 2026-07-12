@@ -14,11 +14,24 @@
   <!-- Corrupted Theme Framework (for CSS variables) -->
     <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.1/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
     
+    <!-- Site-Specific Overrides (dark background + readable text on direct view) -->
+    <link rel="stylesheet" href="assets/css/site-overrides.css">
     <script type="module" src="assets/js/site-bootstrap.js"></script>
     <!-- Countdown Widget Styles -->
     <link rel="stylesheet" href="assets/css/countdown-widget.css">
+    <style>
+      /* OBS overlay mode (?params present): strip the site chrome + background so
+         the widget renders transparent for a browser source. */
+      body.overlay-mode { background: transparent !important; }
+      body.overlay-mode::before,
+      body.overlay-mode::after { display: none !important; }
+      body.overlay-mode .navbar,
+      body.overlay-mode footer { display: none !important; }
+    </style>
 </head>
 <body>
+  <nav class="navbar" data-site-nav></nav>
+
   <!-- Widget container always visible -->
   <div id="countdown-widget" style="max-width: 980px; margin: 0 auto; padding: 2rem 1rem;"></div>
 
@@ -43,13 +56,18 @@
     <p><strong>Q:</strong> What if a URL value is invalid?<br><strong>A:</strong> Invalid preset values fall back to defaults.</p>
   </main>
   <script>
-    // Hide docs when URL has countdown params (widget-only mode)
+    // Widget-only OBS overlay when URL has countdown params: hide docs + strip
+    // chrome/background (the overlay-mode CSS above makes the widget transparent).
     if (window.location.search.length > 0) {
       document.getElementById('countdown-docs').style.display = 'none';
+      document.body.classList.add('overlay-mode');
     }
   </script>
 
+    <footer data-site-footer></footer>
+
     <script src="assets/js/json-asset-loader.js"></script>
+    <script src="/assets/js/nav.js"></script>
     <script type="module">
       import { initCountdown } from './assets/js/countdown-widget.js';
       initCountdown();
