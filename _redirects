@@ -5,3 +5,7 @@
 # Restore: delete these two lines + re-add the "Art Gallery" nav links.
 /art       /  302
 /art.html  /  302
+
+# Union Raid calculator retired 2026-07-11 (no longer used).
+/union_calc       /tools.html  301
+/union_calc.html  /tools.html  301
