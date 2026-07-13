@@ -67,7 +67,6 @@ CLAUDE.local.md
 .claude/
 # NSFW / working assets and internal decks
 **/headshots/
-celeste-ops-presentation.html
 # Only root README.md may be committed; every other markdown stays out (docs -> CelesteOps)
 *.md
 !/README.md

@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CelesteOps · The Local-First Control Panel for You and Your Agents</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#08080f;--sur:#111118;--sur2:#13131f;
+  --bdr:#1e1b2e;--bdr2:#2a2440;
+  --pk:#d94f90;--pkdim:rgba(217,79,144,0.09);--pkglow:rgba(217,79,144,0.28);
+  --pu:#8b5cf6;--pudim:rgba(139,92,246,0.09);--puglow:rgba(139,92,246,0.28);
+  --dp:#6d28d9;
+  --txt:#f0ecf8;--txt2:#7a7085;--txt3:#3a3050;
+  --grn:#10b981;--red:#ef4444;--amb:#f59e0b;--cy:#0891b2;
+  --wht:#ffffff;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--txt);overflow:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(rgba(139,92,246,0.035) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0;}
+.deck{width:100vw;height:100vh;position:relative;z-index:1;}
+.slide{position:absolute;inset:0;display:none;flex-direction:column;padding:34px 54px 46px;opacity:0;transition:opacity .26s ease;overflow-y:auto;overflow-x:hidden;min-height:0;scrollbar-width:thin;scrollbar-color:var(--bdr2) transparent;}
+.slide.active{display:flex;opacity:1;}
+.slide>*{min-height:0;}
+.slide::-webkit-scrollbar{width:5px;}
+.slide::-webkit-scrollbar-thumb{background:var(--bdr2);border-radius:3px;}
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-shrink:0;padding-bottom:10px;border-bottom:1px solid var(--bdr);}
+.sl{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--pk);font-weight:500;}
+.sc{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.1em;color:var(--txt2);}
+.h1{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(30px,3.8vw,52px);line-height:1.05;letter-spacing:-.02em;color:var(--wht);}
+.h1 em{color:var(--pk);font-style:normal;}
+.h2{font-family:'Syne',sans-serif;font-weight:700;font-size:clamp(20px,2.2vw,29px);line-height:1.1;letter-spacing:-.015em;color:var(--wht);}
+.ey{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--pk);font-weight:500;}
+.bt{font-size:16px;line-height:1.62;color:var(--txt2);font-weight:400;}
+.bt b{color:var(--txt);font-weight:600;}
+.mn{font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);}
+.card{background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:18px;}
+.card.ft{background:var(--pkdim);border-color:var(--pkglow);}
+.ct{font-family:'Syne',sans-serif;font-weight:600;font-size:16px;color:var(--wht);margin-bottom:6px;}
+.cb{font-size:15px;line-height:1.6;color:var(--txt2);}
+.c2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.c3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+.c4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+.stat-card{background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:20px 14px;display:flex;flex-direction:column;gap:6px;}
+.stat-card.ft{background:var(--pkdim);border-color:var(--pkglow);}
+.sn{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(26px,2.8vw,40px);color:var(--pk);line-height:1;}
+.slb{font-size:14px;color:var(--txt2);line-height:1.4;}
+.dt{width:100%;border-collapse:collapse;font-size:15px;}
+.dt thead th{font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--txt2);padding:10px 12px;text-align:left;border-bottom:1px solid var(--bdr);}
+.dt thead th.us{color:var(--pk);}
+.dt tbody td{padding:9px 12px;border-bottom:1px solid var(--bdr);color:var(--txt2);line-height:1.5;vertical-align:top;text-align:center;}
+.dt tbody td:first-child{text-align:left;color:var(--txt);font-weight:500;}
+.dt tbody tr:last-child td{border-bottom:none;}
+.dt tbody tr:hover td{background:var(--sur2);}
+.dt td.us{background:var(--pkdim);}
+.yes{color:var(--grn);font-weight:700;}
+.no{color:var(--txt3);}
+.part{color:var(--amb);font-family:'DM Mono',monospace;font-size:13px;}
+.cl{display:flex;flex-direction:column;gap:8px;}
+.ci{position:relative;padding-left:21px;font-size:15px;color:var(--txt2);line-height:1.5;}
+.ci::before{content:'✓';position:absolute;left:0;top:0;color:var(--grn);font-size:13px;font-weight:700;}
+.ci b{color:var(--txt);font-weight:600;}
+.badge{display:inline-flex;align-items:center;padding:4px 11px;border-radius:20px;font-family:'DM Mono',monospace;font-size:12px;font-weight:500;letter-spacing:.04em;}
+.badge-pk{background:var(--pkdim);color:var(--pk);border:1px solid var(--pkglow);}
+.badge-pu{background:var(--pudim);color:var(--pu);border:1px solid var(--puglow);}
+.badge-grn{background:rgba(16,185,129,.1);color:var(--grn);border:1px solid rgba(16,185,129,.25);}
+.badge-cy{background:rgba(8,145,178,.1);color:var(--cy);border:1px solid rgba(8,145,178,.25);}
+.tm-item{font-family:'DM Mono',monospace;font-size:13px;color:var(--txt2);}
+.tm-item span{display:block;color:var(--txt);margin-top:3px;font-size:14px;font-family:'DM Sans',sans-serif;}
+.term{background:#0a0a12;border:1px solid var(--bdr2);border-radius:8px;padding:14px 18px;font-family:'DM Mono',monospace;font-size:14px;line-height:1.8;}
+.term .prompt{color:var(--pk);}
+.term .cmd{color:var(--txt);}
+.term .out{color:var(--txt2);}
+.term .key{color:var(--pu);}
+.term .val{color:var(--grn);}
+.flow{display:flex;align-items:stretch;gap:0;flex-wrap:wrap;}
+.flow-step{flex:1;min-width:150px;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:16px;position:relative;}
+.flow-step.ft{background:var(--pkdim);border-color:var(--pkglow);}
+.flow-arrow{display:flex;align-items:center;color:var(--pu);font-size:20px;padding:0 8px;}
+.nav{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:200;background:var(--sur);border:1px solid var(--bdr);border-radius:40px;padding:7px 14px;}
+.nav-btn{background:transparent;border:none;color:var(--txt2);width:26px;height:26px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:color .15s;}
+.nav-btn:hover{color:var(--pk);}
+.nav-dots{display:flex;gap:5px;align-items:center;}
+.nav-dot{width:5px;height:5px;border-radius:50%;background:var(--bdr2);cursor:pointer;transition:all .2s;border:none;}
+.nav-dot.active{background:var(--pk);width:14px;border-radius:3px;}
+.presenter{position:fixed;bottom:20px;right:54px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);letter-spacing:.14em;text-transform:uppercase;z-index:100;}
+.bar-bot{position:absolute;bottom:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--pk),var(--pu),transparent);}
+@media(max-height:820px){
+  .slide{padding:22px 42px 34px;}
+  .sh{margin-bottom:12px;padding-bottom:8px;}
+  .h1{font-size:clamp(26px,3.2vw,42px);}
+  .h2{font-size:clamp(18px,1.9vw,24px);}
+  .bt{font-size:14px;}
+  .cb{font-size:13px;}
+  .ci{font-size:13px;}
+  .stat-card{padding:14px 12px;}
+  .sn{font-size:clamp(22px,2.4vw,34px);}
+  .card{padding:14px;}
+  .dt tbody td,.dt thead th{padding:7px 10px;}
+}
+@media(max-width:1100px){ .slide{padding:24px 34px 32px;} }
+@media print{
+  html,body{overflow:visible!important;background:#08080f;height:auto;}
+  body::before{display:none;}
+  .deck{width:auto;height:auto;}
+  .slide{position:relative;inset:auto;display:flex!important;opacity:1!important;
+         page-break-after:always;break-after:page;
+         width:297mm;height:210mm;padding:12mm 14mm;overflow:hidden;}
+  .slide:last-child{page-break-after:auto;}
+  .nav,.presenter,.scan-wipe{display:none!important;}
+  .bar-bot{display:none!important;}
+  @page{size:A4 landscape;margin:0;}
+}
+@keyframes glitch1 { 0%,93%,100% { clip-path:none; transform:none; } 94% { clip-path:polygon(0 15%,100% 15%,100% 35%,0 35%); transform:translateX(-5px); } 96% { clip-path:polygon(0 60%,100% 60%,100% 78%,0 78%); transform:translateX(5px); } }
+@keyframes glitch2 { 0%,90%,100% { clip-path:none; transform:none; } 91% { clip-path:polygon(0 25%,100% 25%,100% 45%,0 45%); transform:translateX(7px); } 93% { clip-path:polygon(0 65%,100% 65%,100% 80%,0 80%); transform:translateX(-7px); } }
+.glitch { position:relative; display:inline-block; }
+.glitch::before, .glitch::after { content:attr(data-text); position:absolute; inset:0; pointer-events:none; }
+.glitch::before { color:var(--pk); animation:glitch1 9s infinite; mix-blend-mode:screen; }
+.glitch::after { color:var(--pu); animation:glitch2 12s infinite; mix-blend-mode:screen; }
+@keyframes scanWipe { from { top:-4px; opacity:0.7; } to { top:100%; opacity:0; } }
+.scan-wipe { position:fixed; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--pk),var(--pu),transparent); animation:scanWipe 6s ease-in-out infinite; pointer-events:none; z-index:300; }
+@keyframes blink { 50% { opacity:0; } }
+.cursor::after { content:'_'; animation:blink 1s step-end infinite; color:var(--pk); }
+</style>
+</head>
+<body>
+<div class="scan-wipe"></div>
+<div class="deck">
+
+<!-- ══ 01 TITLE ══ -->
+<div class="slide active" id="s1" style="overflow:visible;">
+  <div class="sh"><span class="sl">CelesteOps &middot; v1.0.5</span><span class="sc">01 / 13</span></div>
+  <!-- hub graphic: one DB, many agents -->
+  <div style="position:absolute;right:40px;top:50%;transform:translateY(-50%);width:460px;height:460px;z-index:2;pointer-events:none;opacity:.9;">
+    <svg viewBox="-230 -230 460 460" style="width:100%;height:100%;" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="0" cy="0" r="200" fill="none" stroke="#8b5cf6" stroke-width=".5" opacity=".1"/>
+      <circle cx="0" cy="0" r="150" fill="none" stroke="#d94f90" stroke-width=".6" opacity=".12"/>
+      <g stroke-width="1.2" opacity=".3">
+        <line x1="0" y1="0" x2="-170" y2="-90" stroke="#d94f90"/>
+        <line x1="0" y1="0" x2="180" y2="-60" stroke="#8b5cf6"/>
+        <line x1="0" y1="0" x2="160" y2="110" stroke="#d94f90"/>
+        <line x1="0" y1="0" x2="-150" y2="120" stroke="#8b5cf6"/>
+        <line x1="0" y1="0" x2="0" y2="-185" stroke="#6d28d9"/>
+      </g>
+      <g font-family="DM Mono, monospace" font-size="12" fill="#7a7085" text-anchor="middle">
+        <circle cx="-170" cy="-90" r="5" fill="#d94f90"/><text x="-170" y="-104">Claude Code</text>
+        <circle cx="180" cy="-60" r="5" fill="#8b5cf6"/><text x="180" y="-74">Claude Desktop</text>
+        <circle cx="160" cy="110" r="5" fill="#d94f90"/><text x="160" y="130">Cursor</text>
+        <circle cx="-150" cy="120" r="5" fill="#8b5cf6"/><text x="-150" y="140">Codex</text>
+        <circle cx="0" cy="-185" r="5" fill="#6d28d9"/><text x="0" y="-198">celeste-cli</text>
+      </g>
+      <circle cx="0" cy="0" r="46" fill="#111118" stroke="#d94f90" stroke-width="1.5"/>
+      <text x="0" y="-2" font-family="DM Mono, monospace" font-size="12" fill="#f0ecf8" text-anchor="middle">celeste</text>
+      <text x="0" y="14" font-family="DM Mono, monospace" font-size="12" fill="#d94f90" text-anchor="middle">_ops.db</text>
+    </svg>
+  </div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:620px;z-index:3;">
+    <div class="ey" style="margin-bottom:16px;">Local-first creator control panel</div>
+    <div class="glitch" data-text="CELESTE OPS" style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(44px,6vw,78px);line-height:1.0;letter-spacing:-.03em;color:var(--wht);">CELESTE<span style="color:var(--pk);"> OPS</span></div>
+    <div class="bt" style="margin-top:20px;font-size:19px;max-width:520px;">One macOS app. One SQLite file. One backlog your agents write to and <b>you approve</b>, over MCP. No cloud in between.</div>
+    <div style="margin-top:26px;display:flex;gap:10px;flex-wrap:wrap;">
+      <span class="badge badge-pk">69 MCP tools</span>
+      <span class="badge badge-pu">5 agent clients</span>
+      <span class="badge badge-grn">PGP-signed &middot; offline</span>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 02 PROBLEM ══ -->
+<div class="slide" id="s2">
+  <div class="sh"><span class="sl">The Problem</span><span class="sc">02 / 13</span></div>
+  <div class="h1" style="margin-bottom:18px;">Your agents have <em>nowhere durable to work.</em></div>
+  <div class="bt" style="max-width:760px;margin-bottom:24px;">Your agents draft specs, write code, triage issues, and queue posts. They need a durable place to put that work so you can review it, and so the <b>next</b> agent reads it back.</div>
+  <div class="c2" style="flex:1;align-content:start;">
+    <div class="card"><div class="ct">Specs rot or vanish</div><div class="cb">Commit a plan to the repo and you ship half-formed thinking in your git history, stale by morning. Leave it out and it dies the second an agent's context resets. The next subagent re-derives the same decisions.</div></div>
+    <div class="card"><div class="ct">Coordination lives elsewhere</div><div class="cb">Slack, Notion, and GitHub each solve a slice, behind auth boundaries, rate limits, and a network round-trip for every read. The work runs on your laptop. Routing the loop through someone else's servers is backwards.</div></div>
+    <div class="card"><div class="ct">Five drifting copies</div><div class="cb">Each agent keeps its own private list. By Thursday they disagree about what's done, what's blocked, and what comes next.</div></div>
+    <div class="card"><div class="ct">Localhost is not a wall</div><div class="cb">A local app that opens an HTTP port answers any web page you visit. "It came from 127.0.0.1" decides nothing about trust.</div></div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 03 THE PRODUCT ══ -->
+<div class="slide" id="s3">
+  <div class="sh"><span class="sl">The Product</span><span class="sc">03 / 13</span></div>
+  <div class="h1" style="margin-bottom:6px;">One backlog. <em>Every agent.</em></div>
+  <div class="bt" style="max-width:760px;margin-bottom:8px;">Your agents read and write one SQLite file over MCP. You approve what ships. No cloud in between.</div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:space-evenly;min-height:0;padding:8px 0;">
+    <!-- agent row -->
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;">
+      <div class="card" style="text-align:center;padding:14px 10px;"><div style="color:var(--pk);font-family:'DM Mono',monospace;font-size:13px;">Claude Code</div><div style="color:var(--txt2);font-size:13px;margin-top:5px;">writes &amp; ships code</div></div>
+      <div class="card" style="text-align:center;padding:14px 10px;"><div style="color:var(--pu);font-family:'DM Mono',monospace;font-size:13px;">Cursor</div><div style="color:var(--txt2);font-size:13px;margin-top:5px;">edits in the IDE</div></div>
+      <div class="card" style="text-align:center;padding:14px 10px;"><div style="color:var(--pk);font-family:'DM Mono',monospace;font-size:13px;">Codex</div><div style="color:var(--txt2);font-size:13px;margin-top:5px;">triages GitHub issues</div></div>
+      <div class="card" style="text-align:center;padding:14px 10px;"><div style="color:var(--pu);font-family:'DM Mono',monospace;font-size:13px;">celeste-cli</div><div style="color:var(--txt2);font-size:13px;margin-top:5px;">drafts specs &amp; plans</div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;color:var(--txt3);font-family:'DM Mono',monospace;font-size:12px;padding:11px 0;">
+      <span style="color:var(--pu);font-size:18px;letter-spacing:14px;">&#8595;&#8595;&#8595;&#8595;</span> &nbsp;file tasks &amp; specs over MCP
+    </div>
+    <!-- central backlog -->
+    <div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:12px;padding:20px;text-align:center;box-shadow:0 0 40px rgba(217,79,144,.12);">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:23px;color:var(--wht);">CelesteOps</div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt2);margin-top:6px;">one SQLite file &middot; 69 MCP tools &middot; the shared backlog</div>
+    </div>
+    <!-- you + loop back -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:18px;padding-top:13px;flex-wrap:wrap;">
+      <div style="background:var(--sur);border:1px solid var(--bdr2);border-radius:10px;padding:11px 18px;display:flex;align-items:center;gap:12px;">
+        <span style="color:var(--amb);font-family:'DM Mono',monospace;font-size:12px;">&#8593; in-review</span>
+        <span style="color:var(--wht);font-family:'Syne',sans-serif;font-weight:600;font-size:16px;">YOU approve</span>
+        <span style="color:var(--grn);font-family:'DM Mono',monospace;font-size:12px;">unblocks &#8595;</span>
+      </div>
+      <span style="color:var(--pu);font-family:'DM Mono',monospace;font-size:12px;"><span style="font-size:17px;">&#8634;</span>&nbsp; the next agent picks it up</span>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 04 WHAT IT TRACKS ══ -->
+<div class="slide" id="s4">
+  <div class="sh"><span class="sl">What It Does</span><span class="sc">04 / 13</span></div>
+  <div class="h2" style="margin-bottom:16px;">A real Mac app, not a notes folder</div>
+  <div style="flex:1;display:flex;gap:18px;min-height:0;">
+    <!-- app window mockup -->
+    <div style="flex:1.3;display:flex;flex-direction:column;background:#0a0a12;border:1px solid var(--bdr2);border-radius:10px;overflow:hidden;min-height:0;">
+      <div style="display:flex;align-items:center;gap:7px;padding:9px 14px;background:#0e0e16;border-bottom:1px solid var(--bdr);flex-shrink:0;">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--red);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--amb);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--grn);"></div>
+        <span style="color:var(--txt3);font-family:'DM Mono',monospace;font-size:11px;margin-left:6px;">CelesteOps &middot; celeste_ops.db</span>
+      </div>
+      <div style="flex:1;display:flex;min-height:0;">
+        <div style="width:104px;border-right:1px solid var(--bdr);padding:10px 0;font-family:'DM Mono',monospace;font-size:12px;flex-shrink:0;">
+          <div style="padding:5px 14px;color:var(--txt3);">Today</div>
+          <div style="padding:5px 14px;color:var(--txt3);">Tasks</div>
+          <div style="padding:5px 12px;color:var(--wht);background:var(--pkdim);border-left:2px solid var(--pk);">Notes</div>
+          <div style="padding:5px 14px;color:var(--txt3);">Projects</div>
+          <div style="padding:5px 14px;color:var(--txt3);">Calendar</div>
+          <div style="padding:5px 14px;color:var(--txt3);">Settings</div>
+        </div>
+        <div style="flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:9px;overflow:hidden;font-size:13px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;">
+            <span style="color:var(--wht);font-family:'Syne',sans-serif;font-weight:700;font-size:15px;">Release flow</span>
+            <span style="display:flex;gap:6px;align-items:center;"><span class="badge badge-amb" style="padding:2px 8px;font-size:10px;">in-review</span><span style="background:var(--grn);color:#04130d;border-radius:4px;padding:3px 11px;font-family:'DM Mono',monospace;font-size:10px;font-weight:700;">Approve</span></span>
+          </div>
+          <!-- rendered mermaid -->
+          <div style="background:var(--bg);border:1px solid var(--bdr2);border-radius:7px;padding:9px 10px;">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.08em;margin-bottom:5px;">```mermaid &middot; rendered in the note</div>
+            <svg viewBox="0 0 300 78" style="width:100%;height:auto;">
+              <defs><marker id="m4" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c5cff"/></marker></defs>
+              <rect x="2" y="28" rx="6" width="46" height="22" fill="#2a1a3e" stroke="#a98fc0"/><text x="25" y="43" fill="#e6d6ff" font-size="10" font-family="DM Mono" text-anchor="middle">Idea</text>
+              <line x1="49" y1="39" x2="66" y2="39" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#m4)"/>
+              <polygon points="92,22 120,39 92,56 64,39" fill="#3a1430" stroke="#d94f90"/><text x="92" y="42" fill="#ffd6ec" font-size="9" font-family="DM Mono" text-anchor="middle">Draft?</text>
+              <line x1="120" y1="34" x2="150" y2="16" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#m4)"/><text x="132" y="22" fill="#4ade80" font-size="8" font-family="DM Mono">yes</text>
+              <line x1="120" y1="46" x2="150" y2="62" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#m4)"/><text x="132" y="62" fill="#fbbf24" font-size="8" font-family="DM Mono">no</text>
+              <rect x="152" y="4" rx="6" width="48" height="22" fill="#191433" stroke="#7c5cff"/><text x="176" y="19" fill="#e6d6ff" font-size="10" font-family="DM Mono" text-anchor="middle">Edit</text>
+              <rect x="152" y="52" rx="6" width="62" height="22" fill="#191433" stroke="#7c5cff"/><text x="183" y="67" fill="#e6d6ff" font-size="9" font-family="DM Mono" text-anchor="middle">Outline</text>
+              <line x1="200" y1="15" x2="246" y2="15" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#m4)"/>
+              <circle cx="268" cy="15" r="15" fill="#0f3320" stroke="#4ade80"/><text x="268" y="18" fill="#c6ffd9" font-size="9" font-family="DM Mono" text-anchor="middle">Ship</text>
+            </svg>
+          </div>
+          <!-- graph + prototype -->
+          <div style="display:flex;gap:9px;flex:1;min-height:0;">
+            <div style="flex:1;background:var(--bg);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;display:flex;flex-direction:column;">
+              <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.08em;">task graph</div>
+              <svg viewBox="0 0 130 70" style="width:100%;flex:1;min-height:0;">
+                <line x1="20" y1="20" x2="65" y2="38" stroke="#d94f90" stroke-width="1" opacity=".5"/>
+                <line x1="65" y1="38" x2="110" y2="20" stroke="#8b5cf6" stroke-width="1" opacity=".5"/>
+                <line x1="65" y1="38" x2="40" y2="60" stroke="#8b5cf6" stroke-width="1" opacity=".5"/>
+                <line x1="65" y1="38" x2="100" y2="58" stroke="#6d28d9" stroke-width="1" opacity=".4"/>
+                <circle cx="20" cy="20" r="6" fill="#d94f90"/><circle cx="110" cy="20" r="6" fill="#8b5cf6"/>
+                <circle cx="65" cy="38" r="8" fill="#0a0a12" stroke="#d94f90" stroke-width="1.5"/>
+                <circle cx="40" cy="60" r="5" fill="#8b5cf6"/><circle cx="100" cy="58" r="5" fill="#6d28d9"/>
+              </svg>
+            </div>
+            <div style="flex:1;background:var(--bg);border:1px solid var(--bdr2);border-radius:7px;padding:7px 9px;display:flex;flex-direction:column;gap:5px;">
+              <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--txt3);letter-spacing:.08em;">prototype &middot; sandboxed</div>
+              <div style="flex:1;border:1px solid var(--bdr2);border-radius:5px;background:linear-gradient(135deg,#13131f,#0a0a12);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:0;">
+                <div style="width:40%;height:5px;border-radius:3px;background:var(--pkglow);"></div>
+                <div style="width:55%;height:5px;border-radius:3px;background:var(--bdr2);"></div>
+                <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--pk);border:1px solid var(--pkglow);border-radius:4px;padding:2px 8px;">Approve to run</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- bands -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+      <div class="card" style="padding:13px;"><div class="ct" style="font-size:15px;color:var(--pk);">Today / Inbox</div><div class="cb" style="font-size:13px;">Top P1s (capped at 3 a day), what's overdue, what just unblocked, a one-click brief.</div></div>
+      <div class="card" style="padding:13px;"><div class="ct" style="font-size:15px;color:var(--pk);">Tasks · Notes · Projects · Content</div><div class="cb" style="font-size:13px;">Real <span class="mn" style="font-size:12px;">blocked_by</span> dependencies and a graph view, notes with backlinks, a cross-repo rollup, an idea&rarr;publish pipeline.</div></div>
+      <div class="card" style="padding:13px;"><div class="ct" style="font-size:15px;color:var(--pk);">Calendar</div><div class="cb" style="font-size:13px;">Stream days, milestones, scheduled posts in month / week / day. &#8984;K searches everything (FTS5).</div></div>
+      <div class="card" style="padding:13px;"><div class="ct" style="font-size:15px;color:var(--pk);">Settings · Vault</div><div class="cb" style="font-size:13px;">Backups, the Connections panel, and a credential vault agents use without seeing the key.</div></div>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ FEATURE GALLERY ══ -->
+<div class="slide" id="sFeatures">
+  <div class="sh"><span class="sl">Built, Not Slideware</span><span class="sc">05 / 14</span></div>
+  <div class="h2" style="margin-bottom:14px;">The real surface area, in one app</div>
+  <div style="flex:1;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:1fr 1fr;gap:13px;min-height:0;font-size:12px;">
+
+    <!-- 1 markdown + mermaid -->
+    <div class="card" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--bdr);font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.05em;">Edit a plan &middot; markdown + mermaid, rendered</div>
+      <div style="padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:7px;min-height:0;">
+        <div style="line-height:1.5;color:var(--txt2);"><span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--wht);font-size:14px;">Release plan</span><br><span style="color:var(--grn);">&#10003;</span> sign the build &nbsp;&nbsp;<span style="color:var(--txt3);">&#9744;</span> notarize</div>
+        <svg viewBox="0 0 250 60" style="width:100%;height:auto;margin-top:auto;">
+          <defs><marker id="ar" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7c5cff"/></marker></defs>
+          <rect x="2" y="20" rx="6" width="44" height="22" fill="#2a1a3e" stroke="#a98fc0"/><text x="24" y="35" fill="#e6d6ff" font-size="10" font-family="DM Mono" text-anchor="middle">Idea</text>
+          <line x1="47" y1="31" x2="66" y2="31" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#ar)"/>
+          <polygon points="92,16 118,31 92,46 66,31" fill="#3a1430" stroke="#d94f90"/><text x="92" y="34" fill="#ffd6ec" font-size="9" font-family="DM Mono" text-anchor="middle">Draft?</text>
+          <line x1="119" y1="31" x2="138" y2="31" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#ar)"/>
+          <rect x="139" y="20" rx="6" width="44" height="22" fill="#191433" stroke="#7c5cff"/><text x="161" y="35" fill="#e6d6ff" font-size="10" font-family="DM Mono" text-anchor="middle">Edit</text>
+          <line x1="184" y1="31" x2="203" y2="31" stroke="#7c5cff" stroke-width="1.4" marker-end="url(#ar)"/>
+          <circle cx="226" cy="31" r="16" fill="#0f3320" stroke="#4ade80"/><text x="226" y="34" fill="#c6ffd9" font-size="9" font-family="DM Mono" text-anchor="middle">Ship</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 2 search -->
+    <div class="card" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--bdr);font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.05em;">&#8984;K search &middot; SQLite FTS5</div>
+      <div style="padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:6px;">
+        <div style="background:var(--bg);border:1px solid var(--bdr2);border-radius:5px;padding:6px 9px;font-family:'DM Mono',monospace;color:var(--txt);">credential broker<span class="cursor" style="color:var(--pk);"></span></div>
+        <div style="color:var(--txt2);display:flex;gap:7px;"><span class="badge badge-pu" style="padding:0 6px;font-size:9px;">task</span> Ship the credential broker</div>
+        <div style="color:var(--txt2);display:flex;gap:7px;"><span class="badge badge-cy" style="padding:0 6px;font-size:9px;">doc</span> Credential broker spec</div>
+        <div style="color:var(--txt2);display:flex;gap:7px;"><span class="badge badge-pk" style="padding:0 6px;font-size:9px;">note</span> SSRF guard notes</div>
+      </div>
+    </div>
+
+    <!-- 3 projects -->
+    <div class="card" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--bdr);font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.05em;">Projects &middot; cross-repo rollup</div>
+      <div style="padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:8px;font-family:'DM Mono',monospace;">
+        <div style="display:flex;justify-content:space-between;color:var(--txt);">content-control <span style="color:var(--txt3);"><span style="color:var(--pk);">5</span> open &middot; <span style="color:var(--amb);">1</span> blk &middot; <span style="color:var(--pu);">2</span> rev</span></div>
+        <div style="display:flex;justify-content:space-between;color:var(--txt);">celeste-cli <span style="color:var(--txt3);"><span style="color:var(--pk);">3</span> open &middot; <span style="color:var(--amb);">0</span> blk &middot; <span style="color:var(--pu);">1</span> rev</span></div>
+        <div style="display:flex;justify-content:space-between;color:var(--txt);">tts-bot <span style="color:var(--txt3);"><span style="color:var(--pk);">2</span> open &middot; <span style="color:var(--amb);">1</span> blk &middot; <span style="color:var(--pu);">0</span> rev</span></div>
+      </div>
+    </div>
+
+    <!-- 4 tasks + deps -->
+    <div class="card" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--bdr);font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.05em;">Tasks &middot; dependency graph</div>
+      <div style="padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:7px;color:var(--txt);"><span class="badge badge-pk" style="padding:0 6px;font-size:9px;">P1</span> ship broker</div>
+        <div style="display:flex;align-items:center;gap:7px;color:var(--txt2);"><span class="badge badge-pu" style="padding:0 6px;font-size:9px;">P2</span> wire install <span style="color:var(--amb);font-family:'DM Mono',monospace;font-size:9px;">blocked</span></div>
+        <svg viewBox="0 0 200 30" style="width:100%;height:auto;margin-top:auto;">
+          <defs><marker id="ar2" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#d94f90"/></marker></defs>
+          <rect x="2" y="6" rx="5" width="60" height="18" fill="#191433" stroke="#4ade80"/><text x="32" y="18" fill="#c6ffd9" font-size="9" font-family="DM Mono" text-anchor="middle">spec &#10003;</text>
+          <line x1="63" y1="15" x2="92" y2="15" stroke="#d94f90" stroke-width="1.4" marker-end="url(#ar2)"/>
+          <rect x="94" y="6" rx="5" width="66" height="18" fill="#2a2410" stroke="#fbbf24"/><text x="127" y="18" fill="#fff3c4" font-size="9" font-family="DM Mono" text-anchor="middle">install</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 5 calendar -->
+    <div class="card" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--bdr);font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.05em;">Calendar &middot; streams + milestones</div>
+      <div style="padding:10px 12px;flex:1;display:grid;grid-template-columns:repeat(7,1fr);grid-auto-rows:1fr;gap:3px;font-family:'DM Mono',monospace;font-size:9px;">
+        <div style="color:var(--txt3);text-align:center;">M</div><div style="color:var(--txt3);text-align:center;">T</div><div style="color:var(--txt3);text-align:center;">W</div><div style="color:var(--txt3);text-align:center;">T</div><div style="color:var(--txt3);text-align:center;">F</div><div style="color:var(--txt3);text-align:center;">S</div><div style="color:var(--txt3);text-align:center;">S</div>
+        <div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:3px;text-align:center;color:var(--pk);">3</div><div style="text-align:center;color:var(--txt3);">4</div><div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:3px;text-align:center;color:var(--pk);">5</div><div style="text-align:center;color:var(--txt3);">6</div><div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:3px;text-align:center;color:var(--pk);">7</div><div style="text-align:center;color:var(--txt3);">8</div><div style="text-align:center;color:var(--txt3);">9</div>
+        <div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:3px;text-align:center;color:var(--pk);">10</div><div style="text-align:center;color:var(--txt3);">11</div><div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:3px;text-align:center;color:var(--pk);">12</div><div style="text-align:center;color:var(--txt3);">13</div><div style="background:rgba(245,158,11,.15);border:1px solid var(--amb);border-radius:3px;text-align:center;color:var(--amb);">14&#9733;</div><div style="text-align:center;color:var(--txt3);">15</div><div style="text-align:center;color:var(--txt3);">16</div>
+      </div>
+    </div>
+
+    <!-- 6 wikilinks -->
+    <div class="card" style="padding:0;display:flex;flex-direction:column;overflow:hidden;">
+      <div style="padding:8px 12px;border-bottom:1px solid var(--bdr);font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.05em;">Wikilinks + backlinks</div>
+      <div style="padding:10px 12px;flex:1;display:flex;flex-direction:column;gap:7px;">
+        <div style="color:var(--txt2);line-height:1.5;">Spec blocks <span style="color:var(--pk);">[[task:wire-install]]</span> and embeds <span style="color:var(--pk);">[[doc:security]]</span>.</div>
+        <div style="color:var(--txt3);font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.1em;margin-top:2px;">BACKLINKS</div>
+        <div style="color:var(--txt2);display:flex;gap:7px;"><span style="color:var(--pu);">&#8617;</span> Wire the install flow <span style="color:var(--txt3);">task</span></div>
+        <div style="color:var(--txt2);display:flex;gap:7px;"><span style="color:var(--pu);">&#8617;</span> v1.10 sprint spec <span style="color:var(--txt3);">doc</span></div>
+      </div>
+    </div>
+
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 05 THE LOOP (differentiator) ══ -->
+<div class="slide" id="s5">
+  <div class="sh"><span class="sl">The Differentiator</span><span class="sc">05 / 13</span></div>
+  <div class="h1" style="margin-bottom:8px;">An approve button <em>other processes wait on.</em></div>
+  <div class="bt" style="max-width:820px;margin-bottom:22px;">A notes app doesn't have one. The loop that makes a shared backlog work:</div>
+  <div class="flow">
+    <div class="flow-step"><div class="ey" style="margin-bottom:6px;">01 · agent</div><div class="cb" style="color:var(--txt);">Files a spec over MCP, flagged <span class="mn">in-review</span></div></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step ft"><div class="ey" style="margin-bottom:6px;">02 · you</div><div class="cb" style="color:var(--txt);">Hit <b>Approve</b> in the Notes tab, in plain English</div></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step"><div class="ey" style="margin-bottom:6px;">03 · system</div><div class="cb" style="color:var(--txt);">The blocked task <b>clears</b> and slides into the Inbox</div></div>
+    <div class="flow-arrow">&#8594;</div>
+    <div class="flow-step"><div class="ey" style="margin-bottom:6px;">04 · next agent</div><div class="cb" style="color:var(--txt);">Polls the timestamp and <b>picks it up</b></div></div>
+  </div>
+  <div style="margin:12px 0 22px;display:flex;align-items:center;gap:12px;color:var(--pu);font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.05em;">
+    <span style="font-size:20px;line-height:1;">&#8634;</span>
+    <span style="flex:1;height:1px;background:linear-gradient(90deg,var(--puglow),transparent);"></span>
+    <span>repeats &middot; new session &middot; new repo &middot; new model</span>
+  </div>
+  <div style="display:flex;gap:18px;align-items:stretch;">
+    <div class="term" style="flex:1.25;font-size:13px;line-height:1.75;">
+      <span class="prompt">agent A &rarr;</span> <span class="cmd">document_create</span>(<span class="key">folder</span>:<span class="val">"specs"</span>, <span class="key">review_status</span>:<span class="val">"in-review"</span>)<br>
+      <span style="color:var(--amb);">you &rarr;</span> <span class="cmd">click Approve</span> &rarr; <span class="cmd">document_update</span> &rarr; <span class="val">approved</span><br>
+      <span class="out">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; blocked task clears &rarr; Inbox</span><br>
+      <span class="prompt">agent B &rarr;</span> <span class="cmd">tasks_unblocked</span>() &rarr; <span style="color:var(--pk);">[ the freed task ]</span>
+    </div>
+    <div class="cb" style="flex:1;font-size:14px;align-self:center;">The backlog doubles as a <b style="color:var(--txt);">message board between agents</b>. Edit an approved spec and CelesteOps drops it back to <span class="mn" style="font-size:12px;">modified</span>, so the next agent re-reads before it acts on a stale plan.</div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 06 BENEFITS ══ -->
+<div class="slide" id="s6">
+  <div class="sh"><span class="sl">Why It Matters</span><span class="sc">06 / 13</span></div>
+  <div class="h2" style="margin-bottom:18px;">What a vault and a SaaS board leave on the table</div>
+  <div class="c2" style="flex:1;align-content:start;">
+    <div class="card"><div class="ct">Specs out of git, still queryable</div><div class="cb">Plans live as documents tagged by metadata: <span class="mn">repo</span>, <span class="mn">folder</span>, <span class="mn">review_status</span>. The git tree stays clean. The plan stays durable across context resets.</div></div>
+    <div class="card"><div class="ct">No network tax</div><div class="cb">Every read and write is a local SQLite call. No auth dance, no rate limit, no round-trip. The coordination layer runs where the work runs.</div></div>
+    <div class="card"><div class="ct">You hold the approve button</div><div class="cb">Agents can't ship themselves. Every spec, every credential, every prototype waits on a first-party click an agent can't make.</div></div>
+    <div class="card"><div class="ct">Yours, signed, encrypted</div><div class="cb">A PGP-signed build you verify before you trust it, and AES-256-GCM backups behind a macOS Keychain key. Off-site copies stay encrypted and stay yours.</div></div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ KNOWLEDGE / DOESN'T DRIFT ══ -->
+<div class="slide" id="sKnowledge">
+  <div class="sh"><span class="sl">Knowledge Management</span><span class="sc">07 / 15</span></div>
+  <div class="h2" style="margin-bottom:6px;">Two kinds of knowledge. Both out of git. Both versioned.</div>
+  <div class="bt" style="max-width:840px;margin-bottom:18px;">Not everything an agent needs to know belongs in a repo, or in a spec that gets archived. CelesteOps holds both, with full version history on every document.</div>
+  <div style="flex:1;display:flex;gap:18px;min-height:0;">
+    <!-- transient -->
+    <div class="card" style="flex:1;display:flex;flex-direction:column;">
+      <div class="ct">Transient &middot; specs &amp; plans</div>
+      <div class="cb" style="margin-bottom:14px;">The work for one cycle. An agent drafts it, you approve it, it archives when it ships, and it stays searchable.</div>
+      <div style="display:flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:12px;margin-bottom:14px;">
+        <span class="badge badge-amb" style="padding:2px 9px;">in-review</span><span style="color:var(--pu);">&rarr;</span>
+        <span class="badge badge-grn" style="padding:2px 9px;">approved</span><span style="color:var(--pu);">&rarr;</span>
+        <span style="color:var(--txt3);border:1px solid var(--bdr2);border-radius:20px;padding:2px 9px;">archived</span>
+      </div>
+      <div style="margin-top:auto;background:var(--bg);border:1px solid var(--bdr2);border-radius:7px;padding:11px 12px;">
+        <div style="color:var(--wht);font-weight:500;">v1.10 sprint spec</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt3);margin-top:5px;">repo: content-control &middot; folder: specs &middot; cycle:v1.10</div>
+      </div>
+    </div>
+    <!-- evergreen -->
+    <div class="card ft" style="flex:1;display:flex;flex-direction:column;">
+      <div class="ct">Evergreen &middot; pinned reference</div>
+      <div class="cb" style="margin-bottom:14px;">Celeste's voice. Brand identity. Procedures and conventions. The knowledge that must <b>not drift</b>, and must not ship in a repo as a stray markdown file.</div>
+      <div style="display:flex;align-items:center;gap:7px;font-family:'DM Mono',monospace;font-size:12px;margin-bottom:14px;">
+        <span class="badge badge-pk" style="padding:2px 9px;">&#128204; pinned</span>
+        <span style="color:var(--txt2);">never auto-archived &middot; always queryable</span>
+      </div>
+      <div style="margin-top:auto;background:var(--bg);border:1px solid var(--pkglow);border-radius:7px;padding:11px 12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:var(--wht);font-weight:500;">Celeste &middot; voice &amp; tone</span><span style="color:var(--pk);font-family:'DM Mono',monospace;font-size:11px;">v7</span>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt3);margin-top:5px;">pinned reference &middot; the brand the agents write in</div>
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;display:flex;align-items:center;gap:12px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt2);">
+    <span style="color:var(--pk);letter-spacing:.06em;">VERSION HISTORY</span>
+    <span style="color:var(--txt);">v7</span><span style="color:var(--txt3);">&larr;</span><span style="color:var(--txt3);">v6</span><span style="color:var(--txt3);">&larr;</span><span style="color:var(--txt3);">v5</span><span style="color:var(--txt3);">&larr; &hellip;</span>
+    <span style="flex:1;height:1px;background:linear-gradient(90deg,var(--pkglow),transparent);"></span>
+    <span>diff or roll back any document, transient or evergreen</span>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 07 INTEGRATIONS ══ -->
+<div class="slide" id="s7">
+  <div class="sh"><span class="sl">Integrations</span><span class="sc">07 / 13</span></div>
+  <div class="h2" style="margin-bottom:16px;">Five clients, one database, standard MCP</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;">
+    <span class="badge badge-pk">Claude Code</span>
+    <span class="badge badge-pu">Claude Desktop &middot; one-click .mcpb</span>
+    <span class="badge badge-pk">Cursor</span>
+    <span class="badge badge-pu">Codex</span>
+    <span class="badge badge-pk">celeste-cli</span>
+  </div>
+  <div style="flex:1;display:flex;gap:18px;min-height:0;">
+    <!-- pairing panel mockup -->
+    <div style="flex:1;display:flex;flex-direction:column;background:#0a0a12;border:1px solid var(--bdr2);border-radius:10px;overflow:hidden;min-height:0;">
+      <div style="display:flex;align-items:center;gap:7px;padding:9px 14px;background:#0e0e16;border-bottom:1px solid var(--bdr);flex-shrink:0;">
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--red);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--amb);"></div>
+        <div style="width:10px;height:10px;border-radius:50%;background:var(--grn);"></div>
+        <span style="color:var(--txt3);font-family:'DM Mono',monospace;font-size:11px;margin-left:6px;">Settings &rsaquo; Connections</span>
+      </div>
+      <div style="padding:18px 16px;display:flex;flex-direction:column;gap:13px;">
+        <div style="color:var(--txt2);font-size:13px;">Add Client &nbsp;<span style="color:var(--wht);font-weight:500;">Claude Code</span></div>
+        <div style="text-align:center;padding:16px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:9px;">
+          <div style="font-family:'DM Mono',monospace;font-size:40px;letter-spacing:.18em;color:var(--pk);font-weight:500;">047 256</div>
+          <div style="color:var(--txt2);font-family:'DM Mono',monospace;font-size:12px;margin-top:7px;">&#9201; expires in 4:31</div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">&rarr; mints one <span style="color:var(--pu);">cops_</span> token &middot; SHA-256 &middot; revocable</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt2);border-top:1px solid var(--bdr);padding-top:10px;">
+          <span><span style="color:var(--grn);">&#9679;</span> claude-desktop</span><span style="color:var(--txt3);">revoke</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;align-items:center;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt2);">
+          <span><span style="color:var(--grn);">&#9679;</span> cursor</span><span style="color:var(--txt3);">revoke</span>
+        </div>
+      </div>
+    </div>
+    <!-- credential broker exchange -->
+    <div style="flex:1.05;display:flex;flex-direction:column;gap:10px;min-height:0;">
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--pk);letter-spacing:.06em;">CREDENTIAL BROKER &middot; the agent never sees the key</div>
+      <div class="term" style="flex:1;font-size:13px;line-height:1.65;overflow:hidden;">
+        <span class="out"># agent calls a stored credential by name</span><br>
+        <span class="prompt">&rarr;</span> <span class="cmd">credential_request</span>(<span class="key">name</span>:<span class="val">"openai"</span>, <span class="key">path</span>:<span class="val">"/v1/models"</span>)<br><br>
+        <span class="out"># CelesteOps injects, server-side:</span><br>
+        &nbsp;&nbsp;Authorization: Bearer <span style="color:var(--txt3);">sk-proj-&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;</span><br><br>
+        <span class="out"># response, every form of the key scrubbed:</span><br>
+        &nbsp;&nbsp;{ <span class="key">status</span>: <span class="val">200</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span class="key">body</span>: <span class="cmd">"...&quot;key&quot;: <span style="color:var(--pk);font-weight:600;">[REDACTED]</span>..."</span> }
+      </div>
+      <div class="cb" style="font-size:13px;">Host welded to the credential, SSRF-guarded, read-only by default. <span class="mn" style="font-size:12px;">install:mcp --pair</span> wires a client in one command.</div>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 08 SECURITY ══ -->
+<div class="slide" id="s8">
+  <div class="sh"><span class="sl">Trust &amp; Security</span><span class="sc">08 / 13</span></div>
+  <div class="h2" style="margin-bottom:18px;">Treat the local API as if it were public</div>
+  <div style="flex:1;display:flex;flex-direction:column;gap:26px;justify-content:center;min-height:0;">
+    <!-- auth gate diagram (top) -->
+    <div style="background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:18px 22px;display:flex;flex-direction:column;gap:13px;">
+      <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
+        <div style="background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt);min-width:130px;">paired client<br><span style="color:var(--pu);font-size:11px;">cops_ token</span></div>
+        <span style="color:var(--pu);font-size:18px;">&rarr;</span>
+        <div style="background:var(--bg);border:1px solid var(--bdr2);border-radius:8px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt2);"><span style="color:var(--grn);">&#10003;</span> token &nbsp;<span style="color:var(--grn);">&#10003;</span> Origin &nbsp;<span style="color:var(--grn);">&#10003;</span> Host</div>
+        <span style="color:var(--grn);font-size:18px;">&rarr;</span>
+        <div style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:8px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:12px;color:var(--grn);">celeste_ops.db</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:11px;flex-wrap:wrap;">
+        <div style="background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt2);min-width:130px;">random website<br><span style="color:var(--txt3);font-size:11px;">hits :43121</span></div>
+        <span style="color:var(--txt3);font-size:18px;">&rarr;</span>
+        <div style="background:var(--bg);border:1px solid var(--bdr2);border-radius:8px;padding:9px 13px;font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);"><span style="color:var(--red);">&#10007;</span> no token</div>
+        <span style="color:var(--red);font-size:18px;">&rarr;</span>
+        <div style="background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:9px 16px;font-family:'DM Mono',monospace;font-size:15px;color:var(--red);font-weight:600;">401</div>
+        <span class="cb" style="font-size:13px;margin-left:6px;">A site with no token gets a 401, even if it guesses the port.</span>
+      </div>
+    </div>
+    <!-- security points (bottom) as 2x2 -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px 28px;">
+      <div class="ci"><b>Encrypted at rest.</b> R2 keys and the backup password sit behind a macOS Keychain key; the API returns <span class="mn" style="font-size:12px;">configured: true</span>, never the value.</div>
+      <div class="ci"><b>Host-welded broker.</b> Agents reach one fixed host, SSRF-guarded against localhost and private IPs; only MCP-enabled credentials are discoverable.</div>
+      <div class="ci"><b>Verifiable releases.</b> Every build is PGP-signed. You run <span class="mn" style="font-size:12px;">gpg --verify</span> before you trust it.</div>
+      <div class="ci"><b>Sandboxed prototypes.</b> Agent-authored HTML renders in a null-origin iframe with a locked CSP, and waits for your approval to run.</div>
+      <div class="ci" style="grid-column:1 / -1;color:var(--txt3);"><b style="color:var(--txt2);">No self-approval.</b> The app's own UI uses an ephemeral in-memory token; the pairing code is the consent, so an agent can never enroll or approve itself.</div>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ LANDSCAPE / POSITIONING ══ -->
+<div class="slide" id="sLandscape">
+  <div class="sh"><span class="sl">Competitive Landscape</span><span class="sc">09 / 16</span></div>
+  <div class="h2" style="margin-bottom:14px;">The coding-agent giants are <em style="color:var(--pk);font-style:normal;">clients</em>. The local + agent-native corner is empty.</div>
+  <div style="flex:1;display:flex;gap:24px;min-height:0;">
+    <!-- 2x2 matrix -->
+    <div style="flex:1.45;position:relative;border:1px solid var(--bdr);border-radius:12px;background:var(--sur);overflow:hidden;min-height:0;">
+      <!-- winning quadrant tint (top-left) -->
+      <div style="position:absolute;left:0;top:0;width:50%;height:50%;background:var(--pkdim);"></div>
+      <!-- dividers -->
+      <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--bdr2);"></div>
+      <div style="position:absolute;top:50%;left:0;right:0;height:1px;background:var(--bdr2);"></div>
+      <!-- quadrant labels -->
+      <div style="position:absolute;top:11px;left:13px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--pk);">LOCAL &middot; AGENT-NATIVE</div>
+      <div style="position:absolute;top:11px;right:13px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--txt3);">CLOUD &middot; AGENT-NATIVE</div>
+      <div style="position:absolute;bottom:11px;left:13px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--txt3);">LOCAL &middot; HUMAN-ONLY</div>
+      <div style="position:absolute;bottom:11px;right:13px;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--txt3);">CLOUD &middot; HUMAN-ONLY</div>
+      <!-- dots -->
+      <div style="position:absolute;left:26%;top:30%;transform:translate(-50%,-50%);text-align:center;"><div style="width:14px;height:14px;border-radius:50%;background:var(--pk);margin:0 auto;box-shadow:0 0 14px var(--pkglow);"></div><div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;color:var(--wht);margin-top:5px;white-space:nowrap;">CelesteOps</div></div>
+      <div style="position:absolute;left:34%;top:43%;transform:translate(-50%,-50%);text-align:center;"><div style="width:6px;height:6px;border-radius:50%;background:var(--txt3);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--txt3);margin-top:3px;white-space:nowrap;">files + MCP</div></div>
+      <div style="position:absolute;left:68%;top:22%;transform:translate(-50%,-50%);text-align:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--pu);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt2);margin-top:4px;white-space:nowrap;">Cursor</div></div>
+      <div style="position:absolute;left:82%;top:33%;transform:translate(-50%,-50%);text-align:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--pu);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt2);margin-top:4px;white-space:nowrap;">ZenFlow</div></div>
+      <div style="position:absolute;left:67%;top:40%;transform:translate(-50%,-50%);text-align:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--pu);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt2);margin-top:4px;white-space:nowrap;">Devin</div></div>
+      <div style="position:absolute;left:25%;top:68%;transform:translate(-50%,-50%);text-align:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--cy);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt2);margin-top:4px;white-space:nowrap;">Obsidian</div></div>
+      <div style="position:absolute;left:36%;top:82%;transform:translate(-50%,-50%);text-align:center;"><div style="width:6px;height:6px;border-radius:50%;background:var(--cy);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--txt3);margin-top:3px;white-space:nowrap;">Logseq</div></div>
+      <div style="position:absolute;left:68%;top:70%;transform:translate(-50%,-50%);text-align:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--txt2);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt2);margin-top:4px;white-space:nowrap;">Notion</div></div>
+      <div style="position:absolute;left:80%;top:81%;transform:translate(-50%,-50%);text-align:center;"><div style="width:8px;height:8px;border-radius:50%;background:var(--txt2);margin:0 auto;"></div><div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt2);margin-top:4px;white-space:nowrap;">Linear / Jira</div></div>
+    </div>
+    <!-- takeaway -->
+    <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:13px;">
+      <div class="card ft"><div class="ct">The empty corner is ours</div><div class="cb" style="font-size:14px;">Local-first &times; agent-native &times; human-in-the-loop. Nobody else is in it.</div></div>
+      <div class="cl">
+        <div class="ci"><b>Coding agents are clients, not rivals.</b> Cursor, ZenFlow, and Devin write the code; CelesteOps is where you and they share one backlog. Cursor is already one of our 5 clients.</div>
+        <div class="ci"><b>Local PKM lacks the loop.</b> Obsidian + free MCP plugins can read a vault, but there's no blocking approval and no structured, dependency-aware backlog.</div>
+        <div class="ci"><b>Cloud boards lack both.</b> Notion and Linear are neither local-first nor agent-native.</div>
+      </div>
+      <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--txt3);line-height:1.6;">Adjacent / DIY: Logseq, AnyType (local PKM) &middot; Letta, mem0 (agent memory) &middot; obsidian-mcp (assemble-it-yourself)</div>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 09 COMPARISON ══ -->
+<div class="slide" id="s9">
+  <div class="sh"><span class="sl">How It Compares</span><span class="sc">09 / 13</span></div>
+  <div class="h2" style="margin-bottom:14px;">The only local-first <em style="color:var(--pk);font-style:normal;">and</em> agent-native option</div>
+  <table class="dt" style="table-layout:fixed;">
+    <thead><tr>
+      <th style="width:27%;">Capability</th>
+      <th class="us">CelesteOps</th>
+      <th>Obsidian</th>
+      <th>Notion</th>
+      <th>Linear / Jira</th>
+      <th>Raw files + MCP</th>
+    </tr></thead>
+    <tbody>
+      <tr><td>Local-first, offline, on your disk</td><td class="us"><span class="yes">●</span></td><td><span class="yes">●</span></td><td><span class="no">○</span></td><td><span class="no">○</span></td><td><span class="yes">●</span></td></tr>
+      <tr><td>Agent-native (MCP, multi-client)</td><td class="us"><span class="yes">●</span></td><td><span class="part">plugin</span></td><td><span class="part">cloud API</span></td><td><span class="part">cloud API</span></td><td><span class="part">unstructured</span></td></tr>
+      <tr><td>Shared human + agent backlog</td><td class="us"><span class="yes">●</span></td><td><span class="no">○</span></td><td><span class="part">partial</span></td><td><span class="part">partial</span></td><td><span class="no">○</span></td></tr>
+      <tr><td>Blocking approval loop</td><td class="us"><span class="yes">●</span></td><td><span class="no">○</span></td><td><span class="no">○</span></td><td><span class="part">manual</span></td><td><span class="no">○</span></td></tr>
+      <tr><td>Specs out-of-git, queryable by metadata</td><td class="us"><span class="yes">●</span></td><td><span class="part">files</span></td><td><span class="part">cloud</span></td><td><span class="no">○</span></td><td><span class="no">○</span></td></tr>
+      <tr><td>Paired, revocable per-client auth</td><td class="us"><span class="yes">●</span></td><td><span class="no">n/a</span></td><td><span class="part">cloud SSO</span></td><td><span class="part">cloud SSO</span></td><td><span class="no">○</span></td></tr>
+      <tr><td>Signed + encrypted, fully yours</td><td class="us"><span class="yes">●</span></td><td><span class="part">your files</span></td><td><span class="no">○</span></td><td><span class="no">○</span></td><td><span class="part">DIY</span></td></tr>
+    </tbody>
+  </table>
+  <div style="flex:1;display:flex;align-items:center;gap:14px;margin-top:18px;">
+    <div class="card" style="flex:1;"><div class="ct" style="color:var(--txt2);">Obsidian</div><div class="cb">A beautiful vault, for you alone. No agents in the loop, no approve button.</div></div>
+    <div class="card" style="flex:1;"><div class="ct" style="color:var(--txt2);">Notion / Linear</div><div class="cb">A board in someone else's cloud. Auth boundaries and a round-trip for every read.</div></div>
+    <div class="card ft" style="flex:1;"><div class="ct">CelesteOps</div><div class="cb">A local backlog for you <b>and your agents</b>, with an approve button other processes wait on.</div></div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 10 MONETIZATION ══ -->
+<div class="slide" id="s10">
+  <div class="sh"><span class="sl">Monetization</span><span class="sc">10 / 13</span></div>
+  <div class="h2" style="margin-bottom:16px;">Free to run. Pay for the safety net.</div>
+  <div class="bt" style="max-width:820px;margin-bottom:20px;">Direct-download, no App Store, no 30% cut. The core app is free. Paid features unlock with an <b>offline-verifiable license key</b> (Ed25519, no phone-home). The entitlement gate ships once; every future paid feature reuses it.</div>
+  <div class="c2" style="flex:1;align-content:start;">
+    <div class="card"><div class="ct" style="color:var(--txt2);">Free &middot; Core</div><div class="cl" style="margin-top:8px;"><div class="ci">The full control panel, 69 MCP tools, all 5 clients</div><div class="ci">Local SQLite, offline, paired auth, credential vault</div><div class="ci">PGP-signed builds, encrypted local backups</div></div></div>
+    <div class="card ft"><div class="ct">Pro &middot; "Lockbox" <span class="badge badge-pk" style="margin-left:6px;">paid</span></div><div class="cl" style="margin-top:8px;"><div class="ci"><b>Cloud backup to your own Google Drive</b>, encrypted, with safe restore</div><div class="ci">Bring-your-own R2 / iCloud, scheduled off-site snapshots</div><div class="ci">Next tier: <b>live multi-device sync</b>, the real local-first sync engine</div></div></div>
+  </div>
+  <div class="bt" style="margin-top:16px;font-size:14px;">Why it works: people who run agents on their laptop will pay to never lose that backlog, and to see it on a second machine. The hard part, a local-first sync substrate, is already designed. Backup is the first shippable rung.</div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 11 STATUS / TRACTION ══ -->
+<div class="slide" id="s11">
+  <div class="sh"><span class="sl">Where It Is</span><span class="sc">11 / 13</span></div>
+  <div class="h2" style="margin-bottom:18px;">Shipped, signed, and running</div>
+  <div class="stat-grid" style="margin-bottom:18px;">
+    <div class="stat-card ft"><div class="sn">v1.0.5</div><div class="slb">Public, PGP-signed macOS release</div></div>
+    <div class="stat-card"><div class="sn">69</div><div class="slb">MCP tools over a snake_case contract</div></div>
+    <div class="stat-card"><div class="sn">5</div><div class="slb">Agent clients on one DB</div></div>
+    <div class="stat-card"><div class="sn">1</div><div class="slb">SQLite file, no cloud to boot</div></div>
+  </div>
+  <div class="c3" style="flex:1;align-content:start;">
+    <div class="card"><div class="ct">Run every day</div><div class="cb">Built solo and used to operate a creator business. Every release gets verified end-to-end before it ships.</div></div>
+    <div class="card"><div class="ct">Public distribution</div><div class="cb">Source stays private; the signed app, MCP shim, one-click extension, installer, and drop-in agent skill ship from <span class="mn">github.com/whykusanagi/celeste-ops</span>.</div></div>
+    <div class="card"><div class="ct">Hardened</div><div class="cb">Token-trust auth, SSRF-guarded broker, encrypted backups, sandboxed prototypes. A security model from the first commit.</div></div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 12 ROADMAP / ASK ══ -->
+<div class="slide" id="s12">
+  <div class="sh"><span class="sl">Where It Goes</span><span class="sc">12 / 13</span></div>
+  <div class="h1" style="margin-bottom:18px;">From <em>my</em> control panel to <em>the</em> control panel.</div>
+  <div class="c3" style="flex:1;align-content:start;">
+    <div class="card"><div class="ct">Near</div><div class="cl" style="margin-top:6px;"><div class="ci">Ship Lockbox (paid cloud backup) + license gate</div><div class="ci">Google Drive, then bring-your-own providers</div></div></div>
+    <div class="card ft"><div class="ct">Next</div><div class="cl" style="margin-top:6px;"><div class="ci">Live multi-device sync (CRDT / op-log over the same provider substrate)</div><div class="ci">Team backlogs: multiple humans, shared approve queue</div></div></div>
+    <div class="card"><div class="ct">Later</div><div class="cl" style="margin-top:6px;"><div class="ci">Developer-ID / notarized + Mac App Store option</div><div class="ci">A marketplace of drop-in agent skills</div></div></div>
+  </div>
+  <div class="card" style="margin-top:18px;background:var(--pudim);border-color:var(--puglow);">
+    <div class="ct">The thesis</div>
+    <div class="cb">More creators and developers manage a stable of agents every month. They need a local, trustworthy place where those agents and the human share one backlog. That category doesn't exist yet. CelesteOps is the first one shipping.</div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+<!-- ══ 13 CLOSE / CTA ══ -->
+<div class="slide" id="s13" style="overflow:visible;">
+  <div class="sh"><span class="sl">CelesteOps</span><span class="sc">13 / 13</span></div>
+  <div style="flex:1;display:flex;flex-direction:column;justify-content:center;max-width:760px;">
+    <div id="ctaTitle" class="glitch" data-text="GET STARTED" style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(40px,5.5vw,68px);line-height:1.0;letter-spacing:-.03em;color:var(--wht);">GET STARTED</div>
+    <div class="bt" style="margin-top:18px;font-size:18px;">Download the signed app, grab a pairing code, wire your agents in one command. <span class="cursor"></span></div>
+    <div class="term" style="margin-top:22px;max-width:560px;">
+      <span class="out"># verify before you trust</span><br>
+      <span class="prompt">$</span> <span class="cmd">gpg --verify checksums.txt.asc checksums.txt</span> <span class="val">&#10003; Good signature</span><br>
+      <span class="prompt">$</span> <span class="cmd">bun run install:mcp --pair <span class="key">&lt;code&gt;</span></span>
+    </div>
+    <div style="margin-top:26px;display:flex;gap:24px;flex-wrap:wrap;">
+      <div class="tm-item">Get it<span>github.com/whykusanagi/celeste-ops</span></div>
+      <div class="tm-item">Built by<span>whykusanagi</span></div>
+      <div class="tm-item">Signing key<span>9404 90EF &middot; me@whykusanagi.xyz</span></div>
+      <div class="tm-item">Stack<span>Electrobun &middot; Bun &middot; bun:sqlite &middot; React 19</span></div>
+    </div>
+  </div>
+  <div class="bar-bot"></div>
+</div>
+
+</div><!-- /.deck -->
+
+<!-- navigation -->
+<nav class="nav" role="navigation" aria-label="Slide navigation">
+  <button class="nav-btn" id="prevBtn" aria-label="Previous slide">&#8592;</button>
+  <div class="nav-dots" id="dots"></div>
+  <button class="nav-btn" id="nextBtn" aria-label="Next slide">&#8594;</button>
+</nav>
+<div class="presenter">whykusanagi</div>
+
+<script>
+(function(){
+  const slides=Array.from(document.querySelectorAll('.slide'));
+  const dotsEl=document.getElementById('dots');
+  let cur=0;
+  slides.forEach(function(s,i){
+    const sc=s.querySelector('.sc'); if(sc) sc.textContent=('0'+(i+1)).slice(-2)+' / '+slides.length;
+    const d=document.createElement('button');
+    d.className='nav-dot'+(i===0?' active':'');
+    d.setAttribute('aria-label','Go to slide '+(i+1));
+    d.onclick=function(){go(i);};
+    dotsEl.appendChild(d);
+  });
+  function go(n){
+    slides[cur].classList.remove('active');
+    dotsEl.children[cur].classList.remove('active');
+    cur=(n+slides.length)%slides.length;
+    slides[cur].classList.add('active');
+    dotsEl.children[cur].classList.add('active');
+    slides[cur].scrollTop=0;
+  }
+  document.getElementById('prevBtn').onclick=function(){go(cur-1);};
+  document.getElementById('nextBtn').onclick=function(){go(cur+1);};
+  document.addEventListener('keydown',function(e){
+    if(e.key==='ArrowRight'||e.key==='ArrowDown'||e.key===' ') go(cur+1);
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(cur-1);
+    if(e.key==='Home') go(0);
+    if(e.key==='End') go(slides.length-1);
+  });
+  const cta=document.getElementById('ctaTitle');
+  if(cta){
+    const orig='GET STARTED';
+    const glyphs=['|','/','-','\\','_'];
+    let active=false;
+    function glitch(){
+      if(active) return;
+      active=true;
+      let t=0;
+      const iv=setInterval(function(){
+        if(t++>10){clearInterval(iv);cta.textContent=orig;active=false;return;}
+        cta.textContent=orig.split('').map(function(c){
+          return c===' '?' ':(Math.random()<.18?glyphs[Math.floor(Math.random()*glyphs.length)]:c);
+        }).join('');
+      },55);
+    }
+    setInterval(glitch,4200);
+  }
+})();
+</script>
+</body>
+</html>
