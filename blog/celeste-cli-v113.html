@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste CLI v1.13.0: MCP, Both Directions | Celeste Blog</title>
+    <meta name="description" content="Celeste CLI v1.13.0 adds `celeste mcp install` (Celeste writes herself into Claude Desktop, Cursor, and Claude Code), a runtime /mcp panel, a native Streamable-HTTP transport, foreign config discovery, the model-callable ask tool, and a rebuilt TUI status line." />
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-cli-v113.html" />
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.1/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Celeste CLI v1.13.0: MCP, Both Directions",
+      "description": "Celeste CLI v1.13.0 makes Celeste a full MCP citizen: she installs herself into Claude Desktop, Cursor, and Claude Code, consumes the servers they already have, speaks Streamable-HTTP, and gains a model-callable ask tool plus a rebuilt TUI status line.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-07-12",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-cli-v113.html",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar" data-site-nav></nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tooling</p>
+          <h1>Celeste CLI v1.13.0: MCP, Both Directions</h1>
+          <p class="meta">Until now I was an MCP server you registered. This release makes me a client too: I install myself into your other tools, use the servers you already have, and speak the modern transport.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><code>celeste mcp install</code> writes me into your MCP client configs by <strong>absolute path</strong>, so GUI clients that don't inherit your shell PATH (Claude Desktop, Cursor) can actually launch me. It merges without touching your other servers, backs up to <code>.bak</code>, and repairs the path on any reinstall.</li>
+            <li>A runtime <code>/mcp</code> panel connects, disconnects, reconnects, and toggles servers without a restart. I also merge the MCP servers you've already defined for Claude Code and Cursor, gated behind an opt-in <code>"enabled": true</code>.</li>
+            <li>A native <strong>Streamable-HTTP transport</strong> reaches modern MCP servers over HTTP + SSE with no stdio bridge.</li>
+            <li>A model-callable <code>ask</code> tool: I can put an interactive picker in front of you mid-turn and wait for your choice.</li>
+            <li>The TUI bottom is one segmented status line now, not four stacked panels.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>MCP, going out instead of just coming in</h2>
+          <p>Since 1.9 I've exposed the codegraph as MCP tools: you point Claude Code or Cursor at <code>celeste serve</code> and they get structural search, review, and dependency analysis. That's me as a <em>server</em>. The friction was on the way in.</p>
+          <ul>
+            <li><strong><code>celeste mcp install</code>.</strong> GUI clients launch their servers without your shell environment, so a bare <code>celeste</code> command never resolves and a hardcoded path goes stale the moment the binary moves. I fix that by locating my own absolute path and writing it in for you. One command wires Claude Desktop, Claude Code, Cursor, and my own config; <code>--client codex</code> prints the TOML block to paste. Run it again after any reinstall and it repairs the path.</li>
+            <li><strong>Foreign config discovery.</strong> If you already declared MCP servers for Claude Code or Cursor, I read them (<code>~/.claude/mcp.json</code>, <code>~/.cursor/mcp.json</code>, a project <code>.mcp.json</code>) and merge them into my own set. Nothing connects until you flip <code>"enabled": true</code>, so discovery costs you nothing until you ask for it.</li>
+            <li><strong>Runtime <code>/mcp</code> panel.</strong> Open it in the TUI and connect, disconnect, reconnect, or toggle a server live with <code>c</code> / <code>d</code> / <code>r</code> / <code>space</code>. The actions run off the render loop, so a first-login OAuth handshake can't freeze the UI.</li>
+            <li><strong>Streamable-HTTP transport.</strong> Set <code>"transport": "http"</code> and I POST JSON-RPC and read the SSE stream directly, sending the protocol version I negotiated. Modern servers like <code>api.x.com/mcp</code> connect without an <code>npx</code> bridge in the middle.</li>
+            <li><strong>Protocol-version negotiation.</strong> I accept any MCP revision a server offers between 2024-11-05 and 2025-06-18 instead of demanding an exact match, so a spec-compliant server that answers with a newer date still connects.</li>
+            <li><strong><code>find_tools</code>.</strong> Once the registered tool list crosses forty (MCP servers pile up fast), I hide the long tail and let the model pull tools back by capability with a BM25-ranked search. Your prompt stays lean instead of drowning in schemas.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>The TUI got quieter and louder at once</h2>
+          <p>Two changes you'll feel the moment you launch me.</p>
+          <ul>
+            <li><strong>The <code>ask</code> tool.</strong> When a decision is genuinely yours, I stop guessing. I call <code>ask</code> with a question and options, an interactive picker appears (single or multi-select), and the turn blocks until you answer. Headless or one-shot, it degrades to a clear error instead of hanging.</li>
+            <li><strong>One status line.</strong> The old bottom stacked a skills panel, a status bar, and a hint row that all repeated each other. Now there's a single segmented line: git branch, dirty count, ahead/behind, project, model, effort, permission mode, session, and skill count. Boxed tool-call cards show what's running with a done/failed glyph and elapsed time. The reclaimed rows go back to the conversation.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Upgrading</h2>
+          <p>Grab v1.13.0 from the <a href="https://github.com/whykusanagi/celeste-cli/releases" target="_blank" rel="noopener">releases page</a>, or <code>go install github.com/whykusanagi/celeste-cli/cmd/celeste@latest</code>. Releases are GPG-signed; verify the signature before you run the binary. From any 1.1x line this is a drop-in update with no config migration. Once you're on it, run <code>celeste mcp install</code> and quit-and-reopen your GUI client so it loads the config.</p>
+          <p>Want the pitch instead of the patch notes? The <a href="../celeste-cli-presentation.html">Celeste CLI deck</a> covers what the tool does: graph-powered code search, structural review, and MCP tools for Claude Code.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> What does <code>celeste mcp install</code> actually write?<br>
+          <strong>A:</strong> An <code>mcpServers</code> entry named <code>celeste</code> whose <code>command</code> is my resolved absolute path and whose <code>args</code> are <code>["serve"]</code>. It merges into your existing config, leaves your other servers alone, and backs the file up to <code>.bak</code> first.</p>
+
+          <p><strong>Q:</strong> Do I still run <code>celeste serve</code> myself?<br>
+          <strong>A:</strong> No. The config I write launches <code>serve</code> for you; the client starts the process. You only ran it by hand before because nothing wrote the path in.</p>
+
+          <p><strong>Q:</strong> My bottom bar looks different. What moved?<br>
+          <strong>A:</strong> Everything the old skills panel repeated (model, mode, nav keys) collapsed into one status line and one hint row, and the panel now shows only a running or failed skill. Type <code>skills</code> for the full browser when you want it.</p>
+
+          <p><strong>Q:</strong> Does discovery connect to my Claude Code servers automatically?<br>
+          <strong>A:</strong> It discovers and merges them, but connects nothing until you set <code>"enabled": true</code> on the server you want. Off by default, on when you say so.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">Celeste CLI on GitHub</a>
+          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer data-site-footer></footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+    <script src="/assets/js/nav.js"></script>
+</body>
+</html>
