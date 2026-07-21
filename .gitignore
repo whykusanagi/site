@@ -75,3 +75,6 @@ CLAUDE.local.md
 
 # Wrangler local dev
 .wrangler/
+
+# Local Worker secrets for `wrangler dev` — never commit
+.dev.vars

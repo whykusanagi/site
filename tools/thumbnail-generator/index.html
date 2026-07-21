@@ -3080,6 +3080,64 @@
         // STATE PERSISTENCE - URL PARAMETER HANDLING
         // ============================================
 
+        // URL bridge for the background / warning-overlay / lewd-frame controls.
+        // loadState() already validates and applies these groups, so all that is
+        // needed here is encode + decode. Specs are [paramName, stateKey, type].
+        // ponytail: one table instead of an if-per-param — 13 controls, one shape.
+        const WARNING_URL_SPEC = [
+            ['warnEnabled', 'enabled',      'bool'],
+            ['warnTop',     'topBanner',    'str'],
+            ['warnBoss',    'bossName',     'str'],
+            ['warnBottom',  'bottomBanner', 'str'],
+            ['warnColor',   'colorTheme',   'str'],
+        ];
+        const LEWD_URL_SPEC = [
+            ['lewdEnabled',  'enabled',      'bool'],
+            ['lewdNsfw',     'nsfw',         'bool'],
+            ['lewdPhrases',  'showPhrases',  'bool'],
+            ['lewdGlow',     'glow',         'bool'],
+            ['lewdColor',    'colorPreset',  'str'],
+            ['lewdFontSize', 'fontSize',     'num'],
+            ['lewdInset',    'inset',        'num'],
+            ['lewdRadius',   'cornerRadius', 'num'],
+        ];
+
+        /**
+         * Decodes a param group into the nested shape loadState() expects.
+         * @returns {Object|undefined} undefined when the group has no params set
+         */
+        function parseGroupParams(params, spec) {
+            const out = {};
+            for (const [param, key, type] of spec) {
+                const raw = params.get(param);
+                if (raw === null) continue;
+                if (type === 'bool') {
+                    out[key] = raw === '1' || raw === 'true';
+                } else if (type === 'num') {
+                    const n = Number(raw);
+                    if (Number.isFinite(n)) out[key] = n;
+                } else {
+                    out[key] = raw;
+                }
+            }
+            return Object.keys(out).length ? out : undefined;
+        }
+
+        /**
+         * Encodes a nested state group into params. Both groups default to
+         * enabled:false, so a disabled group emits nothing at all. When enabled,
+         * every key is emitted — nsfw/showPhrases/glow default true, so "skip
+         * falsy" would silently drop a deliberate opt-out.
+         */
+        function encodeGroupParams(params, spec, group) {
+            if (!group || !group.enabled) return;
+            for (const [param, key, type] of spec) {
+                const v = group[key];
+                if (v === undefined || v === null || v === '') continue;
+                params.set(param, type === 'bool' ? (v ? '1' : '0') : String(v));
+            }
+        }
+
         /**
          * Parses and validates state from URL query parameters
          * @returns {Object|null} Validated state object, or null if no parameters present
@@ -3138,6 +3196,11 @@
                 iconTextScale:     params.get('iconTextScale'),      // "0.5".."2" or null
                 iconLogoPosition:  params.get('iconLogoPosition'),   // 'center'|'corners' or null
                 iconFitCircle:     params.get('iconFitCircle'),      // '1' or null
+                // Background theme ('custom' is a local file upload — not addressable)
+                bgTheme: BG_URLS[params.get('bgTheme')] ? params.get('bgTheme') : undefined,
+                // Overlay groups — undefined when no group params present
+                warningScreen: parseGroupParams(params, WARNING_URL_SPEC),
+                lewdFrame:     parseGroupParams(params, LEWD_URL_SPEC),
             };
         }
 
@@ -3257,6 +3320,7 @@
                 subjectSize,
                 subjectPosition,
                 characterImage: getCurrentCharacterImage(),
+                bgTheme: currentBackgroundTheme,
                 warningScreen: { ...warningState },
                 lewdFrame: {
                     ...lewdFrameState,
@@ -3376,6 +3440,15 @@
                 params.set('iconFitCircle', '1');
             }
 
+            // Background theme (skip default; 'custom' is a local file, not shareable)
+            if (state.bgTheme && state.bgTheme !== 'seamless' && state.bgTheme !== 'custom') {
+                params.set('bgTheme', state.bgTheme);
+            }
+
+            // Warning overlay + lewd frame — emit nothing while disabled
+            encodeGroupParams(params, WARNING_URL_SPEC, state.warningScreen);
+            encodeGroupParams(params, LEWD_URL_SPEC, state.lewdFrame);
+
             const newURL = params.toString()
                 ? `${window.location.pathname}?${params.toString()}`
                 : window.location.pathname;
@@ -3468,6 +3541,14 @@
                     } else {
                         subjectImg.addEventListener('load', applySubjectSettings, { once: true });
                     }
+                }
+
+                // Restore background theme (if saved). Applied before the overlays
+                // so they draw over the final background.
+                if (state.bgTheme && BG_URLS[state.bgTheme]) {
+                    setBackgroundTheme(state.bgTheme);
+                    const bgSelect = document.getElementById('bg-theme-select');
+                    if (bgSelect) bgSelect.value = state.bgTheme;
                 }
 
                 // Restore warning-overlay state (if saved).
@@ -3775,8 +3856,28 @@
 
             // Load saved state after all components are ready
             // Small delay to ensure all existing initialization is complete
-            setTimeout(() => {
+            setTimeout(async () => {
                 loadState();
+
+                // Signal render-complete for headless capture. Without this a
+                // screenshot can fire before loadState() runs and silently
+                // capture page defaults instead of the requested state.
+                // /api/thumbnail waits on this selector.
+                try {
+                    await Promise.all([...document.images]
+                        .filter(img => !img.complete)
+                        .map(img => new Promise(res => {
+                            img.addEventListener('load', res, { once: true });
+                            img.addEventListener('error', res, { once: true });
+                        })));
+                    await document.fonts.ready;
+                } catch (e) {
+                    console.warn('⚠️ Readiness wait failed, flagging anyway:', e);
+                }
+                // ponytail: images + fonts only — the canvas overlays (warning,
+                // lewd frame, iconography) all draw synchronously inside loadState.
+                document.body.dataset.thumbReady = '1';
+                console.log('🏁 Thumbnail ready for capture');
             }, 100);
         }
 
