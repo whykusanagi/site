@@ -31,12 +31,26 @@ function json(body, status) {
   });
 }
 
-export async function handleThumbnail(request, env) {
+export async function handleThumbnail(request, env, ctx) {
   if (!env.CF_ACCOUNT_ID || !env.BROWSER_RENDERING_TOKEN) {
     return json({ error: 'Thumbnail rendering is not configured' }, 503);
   }
 
   const params = new URLSearchParams(new URL(request.url).search);
+
+  // Only seeded renders are cacheable. Without ?seed= the whole point is a
+  // fresh roll of the dice per call, so caching would pin one image forever.
+  // Params are sorted so callers passing them in a different order still share
+  // an entry.
+  const cacheable = Boolean(params.get('seed'));
+  const cache = caches.default;
+  let cacheKey;
+  if (cacheable) {
+    params.sort();
+    cacheKey = new Request(`${new URL(request.url).origin}/api/thumbnail?${params}`);
+    const hit = await cache.match(cacheKey);
+    if (hit) return hit;
+  }
 
   const aspectRatio = params.get('aspectRatio') || DEFAULT_ASPECT_RATIO;
   const viewport = ASPECT_RATIOS[aspectRatio];
@@ -80,12 +94,16 @@ export async function handleThumbnail(request, env) {
     return json({ error: 'Thumbnail render failed', status: rendered.status }, 502);
   }
 
-  return new Response(rendered.body, {
+  const response = new Response(rendered.body, {
     headers: {
       'Content-Type': 'image/png',
       'Content-Disposition': `inline; filename="thumbnail-${aspectRatio.replace(':', 'x')}.png"`,
-      // Renders are deterministic per query string, so let the edge hold them.
       'Cache-Control': 'public, max-age=3600',
     },
   });
+
+  if (cacheable) {
+    ctx.waitUntil(cache.put(cacheKey, response.clone()));
+  }
+  return response;
 }

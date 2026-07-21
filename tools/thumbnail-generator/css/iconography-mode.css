@@ -61,17 +61,21 @@
     transform-box: fill-box;
 }
 
-/* Stagger phases — 10 buckets, evenly spaced over the cycle */
-.icon-star.ph0 { animation-delay: 0s;     }
-.icon-star.ph1 { animation-delay: 0.32s;  }
-.icon-star.ph2 { animation-delay: 0.64s;  }
-.icon-star.ph3 { animation-delay: 0.96s;  }
-.icon-star.ph4 { animation-delay: 1.28s;  }
-.icon-star.ph5 { animation-delay: 1.60s;  }
-.icon-star.ph6 { animation-delay: 1.92s;  }
-.icon-star.ph7 { animation-delay: 2.24s;  }
-.icon-star.ph8 { animation-delay: 2.56s;  }
-.icon-star.ph9 { animation-delay: 2.88s;  }
+/* Stagger phases — 10 buckets, evenly spaced over the cycle.
+   Delays are NEGATIVE so each bucket starts already that far into the cycle.
+   A positive delay would hold every star at the 0% keyframe until it elapsed,
+   so for the first 2.88s the field switches on progressively instead of
+   showing the full small/large glow mix — which a capture would catch. */
+.icon-star.ph0 { animation-delay: 0s;      }
+.icon-star.ph1 { animation-delay: -0.32s;  }
+.icon-star.ph2 { animation-delay: -0.64s;  }
+.icon-star.ph3 { animation-delay: -0.96s;  }
+.icon-star.ph4 { animation-delay: -1.28s;  }
+.icon-star.ph5 { animation-delay: -1.60s;  }
+.icon-star.ph6 { animation-delay: -1.92s;  }
+.icon-star.ph7 { animation-delay: -2.24s;  }
+.icon-star.ph8 { animation-delay: -2.56s;  }
+.icon-star.ph9 { animation-delay: -2.88s;  }
 
 /* ============================================================
  * Centered character (reuse the same rules hero-mode applies).

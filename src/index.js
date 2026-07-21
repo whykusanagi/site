@@ -28,7 +28,7 @@ export default {
         return handleCountdownGenerate(request);
       }
       if (url.pathname === '/api/thumbnail') {
-        return handleThumbnail(request, env);
+        return handleThumbnail(request, env, ctx);
       }
       if (url.pathname === '/api/chat') {
         return handleProxyRequest(request, env);
