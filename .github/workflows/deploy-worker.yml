@@ -36,14 +36,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
+      # No `cache: npm` and no `npm ci`: both require a committed
+      # package-lock.json, which .gitignore deliberately excludes. That
+      # mismatch failed every run of this workflow with "Dependencies lock
+      # file is not found". If the lock file is ever tracked, switch back to
+      # `cache: npm` + `npm ci` for reproducible installs.
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       - name: Deploy Worker
         run: npx wrangler deploy
