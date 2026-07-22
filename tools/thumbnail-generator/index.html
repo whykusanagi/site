@@ -966,7 +966,12 @@
                     density: CONFIG.flowParticles.density,
                     speed: CONFIG.flowParticles.speed,
                     enabled: CONFIG.flowParticles.enabled,
-                    glowColor: getCurrentGlowColor()
+                    glowColor: getCurrentGlowColor(),
+                    // Without a target the component spawns every particle from
+                    // the container centre, and per-frame drag (vx *= 0.90) kills
+                    // velocity within ~30 frames — so the whole field stays a
+                    // ~78px blob dead centre instead of tracing the character.
+                    target: '#celeste-image'
                 });
                 if (CONFIG.flowParticles.enabled) {
                     components.flowParticles.play();
@@ -3946,6 +3951,9 @@
                 // applied per frame (vx *= 0.90), so step count is what matters.
                 const fp = components.flowParticles;
                 if (fp && CONFIG.flowParticles.enabled && typeof fp.updateParticles === 'function') {
+                    // Re-measure first: bounds are taken in start(), which can run
+                    // before the character image has loaded and laid out.
+                    fp.updateCharacterBounds?.();
                     for (let i = 0; i < PREWARM_FRAMES; i++) fp.updateParticles(1 / 60);
                     fp.render?.();
                 }
