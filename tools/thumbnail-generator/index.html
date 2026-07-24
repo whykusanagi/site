@@ -10,8 +10,8 @@
          window, and a headless screenshot captured that fallback. crossorigin is
          required even same-origin: browsers fetch fonts in CORS mode, so a
          preload without it mismatches the @font-face fetch and double-loads. -->
-    <link rel="preload" href="fonts/CourierPrime-Bold.woff2" as="font" type="font/woff2" crossorigin>
-    <link rel="preload" href="fonts/CourierPrime-Regular.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/CourierPrime-Bold.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="fonts/CourierPrime-Regular.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="css/seamless-background.css">
     <link rel="stylesheet" href="css/warning-overlay.css">
     <link rel="stylesheet" href="css/lewd-frame.css">
@@ -23,19 +23,22 @@
            different monospace while the live page (on a Mac) looked correct.
            Courier Prime (OFL) is a metric-compatible free equivalent; 'self'
            in the CSP font-src covers these same-origin files. */
+        /* Full TTFs (complete charset). NOT a Google subset: the latin-ext
+           subset woff2 loaded fine but had no A-Z glyphs, so every letter fell
+           back to a proportional sans while document.fonts reported "loaded". */
         @font-face {
             font-family: 'Courier Prime';
             font-style: normal;
             font-weight: 400;
             font-display: block; /* block, not swap: we WAIT for it via the ready gate, and a swap would risk capturing the fallback */
-            src: url('fonts/CourierPrime-Regular.woff2') format('woff2');
+            src: url('fonts/CourierPrime-Regular.ttf') format('truetype');
         }
         @font-face {
             font-family: 'Courier Prime';
             font-style: normal;
             font-weight: 700;
             font-display: block;
-            src: url('fonts/CourierPrime-Bold.woff2') format('woff2');
+            src: url('fonts/CourierPrime-Bold.ttf') format('truetype');
         }
 
         * {
