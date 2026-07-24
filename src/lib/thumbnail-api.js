@@ -36,18 +36,22 @@ export async function handleThumbnail(request, env, ctx) {
     return json({ error: 'Thumbnail rendering is not configured' }, 503);
   }
 
-  const params = new URLSearchParams(new URL(request.url).search);
+  const url = new URL(request.url);
+  const params = new URLSearchParams(url.search);
 
-  // Only seeded renders are cacheable. Without ?seed= the whole point is a
-  // fresh roll of the dice per call, so caching would pin one image forever.
-  // Params are sorted so callers passing them in a different order still share
-  // an entry.
-  const cacheable = Boolean(params.get('seed'));
+  // Every distinct query caches its PNG — a render is a pure function of the
+  // query, and re-booting a cold headless browser per call is the whole cost
+  // (~25s), so a cache hit (~0.3s) is the entire optimization. Unseeded queries
+  // cache too: the random particles/glitch are rolled once, then that image is
+  // pinned for the query. Pass `nocache=1` to force a fresh render (e.g. to
+  // re-roll an unseeded random); it's stripped from the key and the page URL so
+  // it never fragments the cache or reaches the page.
+  const bust = params.has('nocache');
+  params.delete('nocache');
+  params.sort(); // canonical key: callers passing params in any order share an entry
   const cache = caches.default;
-  let cacheKey;
-  if (cacheable) {
-    params.sort();
-    cacheKey = new Request(`${new URL(request.url).origin}/api/thumbnail?${params}`);
+  const cacheKey = new Request(`${url.origin}/api/thumbnail?${params}`);
+  if (!bust) {
     const hit = await cache.match(cacheKey);
     if (hit) return hit;
   }
@@ -64,7 +68,13 @@ export async function handleThumbnail(request, env, ctx) {
   // Only the query is caller-supplied; the origin and path are fixed, so there
   // is no SSRF surface. The generator page validates every parameter itself and
   // falls back to defaults for anything invalid.
-  const target = `${GENERATOR_URL}?${params.toString()}`;
+  let target = `${GENERATOR_URL}?${params.toString()}`;
+
+  // Browser Rendering caches screenshots by target URL, so a bust must also
+  // present a novel URL or BR just replays its cached shot (~0.4s) instead of
+  // re-rendering. The page ignores the extra param. Only added on a bust, so it
+  // never fragments the normal shared cache.
+  if (bust) target += `&_cb=${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
   // quickAction("screenshot", ...) takes the same options as the REST
   // /screenshot endpoint and returns a Response whose body is the image.
@@ -103,11 +113,15 @@ export async function handleThumbnail(request, env, ctx) {
     headers: {
       'Content-Type': 'image/png',
       'Content-Disposition': `inline; filename="thumbnail-${aspectRatio.replace(':', 'x')}.png"`,
-      'Cache-Control': 'public, max-age=3600',
+      // no-store on a bust so Cloudflare's edge (which auto-caches any public
+      // response) doesn't stash the forced-fresh render — otherwise nocache=1
+      // would re-roll once and then be pinned again. 1h edge TTL otherwise; a
+      // page/asset change takes up to that long to fully reflect in cached PNGs.
+      'Cache-Control': bust ? 'no-store' : 'public, max-age=3600',
     },
   });
 
-  if (cacheable) {
+  if (!bust) {
     ctx.waitUntil(cache.put(cacheKey, response.clone()));
   }
   return response;
