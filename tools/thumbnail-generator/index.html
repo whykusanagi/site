@@ -9,6 +9,27 @@
     <link rel="stylesheet" href="css/lewd-frame.css">
     <link rel="stylesheet" href="css/iconography-mode.css">
     <style>
+        /* Self-hosted so it renders identically everywhere. The page previously
+           relied on 'Courier New', a macOS/Windows system font absent from
+           Cloudflare's headless Linux Chrome — so /api/thumbnail fell back to a
+           different monospace while the live page (on a Mac) looked correct.
+           Courier Prime (OFL) is a metric-compatible free equivalent; 'self'
+           in the CSP font-src covers these same-origin files. */
+        @font-face {
+            font-family: 'Courier Prime';
+            font-style: normal;
+            font-weight: 400;
+            font-display: block; /* block, not swap: we WAIT for it via the ready gate, and a swap would risk capturing the fallback */
+            src: url('fonts/CourierPrime-Regular.woff2') format('woff2');
+        }
+        @font-face {
+            font-family: 'Courier Prime';
+            font-style: normal;
+            font-weight: 700;
+            font-display: block;
+            src: url('fonts/CourierPrime-Bold.woff2') format('woff2');
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -30,7 +51,9 @@
         body {
             width: var(--canvas-w);
             height: var(--canvas-h);
-            font-family: 'Courier New', monospace;
+            /* Courier Prime (self-hosted) first; Courier New kept as the local
+               fallback so nothing changes for a Mac before the woff2 loads. */
+            font-family: 'Courier Prime', 'Courier New', monospace;
             background: #000;
             overflow: hidden !important;
             color: #00ffff;
@@ -3930,6 +3953,14 @@
                             img.addEventListener('load', res, { once: true });
                             img.addEventListener('error', res, { once: true });
                         })));
+                    // Force the display font to load rather than trust lazy
+                    // triggering — the title (700) and subtitle (400) both use
+                    // Courier Prime, and a headless capture must not fire before
+                    // it resolves or it renders the fallback monospace.
+                    await Promise.all([
+                        document.fonts.load('400 36px "Courier Prime"'),
+                        document.fonts.load('700 80px "Courier Prime"'),
+                    ]);
                     await document.fonts.ready;
                 } catch (e) {
                     console.warn('⚠️ Readiness wait failed, flagging anyway:', e);
