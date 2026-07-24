@@ -3,12 +3,12 @@
  *
  * The generator page (tools/thumbnail-generator/index.html) already takes its
  * entire state from query parameters, so this endpoint is a thin shim: forward
- * the caller's query to the page, screenshot it via Cloudflare Browser
- * Rendering, stream the PNG back.
+ * the caller's query to the page, screenshot it via the Browser Rendering
+ * binding, stream the PNG back.
  *
- * Requires two Worker secrets (`wrangler secret put`):
- *   CF_ACCOUNT_ID            - the Cloudflare account id
- *   BROWSER_RENDERING_TOKEN  - API token with "Browser Rendering - Edit"
+ * Uses the `BROWSER` binding (wrangler.toml `[browser]`) — no API token. The
+ * binding is granted at deploy time, so there is nothing to configure at
+ * runtime beyond the binding existing.
  */
 
 const GENERATOR_URL = 'https://whykusanagi.xyz/tools/thumbnail-generator/index.html';
@@ -32,7 +32,7 @@ function json(body, status) {
 }
 
 export async function handleThumbnail(request, env, ctx) {
-  if (!env.CF_ACCOUNT_ID || !env.BROWSER_RENDERING_TOKEN) {
+  if (!env.BROWSER) {
     return json({ error: 'Thumbnail rendering is not configured' }, 503);
   }
 
@@ -66,31 +66,29 @@ export async function handleThumbnail(request, env, ctx) {
   // falls back to defaults for anything invalid.
   const target = `${GENERATOR_URL}?${params.toString()}`;
 
-  const rendered = await fetch(
-    `https://api.cloudflare.com/client/v4/accounts/${env.CF_ACCOUNT_ID}/browser-rendering/screenshot`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${env.BROWSER_RENDERING_TOKEN}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        url: target,
-        viewport,
-        // The page sets data-thumb-ready only once loadState() has applied the
-        // query params and images/fonts have settled. loadState() runs behind
-        // `await initComponents()` plus a 100ms timer, so without this gate the
-        // screenshot races it and silently captures page defaults.
-        waitForSelector: { selector: 'body[data-thumb-ready]', timeout: 25000 },
-        screenshotOptions: { type: 'png' },
-        gotoOptions: { waitUntil: 'domcontentloaded', timeout: 30000 },
-      }),
-    },
-  );
+  // quickAction("screenshot", ...) takes the same options as the REST
+  // /screenshot endpoint and returns a Response whose body is the image.
+  let rendered;
+  try {
+    rendered = await env.BROWSER.quickAction('screenshot', {
+      url: target,
+      viewport,
+      // The page sets data-thumb-ready only once loadState() has applied the
+      // query params and images/fonts have settled. loadState() runs behind
+      // `await initComponents()` plus a 100ms timer, so without this gate the
+      // screenshot races it and silently captures page defaults.
+      waitForSelector: { selector: 'body[data-thumb-ready]', timeout: 25000 },
+      screenshotOptions: { type: 'png' },
+      gotoOptions: { waitUntil: 'domcontentloaded', timeout: 30000 },
+    });
+  } catch (err) {
+    console.error('Browser Rendering binding threw:', err?.stack || err);
+    return json({ error: 'Thumbnail render failed', detail: String(err) }, 502);
+  }
 
   if (!rendered.ok) {
     // Body may be JSON or text depending on where it failed; log verbatim.
-    console.error('Browser Rendering failed:', rendered.status, await rendered.text());
+    console.error('Browser Rendering failed:', rendered.status, await rendered.clone().text());
     return json({ error: 'Thumbnail render failed', status: rendered.status }, 502);
   }
 
