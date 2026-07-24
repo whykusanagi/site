@@ -107,7 +107,7 @@ export class LogoComponent {
                 0 0 25px rgba(139, 92, 246, 0.4)
             `,
             letterSpacing: '6px',
-            fontFamily: "'Courier New', monospace",
+            fontFamily: "'Courier Prime', 'Courier New', monospace",
             textTransform: 'uppercase',
             whiteSpace: 'nowrap'
         });
@@ -125,7 +125,7 @@ export class LogoComponent {
                 color: '#d94f90',
                 textShadow: '0 0 8px rgba(217, 79, 144, 0.6)',
                 letterSpacing: '2px',
-                fontFamily: "'Courier New', monospace",
+                fontFamily: "'Courier Prime', 'Courier New', monospace",
                 opacity: '0.7',
                 whiteSpace: 'nowrap'
             });
