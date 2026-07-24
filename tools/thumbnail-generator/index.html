@@ -4,6 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=1920, height=1080">
     <title>YouTube Thumbnail Generator - Corrupted Theme</title>
+    <!-- Preload the display font so it's in cache before ANY text paints. Without
+         this, a heavy render (warning overlay draws a big canvas synchronously in
+         loadState) paints the title in the fallback during font-display:block's
+         window, and a headless screenshot captured that fallback. crossorigin is
+         required even same-origin: browsers fetch fonts in CORS mode, so a
+         preload without it mismatches the @font-face fetch and double-loads. -->
+    <link rel="preload" href="fonts/CourierPrime-Bold.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/CourierPrime-Regular.woff2" as="font" type="font/woff2" crossorigin>
     <link rel="stylesheet" href="css/seamless-background.css">
     <link rel="stylesheet" href="css/warning-overlay.css">
     <link rel="stylesheet" href="css/lewd-frame.css">
