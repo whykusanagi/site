@@ -77,9 +77,16 @@ export async function handleThumbnail(request, env, ctx) {
       // query params and images/fonts have settled. loadState() runs behind
       // `await initComponents()` plus a 100ms timer, so without this gate the
       // screenshot races it and silently captures page defaults.
-      waitForSelector: { selector: 'body[data-thumb-ready]', timeout: 25000 },
+      //
+      // Timeout is a CEILING, not a fixed wait — it resolves the instant the
+      // selector appears, so a high ceiling never slows a fast render. Set near
+      // Browser Rendering's 60s max because a cold capture pulls several MB of
+      // character/background PNGs; heavy combos (warning overlay + dense
+      // particles + a big bg) were blowing a 25s ceiling and 422-ing.
+      // ponytail: raise the ceiling now; the real fix is lighter assets.
+      waitForSelector: { selector: 'body[data-thumb-ready]', timeout: 55000 },
       screenshotOptions: { type: 'png' },
-      gotoOptions: { waitUntil: 'domcontentloaded', timeout: 30000 },
+      gotoOptions: { waitUntil: 'domcontentloaded', timeout: 55000 },
     });
   } catch (err) {
     console.error('Browser Rendering binding threw:', err?.stack || err);
