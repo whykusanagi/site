@@ -14,7 +14,7 @@
 
 import { handleProxyRequest } from './lib/celeste-proxy.js';
 import { handleCountdownPresets, handleCountdownGenerate } from './lib/countdown-api.js';
-import { handleThumbnail } from './lib/thumbnail-api.js';
+import { handleRender } from './lib/render-api.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -28,7 +28,7 @@ export default {
         return handleCountdownGenerate(request);
       }
       if (url.pathname === '/api/thumbnail') {
-        return handleThumbnail(request, env, ctx);
+        return handleRender(request, env, ctx, 'thumbnail');
       }
       if (url.pathname === '/api/chat') {
         return handleProxyRequest(request, env);

@@ -1,28 +1,40 @@
 /**
- * /api/thumbnail — renders the thumbnail generator headlessly and returns a PNG.
+ * /api/<tool> — renders a query-param-driven generator page headlessly and
+ * returns a PNG.
  *
- * The generator page (tools/thumbnail-generator/index.html) already takes its
- * entire state from query parameters, so this endpoint is a thin shim: forward
- * the caller's query to the page, screenshot it via the Browser Rendering
- * binding, stream the PNG back.
+ * Each generator page already takes its entire state from query parameters, so
+ * this endpoint is a thin shim: forward the caller's query to the page,
+ * screenshot it via the Browser Rendering binding, stream the PNG back. The
+ * only per-tool facts are in TOOLS below.
  *
  * Uses the `BROWSER` binding (wrangler.toml `[browser]`) — no API token. The
  * binding is granted at deploy time, so there is nothing to configure at
  * runtime beyond the binding existing.
  */
 
-const GENERATOR_URL = 'https://whykusanagi.xyz/tools/thumbnail-generator/index.html';
-
-// Mirrors ASPECT_RATIOS in tools/thumbnail-generator/index.html.
-// ponytail: duplicated rather than fetched — five constants that change ~never.
-const ASPECT_RATIOS = {
-  '16:9': { width: 1920, height: 1080 },
-  '2:1':  { width: 1920, height: 960  },
-  '1:1':  { width: 1920, height: 1920 },
-  '4:5':  { width: 1920, height: 2400 },
-  '9:16': { width: 1080, height: 1920 },
+/**
+ * Per-tool render config.
+ *
+ * `sizes` mirrors each page's own size table. ponytail: duplicated rather than
+ * fetched — a handful of constants that change ~never. A drift between this
+ * table and the page produces letterboxed PNGs rather than an error, so each
+ * tool's table is asserted against its source in that tool's test.
+ */
+export const TOOLS = {
+  thumbnail: {
+    url: 'https://whykusanagi.xyz/tools/thumbnail-generator/index.html',
+    ready: 'body[data-thumb-ready]',
+    sizeParam: 'aspectRatio',
+    defaultSize: '16:9',
+    sizes: {
+      '16:9': { width: 1920, height: 1080 },
+      '2:1':  { width: 1920, height: 960  },
+      '1:1':  { width: 1920, height: 1920 },
+      '4:5':  { width: 1920, height: 2400 },
+      '9:16': { width: 1080, height: 1920 },
+    },
+  },
 };
-const DEFAULT_ASPECT_RATIO = '16:9';
 
 function json(body, status) {
   return new Response(JSON.stringify(body), {
@@ -31,7 +43,10 @@ function json(body, status) {
   });
 }
 
-export async function handleThumbnail(request, env, ctx) {
+export async function handleRender(request, env, ctx, toolName) {
+  const cfg = TOOLS[toolName];
+  if (!cfg) return json({ error: 'Unknown tool' }, 404);
+
   if (!env.BROWSER) {
     return json({ error: 'Thumbnail rendering is not configured' }, 503);
   }
@@ -50,43 +65,50 @@ export async function handleThumbnail(request, env, ctx) {
   params.delete('nocache');
   params.sort(); // canonical key: callers passing params in any order share an entry
   const cache = caches.default;
-  const cacheKey = new Request(`${url.origin}/api/thumbnail?${params}`);
+  // Path-scoped so two tools with overlapping params cannot collide.
+  const cacheKey = new Request(`${url.origin}/api/${toolName}?${params}`);
   if (!bust) {
     const hit = await cache.match(cacheKey);
     if (hit) return hit;
   }
 
-  const aspectRatio = params.get('aspectRatio') || DEFAULT_ASPECT_RATIO;
-  const viewport = ASPECT_RATIOS[aspectRatio];
+  const size = params.get(cfg.sizeParam) || cfg.defaultSize;
+  const viewport = cfg.sizes[size];
   if (!viewport) {
     return json({
-      error: 'Unknown aspectRatio',
-      supported: Object.keys(ASPECT_RATIOS),
+      error: `Unknown ${cfg.sizeParam}`,
+      supported: Object.keys(cfg.sizes),
     }, 400);
   }
 
   // Only the query is caller-supplied; the origin and path are fixed, so there
   // is no SSRF surface. The generator page validates every parameter itself and
   // falls back to defaults for anything invalid.
-  let target = `${GENERATOR_URL}?${params.toString()}`;
+  //
+  // Built with URL rather than string concatenation because a tool's configured
+  // url may already carry its own query (e.g. `?embed=1`), which a second `?`
+  // would corrupt. Caller params are copied on top.
+  const target = new URL(cfg.url);
+  for (const [k, v] of params) target.searchParams.set(k, v);
 
   // Browser Rendering caches screenshots by target URL, so a bust must also
   // present a novel URL or BR just replays its cached shot (~0.4s) instead of
   // re-rendering. The page ignores the extra param. Only added on a bust, so it
   // never fragments the normal shared cache.
-  if (bust) target += `&_cb=${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
+  if (bust) {
+    target.searchParams.set('_cb', Date.now().toString(36) + Math.random().toString(36).slice(2, 8));
+  }
 
   // quickAction("screenshot", ...) takes the same options as the REST
   // /screenshot endpoint and returns a Response whose body is the image.
   let rendered;
   try {
     rendered = await env.BROWSER.quickAction('screenshot', {
-      url: target,
+      url: target.toString(),
       viewport,
-      // The page sets data-thumb-ready only once loadState() has applied the
-      // query params and images/fonts have settled. loadState() runs behind
-      // `await initComponents()` plus a 100ms timer, so without this gate the
-      // screenshot races it and silently captures page defaults.
+      // The page sets its ready flag only once it has applied the query params
+      // and images/fonts have settled. Without this gate the screenshot races
+      // that and silently captures page defaults.
       //
       // Timeout is a CEILING, not a fixed wait — it resolves the instant the
       // selector appears, so a high ceiling never slows a fast render. Set near
@@ -94,25 +116,25 @@ export async function handleThumbnail(request, env, ctx) {
       // character/background PNGs; heavy combos (warning overlay + dense
       // particles + a big bg) were blowing a 25s ceiling and 422-ing.
       // ponytail: raise the ceiling now; the real fix is lighter assets.
-      waitForSelector: { selector: 'body[data-thumb-ready]', timeout: 55000 },
+      waitForSelector: { selector: cfg.ready, timeout: 55000 },
       screenshotOptions: { type: 'png' },
       gotoOptions: { waitUntil: 'domcontentloaded', timeout: 55000 },
     });
   } catch (err) {
     console.error('Browser Rendering binding threw:', err?.stack || err);
-    return json({ error: 'Thumbnail render failed', detail: String(err) }, 502);
+    return json({ error: 'Render failed', detail: String(err) }, 502);
   }
 
   if (!rendered.ok) {
     // Body may be JSON or text depending on where it failed; log verbatim.
     console.error('Browser Rendering failed:', rendered.status, await rendered.clone().text());
-    return json({ error: 'Thumbnail render failed', status: rendered.status }, 502);
+    return json({ error: 'Render failed', status: rendered.status }, 502);
   }
 
   const response = new Response(rendered.body, {
     headers: {
       'Content-Type': 'image/png',
-      'Content-Disposition': `inline; filename="thumbnail-${aspectRatio.replace(':', 'x')}.png"`,
+      'Content-Disposition': `inline; filename="${toolName}-${size.replace(':', 'x')}.png"`,
       // no-store on a bust so Cloudflare's edge (which auto-caches any public
       // response) doesn't stash the forced-fresh render — otherwise nocache=1
       // would re-roll once and then be pinned again. 1h edge TTL otherwise; a
