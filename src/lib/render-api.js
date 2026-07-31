@@ -23,6 +23,11 @@
 export const TOOLS = {
   thumbnail: {
     url: 'https://whykusanagi.xyz/tools/thumbnail-generator/index.html',
+    // tools/thumbnail-generator/index.html sets this attribute only once
+    // loadState() has applied the query params and images/fonts have
+    // settled. loadState() runs behind `await initComponents()` plus a
+    // 100ms timer — the source of the race the generic ready-selector
+    // comment below warns about, for this tool specifically.
     ready: 'body[data-thumb-ready]',
     sizeParam: 'aspectRatio',
     defaultSize: '16:9',
@@ -90,15 +95,16 @@ export async function handleRender(request, env, ctx, toolName) {
   // would corrupt. Appends rather than sets: for thumbnail, cfg.url carries no
   // query, so appending every caller param reproduces the old
   // `${GENERATOR_URL}?${params.toString()}` byte-for-byte, including any
-  // duplicate keys in their original order. That parity matters because both
-  // the page's own `.get()` and this function's `params.get(cfg.sizeParam)`
-  // above read the *first* occurrence of a repeated key — set() would let a
-  // later duplicate silently win in the forwarded URL while the viewport and
-  // Content-Disposition filename stayed keyed off the first one, so the
-  // rendered image and its reported size could disagree. This also means a
-  // caller cannot override a tool's own baked-in query defaults (e.g.
-  // micro-gfx's embed=1) — that's intentional: nothing caller-supplied should
-  // be able to switch off the screenshot path.
+  // duplicate keys in their relative order (params.sort() above is a stable
+  // sort, so same-key duplicates keep their order relative to each other).
+  // That parity matters because both the page's own `.get()` and this
+  // function's `params.get(cfg.sizeParam)` above read the *first* occurrence
+  // of a repeated key — set() would let a later duplicate silently win in the
+  // forwarded URL while the viewport and Content-Disposition filename stayed
+  // keyed off the first one, so the rendered image and its reported size
+  // could disagree. This also means a caller cannot override a tool's own
+  // baked-in query defaults (e.g. micro-gfx's embed=1) — that's intentional:
+  // nothing caller-supplied should be able to switch off the screenshot path.
   const target = new URL(cfg.url);
   for (const [k, v] of params) target.searchParams.append(k, v);
 
