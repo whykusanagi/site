@@ -62,6 +62,20 @@ const decode = p => decodeState(p, FORMATS, THEMES);
   assert.equal(decode(p).title.length, MAX_TEXT);
 }
 
+// 5b. Empty-value params are skipped, not coerced. Number('') is 0, so an
+//     unguarded `?seed=` would silently pin the artwork to seed 0.
+{
+  assert.deepEqual(decode(new URLSearchParams('seed=')), {});
+  assert.deepEqual(decode(new URLSearchParams('warp=&erode=&grain=')), {});
+}
+
+// 5c. nsfw='0' must decode to false, not be dropped as invalid — an explicit
+//     opt-out has to survive the round trip.
+{
+  assert.deepEqual(decode(new URLSearchParams('nsfw=0')), { nsfw: false });
+  assert.equal(typeof decode(new URLSearchParams('nsfw=0')).nsfw, 'boolean');
+}
+
 // 6. Registry drift: the size table in render-api.js must match the theme's
 //    own format table. A mismatch produces letterboxed or cropped PNGs rather
 //    than an error, so nothing else would catch it.
