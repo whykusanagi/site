@@ -37,6 +37,8 @@
       <div class="ctl-group">
         <h3>Export</h3>
         <div class="ctl-row"><button id="c-png">Download PNG @2x</button></div>
+        <div class="ctl-row"><button id="c-link" class="secondary">Copy link</button></div>
+        <div class="ctl-row"><button id="c-api" class="secondary">Copy API URL</button></div>
       </div>
 
       <div class="ctl-group">
@@ -80,12 +82,17 @@
 
   <script type="module">
   import { MicroGfx } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/src/lib/micro-gfx.js';
-  import { DEFAULTS, POLARITIES, TEXT_KEYS, MAX_TEXT } from './state.js';
+  import { DEFAULTS, POLARITIES, TEXT_KEYS, MAX_TEXT, encodeState, decodeState } from './state.js';
 
   const $ = id => document.getElementById(id);
   const randomSeed = () => (Math.random() * 0x100000000) >>> 0;
 
-  const state = { ...DEFAULTS, seed: randomSeed() };
+  const params = new URLSearchParams(location.search);
+  const state = {
+    ...DEFAULTS,
+    seed: randomSeed(),
+    ...decodeState(params, Object.keys(MicroGfx.formats), MicroGfx.themes),
+  };
   let current = null;
 
   function render() {
@@ -113,6 +120,16 @@
     MicroGfx.mount($('stage'), current);
     $('meta').textContent =
       `seed ${current.seed} · ${current.archetype} · ${current.polarity} · ${current.width}×${current.height}`;
+    syncURL();
+  }
+
+  function syncURL() {
+    // Not in embed mode: encodeState does not carry `embed`, so rewriting the
+    // URL there would drop the flag from the address bar. Harmless (the mode is
+    // already applied to the DOM and replaceState does not reload) but it makes
+    // a failing screenshot much harder to reproduce by hand.
+    if (document.body.dataset.embed !== undefined) return;
+    history.replaceState(null, '', `${location.pathname}?${encodeState(state)}`);
   }
 
   /** A row of mutually-exclusive buttons bound to one state key. */
@@ -183,6 +200,13 @@
     a.download = `micro-gfx-${state.format}-${state.seed}.png`;
     a.click();
     URL.revokeObjectURL(a.href);
+  });
+
+  $('c-link').addEventListener('click', () => {
+    navigator.clipboard.writeText(location.href);
+  });
+  $('c-api').addEventListener('click', () => {
+    navigator.clipboard.writeText(`https://whykusanagi.xyz/api/micro-gfx?${encodeState(state)}`);
   });
 
   render();
