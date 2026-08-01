@@ -62,7 +62,11 @@
       font-weight: 700;
       font-display: block;
     }
-    #stage svg text { font-family: 'Courier Prime', monospace; }
+    /* Courier Prime first; Courier New kept as the metric-compatible middle
+       fallback (same stack as tools/thumbnail-generator/index.html) so a
+       Courier Prime load failure degrades to a font shaped like it rather
+       than straight to DejaVu Sans Mono on headless Linux. */
+    #stage svg text { font-family: 'Courier Prime', 'Courier New', monospace; }
   </style>
 </head>
 <body>
@@ -160,12 +164,21 @@
   }
 
   function syncURL() {
-    // Not in embed mode: encodeState does not carry `embed`, so rewriting the
-    // URL there would drop the flag from the address bar. Harmless (the mode is
-    // already applied to the DOM and replaceState does not reload) but it makes
-    // a failing screenshot much harder to reproduce by hand.
+    // Skip while in embed mode: encodeState does not carry `embed`, so
+    // rewriting the URL here would drop the flag from the address bar.
+    // Harmless (the mode is already applied to the DOM and replaceState does
+    // not reload) but it would make a failing screenshot much harder to
+    // reproduce by hand.
     if (document.body.dataset.embed !== undefined) return;
-    history.replaceState(null, '', `${location.pathname}?${encodeState(state)}`);
+    try {
+      history.replaceState(null, '', `${location.pathname}?${encodeState(state)}`);
+    } catch (e) {
+      // Safari throws SecurityError past 100 replaceState calls per 30s, and
+      // render() calls syncURL() on every slider/text `input` event,
+      // unthrottled. A throw here must not break rendering — the address bar
+      // just goes stale until the next call that doesn't hit the limit.
+      console.warn('syncURL: history.replaceState failed:', e);
+    }
   }
 
   /** A row of mutually-exclusive buttons bound to one state key. */
@@ -229,6 +242,18 @@
     render();
   });
 
+  // ponytail: MicroGfx.toPNG() rasterises by cloning the SVG node,
+  // XMLSerializer-ing it, and loading that through an <img
+  // src="data:image/svg+xml...">. SVG rendered as an image is an isolated
+  // document — the page's stylesheet never applies and the external Courier
+  // Prime file is never fetched — so the serialized
+  // font-family="'Courier New', Courier, monospace" presentation attribute
+  // wins instead. This download therefore renders in a different typeface
+  // than both the on-page preview and /api/micro-gfx (both of which apply
+  // this page's @font-face). Fixing it for real means base64-inlining
+  // ~100KB of Courier Prime TTF as a data: @font-face inside the serialized
+  // SVG before rasterising — not done here; it's a real chunk of work for a
+  // personal tool's export button, not a one-line fix.
   $('c-png').addEventListener('click', async () => {
     const blob = await MicroGfx.toPNG(current, { scale: 2 });
     const a = document.createElement('a');
@@ -259,14 +284,31 @@
   // resolve before Courier Prime is even requested. document.fonts.load()
   // explicitly triggers (and waits for) the fetch instead of relying on that
   // detection, same as the thumbnail generator's fix for the identical race.
-  // Swallow a load failure rather than block forever: a screenshot in the
-  // fallback font beats a 55s timeout and a 502.
-  Promise.all([
-    document.fonts.load('400 16px "Courier Prime"'),
-    document.fonts.load('700 16px "Courier Prime"'),
-  ]).catch(() => {}).then(() => document.fonts.ready).then(() => {
+  // A load failure is logged, not swallowed, then flagged ready anyway: a
+  // screenshot in the fallback font beats blocking forever, but a silent
+  // catch here means nobody ever finds out it happened. This repo has been
+  // burned twice by fonts that reported success while rendering wrong (see
+  // the CourierPrime-latin-ext-subset comment above in
+  // tools/thumbnail-generator/index.html) — document.fonts.load() itself
+  // makes that easy: it *resolves* with an empty array rather than rejecting
+  // when no @font-face matches the requested family/weight, so a typo here
+  // would set the ready gate immediately with nothing in any log, and
+  // /api/micro-gfx would cache a fallback-font PNG at the edge for an hour.
+  (async () => {
+    try {
+      const loaded = await Promise.all([
+        document.fonts.load('400 16px "Courier Prime"'),
+        document.fonts.load('700 16px "Courier Prime"'),
+      ]);
+      if (loaded.some(faces => faces.length === 0)) {
+        console.warn('Courier Prime: document.fonts.load() matched no @font-face for one of the requested weights — check the family/weight spec.');
+      }
+      await document.fonts.ready;
+    } catch (e) {
+      console.warn('Courier Prime failed to load, flagging ready anyway:', e);
+    }
     document.body.dataset.gfxReady = '';
-  });
+  })();
   </script>
 </body>
 </html>
