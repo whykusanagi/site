@@ -4,6 +4,13 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Micro GFX Generator — Corrupted Theme</title>
+  <!-- Preload the display font so the fetch is already underway before the
+       ready gate checks it. crossorigin is required even same-origin:
+       browsers fetch fonts in CORS mode, so a preload without it mismatches
+       the @font-face fetch and double-loads (same fix as
+       tools/thumbnail-generator/index.html). -->
+  <link rel="preload" href="../thumbnail-generator/fonts/CourierPrime-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="../thumbnail-generator/fonts/CourierPrime-Bold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
   <style>
     * { box-sizing: border-box; }
@@ -27,6 +34,35 @@
     .chips { display: flex; flex-wrap: wrap; gap: 6px; }
     .chips button { padding: 4px 10px; font-size: 12px; font-weight: 500; }
     #meta { font-size: 12px; color: #9a8db5; margin: 8px 0 0; font-family: monospace; }
+
+    /* Screenshot mode: /api/micro-gfx renders this page at ?embed=1 with the
+       viewport set to the format's exact pixel size, so the SVG must fill it
+       with no chrome, padding or scrollbars. */
+    body[data-embed] { overflow: hidden; }
+    body[data-embed] #app { padding: 0; gap: 0; }
+    body[data-embed] #controls-pane { display: none; }
+    body[data-embed] #preview-pane { padding: 0; background: none; border-radius: 0; }
+    body[data-embed] #stage { max-width: none; max-height: none; box-shadow: none; }
+    body[data-embed] #stage svg { max-width: none; max-height: none; width: 100vw; height: 100vh; }
+
+    /* Courier New does not exist on Cloudflare's headless Linux Chrome, which
+       would silently substitute and make /api/micro-gfx renders disagree with
+       the page. Reuse the thumbnail generator's self-hosted Courier Prime and
+       override MicroGfx's font-family presentation attribute (a CSS rule beats
+       a presentation attribute, so no module change is needed). */
+    @font-face {
+      font-family: 'Courier Prime';
+      src: url('../thumbnail-generator/fonts/CourierPrime-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-display: block;
+    }
+    @font-face {
+      font-family: 'Courier Prime';
+      src: url('../thumbnail-generator/fonts/CourierPrime-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-display: block;
+    }
+    #stage svg text { font-family: 'Courier Prime', monospace; }
   </style>
 </head>
 <body>
@@ -209,7 +245,28 @@
     navigator.clipboard.writeText(`https://whykusanagi.xyz/api/micro-gfx?${encodeState(state)}`);
   });
 
+  if (params.get('embed') === '1') document.body.dataset.embed = '';
+
   render();
+
+  // /api/micro-gfx blocks on body[data-gfx-ready]. Without this gate the
+  // screenshot races state application and silently captures page defaults —
+  // the same failure the thumbnail generator hit (fixed there in #56/#59).
+  // Plain `document.fonts.ready` is not enough on its own: mount() just
+  // inserted the <text> nodes via replaceChildren with no forced layout, so
+  // the browser's own "this text needs a font" detection only runs on the
+  // next render update — after this script finishes — meaning `.ready` can
+  // resolve before Courier Prime is even requested. document.fonts.load()
+  // explicitly triggers (and waits for) the fetch instead of relying on that
+  // detection, same as the thumbnail generator's fix for the identical race.
+  // Swallow a load failure rather than block forever: a screenshot in the
+  // fallback font beats a 55s timeout and a 502.
+  Promise.all([
+    document.fonts.load('400 16px "Courier Prime"'),
+    document.fonts.load('700 16px "Courier Prime"'),
+  ]).catch(() => {}).then(() => document.fonts.ready).then(() => {
+    document.body.dataset.gfxReady = '';
+  });
   </script>
 </body>
 </html>

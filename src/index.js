@@ -8,6 +8,7 @@
  *   - /api/countdown/presets    → countdown preset data
  *   - /api/countdown/generate   → countdown URL builder
  *   - /api/thumbnail            → headless PNG render of the thumbnail generator
+ *   - /api/micro-gfx            → headless PNG render of the micro-gfx generator
  *   - /api/health               → health check
  * (favicon is handled by Pages `_redirects`.)
  */
@@ -29,6 +30,9 @@ export default {
       }
       if (url.pathname === '/api/thumbnail') {
         return handleRender(request, env, ctx, 'thumbnail');
+      }
+      if (url.pathname === '/api/micro-gfx') {
+        return handleRender(request, env, ctx, 'micro-gfx');
       }
       if (url.pathname === '/api/chat') {
         return handleProxyRequest(request, env);

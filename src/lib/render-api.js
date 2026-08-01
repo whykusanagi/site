@@ -39,6 +39,25 @@ export const TOOLS = {
       '9:16': { width: 1080, height: 1920 },
     },
   },
+  'micro-gfx': {
+    // ?embed=1 is baked in: this is the screenshot-only view. handleRender
+    // merges caller params via URL.searchParams, so this existing query is
+    // preserved rather than clobbered.
+    url: 'https://whykusanagi.xyz/tools/micro-gfx/index.html?embed=1',
+    ready: 'body[data-gfx-ready]',
+    sizeParam: 'format',
+    defaultSize: 'card',
+    // Must match MicroGfx.formats exactly — asserted by
+    // tools/micro-gfx/test-micro-gfx.mjs, because a mismatch letterboxes the
+    // PNG rather than erroring.
+    sizes: {
+      card:     { width: 1200, height: 630  },
+      banner:   { width: 1500, height: 500  },
+      poster:   { width: 1080, height: 1350 },
+      portrait: { width: 1080, height: 1920 },
+      square:   { width: 1080, height: 1080 },
+    },
+  },
 };
 
 function json(body, status) {
