@@ -17,8 +17,10 @@
  *
  * `sizes` mirrors each page's own size table. ponytail: duplicated rather than
  * fetched — a handful of constants that change ~never. A drift between this
- * table and the page produces letterboxed PNGs rather than an error, so each
- * tool's table is asserted against its source in that tool's test.
+ * table and the page produces letterboxed PNGs rather than an error, so both
+ * tools' tables are asserted against their source pages in
+ * tools/micro-gfx/test-micro-gfx.mjs (thumbnail's own test file never
+ * references this table, so that's the one guarding it).
  */
 export const TOOLS = {
   thumbnail: {
@@ -31,6 +33,9 @@ export const TOOLS = {
     ready: 'body[data-thumb-ready]',
     sizeParam: 'aspectRatio',
     defaultSize: '16:9',
+    // Must match tools/thumbnail-generator/index.html's own ASPECT_RATIOS
+    // exactly — asserted by tools/micro-gfx/test-micro-gfx.mjs (not
+    // thumbnail's own test, which never references this table).
     sizes: {
       '16:9': { width: 1920, height: 1080 },
       '2:1':  { width: 1920, height: 960  },
@@ -72,7 +77,7 @@ export async function handleRender(request, env, ctx, toolName) {
   if (!cfg) return json({ error: 'Unknown tool' }, 404);
 
   if (!env.BROWSER) {
-    return json({ error: 'Thumbnail rendering is not configured' }, 503);
+    return json({ error: 'Rendering is not configured' }, 503);
   }
 
   const url = new URL(request.url);
@@ -97,7 +102,11 @@ export async function handleRender(request, env, ctx, toolName) {
   }
 
   const size = params.get(cfg.sizeParam) || cfg.defaultSize;
-  const viewport = cfg.sizes[size];
+  // Object.hasOwn, not a bare cfg.sizes[size] read: size is caller-controlled,
+  // so an unguarded dynamic property read lets ?format=constructor or
+  // ?format=__proto__ resolve truthy via the prototype chain, skip the 400
+  // below, and reach quickAction with a garbage viewport (502 instead of 400).
+  const viewport = Object.hasOwn(cfg.sizes, size) ? cfg.sizes[size] : undefined;
   if (!viewport) {
     return json({
       error: `Unknown ${cfg.sizeParam}`,
@@ -113,9 +122,12 @@ export async function handleRender(request, env, ctx, toolName) {
   // url may already carry its own query (e.g. `?embed=1`), which a second `?`
   // would corrupt. Appends rather than sets: for thumbnail, cfg.url carries no
   // query, so appending every caller param reproduces the old
-  // `${GENERATOR_URL}?${params.toString()}` byte-for-byte, including any
-  // duplicate keys in their relative order (params.sort() above is a stable
-  // sort, so same-key duplicates keep their order relative to each other).
+  // `${GENERATOR_URL}?${params.toString()}` byte-for-byte for any non-empty
+  // query (an empty query loses the old code's trailing bare `?`, which
+  // addresses the same resource either way — functionally irrelevant),
+  // including any duplicate keys in their relative order (params.sort() above
+  // is a stable sort, so same-key duplicates keep their order relative to
+  // each other).
   // That parity matters because both the page's own `.get()` and this
   // function's `params.get(cfg.sizeParam)` above read the *first* occurrence
   // of a repeated key — set() would let a later duplicate silently win in the
