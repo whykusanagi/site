@@ -2,22 +2,22 @@
   {
     "AllowedOrigins": [
       "https://whykusanagi.xyz",
-      "https://site-45q.pages.dev",
-      "https://colab.research.google.com",
+      "https://www.whykusanagi.xyz",
+      "https://nikkers.cc",
       "https://github.com",
-      "https://skeb.jp",
-      "https://vgen.co",
-      "https://ondigitalocean.app",
-      "https://cloud.digitalocean.com",
-      "https://discord.com",
-      "https://canary.discord.com"
+      "https://camo.githubusercontent.com",
+      "https://raw.githubusercontent.com",
+      "https://myoshi.co",
+      "https://oshi.to"
     ],
     "AllowedMethods": [
-      "GET"
+      "GET",
+      "HEAD"
     ],
     "AllowedHeaders": [
       "*"
     ],
-    "ExposeHeaders": []
+    "ExposeHeaders": [],
+    "MaxAgeSeconds": 3600
   }
 ]
