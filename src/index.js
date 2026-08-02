@@ -8,13 +8,14 @@
  *   - /api/countdown/presets    → countdown preset data
  *   - /api/countdown/generate   → countdown URL builder
  *   - /api/thumbnail            → headless PNG render of the thumbnail generator
+ *   - /api/micro-gfx            → headless PNG render of the micro-gfx generator
  *   - /api/health               → health check
  * (favicon is handled by Pages `_redirects`.)
  */
 
 import { handleProxyRequest } from './lib/celeste-proxy.js';
 import { handleCountdownPresets, handleCountdownGenerate } from './lib/countdown-api.js';
-import { handleThumbnail } from './lib/thumbnail-api.js';
+import { handleRender } from './lib/render-api.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -28,7 +29,10 @@ export default {
         return handleCountdownGenerate(request);
       }
       if (url.pathname === '/api/thumbnail') {
-        return handleThumbnail(request, env, ctx);
+        return handleRender(request, env, ctx, 'thumbnail');
+      }
+      if (url.pathname === '/api/micro-gfx') {
+        return handleRender(request, env, ctx, 'micro-gfx');
       }
       if (url.pathname === '/api/chat') {
         return handleProxyRequest(request, env);

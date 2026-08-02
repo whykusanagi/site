@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Micro GFX Generator — Corrupted Theme</title>
+  <!-- Preload the display font so the fetch is already underway before the
+       ready gate checks it. crossorigin is required even same-origin:
+       browsers fetch fonts in CORS mode, so a preload without it mismatches
+       the @font-face fetch and double-loads (same fix as
+       tools/thumbnail-generator/index.html). -->
+  <link rel="preload" href="../thumbnail-generator/fonts/CourierPrime-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="../thumbnail-generator/fonts/CourierPrime-Bold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0a0a0a; color: #f5f1f8; font-family: system-ui, sans-serif; }
+    #app { display: flex; min-height: 100vh; gap: 16px; padding: 16px; }
+    #preview-pane { flex: 1; display: flex; align-items: center; justify-content: center;
+      background: repeating-conic-gradient(#1a1a1a 0% 25%, #222 0% 50%) 50% / 24px 24px; border-radius: 8px; padding: 16px; }
+    #stage { max-width: 100%; max-height: 85vh; box-shadow: 0 8px 40px rgba(0,0,0,.6); }
+    #stage svg { display: block; max-width: 100%; max-height: 85vh; height: auto; }
+    #controls-pane { width: 320px; flex: none; overflow-y: auto; max-height: 95vh; padding: 8px; }
+    .ctl-group { border: 1px solid #3a2555; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+    .ctl-group h3 { margin: 0 0 8px; font-size: 14px; color: #e86ca8; }
+    .ctl-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
+    .ctl-row label { flex: 1; }
+    .ctl-row input[type="text"] { flex: 2; min-width: 0; }
+    select, input[type="number"], input[type="text"] { background: #140c28; color: #f5f1f8;
+      border: 1px solid #3a2555; border-radius: 4px; padding: 4px; font-family: inherit; font-size: 13px; }
+    button { background: linear-gradient(135deg,#d94f90,#b61b70); color: #fff; border: none;
+      border-radius: 6px; padding: 8px 12px; cursor: pointer; font-weight: 600; }
+    button.secondary { background: #2a1d40; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+    .chips button { padding: 4px 10px; font-size: 12px; font-weight: 500; }
+    #meta { font-size: 12px; color: #9a8db5; margin: 8px 0 0; font-family: monospace; }
+
+    /* Screenshot mode: /api/micro-gfx renders this page at ?embed=1 with the
+       viewport set to the format's exact pixel size, so the SVG must fill it
+       with no chrome, padding or scrollbars. */
+    body[data-embed] { overflow: hidden; }
+    body[data-embed] #app { padding: 0; gap: 0; }
+    body[data-embed] #controls-pane { display: none; }
+    body[data-embed] #preview-pane { padding: 0; background: none; border-radius: 0; }
+    body[data-embed] #stage { max-width: none; max-height: none; box-shadow: none; }
+    body[data-embed] #stage svg { max-width: none; max-height: none; width: 100vw; height: 100vh; }
+
+    /* Courier New does not exist on Cloudflare's headless Linux Chrome, which
+       would silently substitute and make /api/micro-gfx renders disagree with
+       the page. Reuse the thumbnail generator's self-hosted Courier Prime and
+       override MicroGfx's font-family presentation attribute (a CSS rule beats
+       a presentation attribute, so no module change is needed). */
+    @font-face {
+      font-family: 'Courier Prime';
+      src: url('../thumbnail-generator/fonts/CourierPrime-Regular.ttf') format('truetype');
+      font-weight: 400;
+      font-display: block;
+    }
+    @font-face {
+      font-family: 'Courier Prime';
+      src: url('../thumbnail-generator/fonts/CourierPrime-Bold.ttf') format('truetype');
+      font-weight: 700;
+      font-display: block;
+    }
+    /* Courier Prime first; Courier New kept as the metric-compatible middle
+       fallback (same stack as tools/thumbnail-generator/index.html) so a
+       Courier Prime load failure degrades to a font shaped like it rather
+       than straight to DejaVu Sans Mono on headless Linux. */
+    #stage svg text { font-family: 'Courier Prime', 'Courier New', monospace; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div id="preview-pane"><div id="stage"></div></div>
+    <div id="controls-pane">
+
+      <div class="ctl-group">
+        <h3>Export</h3>
+        <div class="ctl-row"><button id="c-png">Download PNG @2x</button></div>
+        <div class="ctl-row"><button id="c-link" class="secondary">Copy link</button></div>
+        <div class="ctl-row"><button id="c-api" class="secondary">Copy API URL</button></div>
+      </div>
+
+      <div class="ctl-group">
+        <h3>Seed</h3>
+        <div class="ctl-row">
+          <input type="number" id="c-seed" min="0" max="4294967295" step="1" style="flex:2;min-width:0">
+          <button id="c-roll" class="secondary">🎲 Roll</button>
+        </div>
+        <p id="meta">—</p>
+      </div>
+
+      <div class="ctl-group"><h3>Format</h3><div class="chips" id="c-formats"></div></div>
+      <div class="ctl-group"><h3>Theme</h3><div class="chips" id="c-themes"></div></div>
+      <div class="ctl-group"><h3>Polarity</h3><div class="chips" id="c-polarities"></div></div>
+
+      <div class="ctl-group">
+        <h3>Degrade</h3>
+        <div class="ctl-row"><label for="c-warp">Warp <span id="c-warp-v">0.20</span></label>
+          <input type="range" id="c-warp" min="0" max="1" step="0.05" value="0.2"></div>
+        <div class="ctl-row"><label for="c-erode">Erode <span id="c-erode-v">0.00</span></label>
+          <input type="range" id="c-erode" min="0" max="1" step="0.05" value="0"></div>
+        <div class="ctl-row"><label for="c-grain">Grain <span id="c-grain-v">0.06</span></label>
+          <input type="range" id="c-grain" min="0" max="0.4" step="0.02" value="0.06"></div>
+      </div>
+
+      <div class="ctl-group">
+        <h3>Text</h3>
+        <div class="ctl-row"><label for="c-eyebrow">Eyebrow</label><input type="text" id="c-eyebrow" maxlength="256"></div>
+        <div class="ctl-row"><label for="c-title">Title</label><input type="text" id="c-title" maxlength="256"></div>
+        <div class="ctl-row"><label for="c-serial">Serial</label><input type="text" id="c-serial" maxlength="256" placeholder="SEED <n>"></div>
+        <div class="ctl-row"><label for="c-nameplate">Nameplate</label><input type="text" id="c-nameplate" maxlength="256"></div>
+      </div>
+
+      <div class="ctl-group">
+        <h3>Glyph layer</h3>
+        <div class="ctl-row"><label for="c-nsfw">NSFW phrases</label><input type="checkbox" id="c-nsfw"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <script type="module">
+  import { MicroGfx } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/src/lib/micro-gfx.js';
+  import { DEFAULTS, POLARITIES, TEXT_KEYS, MAX_TEXT, encodeState, decodeState } from './state.js';
+
+  const $ = id => document.getElementById(id);
+  const randomSeed = () => (Math.random() * 0x100000000) >>> 0;
+
+  const params = new URLSearchParams(location.search);
+  const state = {
+    ...DEFAULTS,
+    seed: randomSeed(),
+    ...decodeState(params, Object.keys(MicroGfx.formats), MicroGfx.themes),
+  };
+  let current = null;
+
+  function render() {
+    current = MicroGfx.generate({
+      seed: state.seed,
+      format: state.format,
+      theme: state.theme,
+      // 'seeded' is the page's word for "let the seed pick"; the module wants
+      // undefined. Passing the literal string would fall through to seeded
+      // anyway, but only by accident — be explicit.
+      polarity: state.polarity === 'seeded' ? undefined : state.polarity,
+      degrade: { warp: state.warp, erode: state.erode, grain: state.grain },
+      text: {
+        eyebrow: state.eyebrow.slice(0, MAX_TEXT),
+        title: state.title.slice(0, MAX_TEXT),
+        // Empty serial tracks the seed. Any other value is used verbatim.
+        serial: (state.serial || `SEED ${state.seed}`).slice(0, MAX_TEXT),
+        nameplate: state.nameplate.slice(0, MAX_TEXT),
+      },
+      nsfw: state.nsfw,
+    });
+    // mount() appends DOM nodes. Never assign current.svg to innerHTML — that
+    // string is for file/PNG output and round-tripping it through the HTML
+    // parser reintroduces the injection surface the module avoids.
+    MicroGfx.mount($('stage'), current);
+    $('meta').textContent =
+      `seed ${current.seed} · ${current.archetype} · ${current.polarity} · ${current.width}×${current.height}`;
+    syncURL();
+  }
+
+  function syncURL() {
+    // Skip while in embed mode: encodeState does not carry `embed`, so
+    // rewriting the URL here would drop the flag from the address bar.
+    // Harmless (the mode is already applied to the DOM and replaceState does
+    // not reload) but it would make a failing screenshot much harder to
+    // reproduce by hand.
+    if (document.body.dataset.embed !== undefined) return;
+    try {
+      history.replaceState(null, '', `${location.pathname}?${encodeState(state)}`);
+    } catch (e) {
+      // Safari throws SecurityError past 100 replaceState calls per 30s, and
+      // render() calls syncURL() on every slider/text `input` event,
+      // unthrottled. A throw here must not break rendering — the address bar
+      // just goes stale until the next call that doesn't hit the limit.
+      console.warn('syncURL: history.replaceState failed:', e);
+    }
+  }
+
+  /** A row of mutually-exclusive buttons bound to one state key. */
+  function chips(hostId, values, key) {
+    const host = $(hostId);
+    host.replaceChildren();
+    for (const v of values) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = v;
+      b.dataset.value = v;
+      b.className = state[key] === v ? '' : 'secondary';
+      b.addEventListener('click', () => {
+        state[key] = v;
+        for (const c of host.children) c.className = c === b ? '' : 'secondary';
+        render();
+      });
+      host.appendChild(b);
+    }
+  }
+
+  /** Slider bound to a float state key, with its live value readout. */
+  function slider(id, key) {
+    const input = $(id), readout = $(`${id}-v`);
+    input.value = state[key];
+    readout.textContent = Number(state[key]).toFixed(2);
+    input.addEventListener('input', () => {
+      state[key] = Number(input.value);
+      readout.textContent = state[key].toFixed(2);
+      render();
+    });
+  }
+
+  // Built from what the module exposes, so a new format or theme in a future
+  // theme release shows up without a code change here.
+  chips('c-formats', Object.keys(MicroGfx.formats), 'format');
+  chips('c-themes', MicroGfx.themes, 'theme');
+  chips('c-polarities', POLARITIES, 'polarity');
+  slider('c-warp', 'warp');
+  slider('c-erode', 'erode');
+  slider('c-grain', 'grain');
+
+  for (const k of TEXT_KEYS) {
+    const input = $(`c-${k}`);
+    input.value = state[k];
+    input.addEventListener('input', () => { state[k] = input.value; render(); });
+  }
+
+  $('c-nsfw').checked = state.nsfw;
+  $('c-nsfw').addEventListener('change', e => { state.nsfw = e.target.checked; render(); });
+
+  $('c-seed').value = state.seed;
+  $('c-seed').addEventListener('change', e => {
+    const n = Number(e.target.value);
+    if (Number.isInteger(n) && n >= 0 && n <= 0xffffffff) { state.seed = n >>> 0; render(); }
+    else e.target.value = state.seed;
+  });
+  $('c-roll').addEventListener('click', () => {
+    state.seed = randomSeed();
+    $('c-seed').value = state.seed;
+    render();
+  });
+
+  // ponytail: MicroGfx.toPNG() rasterises by cloning the SVG node,
+  // XMLSerializer-ing it, and loading that through an <img
+  // src="data:image/svg+xml...">. SVG rendered as an image is an isolated
+  // document — the page's stylesheet never applies and the external Courier
+  // Prime file is never fetched — so the serialized
+  // font-family="'Courier New', Courier, monospace" presentation attribute
+  // wins instead. This download therefore renders in a different typeface
+  // than both the on-page preview and /api/micro-gfx (both of which apply
+  // this page's @font-face). Fixing it for real means base64-inlining
+  // ~100KB of Courier Prime TTF as a data: @font-face inside the serialized
+  // SVG before rasterising — not done here; it's a real chunk of work for a
+  // personal tool's export button, not a one-line fix.
+  $('c-png').addEventListener('click', async () => {
+    const blob = await MicroGfx.toPNG(current, { scale: 2 });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `micro-gfx-${state.format}-${state.seed}.png`;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  $('c-link').addEventListener('click', () => {
+    navigator.clipboard.writeText(location.href);
+  });
+  $('c-api').addEventListener('click', () => {
+    navigator.clipboard.writeText(`https://whykusanagi.xyz/api/micro-gfx?${encodeState(state)}`);
+  });
+
+  if (params.get('embed') === '1') document.body.dataset.embed = '';
+
+  render();
+
+  // /api/micro-gfx blocks on body[data-gfx-ready]. Without this gate the
+  // screenshot races state application and silently captures page defaults —
+  // the same failure the thumbnail generator hit (fixed there in #56/#59).
+  // Plain `document.fonts.ready` is not enough on its own: mount() just
+  // inserted the <text> nodes via replaceChildren with no forced layout, so
+  // the browser's own "this text needs a font" detection only runs on the
+  // next render update — after this script finishes — meaning `.ready` can
+  // resolve before Courier Prime is even requested. document.fonts.load()
+  // explicitly triggers (and waits for) the fetch instead of relying on that
+  // detection, same as the thumbnail generator's fix for the identical race.
+  // A load failure is logged, not swallowed, then flagged ready anyway: a
+  // screenshot in the fallback font beats blocking forever, but a silent
+  // catch here means nobody ever finds out it happened. This repo has been
+  // burned twice by fonts that reported success while rendering wrong (see
+  // the CourierPrime-latin-ext-subset comment above in
+  // tools/thumbnail-generator/index.html) — document.fonts.load() itself
+  // makes that easy: it *resolves* with an empty array rather than rejecting
+  // when no @font-face matches the requested family/weight, so a typo here
+  // would set the ready gate immediately with nothing in any log, and
+  // /api/micro-gfx would cache a fallback-font PNG at the edge for an hour.
+  (async () => {
+    try {
+      const loaded = await Promise.all([
+        document.fonts.load('400 16px "Courier Prime"'),
+        document.fonts.load('700 16px "Courier Prime"'),
+      ]);
+      if (loaded.some(faces => faces.length === 0)) {
+        console.warn('Courier Prime: document.fonts.load() matched no @font-face for one of the requested weights — check the family/weight spec.');
+      }
+      await document.fonts.ready;
+    } catch (e) {
+      console.warn('Courier Prime failed to load, flagging ready anyway:', e);
+    }
+    document.body.dataset.gfxReady = '';
+  })();
+  </script>
+</body>
+</html>

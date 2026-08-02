@@ -20,8 +20,8 @@ vars = { ENVIRONMENT = "production" }
 #    silently absorbed into the table (which is exactly how routes/vars got
 #    swallowed once). ──
 
-# Browser Rendering binding — powers /api/thumbnail. Granted at deploy time, so
-# no API token to mint, store, or rotate.
+# Browser Rendering binding — powers /api/thumbnail and /api/micro-gfx.
+# Granted at deploy time, so no API token to mint, store, or rotate.
 [browser]
 binding = "BROWSER"
 

@@ -17,12 +17,10 @@
   "author": "whykusanagi",
   "license": "MIT",
   "devDependencies": {
-    "wrangler": "^4.110.0"
+    "wrangler": "^4.110.0",
+    "@whykusanagi/corrupted-theme": "^0.3.2"
   },
   "engines": {
     "node": ">=18.0.0"
-  },
-  "dependencies": {
-    "@whykusanagi/corrupted-theme": "^0.3.0"
   }
 }
