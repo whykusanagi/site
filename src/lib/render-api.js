@@ -185,9 +185,14 @@ export async function handleRender(request, env, ctx, toolName) {
       'Content-Disposition': `inline; filename="${toolName}-${size.replace(':', 'x')}.png"`,
       // no-store on a bust so Cloudflare's edge (which auto-caches any public
       // response) doesn't stash the forced-fresh render — otherwise nocache=1
-      // would re-roll once and then be pinned again. 1h edge TTL otherwise; a
-      // page/asset change takes up to that long to fully reflect in cached PNGs.
-      'Cache-Control': bust ? 'no-store' : 'public, max-age=3600',
+      // would re-roll once and then be pinned again.
+      //
+      // 30d otherwise: a render is a pure function of its query, and these PNGs
+      // are now og:image targets — a cold render is ~2s for micro-gfx and ~16s
+      // for thumbnail, past the fetch timeout of most social and AI scrapers.
+      // Trade-off: a page or asset change takes up to 30 days to appear in
+      // already-cached PNGs. nocache=1 is the escape hatch.
+      'Cache-Control': bust ? 'no-store' : 'public, max-age=2592000',
     },
   });
 

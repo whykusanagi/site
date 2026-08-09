@@ -9,6 +9,7 @@
     "deploy": "wrangler deploy",
     "build": "echo 'No build required for Cloudflare Workers'",
     "sitemap": "node scripts/gen-sitemap.mjs",
+    "warm-og": "node scripts/warm-og.mjs",
     "test": "node --test scripts/*.test.mjs",
     "test:tap": "node --test --test-reporter=tap scripts/*.test.mjs"
   },
