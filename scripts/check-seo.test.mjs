@@ -56,7 +56,10 @@ function collectTypes(node, acc = []) {
   return acc;
 }
 
-for (const file of indexablePages()) {
+// Render targets are excluded from the sitemap but still need their noindex
+// tag verified, so walk them alongside the indexable pages — the NOINDEX
+// branch below is what separates the two treatments.
+for (const file of [...indexablePages(), ...NOINDEX]) {
   const html = readFileSync(file, 'utf8');
   const head = headOf(html);
   const canonical = ORIGIN + cleanUrl(file);
