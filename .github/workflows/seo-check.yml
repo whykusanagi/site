@@ -1,0 +1,57 @@
+name: SEO check
+
+# Guards the metadata invariants in scripts/check-seo.test.mjs and catches a
+# stale committed sitemap.xml / feed.xml. Both generated files are committed so
+# Pages can serve them statically, which means they can drift out of date —
+# regenerating and diffing is what stops that.
+#
+# The regen-diff step ("Generated files are current") runs on pull_request
+# only. lastmod in sitemap.xml/feed.xml comes from `git log -1` per file
+# (scripts/lib/pages.mjs). This repo squash-merges, so every HTML file touched
+# by a PR gets its last-commit date rewritten to the merge commit's date the
+# moment the squash lands on main — which immediately desyncs the
+# already-committed sitemap/feed from what a fresh regen would produce, with
+# no code change involved. Running the regen-diff on push-to-main would red-X
+# main on every squash-merge that touched HTML. On a PR, before the squash,
+# the diff is meaningful: it catches an author who edited HTML without
+# regenerating. Do not broaden this trigger back to push — it would
+# reintroduce a permanently red main.
+
+on:
+  pull_request:
+    paths:
+      - '**/*.html'
+      - 'scripts/**'
+      - 'sitemap.xml'
+      - 'feed.xml'
+      - 'robots.txt'
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # lastmod comes from git log, so a shallow clone yields wrong dates.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Metadata invariants
+        run: npm test
+
+      - name: Generated files are current
+        if: github.event_name == 'pull_request'
+        run: |
+          npm run sitemap
+          npm run feed
+          git diff --exit-code --stat sitemap.xml feed.xml \
+            || { echo "::error::sitemap.xml or feed.xml is stale — run 'npm run sitemap && npm run feed' and commit"; exit 1; }

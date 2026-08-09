@@ -12,19 +12,19 @@
  */
 (function () {
   const LINKS = [
-    { href: '/celeste.html',     icon: 'fa-robot',   label: 'Celeste AI' },
-    { href: '/music.html',       icon: 'fa-music',   label: 'Music' },
-    { href: '/blog/index.html',  icon: 'fa-blog',    label: 'Blog' },
-    { href: '/references.html',  icon: 'fa-palette', label: 'References' },
-    { href: '/doujin.html',      icon: 'fa-book',    label: 'Doujin' },
-    { href: '/links.html',       icon: 'fa-link',    label: 'Links' },
-    { href: '/tools.html',       icon: 'fa-tools',   label: 'Tools' },
+    { href: '/celeste',     icon: 'fa-robot',   label: 'Celeste AI' },
+    { href: '/music',       icon: 'fa-music',   label: 'Music' },
+    { href: '/blog/',       icon: 'fa-blog',    label: 'Blog' },
+    { href: '/references',  icon: 'fa-palette', label: 'References' },
+    { href: '/doujin',      icon: 'fa-book',    label: 'Doujin' },
+    { href: '/links',       icon: 'fa-link',    label: 'Links' },
+    { href: '/tools',       icon: 'fa-tools',   label: 'Tools' },
   ];
 
   const path = location.pathname;
   const slug = (s) => s.replace(/^\//, '').replace(/\/$/, '').replace(/\.html$/, '');
   const isActive = (href) => {
-    if (href === '/blog/index.html') return /^\/blog(\/|$)/.test(path);
+    if (href === '/blog/') return /^\/blog(\/|$)/.test(path);
     return slug(path) === slug(href);
   };
 
@@ -69,8 +69,8 @@
       '<p>&copy; ' + new Date().getFullYear() + ' whykusanagi. All rights reserved. ' +
         '<strong class="footer-badge">18+ Only</strong></p>' +
       '<p class="footer-links">' +
-        '<a href="/">Home</a> · <a href="/privacy.html">Privacy</a> · <a href="/terms.html">Terms</a> · ' +
-        '<a href="/dmca.html">DMCA</a> · <a href="/refunds.html">Refunds</a> · <a href="/shipping.html">Shipping</a>' +
+        '<a href="/">Home</a> · <a href="/privacy">Privacy</a> · <a href="/terms">Terms</a> · ' +
+        '<a href="/dmca">DMCA</a> · <a href="/refunds">Refunds</a> · <a href="/shipping">Shipping</a>' +
       '</p>';
     footerMount.replaceWith(footer);
   }

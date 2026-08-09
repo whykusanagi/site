@@ -1,0 +1,43 @@
+# whykusanagi.xyz crawl policy
+# search=yes, ai-input=yes (AI search/agents may read & cite) · ai-train=no (no model training)
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Allow: /api/micro-gfx
+Disallow: /tools/thumbnail-generator/
+Disallow: /tools/neo-deco-portrait/
+Content-Signal: search=yes, ai-input=yes, ai-train=no
+
+# AI training crawlers — disallowed (ai-train=no)
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: ClaudeBot
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: Meta-ExternalAgent
+Disallow: /
+
+# AI search / agent crawlers (OAI-SearchBot, Claude-Web, Claude-User,
+# PerplexityBot) are deliberately NOT given their own groups: under RFC 9309 a
+# crawler obeys only its most specific matching group, so naming them here
+# would detach them from the Disallow rules and Content-Signal above. They fall
+# through to `*`, which already allows them.
+
+Sitemap: https://whykusanagi.xyz/sitemap.xml

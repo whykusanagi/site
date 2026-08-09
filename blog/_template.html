@@ -3,10 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>[BLOG POST TITLE] | Celeste Blog</title>
+    <title>[BLOG POST TITLE]</title>
     <meta name="description" content="[BLOG POST DESCRIPTION - 150-160 characters for SEO]" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/[FILENAME]">
+    <meta property="og:title" content="[BLOG POST TITLE]">
+    <meta property="og:description" content="[BLOG POST DESCRIPTION - 150-160 characters for SEO]">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=[SEED]&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=[BLOG%20POST%20TITLE]&amp;nameplate=whykusanagi.xyz">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/[FILENAME]">
+    <meta name="twitter:title" content="[BLOG POST TITLE]">
+    <meta name="twitter:description" content="[BLOG POST DESCRIPTION - 150-160 characters for SEO]">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=[SEED]&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=[BLOG%20POST%20TITLE]&amp;nameplate=whykusanagi.xyz">
+
+    <!-- SEO -->
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://whykusanagi.xyz/blog/[FILENAME].html" />
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/[FILENAME]" />
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
     <script src="../assets/js/env-config.js"></script>
     <script src="../assets/js/background-setup.js"></script>
     <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
@@ -25,8 +42,9 @@
         "url": "https://whykusanagi.xyz/"
       },
       "datePublished": "[YYYY-MM-DD]",
+      "dateModified": "[YYYY-MM-DD]",
       "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
-      "mainEntityOfPage": "https://whykusanagi.xyz/blog/[FILENAME].html",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/[FILENAME]",
       "publisher": {
         "@type": "Organization",
         "name": "whykusanagi",
@@ -35,6 +53,17 @@
           "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
         }
       }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "[BLOG POST TITLE]", "item": "https://whykusanagi.xyz/blog/[FILENAME]" }
+      ]
     }
     </script>
   </head>
@@ -104,7 +133,7 @@
           <h2>[SECTION HEADING 3 - Optional]</h2>
           <p>[Additional content section. You can add or remove sections as needed for your blog post structure.]</p>
           <p>[You can include links to related pages, external resources, or downloadable assets here.]</p>
-          <p>For more information, see the <a href="../tools.html">Tools page</a> or check out our <a href="https://github.com/whykusanagi" target="_blank" rel="noopener">GitHub repositories</a> for technical documentation.</p>
+          <p>For more information, see the <a href="../tools">Tools page</a> or check out our <a href="https://github.com/whykusanagi" target="_blank" rel="noopener">GitHub repositories</a> for technical documentation.</p>
         </section>
 
         <!-- 
@@ -129,8 +158,8 @@
         </section>
 
         <section class="cta-grid">
-          <a class="btn" href="../tools.html">Browse Tech Tools</a>
-          <a class="btn" href="../links.html#discord">Join Community</a>
+          <a class="btn" href="../tools">Browse Tech Tools</a>
+          <a class="btn" href="../links#discord">Join Community</a>
         </section>
       </article>
     </main>

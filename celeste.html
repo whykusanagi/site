@@ -7,7 +7,7 @@
 
   <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://whykusanagi.xyz/celeste.html">
+  <meta property="og:url" content="https://whykusanagi.xyz/celeste">
   <meta property="og:title" content="Chat with Celeste AI | Corrupted VTuber Assistant">
   <meta property="og:description" content="Talk to Celeste, whykusanagi's corrupted-AI demon Onee-san and VTuber. Ask about NIKKE meta, stream lore, or corrupted-theme rabbit holes, all in character.">
   <meta property="og:image" content="https://s3.whykusanagi.xyz/Celeste_Vel_Icon.png">
@@ -15,7 +15,7 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://whykusanagi.xyz/celeste.html">
+  <meta name="twitter:url" content="https://whykusanagi.xyz/celeste">
   <meta name="twitter:title" content="Chat with Celeste AI | Corrupted VTuber Assistant">
   <meta name="twitter:description" content="Talk to Celeste, whykusanagi's corrupted-AI demon Onee-san. Ask about NIKKE meta, stream lore, or just chat with the abyss.">
   <meta name="twitter:image" content="https://s3.whykusanagi.xyz/Celeste_Vel_Icon.png">
@@ -23,7 +23,8 @@
 
   <!-- SEO -->
   <meta name="robots" content="index, follow">
-  <link rel="canonical" href="https://whykusanagi.xyz/celeste.html">
+  <link rel="canonical" href="https://whykusanagi.xyz/celeste">
+  <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
 
   <title>Celeste AI</title>
   <!-- Load environment config for asset URL handling (dev vs production) -->
@@ -145,7 +146,17 @@
       to { opacity: 1; transform: translateY(0); }
     }
   </style>
-</head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "Celeste AI", "item": "https://whykusanagi.xyz/celeste" }
+    ]
+  }
+  </script>
+  </head>
 <body>
   <script src="assets/js/loading.js"></script>
 

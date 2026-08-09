@@ -25,6 +25,7 @@
     <!-- SEO -->
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://whykusanagi.xyz/blog/">
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
 
     <!-- Load environment config before any asset URLs -->
     <script src="../assets/js/env-config.js"></script>
@@ -37,7 +38,53 @@
   <script type="module" src="../assets/js/site-bootstrap.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  </head>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "@id": "https://whykusanagi.xyz/blog/#blog",
+      "name": "Celeste Blog",
+      "url": "https://whykusanagi.xyz/blog/",
+      "publisher": { "@id": "https://whykusanagi.xyz/#whykusanagi" },
+      "blogPost": [
+        { "@type": "BlogPosting", "headline": "Celeste CLI v1.13.0: MCP, Both Directions", "url": "https://whykusanagi.xyz/blog/celeste-cli-v113", "datePublished": "2026-07-12" },
+        { "@type": "BlogPosting", "headline": "Corrupted Theme 0.3.0: One Home for the Glitch Libraries", "url": "https://whykusanagi.xyz/blog/corrupted-theme-v030", "datePublished": "2026-07-09" },
+        { "@type": "BlogPosting", "headline": "LDPlayer & LD Cloud Exposure — Security Advisory", "url": "https://whykusanagi.xyz/blog/ld-advisory", "datePublished": "2026-07-09" },
+        { "@type": "BlogPosting", "headline": "LDPlayer Part 2 — Inside the Bundle", "url": "https://whykusanagi.xyz/blog/ld-advisory-part-2", "datePublished": "2026-07-09" },
+        { "@type": "BlogPosting", "headline": "Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying", "url": "https://whykusanagi.xyz/blog/celeste-cli-v1112", "datePublished": "2026-06-23" },
+        { "@type": "BlogPosting", "headline": "Fugu vs Grok: Benchmarking Sakana AI in Celeste CLI v1.11.2", "url": "https://whykusanagi.xyz/blog/fugu-vs-grok-celeste-cli", "datePublished": "2026-06-23" },
+        { "@type": "BlogPosting", "headline": "I Built My Own Task Manager Instead of Opening Obsidian", "url": "https://whykusanagi.xyz/blog/celesteops-local-first-control-panel", "datePublished": "2026-06-02" },
+        { "@type": "BlogPosting", "headline": "Corrupted Theme 0.2.1: 14 New Components and a Real CDN", "url": "https://whykusanagi.xyz/blog/corrupted-theme-v021", "datePublished": "2026-05-25" },
+        { "@type": "BlogPosting", "headline": "Celeste CLI v1.8: Code Graph, MCP Server, Agentic AI", "url": "https://whykusanagi.xyz/blog/celeste-cli-v18", "datePublished": "2026-04-04" },
+        { "@type": "BlogPosting", "headline": "Celeste on Twitch and TikTok: Your AI VTuber Entertainer Goes Live", "url": "https://whykusanagi.xyz/blog/celeste-streaming-toolkit", "datePublished": "2026-04-04" },
+        { "@type": "BlogPosting", "headline": "Abyssal Conquest: Free Browser Rails Shooter Inspired by NIKKE", "url": "https://whykusanagi.xyz/blog/abyssal-conquest-demo", "datePublished": "2026-04-01" },
+        { "@type": "BlogPosting", "headline": "NIKKE Tierlist Maker: Drag-and-Drop Custom Tier Lists with PNG Export", "url": "https://whykusanagi.xyz/blog/nikke-tierlist-maker", "datePublished": "2026-03-24" },
+        { "@type": "BlogPosting", "headline": "Corrupted Theme Vortex: A Black Hole in CSS and Canvas", "url": "https://whykusanagi.xyz/blog/corrupted-theme-vortex", "datePublished": "2026-03-01" },
+        { "@type": "BlogPosting", "headline": "Celeste Discord Bot Command Guide (Go Overhaul)", "url": "https://whykusanagi.xyz/blog/celeste-discord-command-guide", "datePublished": "2026-02-08" },
+        { "@type": "BlogPosting", "headline": "Zero-Context Validation for Documentation Quality", "url": "https://whykusanagi.xyz/blog/zero-context-validation", "datePublished": "2026-02-05" },
+        { "@type": "BlogPosting", "headline": "NIKKE Core Dust Breakpoints Guide", "url": "https://whykusanagi.xyz/blog/nikke-coredust-breakpoints", "datePublished": "2025-11-27" },
+        { "@type": "BlogPosting", "headline": "NIKKE CP Deficit Calculator & Stat Penalty Guide", "url": "https://whykusanagi.xyz/blog/nikke-deficit-calculator", "datePublished": "2025-11-27" },
+        { "@type": "BlogPosting", "headline": "NIKKE SR Doll Calculator: Resource Planning Guide", "url": "https://whykusanagi.xyz/blog/nikke-sr-doll-calculator", "datePublished": "2025-01-27" },
+        { "@type": "BlogPosting", "headline": "NIKKE Endgame Tierlist & Investment Guide", "url": "https://whykusanagi.xyz/blog/nikke-tierlist-api", "datePublished": "2025-01-27" },
+        { "@type": "BlogPosting", "headline": "Building Enterprise Guardrails for AI Development", "url": "https://whykusanagi.xyz/blog/ai-guardrails-template", "datePublished": "2025-01-26" },
+        { "@type": "BlogPosting", "headline": "Production-Ready Glassmorphic Design System", "url": "https://whykusanagi.xyz/blog/corrupted-theme-design-system", "datePublished": "2025-01-26" },
+        { "@type": "BlogPosting", "headline": "VTuber Character Measurement Tool with MediaPipe", "url": "https://whykusanagi.xyz/blog/vthree-sizes-measurement-tool", "datePublished": "2025-01-26" },
+        { "@type": "BlogPosting", "headline": "Multi-Client Facial Tracking Relay for VTubers", "url": "https://whykusanagi.xyz/blog/vtuberhub-facial-tracking-relay", "datePublished": "2025-01-26" }
+      ]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" }
+      ]
+    }
+    </script>
+    </head>
   <body class="has-video-bg">
     <script src="../assets/js/loading.js"></script>
 
@@ -60,108 +107,118 @@
         <div class="blog-layout">
           <div class="blog-column scrollable-column">
             <article class="card" data-published="2026-07-12">
-              <h2><a href="celeste-cli-v113.html">Celeste CLI v1.13.0: MCP, Both Directions</a></h2>
+              <h2><a href="celeste-cli-v113">Celeste CLI v1.13.0: MCP, Both Directions</a></h2>
               <p>v1.13.0 adds <code>celeste mcp install</code> (Celeste writes herself into Claude Desktop, Cursor, and Claude Code), a runtime <code>/mcp</code> panel, a native Streamable-HTTP transport, foreign config discovery, the model-callable <code>ask</code> tool, and a rebuilt TUI status line.</p>
               <p><small>release notes, celeste-cli, MCP, Claude Desktop, Cursor, Claude Code, Streamable-HTTP, Go CLI, TUI, ask tool</small></p>
             </article>
 
             <article class="card" data-published="2026-07-09">
-              <h2><a href="corrupted-theme-v030.html">Corrupted Theme 0.3.0: One Home for the Glitch Libraries, Deterministic Render-to-Video, and an LLM-Readable Surface</a></h2>
+              <h2><a href="corrupted-theme-v030">Corrupted Theme 0.3.0: One Home for the Glitch Libraries, Deterministic Render-to-Video, and an LLM-Readable Surface</a></h2>
               <p>0.3.0 absorbs the glitch libraries copy-pasted across celeste-tts-bot, the site thumbnail-generator, youtube_poop, and spatial_videos into one canonical package: a stream overlay suite, CorruptedMandala, canvas transitions, 17 anime-blocks classes, 12 composite transitions, anime.js-derived orchestration components, deterministic render-to-video, and a manifest built for LLM agents.</p>
               <p><small>release notes, design system, animation, CDN, video, LLM, glassmorphism, corrupted theme</small></p>
             </article>
+            <article class="card" data-published="2026-07-09">
+              <h2><a href="ld-advisory">LD Cloud, LDPlayer, and LDShop: A Security Advisory</a></h2>
+              <p>Twenty-three publicly listable Huawei Cloud buckets tied to LD Cloud, LDPlayer, and LDShop held database backups, bastion-host dumps, and session recordings of users logging into games like Wuthering Waves. What I confirmed, why the cloud-streaming architecture makes it worse than a routine leak, and what to do tonight.</p>
+              <p><small>security advisory, LD Cloud, LDPlayer, LDShop, data exposure, Wuthering Waves, credential safety</small></p>
+            </article>
+            <article class="card" data-published="2026-07-09">
+              <h2><a href="ld-advisory-part-2">LDPlayer Part 2: Inside the Bundle</a></h2>
+              <p>Twelve days after the disclosure: the buckets are closed, but LD is silent, Kuro deflected the report, and the local LDPlayer install ships an analytics SDK with encryption Citizen Lab already documented as broken, on top of an Android image unpatched since 2019.</p>
+              <p><small>security advisory, LDPlayer, MobTech SDK, Citizen Lab, Android security, follow-up</small></p>
+            </article>
             <article class="card" data-published="2026-06-23">
-              <h2><a href="celeste-cli-v1112.html">Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying</a></h2>
+              <h2><a href="celeste-cli-v1112">Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying</a></h2>
               <p>Release notes for v1.11.2: read commands now honor the <code>-config</code> profile flag instead of falling back to the default, and the TUI <code>/model</code> picker lists the real models your provider serves. Includes a recap of the 1.11.x line that made Sakana's Fugu the default.</p>
               <p><small>release notes, celeste-cli, Go CLI, config profiles, TUI model picker, Sakana Fugu, provider models, MCP, GPG-signed release</small></p>
             </article>
             <article class="card" data-published="2026-06-23">
-              <h2><a href="fugu-vs-grok-celeste-cli.html">Fugu vs Grok: Benchmarking Sakana AI in Celeste CLI v1.11.2</a></h2>
+              <h2><a href="fugu-vs-grok-celeste-cli">Fugu vs Grok: Benchmarking Sakana AI in Celeste CLI v1.11.2</a></h2>
               <p>I added Sakana AI's Fugu model to celeste-cli and ran it against Grok on ten reasoning problems and a dependency-DAG subagent relay, persona left on. Fugu went 10 for 10 to Grok's 8, drove the DAG cleanly where Grok ran flaky, and is now the default model.</p>
               <p><small>Sakana AI, Fugu, Grok, LLM benchmark, AI agent DAG, subagent orchestration, Go CLI, OpenAI compatible, 1M context, code review</small></p>
             </article>
             <article class="card" data-published="2026-06-02">
-              <h2><a href="celesteops-local-first-control-panel.html">I Built My Own Task Manager Instead of Opening Obsidian</a></h2>
+              <h2><a href="celesteops-local-first-control-panel">I Built My Own Task Manager Instead of Opening Obsidian</a></h2>
               <p>CelesteOps is a local-first macOS control panel that shares one SQLite backlog with Claude Code, Claude Desktop, Cursor, and Codex over MCP. Specs and plans live out of git but stay queryable, every client pairs with a revocable token, and a dependency graph shows what's blocking what. Signed, encrypted, local.</p>
               <p><small>local-first, MCP, task manager, SQLite, Claude Code, Codex, Cursor, agent tooling, spec storage, PGP-signed release</small></p>
             </article>
             <article class="card" data-published="2026-05-25">
-              <h2><a href="corrupted-theme-v021.html">Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening</a></h2>
+              <h2><a href="corrupted-theme-v021">Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening</a></h2>
               <p>The 0.2.0 and 0.2.1 releases push Corrupted Theme from a styles library to a production-ready framework: 14 new components, same-origin CDN distribution with SRI, a live demo site, a canonical data layer for cross-language consumers, NSFW handling consolidation, and a CodeQL-driven security pass.</p>
               <p><small>release notes, design system, glassmorphism, CDN, SRI, components, security hardening, CSS framework</small></p>
             </article>
             <article class="card" data-published="2026-04-04">
-              <h2><a href="celeste-cli-v18.html">Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI</a></h2>
+              <h2><a href="celeste-cli-v18">Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI</a></h2>
               <p>Biggest release yet. .grimoire project context, semantic code search without embeddings, MCP server mode, session persistence with undo, plan mode, extended thinking, and cost tracking. Open-source Go CLI.</p>
               <p><small>Go CLI, MCP server, AI agent, code graph, semantic search, Bubble Tea TUI, open source</small></p>
             </article>
             <article class="card" data-published="2026-04-04">
-              <h2><a href="celeste-streaming-toolkit.html">Celeste on Twitch and TikTok: Your AI VTuber Entertainer Goes Live</a></h2>
+              <h2><a href="celeste-streaming-toolkit">Celeste on Twitch and TikTok: Your AI VTuber Entertainer Goes Live</a></h2>
               <p>Celeste reacts to your TikTok gifts in real-time, nags you about gacha dailies, catches duplicate links, monitors cross-channel drama, and dances on screen with chroma animations. Here's what she does for her fans.</p>
               <p><small>AI VTuber, TikTok Live, Twitch, channel points, gacha reminders, chroma animations</small></p>
             </article>
             <article class="card" data-published="2026-04-01">
-              <h2><a href="abyssal-conquest-demo.html">Abyssal Conquest: Free Rails Shooter in Your Browser - Play Now</a></h2>
+              <h2><a href="abyssal-conquest-demo">Abyssal Conquest: Free Rails Shooter in Your Browser - Play Now</a></h2>
               <p>A full NIKKE-inspired rails shooter you can play free right now. Boss fights with unique mechanics, burst skills, equipment, original soundtrack, infinite boss rush with global leaderboards, and an AC-130 gunship mode.</p>
               <p><small>Free browser game, rails shooter, boss fights, leaderboards, original soundtrack, AC-130 mode</small></p>
             </article>
             <article class="card" data-published="2026-03-24">
-              <h2><a href="nikke-tierlist-maker.html">NIKKE Tierlist Maker: Drag-and-Drop Custom Tier Lists with PNG Export</a></h2>
+              <h2><a href="nikke-tierlist-maker">NIKKE Tierlist Maker: Drag-and-Drop Custom Tier Lists with PNG Export</a></h2>
               <p>Build and share custom NIKKE tier lists with drag-and-drop, color-coded tiers, element-colored portraits, and one-click PNG export. Free at nikkers.cc.</p>
               <p><small>NIKKE tier list maker, custom tierlist, PNG export, drag and drop, nikkers.cc</small></p>
             </article>
             <article class="card" data-published="2026-03-01">
-              <h2><a href="corrupted-theme-vortex.html">Corrupted Theme Vortex: Interstellar-Style Black Hole Animation</a></h2>
+              <h2><a href="corrupted-theme-vortex">Corrupted Theme Vortex: Interstellar-Style Black Hole Animation</a></h2>
               <p>Real-time black hole animation with accretion disk physics, spaghettification, and Saturn-ring depth layering. Canvas-rendered for glassmorphic UI backgrounds. Corrupted Theme v0.1.8.</p>
               <p><small>Canvas animation, black hole, glassmorphic design system, npm package, voidpunk</small></p>
             </article>
             <article class="card" data-published="2026-02-08">
-              <h2><a href="celeste-discord-command-guide.html">Celeste Discord Command Guide (Go Overhaul)</a></h2>
+              <h2><a href="celeste-discord-command-guide">Celeste Discord Command Guide (Go Overhaul)</a></h2>
               <p>Updated command reference for chat, voice, gacha, doujin recommendations, raid scheduling, radio controls, and moderation.</p>
               <p><small>Current slash syntax, permission notes, NSFW rules</small></p>
             </article>
             <article class="card" data-published="2026-02-05">
-              <h2><a href="zero-context-validation.html">Zero-Context Validation: Test Documentation Completeness with Blind Sub-Agents</a></h2>
+              <h2><a href="zero-context-validation">Zero-Context Validation: Test Documentation Completeness with Blind Sub-Agents</a></h2>
               <p>Spawn blind sub-agents to test your documentation - they expose blindspots you can't see because you have context. Production documentation testing for AI-assisted development.</p>
               <p><small>Claude Code skill, documentation testing, AI development tools, developer productivity</small></p>
             </article>
             <article class="card" data-published="2025-11-27">
-              <h2><a href="nikke-coredust-breakpoints.html">NIKKE Core Dust Breakpoints</a></h2>
+              <h2><a href="nikke-coredust-breakpoints">NIKKE Core Dust Breakpoints</a></h2>
               <p>Data-driven analysis tool to identify optimal outpost levels for maximum core dust production. Modular Python library with interactive Plotly visualizations.</p>
               <p><small>41 breakpoints across 400 levels, comprehensive test coverage, production-ready</small></p>
             </article>
             <article class="card" data-published="2025-11-27">
-              <h2><a href="nikke-deficit-calculator.html">NIKKE CP Deficit Calculator</a></h2>
+              <h2><a href="nikke-deficit-calculator">NIKKE CP Deficit Calculator</a></h2>
               <p>Self-contained calculator for determining Combat Power deficit and stat penalties in Goddess of Victory: NIKKE. Piecewise function with 99.5% accuracy.</p>
               <p><small>501 data points, self-contained dataset, production-ready for nikkers.gg</small></p>
             </article>
             <article class="card" data-published="2025-01-27">
-              <h2><a href="nikke-tierlist-api.html">NIKKE Tierlist & Recommendation API</a></h2>
+              <h2><a href="nikke-tierlist-api">NIKKE Tierlist & Recommendation API</a></h2>
               <p>Production-ready Cloudflare Workers API for NIKKE tierlist browsing and AI-powered squad recommendations. 164 units with real union investment data.</p>
               <p><small>Cloudflare Workers, OpenAPI docs, comprehensive test coverage, built for nikkers.cc</small></p>
             </article>
             <article class="card" data-published="2025-01-27">
-              <h2><a href="nikke-sr-doll-calculator.html">NIKKE SR Doll Leveling Calculator</a></h2>
+              <h2><a href="nikke-sr-doll-calculator">NIKKE SR Doll Leveling Calculator</a></h2>
               <p>Interactive calculator for estimating resources needed to level SR dolls to Phase 15. Includes luck calculator for super success rates.</p>
               <p><small>Resource planning, luck tracking, corrupted-theme UI</small></p>
             </article>
             <article class="card" data-published="2025-01-26">
-              <h2><a href="vtuberhub-facial-tracking-relay.html">Multi-Client Facial Tracking Relay for VTubers</a></h2>
+              <h2><a href="vtuberhub-facial-tracking-relay">Multi-Client Facial Tracking Relay for VTubers</a></h2>
               <p>Split iFacialMocap UDP streams to multiple applications simultaneously. Zero-latency Go relay for VTube Studio, Warudo, and replay tooling.</p>
               <p><small>Sub-millisecond latency, packet dumping, cross-platform</small></p>
             </article>
             <article class="card" data-published="2025-01-26">
-              <h2><a href="vthree-sizes-measurement-tool.html">Automated VTuber Character Measurement Tool</a></h2>
+              <h2><a href="vthree-sizes-measurement-tool">Automated VTuber Character Measurement Tool</a></h2>
               <p>Extract accurate body measurements from anime character images using Google MediaPipe Pose detection for character design and 3D modeling.</p>
               <p><small>Open-source Python tool, Google Colab ready, unit tested</small></p>
             </article>
             <article class="card" data-published="2025-01-26">
-              <h2><a href="corrupted-theme-design-system.html">Building a Production-Ready Glassmorphic Design System</a></h2>
+              <h2><a href="corrupted-theme-design-system">Building a Production-Ready Glassmorphic Design System</a></h2>
               <p>How I built Corrupted Theme—a production-ready glassmorphic CSS framework with enterprise-grade standards, Docker showcase, and npm distribution.</p>
               <p><small>50+ components, WCAG AA compliance, npm package</small></p>
             </article>
             <article class="card" data-published="2025-01-26">
-              <h2><a href="ai-guardrails-template.html">Enterprise Guardrails for AI Development</a></h2>
+              <h2><a href="ai-guardrails-template">Enterprise Guardrails for AI Development</a></h2>
               <p>Walkthrough of the ai_development template that keeps AI repos compliant with CLAUDE.md, MCP workflows, and detect-secrets.</p>
               <p><small>Includes bootstrap steps + audit guidance</small></p>
             </article>

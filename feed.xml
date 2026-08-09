@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>whykusanagi blog</title>
+    <link>https://whykusanagi.xyz/blog/</link>
+    <description>Streams, digital art, NIKKE tools, the corrupted-theme design system, and Celeste.</description>
+    <language>en</language>
+    <atom:link href="https://whykusanagi.xyz/feed.xml" rel="self" type="application/rss+xml"/>
+    <item>
+      <title>Celeste CLI v1.13.0: MCP, Both Directions</title>
+      <link>https://whykusanagi.xyz/blog/celeste-cli-v113</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-cli-v113</guid>
+      <pubDate>Sun, 12 Jul 2026 00:00:00 GMT</pubDate>
+      <description>Celeste CLI v1.13.0 adds `celeste mcp install` (Celeste writes herself into Claude Desktop, Cursor, and Claude Code), a runtime /mcp panel, a native Streamable-HTTP transport, foreign config discovery, the model-callable ask tool, and a rebuilt TUI status line.</description>
+    </item>
+    <item>
+      <title>Corrupted Theme 0.3.0: one home for the glitch libraries, deterministic render-to-video, and an LLM-readable surface</title>
+      <link>https://whykusanagi.xyz/blog/corrupted-theme-v030</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/corrupted-theme-v030</guid>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 GMT</pubDate>
+      <description>Corrupted Theme 0.3.0 consolidates the glitch libraries scattered across my projects into one canonical package, adds deterministic render-to-video, and ships a machine-readable manifest for LLM agents.</description>
+    </item>
+    <item>
+      <title>LDPlayer Part 2 — Inside the Bundle</title>
+      <link>https://whykusanagi.xyz/blog/ld-advisory-part-2</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/ld-advisory-part-2</guid>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 GMT</pubDate>
+      <description>Twelve days after the LD Cloud disclosure: buckets closed, operator silent, software unchanged, and a bundled analytics SDK has documented broken encryption.</description>
+    </item>
+    <item>
+      <title>LDPlayer &amp; LD Cloud Exposure — Security Advisory</title>
+      <link>https://whykusanagi.xyz/blog/ld-advisory</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/ld-advisory</guid>
+      <pubDate>Thu, 09 Jul 2026 00:00:00 GMT</pubDate>
+      <description>What I confirmed about LD Cloud, LDPlayer and LDShop exposure, why it is structurally different from a routine leak, and what viewers should do tonight.</description>
+    </item>
+    <item>
+      <title>Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying</title>
+      <link>https://whykusanagi.xyz/blog/celeste-cli-v1112</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-cli-v1112</guid>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 GMT</pubDate>
+      <description>Celeste CLI v1.11.2 makes -config profiles work in read commands and lists real provider models in the TUI /model picker. Plus a recap of the 1.11.x Fugu arc.</description>
+    </item>
+    <item>
+      <title>Fugu vs Grok: Benchmarking Sakana AI in Celeste CLI v1.11.2</title>
+      <link>https://whykusanagi.xyz/blog/fugu-vs-grok-celeste-cli</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/fugu-vs-grok-celeste-cli</guid>
+      <pubDate>Tue, 23 Jun 2026 00:00:00 GMT</pubDate>
+      <description>I added Sakana AI&apos;s Fugu model to celeste-cli and ran it head-to-head against Grok on ten reasoning problems and a dependency-DAG subagent relay. Fugu won 10 to 8, drove the DAG cleanly where Grok ran flaky, and is now the default model.</description>
+    </item>
+    <item>
+      <title>I Built My Own Task Manager Instead of Opening Obsidian</title>
+      <link>https://whykusanagi.xyz/blog/celesteops-local-first-control-panel</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celesteops-local-first-control-panel</guid>
+      <pubDate>Tue, 02 Jun 2026 00:00:00 GMT</pubDate>
+      <description>CelesteOps is a local-first macOS control panel that shares one SQLite backlog with Claude, Codex, and Cursor over MCP — specs out of git, paired clients, signed releases.</description>
+    </item>
+    <item>
+      <title>Corrupted Theme 0.2.1: 14 new components, a real CDN, and security hardening</title>
+      <link>https://whykusanagi.xyz/blog/corrupted-theme-v021</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/corrupted-theme-v021</guid>
+      <pubDate>Mon, 25 May 2026 00:00:00 GMT</pubDate>
+      <description>Corrupted Theme 0.2.1 ships 14 new components, same-origin CDN distribution with SRI, a canonical data layer for cross-language consumers, a live demo site, and a CodeQL-driven security pass. A glassmorphic dark-mode design system built for production.</description>
+    </item>
+    <item>
+      <title>Celeste CLI v1.8: Grimoire Config, Code Graph, MCP Server, and Agentic AI</title>
+      <link>https://whykusanagi.xyz/blog/celeste-cli-v18</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-cli-v18</guid>
+      <pubDate>Sat, 04 Apr 2026 00:00:00 GMT</pubDate>
+      <description>Celeste CLI v1.8 brings .grimoire project context, semantic code search, MCP server mode, session persistence, file checkpointing, extended thinking, cost tracking, and plan mode. Open-source Go CLI.</description>
+    </item>
+    <item>
+      <title>Celeste on Twitch and TikTok: Your AI VTuber Entertainer Goes Live</title>
+      <link>https://whykusanagi.xyz/blog/celeste-streaming-toolkit</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-streaming-toolkit</guid>
+      <pubDate>Sat, 04 Apr 2026 00:00:00 GMT</pubDate>
+      <description>Meet Celeste on Twitch and TikTok Live. She reacts to gifts with animated overlays, runs daily gacha reminders, catches duplicate links, monitors cross-channel drama, and entertains with chroma-keyed animations.</description>
+    </item>
+    <item>
+      <title>Abyssal Conquest: Free Browser Rails Shooter Inspired by NIKKE</title>
+      <link>https://whykusanagi.xyz/blog/abyssal-conquest-demo</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/abyssal-conquest-demo</guid>
+      <pubDate>Wed, 01 Apr 2026 00:00:00 GMT</pubDate>
+      <description>Play Abyssal Conquest free in your browser. A NIKKE-inspired rails shooter with boss fights, burst skills, equipment, infinite boss rush, AC-130 mode, leaderboards, and a full original soundtrack.</description>
+    </item>
+    <item>
+      <title>NIKKE Tierlist Maker: Drag-and-Drop Custom Tier Lists with PNG Export</title>
+      <link>https://whykusanagi.xyz/blog/nikke-tierlist-maker</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/nikke-tierlist-maker</guid>
+      <pubDate>Tue, 24 Mar 2026 00:00:00 GMT</pubDate>
+      <description>Create custom NIKKE tier lists with drag-and-drop, color-coded tiers, and one-click PNG export. Free browser tool with all 164+ units at nikkers.cc.</description>
+    </item>
+    <item>
+      <title>Corrupted Theme Vortex: Interstellar-Style Black Hole Animation</title>
+      <link>https://whykusanagi.xyz/blog/corrupted-theme-vortex</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/corrupted-theme-vortex</guid>
+      <pubDate>Sun, 01 Mar 2026 00:00:00 GMT</pubDate>
+      <description>Corrupted Theme v0.1.8 adds Vortex, a real-time black hole animation with accretion disk physics, spaghettification, and Saturn-ring layering. Pure Canvas rendering for glassmorphic UI backgrounds.</description>
+    </item>
+    <item>
+      <title>Celeste Discord Bot Command Guide (Go Overhaul)</title>
+      <link>https://whykusanagi.xyz/blog/celeste-discord-command-guide</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-discord-command-guide</guid>
+      <pubDate>Sun, 08 Feb 2026 00:00:00 GMT</pubDate>
+      <description>Updated guide to Celeste&apos;s current Discord slash commands after the Go overhaul, including chat, voice, gacha, doujin recommendations, raid scheduling, radio controls, and NSFW verification.</description>
+    </item>
+    <item>
+      <title>Zero-Context Validation for Documentation Quality</title>
+      <link>https://whykusanagi.xyz/blog/zero-context-validation</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/zero-context-validation</guid>
+      <pubDate>Thu, 05 Feb 2026 00:00:00 GMT</pubDate>
+      <description>Use blind sub-agents to test whether documentation is complete before developers get blocked. A practical documentation-quality workflow for Claude Code.</description>
+    </item>
+    <item>
+      <title>NIKKE Core Dust Breakpoints Guide</title>
+      <link>https://whykusanagi.xyz/blog/nikke-coredust-breakpoints</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/nikke-coredust-breakpoints</guid>
+      <pubDate>Thu, 27 Nov 2025 00:00:00 GMT</pubDate>
+      <description>Core dust breakpoint guide for NIKKE with 41 key levels across 400 outpost levels, plus planning tips for campaign progression and endgame resource use.</description>
+    </item>
+    <item>
+      <title>NIKKE CP Deficit Calculator &amp; Stat Penalty Guide</title>
+      <link>https://whykusanagi.xyz/blog/nikke-deficit-calculator</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/nikke-deficit-calculator</guid>
+      <pubDate>Thu, 27 Nov 2025 00:00:00 GMT</pubDate>
+      <description>Self-contained calculator for determining Combat Power deficit and stat penalties in Goddess of Victory: NIKKE. Piecewise function with 99.5% accuracy.</description>
+    </item>
+    <item>
+      <title>NIKKE SR Doll Calculator: Resource Planning Guide</title>
+      <link>https://whykusanagi.xyz/blog/nikke-sr-doll-calculator</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/nikke-sr-doll-calculator</guid>
+      <pubDate>Mon, 27 Jan 2025 00:00:00 GMT</pubDate>
+      <description>Interactive calculator for estimating resources needed to level SR dolls to Phase 15 in NIKKE. Includes luck calculator for super success rates.</description>
+    </item>
+    <item>
+      <title>NIKKE Endgame Tierlist &amp; Investment Guide</title>
+      <link>https://whykusanagi.xyz/blog/nikke-tierlist-api</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/nikke-tierlist-api</guid>
+      <pubDate>Mon, 27 Jan 2025 00:00:00 GMT</pubDate>
+      <description>Endgame NIKKE tierlist built from top 50 union and top 200 solo raid data, with practical investment guidance for union raid and solo raid planning.</description>
+    </item>
+    <item>
+      <title>Building Enterprise Guardrails for AI Development</title>
+      <link>https://whykusanagi.xyz/blog/ai-guardrails-template</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/ai-guardrails-template</guid>
+      <pubDate>Sun, 26 Jan 2025 00:00:00 GMT</pubDate>
+      <description>How the ai_development guardrails template enforces Meta/Google/Netflix-level standards for AI-led repos using CLAUDE.md, .cursorrules, and MCP workflows.</description>
+    </item>
+    <item>
+      <title>Production-Ready Glassmorphic Design System</title>
+      <link>https://whykusanagi.xyz/blog/corrupted-theme-design-system</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/corrupted-theme-design-system</guid>
+      <pubDate>Sun, 26 Jan 2025 00:00:00 GMT</pubDate>
+      <description>How I built Corrupted Theme—a production-ready glassmorphic CSS framework with enterprise-grade standards, Docker showcase, and npm distribution.</description>
+    </item>
+    <item>
+      <title>VTuber Character Measurement Tool with MediaPipe</title>
+      <link>https://whykusanagi.xyz/blog/vthree-sizes-measurement-tool</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/vthree-sizes-measurement-tool</guid>
+      <pubDate>Sun, 26 Jan 2025 00:00:00 GMT</pubDate>
+      <description>Build accurate 3-size measurements for VTuber characters using Google MediaPipe Pose detection. Open-source Python tool for character design and 3D modeling.</description>
+    </item>
+    <item>
+      <title>Multi-Client Facial Tracking Relay for VTubers</title>
+      <link>https://whykusanagi.xyz/blog/vtuberhub-facial-tracking-relay</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/vtuberhub-facial-tracking-relay</guid>
+      <pubDate>Sun, 26 Jan 2025 00:00:00 GMT</pubDate>
+      <description>Split iFacialMocap UDP streams to multiple applications simultaneously. Lightweight Go relay for VTube Studio, Warudo, and other facial tracking tools.</description>
+    </item>
+  </channel>
+</rss>

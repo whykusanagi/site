@@ -3,12 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>NIKKE Endgame Tierlist & Investment Guide | Celeste Blog</title>
+    <title>NIKKE Endgame Tierlist & Investment Guide</title>
     <meta name="description" content="Endgame NIKKE tierlist built from top 50 union and top 200 solo raid data, with practical investment guidance for union raid and solo raid planning." />
     <meta name="keywords" content="nikke tierlist api, nikke recommendation api, cloudflare workers, nikke units, nikke tier list, nikkers.cc, goddess of victory nikke api" />
     <meta name="author" content="Celeste" />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/nikke-tierlist-api">
+    <meta property="og:title" content="NIKKE Endgame Tierlist &amp; Investment Guide">
+    <meta property="og:description" content="Endgame NIKKE tierlist built from top 50 union and top 200 solo raid data, with practical investment guidance for union raid and solo raid planning.">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3201988285&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=NIKKE%20Endgame%20Tierlist%20%26%20Investment%20Guide&amp;nameplate=whykusanagi.xyz">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/nikke-tierlist-api">
+    <meta name="twitter:title" content="NIKKE Endgame Tierlist &amp; Investment Guide">
+    <meta name="twitter:description" content="Endgame NIKKE tierlist built from top 50 union and top 200 solo raid data, with practical investment guidance for union raid and solo raid planning.">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3201988285&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=NIKKE%20Endgame%20Tierlist%20%26%20Investment%20Guide&amp;nameplate=whykusanagi.xyz">
+    <meta name="twitter:site" content="@whykusanagi">
+    <meta name="twitter:creator" content="@whykusanagi">
+
+    <!-- SEO -->
     <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://whykusanagi.xyz/blog/nikke-tierlist-api.html" />
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/nikke-tierlist-api" />
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
     <script src="../assets/js/env-config.js"></script>
     <script src="../assets/js/background-setup.js"></script>
     <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
@@ -30,8 +49,9 @@
         "url": "https://whykusanagi.xyz/"
       },
       "datePublished": "2025-01-27",
+      "dateModified": "2026-08-08",
       "image": "https://s3.whykusanagi.xyz/art/shimiko_cosplay_fullbd.png",
-      "mainEntityOfPage": "https://whykusanagi.xyz/blog/nikke-tierlist-api.html",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/nikke-tierlist-api",
       "publisher": {
         "@type": "Organization",
         "name": "whykusanagi",
@@ -42,7 +62,18 @@
       }
     }
     </script>
-  </head>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "NIKKE Tierlist Guide", "item": "https://whykusanagi.xyz/blog/nikke-tierlist-api" }
+      ]
+    }
+    </script>
+    </head>
   <body class="has-video-bg blog-article">
     <script src="../assets/js/loading.js"></script>
 
@@ -144,7 +175,7 @@
           <p>The tierlist is designed to be easy to use—just select what you're looking for (union raid planning, solo raid optimization, hard campaign progression) and the tierlist will help you find the best units for your needs.</p>
           
           <h3>Combining Tierlist Strategy with Core Dust Optimization</h3>
-          <p>To maximize your endgame performance, combine this tierlist with <a href="nikke-coredust-breakpoints.html">core dust breakpoint optimization</a>. Core dust is the bottleneck resource for character development, and knowing when to push campaign stages to reach breakpoint levels directly supports your union raid and solo raid investment strategy.</p>
+          <p>To maximize your endgame performance, combine this tierlist with <a href="nikke-coredust-breakpoints">core dust breakpoint optimization</a>. Core dust is the bottleneck resource for character development, and knowing when to push campaign stages to reach breakpoint levels directly supports your union raid and solo raid investment strategy.</p>
           <p>Here's how they work together:</p>
           <ul>
             <li><strong>Use the tierlist</strong> to identify which units to invest in for union raids and solo raids</li>
@@ -166,9 +197,9 @@
           <h2>Related NIKKE Projects</h2>
           <p>This API is part of a larger ecosystem of NIKKE community tools:</p>
           <ul>
-            <li><strong><a href="nikke-coredust-breakpoints.html">NIKKE Core Dust Breakpoints</a></strong>: Data-driven analysis tool for identifying optimal outpost levels for maximum core dust production</li>
-            <li><strong><a href="nikke-deficit-calculator.html">NIKKE CP Deficit Calculator</a></strong>: Self-contained calculator for determining Combat Power deficit and stat penalties with 99.5% accuracy</li>
-            <li><strong><a href="nikke-sr-doll-calculator.html">NIKKE SR Doll Leveling Calculator</a></strong>: Interactive calculator for estimating resources needed to level SR dolls to Phase 15, including luck tracking</li>
+            <li><strong><a href="nikke-coredust-breakpoints">NIKKE Core Dust Breakpoints</a></strong>: Data-driven analysis tool for identifying optimal outpost levels for maximum core dust production</li>
+            <li><strong><a href="nikke-deficit-calculator">NIKKE CP Deficit Calculator</a></strong>: Self-contained calculator for determining Combat Power deficit and stat penalties with 99.5% accuracy</li>
+            <li><strong><a href="nikke-sr-doll-calculator">NIKKE SR Doll Leveling Calculator</a></strong>: Interactive calculator for estimating resources needed to level SR dolls to Phase 15, including luck tracking</li>
           </ul>
           <p>All of these tools are designed to work together, providing NIKKE players with comprehensive resources for optimizing their progression, resource management, and squad building strategies.</p>
         </section>
@@ -178,7 +209,7 @@
           <ul>
             <li><a href="https://nikkers.cc" target="_blank" rel="noopener">nikkers.cc</a> (tierlist and recommendation API usage)</li>
             <li><a href="https://enikk.app/unions/NA/26017" target="_blank" rel="noopener">Corelust union profile</a> (union reference used in this guide)</li>
-            <li><a href="nikke-coredust-breakpoints.html">NIKKE Core Dust Breakpoints</a> (companion optimization guide)</li>
+            <li><a href="nikke-coredust-breakpoints">NIKKE Core Dust Breakpoints</a> (companion optimization guide)</li>
           </ul>
         </section>
 
@@ -195,9 +226,9 @@
         </section>
 
         <section class="cta-grid">
-          <a class="btn" href="nikke-coredust-breakpoints.html"><i class="fas fa-chart-line"></i> Core Dust Breakpoints</a>
+          <a class="btn" href="nikke-coredust-breakpoints"><i class="fas fa-chart-line"></i> Core Dust Breakpoints</a>
           <a class="btn" href="https://nikkers.cc" target="_blank" rel="noopener"><i class="fas fa-external-link-alt"></i> Use on nikkers.cc</a>
-          <a class="btn" href="nikke-deficit-calculator.html"><i class="fas fa-calculator"></i> CP Deficit Calculator</a>
+          <a class="btn" href="nikke-deficit-calculator"><i class="fas fa-calculator"></i> CP Deficit Calculator</a>
         </section>
       </article>
     </main>
