@@ -4,10 +4,15 @@
  * hit instead of paying the cold render. Run after deploy: npm run warm-og
  */
 import { readFileSync } from 'node:fs';
-import { allPages } from './lib/pages.mjs';
+import { indexablePages } from './lib/pages.mjs';
 
 const urls = new Set();
-for (const file of allPages()) {
+// indexablePages(), not allPages() — allPages() includes blog/_template.html,
+// whose og:image URL carries literal placeholders like [SEED] and
+// [BLOG%20POST%20TITLE]. fetch() percent-encodes those brackets instead of
+// throwing, so a cold render for a URL nobody will ever hit gets pinned in
+// cache for the full TTL. Do not broaden this back to allPages().
+for (const file of indexablePages()) {
   const html = readFileSync(file, 'utf8');
   for (const m of html.matchAll(/content="(https:\/\/whykusanagi\.xyz\/api\/[^"]+)"/g)) {
     urls.add(m[1].replace(/&amp;/g, '&'));
