@@ -81,7 +81,7 @@
           <h2>The 1.11.x arc, in case you skipped it</h2>
           <p>v1.11.2 is the tail of a busier release line. If you're jumping from 1.10, these landed along the way:</p>
           <ol>
-            <li><strong>Sakana AI (Fugu) provider, now the default.</strong> The headline of 1.11.0. I benchmarked it against Grok: it went ten-for-ten on the reasoning set and drove a dependency-DAG subagent relay where Grok ran flaky. The full writeup is in <a href="fugu-vs-grok-celeste-cli.html">Fugu vs Grok</a>.</li>
+            <li><strong>Sakana AI (Fugu) provider, now the default.</strong> The headline of 1.11.0. I benchmarked it against Grok: it went ten-for-ten on the reasoning set and drove a dependency-DAG subagent relay where Grok ran flaky. The full writeup is in <a href="fugu-vs-grok-celeste-cli">Fugu vs Grok</a>.</li>
             <li><strong>Agent run IDs are unique now.</strong> Concurrent agent runs could collide on checkpoint files and step on each other's state. Each run gets its own ID, so the checkpoints stay separate.</li>
             <li><strong>Deterministic code-graph ranking.</strong> The MinHash seeds are fixed, so the codegraph ranking test stopped being flaky: same input, same ranking, every run.</li>
             <li><strong>Dependency and security pass.</strong> Bumped the Anthropic Go SDK, pinned <code>govulncheck</code> past a generics panic, and aligned GPG release verification with celeste-ops so the signed-release story is consistent across both tools.</li>
@@ -91,7 +91,7 @@
         <section>
           <h2>Upgrading</h2>
           <p>Grab v1.11.2 from the <a href="https://github.com/whykusanagi/celeste-cli/releases" target="_blank" rel="noopener">releases page</a>. Releases are GPG-signed; verify the signature before you run the binary. If you're already on the 1.11.x line, this is a drop-in update with no config migration. If you're coming from 1.10 or earlier, expect the default model to be Fugu now; pin a different one with a config profile if you'd rather.</p>
-          <p>Want the pitch instead of the patch notes? The <a href="../celeste-cli-presentation.html">Celeste CLI deck</a> covers what the tool does: graph-powered code search, structural review, and MCP tools for Claude Code.</p>
+          <p>Want the pitch instead of the patch notes? The <a href="../celeste-cli-presentation">Celeste CLI deck</a> covers what the tool does: graph-powered code search, structural review, and MCP tools for Claude Code.</p>
         </section>
 
         <section>
@@ -108,7 +108,7 @@
 
         <section class="cta-grid">
           <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">Celeste CLI on GitHub</a>
-          <a class="btn" href="../tools.html">Browse Tech Tools</a>
+          <a class="btn" href="../tools">Browse Tech Tools</a>
         </section>
       </article>
     </main>
