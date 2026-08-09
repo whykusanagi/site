@@ -18,8 +18,17 @@ let warm = 0;
 let cold = 0;
 for (const url of urls) {
   const t0 = process.hrtime.bigint();
-  const res = await fetch(url);
-  await res.arrayBuffer();
+  let res;
+  try {
+    res = await fetch(url);
+    await res.arrayBuffer();
+  } catch (err) {
+    // Keep going: one unreachable URL should not leave the rest of the cards
+    // cold, and the exit code still marks the run as failed.
+    console.log(`ERR ${err.message} ${url.slice(0, 100)}`);
+    process.exitCode = 1;
+    continue;
+  }
   const ms = Number(process.hrtime.bigint() - t0) / 1e6;
   const slow = ms > 1000;
   if (slow) cold++; else warm++;
