@@ -37,6 +37,42 @@
   <script type="module" src="../assets/js/site-bootstrap.js"></script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Blog",
+      "@id": "https://whykusanagi.xyz/blog/#blog",
+      "name": "Celeste Blog",
+      "url": "https://whykusanagi.xyz/blog/",
+      "publisher": { "@id": "https://whykusanagi.xyz/#whykusanagi" },
+      "blogPost": [
+        { "@type": "BlogPosting", "headline": "Celeste CLI v1.13.0: MCP, Both Directions", "url": "https://whykusanagi.xyz/blog/celeste-cli-v113", "datePublished": "2026-07-12" },
+        { "@type": "BlogPosting", "headline": "Corrupted Theme 0.3.0: One Home for the Glitch Libraries", "url": "https://whykusanagi.xyz/blog/corrupted-theme-v030", "datePublished": "2026-07-09" },
+        { "@type": "BlogPosting", "headline": "LDPlayer & LD Cloud Exposure — Security Advisory", "url": "https://whykusanagi.xyz/blog/ld-advisory", "datePublished": "2026-07-09" },
+        { "@type": "BlogPosting", "headline": "LDPlayer Part 2 — Inside the Bundle", "url": "https://whykusanagi.xyz/blog/ld-advisory-part-2", "datePublished": "2026-07-09" },
+        { "@type": "BlogPosting", "headline": "Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying", "url": "https://whykusanagi.xyz/blog/celeste-cli-v1112", "datePublished": "2026-06-23" },
+        { "@type": "BlogPosting", "headline": "Fugu vs Grok: Benchmarking Sakana AI in Celeste CLI v1.11.2", "url": "https://whykusanagi.xyz/blog/fugu-vs-grok-celeste-cli", "datePublished": "2026-06-23" },
+        { "@type": "BlogPosting", "headline": "I Built My Own Task Manager Instead of Opening Obsidian", "url": "https://whykusanagi.xyz/blog/celesteops-local-first-control-panel", "datePublished": "2026-06-02" },
+        { "@type": "BlogPosting", "headline": "Corrupted Theme 0.2.1: 14 New Components and a Real CDN", "url": "https://whykusanagi.xyz/blog/corrupted-theme-v021", "datePublished": "2026-05-25" },
+        { "@type": "BlogPosting", "headline": "Celeste CLI v1.8: Code Graph, MCP Server, Agentic AI", "url": "https://whykusanagi.xyz/blog/celeste-cli-v18", "datePublished": "2026-04-04" },
+        { "@type": "BlogPosting", "headline": "Celeste on Twitch and TikTok: Your AI VTuber Entertainer Goes Live", "url": "https://whykusanagi.xyz/blog/celeste-streaming-toolkit", "datePublished": "2026-04-04" },
+        { "@type": "BlogPosting", "headline": "Abyssal Conquest: Free Browser Rails Shooter Inspired by NIKKE", "url": "https://whykusanagi.xyz/blog/abyssal-conquest-demo", "datePublished": "2026-04-01" },
+        { "@type": "BlogPosting", "headline": "NIKKE Tierlist Maker: Drag-and-Drop Custom Tier Lists with PNG Export", "url": "https://whykusanagi.xyz/blog/nikke-tierlist-maker", "datePublished": "2026-03-24" },
+        { "@type": "BlogPosting", "headline": "Corrupted Theme Vortex: A Black Hole in CSS and Canvas", "url": "https://whykusanagi.xyz/blog/corrupted-theme-vortex", "datePublished": "2026-03-01" },
+        { "@type": "BlogPosting", "headline": "Celeste Discord Bot Command Guide (Go Overhaul)", "url": "https://whykusanagi.xyz/blog/celeste-discord-command-guide", "datePublished": "2026-02-08" },
+        { "@type": "BlogPosting", "headline": "Zero-Context Validation for Documentation Quality", "url": "https://whykusanagi.xyz/blog/zero-context-validation", "datePublished": "2026-02-05" },
+        { "@type": "BlogPosting", "headline": "NIKKE Core Dust Breakpoints Guide", "url": "https://whykusanagi.xyz/blog/nikke-coredust-breakpoints", "datePublished": "2025-11-27" },
+        { "@type": "BlogPosting", "headline": "NIKKE CP Deficit Calculator & Stat Penalty Guide", "url": "https://whykusanagi.xyz/blog/nikke-deficit-calculator", "datePublished": "2025-11-27" },
+        { "@type": "BlogPosting", "headline": "NIKKE SR Doll Calculator: Resource Planning Guide", "url": "https://whykusanagi.xyz/blog/nikke-sr-doll-calculator", "datePublished": "2025-01-27" },
+        { "@type": "BlogPosting", "headline": "NIKKE Endgame Tierlist & Investment Guide", "url": "https://whykusanagi.xyz/blog/nikke-tierlist-api", "datePublished": "2025-01-27" },
+        { "@type": "BlogPosting", "headline": "Building Enterprise Guardrails for AI Development", "url": "https://whykusanagi.xyz/blog/ai-guardrails-template", "datePublished": "2025-01-26" },
+        { "@type": "BlogPosting", "headline": "Production-Ready Glassmorphic Design System", "url": "https://whykusanagi.xyz/blog/corrupted-theme-design-system", "datePublished": "2025-01-26" },
+        { "@type": "BlogPosting", "headline": "VTuber Character Measurement Tool with MediaPipe", "url": "https://whykusanagi.xyz/blog/vthree-sizes-measurement-tool", "datePublished": "2025-01-26" },
+        { "@type": "BlogPosting", "headline": "Multi-Client Facial Tracking Relay for VTubers", "url": "https://whykusanagi.xyz/blog/vtuberhub-facial-tracking-relay", "datePublished": "2025-01-26" }
+      ]
+    }
+    </script>
   </head>
   <body class="has-video-bg">
     <script src="../assets/js/loading.js"></script>
@@ -69,6 +105,16 @@
               <h2><a href="corrupted-theme-v030">Corrupted Theme 0.3.0: One Home for the Glitch Libraries, Deterministic Render-to-Video, and an LLM-Readable Surface</a></h2>
               <p>0.3.0 absorbs the glitch libraries copy-pasted across celeste-tts-bot, the site thumbnail-generator, youtube_poop, and spatial_videos into one canonical package: a stream overlay suite, CorruptedMandala, canvas transitions, 17 anime-blocks classes, 12 composite transitions, anime.js-derived orchestration components, deterministic render-to-video, and a manifest built for LLM agents.</p>
               <p><small>release notes, design system, animation, CDN, video, LLM, glassmorphism, corrupted theme</small></p>
+            </article>
+            <article class="card" data-published="2026-07-09">
+              <h2><a href="ld-advisory">LD Cloud, LDPlayer, and LDShop: A Security Advisory</a></h2>
+              <p>Twenty-three publicly listable Huawei Cloud buckets tied to LD Cloud, LDPlayer, and LDShop held database backups, bastion-host dumps, and session recordings of users logging into games like Wuthering Waves. What I confirmed, why the cloud-streaming architecture makes it worse than a routine leak, and what to do tonight.</p>
+              <p><small>security advisory, LD Cloud, LDPlayer, LDShop, data exposure, Wuthering Waves, credential safety</small></p>
+            </article>
+            <article class="card" data-published="2026-07-09">
+              <h2><a href="ld-advisory-part-2">LDPlayer Part 2: Inside the Bundle</a></h2>
+              <p>Twelve days after the disclosure: the buckets are closed, but LD is silent, Kuro deflected the report, and the local LDPlayer install ships an analytics SDK with encryption Citizen Lab already documented as broken, on top of an Android image unpatched since 2019.</p>
+              <p><small>security advisory, LDPlayer, MobTech SDK, Citizen Lab, Android security, follow-up</small></p>
             </article>
             <article class="card" data-published="2026-06-23">
               <h2><a href="celeste-cli-v1112">Celeste CLI v1.11.2: Config Profiles Stick, and /model Stops Lying</a></h2>
