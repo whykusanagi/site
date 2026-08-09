@@ -34,17 +34,10 @@ Disallow: /
 User-agent: Meta-ExternalAgent
 Disallow: /
 
-# AI search / agent crawlers — allowed (search + ai-input)
-User-agent: OAI-SearchBot
-Allow: /
-
-User-agent: Claude-Web
-Allow: /
-
-User-agent: Claude-User
-Allow: /
-
-User-agent: PerplexityBot
-Allow: /
+# AI search / agent crawlers (OAI-SearchBot, Claude-Web, Claude-User,
+# PerplexityBot) are deliberately NOT given their own groups: under RFC 9309 a
+# crawler obeys only its most specific matching group, so naming them here
+# would detach them from the Disallow rules and Content-Signal above. They fall
+# through to `*`, which already allows them.
 
 Sitemap: https://whykusanagi.xyz/sitemap.xml
