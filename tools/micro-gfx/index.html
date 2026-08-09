@@ -82,7 +82,18 @@
        than straight to DejaVu Sans Mono on headless Linux. */
     #stage svg text { font-family: 'Courier Prime', 'Courier New', monospace; }
   </style>
-</head>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+      { "@type": "ListItem", "position": 2, "name": "Tools", "item": "https://whykusanagi.xyz/tools" },
+      { "@type": "ListItem", "position": 3, "name": "Micro GFX Generator", "item": "https://whykusanagi.xyz/tools/micro-gfx/" }
+    ]
+  }
+  </script>
+  </head>
 <body>
   <div id="app">
     <div id="preview-pane"><div id="stage"></div></div>
