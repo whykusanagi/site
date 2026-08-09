@@ -3,7 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Micro GFX Generator — Corrupted Theme</title>
+  <title>Micro GFX Generator — Seeded Poster &amp; Banner Art</title>
+  <meta name="description" content="Generate seeded instrument-panel posters and banners: barcodes, gauges, histograms and coordinate readouts in five print formats. Same seed, same art.">
+  <link rel="canonical" href="https://whykusanagi.xyz/tools/micro-gfx/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://whykusanagi.xyz/tools/micro-gfx/">
+  <meta property="og:title" content="Micro GFX Generator — Seeded Poster &amp; Banner Art">
+  <meta property="og:description" content="Seeded instrument-panel posters and banners: barcodes, gauges, histograms and coordinate readouts in five print formats. Same seed, same art.">
+  <meta property="og:image" content="https://s3.whykusanagi.xyz/art/MousePad/full-body.png">
+  <meta property="og:site_name" content="whykusanagi">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://whykusanagi.xyz/tools/micro-gfx/">
+  <meta name="twitter:title" content="Micro GFX Generator — Seeded Poster &amp; Banner Art">
+  <meta name="twitter:description" content="Seeded instrument-panel posters and banners in five print formats. Same seed, same art.">
+  <meta name="twitter:image" content="https://s3.whykusanagi.xyz/art/MousePad/full-body.png">
   <!-- Preload the display font so the fetch is already underway before the
        ready gate checks it. crossorigin is required even same-origin:
        browsers fetch fonts in CORS mode, so a preload without it mismatches
@@ -22,6 +35,7 @@
     #stage svg { display: block; max-width: 100%; max-height: 85vh; height: auto; }
     #controls-pane { width: 320px; flex: none; overflow-y: auto; max-height: 95vh; padding: 8px; }
     .ctl-group { border: 1px solid #3a2555; border-radius: 8px; padding: 10px; margin-bottom: 10px; }
+    #controls-pane h1 { margin: 0 0 12px; font-size: 18px; color: #e86ca8; }
     .ctl-group h3 { margin: 0 0 8px; font-size: 14px; color: #e86ca8; }
     .ctl-row { display: flex; align-items: center; gap: 8px; margin: 6px 0; font-size: 13px; }
     .ctl-row label { flex: 1; }
@@ -73,6 +87,7 @@
   <div id="app">
     <div id="preview-pane"><div id="stage"></div></div>
     <div id="controls-pane">
+      <h1>Micro GFX Generator</h1>
 
       <div class="ctl-group">
         <h3>Export</h3>
