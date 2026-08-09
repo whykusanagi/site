@@ -3,6 +3,19 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { ORIGIN, allPages, lastmod, xmlEscape } from './lib/pages.mjs';
 
+/**
+ * Values are scraped from HTML attributes, where they are already
+ * HTML-escaped. Decode before xmlEscape() runs or `&amp;` becomes
+ * `&amp;amp;` and readers render the entity as literal text. Single regex
+ * pass (numeric and named entities matched together) so a decoded `&` can't
+ * be re-scanned as the start of a new entity by a later pass.
+ */
+const NAMED = { lt: '<', gt: '>', quot: '"', apos: "'", amp: '&' };
+const htmlDecode = (s) =>
+  s.replace(/&(?:#(\d+)|(lt|gt|quot|apos|amp));/g, (_, num, name) =>
+    num !== undefined ? String.fromCharCode(num) : NAMED[name],
+  );
+
 const posts = allPages()
   .filter((f) => f.startsWith('blog/') && !/(_template|index)\.html$/.test(f))
   .map((file) => {
@@ -10,8 +23,8 @@ const posts = allPages()
     const pick = (re) => (html.match(re) || [, ''])[1];
     return {
       url: `${ORIGIN}/blog/${file.slice('blog/'.length).replace(/\.html$/, '')}`,
-      title: pick(/<meta property="og:title" content="([^"]*)"/) || pick(/<title>([^<]*)<\/title>/),
-      description: pick(/<meta name="description" content="([^"]*)"/),
+      title: htmlDecode(pick(/<meta property="og:title" content="([^"]*)"/) || pick(/<title>([^<]*)<\/title>/)),
+      description: htmlDecode(pick(/<meta name="description" content="([^"]*)"/)),
       published: pick(/"datePublished":\s*"([0-9-]+)"/) || lastmod(file),
     };
   })
