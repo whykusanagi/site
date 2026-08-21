@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { cleanUrl, indexablePages, lastmod } from './lib/pages.mjs';
+import { allPages, cleanUrl, EXCLUDED, indexablePages, lastmod } from './lib/pages.mjs';
 
 test('cleanUrl strips .html and collapses index files', () => {
   assert.equal(cleanUrl('index.html'), '/');
@@ -21,12 +21,9 @@ test('excludes the error page, template, redirect, and render targets', () => {
   ]) {
     assert.ok(!pages.includes(gone), `${gone} should be excluded`);
   }
-  // Spec said 45 (50 HTML files - 5 exclusions), but tools/micro-gfx/index.html
-  // (added in #60, the branch's base commit) was already counted by name in the
-  // spec's own S1 priority table — the "50"/"45" figures elsewhere in the spec
-  // and plan were an arithmetic miscount, not a page added after the fact.
-  // Actual indexable count is 46; see task-1-report.md for the full trace.
-  assert.equal(pages.length, 46);
+  // Relationship, not a magic number: a hardcoded count made every new page a
+  // test failure. The invariant is that exactly the EXCLUDED set is dropped.
+  assert.equal(pages.length, allPages().length - EXCLUDED.size);
 });
 
 test('lastmod returns an ISO date, not the 2025-11-26 that ai-index.xml was stuck on', () => {

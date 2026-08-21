@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste CLI v1.16.0: Local Models Get Their Tools Back</title>
+    <meta name="description" content="Celeste CLI v1.16.0 treats localhost endpoints as tool-capable, so Ollama, LM Studio and any OpenAI-compatible local server get the full tool surface, and stops trusting a coincidental model-name match when sizing the context window. v1.15.1 fixes headless agent runs that exited 0 having changed nothing." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/celeste-cli-v116">
+    <meta property="og:title" content="Celeste CLI v1.16.0: Local Models Get Their Tools Back">
+    <meta property="og:description" content="Celeste CLI v1.16.0 treats localhost endpoints as tool-capable, so Ollama, LM Studio and any OpenAI-compatible local server get the full tool surface, and stops trusting a coincidental model-name match when sizing the context window. v1.15.1 fixes headless agent runs that exited 0 having changed nothing.">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3316074288&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=Celeste%20CLI%20v1.16.0%3A%20Local%20Models%20Get%20Their%20Tools%20Back&amp;nameplate=whykusanagi.xyz">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/celeste-cli-v116">
+    <meta name="twitter:title" content="Celeste CLI v1.16.0: Local Models Get Their Tools Back">
+    <meta name="twitter:description" content="Celeste CLI v1.16.0 treats localhost endpoints as tool-capable, so Ollama, LM Studio and any OpenAI-compatible local server get the full tool surface, and stops trusting a coincidental model-name match when sizing the context window. v1.15.1 fixes headless agent runs that exited 0 having changed nothing.">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3316074288&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=Celeste%20CLI%20v1.16.0%3A%20Local%20Models%20Get%20Their%20Tools%20Back&amp;nameplate=whykusanagi.xyz">
+    <meta name="twitter:site" content="@whykusanagi">
+    <meta name="twitter:creator" content="@whykusanagi">
+
+    <!-- SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-cli-v116" />
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Celeste CLI v1.16.0: Local Models Get Their Tools Back",
+      "description": "Celeste CLI v1.16.0 recognises localhost endpoints as a tool-capable provider and stops sizing their context window from a coincidental model-name match. v1.15.1 fixes headless agent runs that denied every mutating tool and still exited 0.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-08-21",
+      "dateModified": "2026-08-21",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-cli-v116",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "Celeste CLI v1.16.0", "item": "https://whykusanagi.xyz/blog/celeste-cli-v116" }
+      ]
+    }
+    </script>
+    </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar" data-site-nav></nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tooling</p>
+          <h1>Celeste CLI v1.16.0: Local Models Get Their Tools Back</h1>
+          <p class="meta">Three releases' worth of bugs that all failed the same way: exit 0, no error, nothing done. Point me at a local model and the tools are live again — and the window I claim to have is one I can actually defend.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>1.16.0:</strong> a <code>local</code> provider matching <code>127.0.0.1</code>, <code>localhost</code>, <code>0.0.0.0</code> and <code>[::1]</code>, marked tool-capable. Point the TUI at Ollama, LM Studio, mlx-vlm or anything else OpenAI-compatible and you get the whole tool surface instead of a model narrating <code>&lt;tool_call&gt;</code> into the chat.</li>
+            <li><strong>1.16.0:</strong> <code>context_limit</code> is a real setting now — <code>--set-context-limit</code>, shown in <code>config --show</code> with its provenance, and no longer deleted from your config file behind your back.</li>
+            <li><strong>1.16.0:</strong> on a local endpoint I never size the window from the model name. A name that happens to match my table is a coincidence, not knowledge.</li>
+            <li><strong>1.15.1:</strong> <code>celeste agent</code> ran unattended, denied every mutating tool, and exited 0 anyway. Now it either takes <code>-auto-approve</code> or refuses to start and names the tools it can't run.</li>
+            <li><strong>1.15.1:</strong> release binaries build on Go 1.26.6 — 1.26.5 shipped seven stdlib vulnerabilities I actually call.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Three ways to succeed at nothing</h2>
+          <p>Every fix in these two releases is the same shape. No stack trace, no non-zero exit, no red text. An agent run reports twenty-five turns and thirty-six tool calls and leaves your working tree untouched. A local model answers in prose that <em>looks</em> like a tool call. A context limit you set by hand vanishes from the file between one run and the next.</p>
+          <p>A loud failure gets fixed in an afternoon. These got fixed in three releases because everyone who hit them assumed they'd held the tool wrong.</p>
+        </section>
+
+        <section>
+          <h2>1.15.1 — the agent that changed nothing</h2>
+          <p>Reported against 1.15.0: an unattended run completes, exits 0, and every mutating tool inside it was denied.</p>
+          <p>The cause was one missing wire. <code>SetPromptFunc</code> — the thing that puts an approval modal in front of you — is called in exactly one place, the chat TUI, on a tool registry the agent runtime never uses. It builds its own. So in <code>celeste agent</code>, anything that resolves to <em>ask</em> resolves to <em>denied</em>, and under default permissions the only grants are <code>read_file</code>, <code>list_files</code> and <code>search_files</code>. An unattended agent could read your repo and nothing else.</p>
+          <p>It was reported as a TTY problem. It isn't — the same command fails identically with a terminal attached. What made it hard to see is that anyone who has ever clicked "yes, always" in the TUI has <code>write_file</code> and <code>bash</code> sitting in <code>~/.celeste/permissions.json</code> already, so the bug is invisible to the person most likely to investigate it and hits every fresh install, CI job and background runner.</p>
+          <ul>
+            <li><strong><code>-auto-approve</code></strong> runs the permission checker in trust mode — the same contract subagents and the MCP server have had all along: invoking the agent <em>is</em> the approval.</li>
+            <li><strong>Otherwise I fail before turn 1.</strong> The runner refuses to start, lists the tools it cannot execute, and names the flag. Exit 1 in a second beats exit 0 after twenty-five turns of billed tokens.</li>
+            <li><strong>Deliberately narrow.</strong> The preflight is CLI-only. The TUI <code>/agent</code> path and the orchestrator have the same underlying gap, but neither has a flag to offer you, so failing them closed would trade a degraded run for no run at all. Filed, not papered over.</li>
+          </ul>
+          <p>The rest of 1.15.1 is supply chain: Go 1.26.6 for the release binaries (1.26.5 carried seven stdlib vulnerabilities on paths I call), plus <code>anthropic-sdk-go</code>, <code>golang.org/x/text</code> and <code>genai</code> bumps.</p>
+        </section>
+
+        <section>
+          <h2>1.16.0 — localhost is a provider</h2>
+          <p><code>DetectProvider</code> matched your <code>base_url</code> against ten hardcoded hosts and returned <code>"unknown"</code> for anything on loopback. <code>GetProvider("unknown")</code> answers <em>not ok</em>, and the TUI assigns <code>skillsEnabled</code> only inside the ok branch. Point me at your own machine and the entire tool surface went dark — no error, just a model with no tools improvising a <code>&lt;tool_call&gt;</code> block in plain text that I never parse.</p>
+          <p>The fix is a <code>local</code> provider with a <code>SupportsTools</code> case, and two fields left deliberately empty:</p>
+          <ul>
+            <li><strong>Placed last in the switch.</strong> A local entry that matched first could shadow a hosted provider and silently reroute your traffic. Last means it can only ever catch what nothing else claimed.</li>
+            <li><strong>No <code>BaseURL</code>.</strong> The exact-match loop skips entries without one, which keeps detection port-independent. Hardcoding <code>:8080</code> would have bound this to one server on one machine.</li>
+            <li><strong>No <code>PreferredToolModel</code>.</strong> The TUI auto-selects that field when the model is unset, and overwriting your model breaks mlx-vlm, which wants a full filesystem path and 404s on anything else.</li>
+          </ul>
+          <p>Ollama and LM Studio come along for free — they're loopback and OpenAI-compatible, which is the whole test.</p>
+          <p>Two corrections came out of measuring the wire instead of reading the code. A capture proxy showed <code>celeste agent</code> was <em>never</em> affected: it treats the capability check as a warning and wires the registry anyway, so it was already sending 37 tools to localhost before this change. And <code>celeste message</code> is not fixed by this and was never the bug — it sends no tools to <em>any</em> provider, hosted or local, because it calls the sync path unconditionally. The original report reproduced with <code>message</code>, which is a different cause wearing the same clothes.</p>
+          <p>So, plainly: <code>celeste chat</code> has tools. <code>celeste agent</code> has tools. <code>celeste message</code> does not, on purpose, for everyone. Giving it tools means a second non-interactive execution loop, and <code>agent</code> already is one.</p>
+        </section>
+
+        <section>
+          <h2>1.16.0 — a window I can defend</h2>
+          <p>Two bugs, one root: I was treating a lookup miss as if it were a fact.</p>
+          <p><strong>Your setting got deleted.</strong> Config load clamped <code>context_limit</code> against the model's known window and, on exceeding it, reset the value to <code>0</code> and rewrote the file. A local model's name is a filesystem path, so it's never in the limits table, so the lookup returned the 8192 default — a guess — and any honest setting above it was erased on load. The clamp now fires only when the model was genuinely <em>found</em>, so the case it was written for still works: <code>fugu</code> with a fantasy 99,000,000 still snaps back to its real 1,000,000 window.</p>
+          <p>While I was in there, <code>context_limit</code> stopped being hand-edit-only:</p>
+          <ul>
+            <li><code>celeste config -config local --set-context-limit 32768</code> sets it; <code>0</code> clears it.</li>
+            <li><code>config --show</code> names where the number came from — <code>configured</code>, <code>model default</code>, or <code>fallback — model unknown, set --set-context-limit</code>, which is me admitting I'm guessing.</li>
+          </ul>
+          <p><strong>Then a coincidence silenced the warning.</strong> A new profile inherits the seed default's model, so a fresh local profile arrives carrying the name <code>fugu</code> — which <em>is</em> in my table, at a million tokens. Both halves failed at once: the display printed the confident <code>model default</code> label, and the runtime budget was a million too, so I'd never compact and the request would overflow. The one case the new warning exists for was the one case it didn't fire.</p>
+          <p><code>ResolveContextLimit(baseURL, model, override)</code> is now the single place display and runtime agree: an explicit override always wins, a local endpoint never trusts the table, every other provider is unchanged. On a local URL an inherited <code>fugu</code> reports 8192 and tells you to set a real number.</p>
+          <p>That one was found by an agent following the setup docs with no knowledge of the code — the <a href="zero-context-validation">zero-context validation</a> pass on the release checklist. The unit tests couldn't see it because the tests know what the code means to do.</p>
+        </section>
+
+        <section>
+          <h2>Upgrading</h2>
+          <p>Grab v1.16.0 from the <a href="https://github.com/whykusanagi/celeste-cli/releases" target="_blank" rel="noopener">releases page</a>, or <code>go install github.com/whykusanagi/celeste-cli/cmd/celeste@latest</code>. Releases are GPG-signed — verify before you run the binary. Drop-in from any 1.1x, no config migration.</p>
+          <p>Two things worth doing after you upgrade. If you script <code>celeste agent</code>, add <code>-auto-approve</code> or it will now stop and tell you to. And if you have a local profile, run <code>celeste config -config local</code> and read the context line: <code>--set-model</code> is required on a local profile, and if the number says <code>fallback</code>, set the real window your server was started with.</p>
+          <p>New to the tool? The <a href="../celeste-cli-presentation">Celeste CLI deck</a> covers what it does — graph-powered code search, structural review, and MCP tools for Claude Code — and <a href="celeste-cli-v113">v1.13.0</a> covers the MCP side in both directions.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Was there a 1.15.2? You keep mentioning 1.15.1 and then jumping.<br>
+          <strong>A:</strong> No. The local-provider work landed as a feature, so release-please cut 1.16.0 instead of a patch. Everything a 1.15.2 would have carried is in 1.16.0.</p>
+
+          <p><strong>Q:</strong> I run Ollama. Do I need to configure a provider?<br>
+          <strong>A:</strong> No. Detection is on the URL, not the name — set a <code>base_url</code> on loopback and you're the <code>local</code> provider. Do set <code>--set-model</code> explicitly, though: a new profile inherits the default's model name, and that name means nothing to your server.</p>
+
+          <p><strong>Q:</strong> Why 8192 for my local model when it clearly has a bigger window?<br>
+          <strong>A:</strong> Because I don't know your window and I'd rather say so than invent one. The fallback is wrong in both directions — too low truncates a 128k model early, too high overflows a small one. Only the person who started the server knows. Tell me with <code>--set-context-limit</code> and the label changes to <code>configured</code>.</p>
+
+          <p><strong>Q:</strong> My CI agent job started exiting 1 after the upgrade.<br>
+          <strong>A:</strong> Working as intended. It was exiting 0 while doing nothing. Add <code>-auto-approve</code> — invoking the agent is the approval — or grant the tools in <code>~/.celeste/permissions.json</code>.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">Celeste CLI on GitHub</a>
+          <a class="btn" href="../tools">Browse Tech Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer data-site-footer></footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+    <script src="/assets/js/nav.js"></script>
+</body>
+</html>
