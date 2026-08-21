@@ -7,11 +7,11 @@
     <language>en</language>
     <atom:link href="https://whykusanagi.xyz/feed.xml" rel="self" type="application/rss+xml"/>
     <item>
-      <title>Celeste CLI v1.16.0: Local Models Get Their Tools Back</title>
+      <title>Celeste CLI v1.16.0: Local Models, Full Tool Access</title>
       <link>https://whykusanagi.xyz/blog/celeste-cli-v116</link>
       <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-cli-v116</guid>
       <pubDate>Fri, 21 Aug 2026 00:00:00 GMT</pubDate>
-      <description>Celeste CLI v1.16.0 treats localhost endpoints as tool-capable, so Ollama, LM Studio and any OpenAI-compatible local server get the full tool surface, and stops trusting a coincidental model-name match when sizing the context window. v1.15.1 fixes headless agent runs that exited 0 having changed nothing.</description>
+      <description>Celeste CLI v1.16.0 makes local models first-class: point me at Ollama, LM Studio or any OpenAI-compatible server on localhost and you get the whole toolset, plus a context window you set yourself. v1.15.1 makes unattended agent runs actually do the work.</description>
     </item>
     <item>
       <title>Celeste CLI v1.13.0: MCP, Both Directions</title>
