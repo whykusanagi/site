@@ -20,6 +20,10 @@
 
     const SEPARATORS = { outer: '⚠', middle: '◈', inner: '001011' };
 
+    /* The tier served when nothing asks for another. Never point this at a
+     * permissive tier: everything that does not opt in inherits it. */
+    const DEFAULT_TIER = 'sfw';
+
     const STAR_DENSITY = {
         low:  { radii: [0.55, 0.85],                              sizes: [14, 9] },
         med:  { radii: [0.55, 0.69, 0.85, 1.01],                  sizes: [17, 13, 10, 7] },
@@ -49,6 +53,7 @@
                             rings: true, text: true, stars: true,
                             logo: false, title: false },
                 phraseIdx: { outer: 0, middle: 0, inner: 0 },
+                tier: DEFAULT_TIER,
                 starDensity: 'med',
                 mandorlaShape: 'mandorla',
                 labelTop: '⚠ CELESTE ⚠',
@@ -180,22 +185,55 @@
             }
         }
 
+        /* incantations.json is accepted in two shapes:
+         *     flat    { outer:[], middle:[], inner:[] }        -> the DEFAULT_TIER
+         *     tiered  { sfw:{...}, r18:{...}, ... }            -> chosen by state.tier
+         * Flat is the original shape and still works untouched.
+         *
+         * A tier is NEVER inferred. Ask for one that is not in the document and you
+         * get FALLBACK_PHRASES, not whichever tier happens to be present. The rings
+         * are the most legible text in frame — an r18 line must not reach a render
+         * that did not explicitly ask for it, and silently substituting a
+         * neighbouring tier is exactly how that would happen.
+         */
+        _ringsOk(o) {
+            return !!o && ['outer', 'middle', 'inner'].every(
+                r => Array.isArray(o[r]) && o[r].length);
+        }
+
+        availableTiers() {
+            if (!this.phraseDoc) return [];
+            if (this._ringsOk(this.phraseDoc)) return [DEFAULT_TIER];
+            return Object.keys(this.phraseDoc).filter(k => this._ringsOk(this.phraseDoc[k]));
+        }
+
+        /* Returns true when the requested tier was actually found. Callers that care
+         * (a batch render routing r18 to one platform) should check it rather than
+         * trust that the frames carry what they asked for. */
+        setTier(tier) {
+            const want = tier || DEFAULT_TIER;
+            this.state.tier = want;
+            if (!this.phraseDoc) { this.phrases = FALLBACK_PHRASES; return false; }
+            const flat = this._ringsOk(this.phraseDoc);
+            const picked = flat ? (want === DEFAULT_TIER ? this.phraseDoc : null)
+                                : this.phraseDoc[want];
+            if (this._ringsOk(picked)) { this.phrases = picked; return true; }
+            console.error(`IconographyMode: tier "${want}" not in incantations.json `
+                          + `(have: ${this.availableTiers().join(', ') || 'none'}) — using fallback`);
+            this.phrases = FALLBACK_PHRASES;
+            return false;
+        }
+
         async loadPhrases() {
             try {
                 const res = await fetch('data/incantations.json', { cache: 'no-store' });
                 if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                const data = await res.json();
-                if (Array.isArray(data.outer)  && data.outer.length  &&
-                    Array.isArray(data.middle) && data.middle.length &&
-                    Array.isArray(data.inner)  && data.inner.length) {
-                    this.phrases = data;
-                } else {
-                    throw new Error('JSON missing required non-empty arrays');
-                }
+                this.phraseDoc = await res.json();
             } catch (err) {
                 console.error('IconographyMode: failed to load incantations.json — using fallback', err);
-                this.phrases = FALLBACK_PHRASES;
+                this.phraseDoc = null;
             }
+            return this.setTier(this.state.tier);
         }
 
         setActive(active) {
