@@ -22,9 +22,11 @@ export function normalizeBoneRotation(entry) {
   }
   if (hasEuler) {
     if (entry.euler.length !== 3) throw new Error('euler must have 3 components');
+    if (!entry.euler.every(Number.isFinite)) throw new Error('euler components must be finite numbers');
     return { type: 'euler', value: eulerDegreesToRadians(entry.euler) };
   }
   if (entry.quat.length !== 4) throw new Error('quat must have 4 components');
+  if (!entry.quat.every(Number.isFinite)) throw new Error('quat components must be finite numbers');
   return { type: 'quat', value: [...entry.quat] };
 }
 
@@ -56,7 +58,11 @@ export function validatePoseDoc(doc) {
     return errors;
   }
   for (const [poseName, pose] of Object.entries(doc.poses)) {
-    for (const [boneName, entry] of Object.entries(pose?.bones ?? {})) {
+    if (pose === null || typeof pose !== 'object') {
+      errors.push(`${poseName}: pose must be an object`);
+      continue;
+    }
+    for (const [boneName, entry] of Object.entries(pose.bones ?? {})) {
       try {
         normalizeBoneRotation(entry);
       } catch (e) {

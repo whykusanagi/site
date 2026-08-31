@@ -1,7 +1,9 @@
 /**
  * Applies pose data to a VRM's normalized humanoid bones and blends between
- * poses. Owns vrm.humanoid.autoUpdateHumanBones: with poses active the clip
- * must not also drive the body, or the two fight every frame.
+ * poses. Writes normalized bone nodes directly, and relies on the humanoid's
+ * default auto-update behavior to copy those normalized rotations onto the
+ * raw skeleton every frame - this class deliberately leaves that behavior
+ * untouched rather than toggling it.
  */
 import { normalizeBoneRotation, resolvePose, blendFactor, validatePoseDoc } from './pose-math.js';
 
@@ -15,6 +17,9 @@ export class PoseController {
     /** boneName -> THREE.Quaternion target */
     this.targets = new Map();
     this.framing = null;
+    /** True once setFraming() has received a non-null spec; gates whether
+     * release() is allowed to touch the viewer's camera state. */
+    this.hadFraming = false;
   }
 
   /** Loads pose JSON. A 404 or malformed file warns once and leaves idle. */
@@ -63,25 +68,29 @@ export class PoseController {
       this.targets.set(boneName, q);
     }
 
-    // The pose owns the body now: stop the humanoid resetting bones each update.
-    if (this.vrm?.humanoid) this.vrm.humanoid.autoUpdateHumanBones = false;
     this.setFraming(pose.framing ?? null);
   }
 
-  /** Hands the body back to the idle clip and returns the camera home. */
+  /**
+   * Hands the body back to the idle clip. Only restores camera state if this
+   * controller actually applied framing - otherwise a visitor's manual zoom
+   * (which writes the same viewer.targetCameraDistance field) gets stolen on
+   * every no-pose section change.
+   */
   release() {
     this.targets.clear();
     this.framing = null;
-    if (this.vrm?.humanoid) this.vrm.humanoid.autoUpdateHumanBones = true;
-    if (this.viewer) {
+    if (this.hadFraming && this.viewer) {
       this.viewer.lookTarget?.set(0, 1.5, 0);
       this.viewer.targetCameraDistance = 1.7;
+      this.hadFraming = false;
     }
   }
 
   /** Stores the framing spec; the bone is re-read fresh every update() frame. */
   setFraming(framing) {
     this.framing = framing ?? null;
+    if (this.framing) this.hadFraming = true;
   }
 
   setReducedMotion(on) {

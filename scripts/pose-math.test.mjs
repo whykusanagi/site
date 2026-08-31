@@ -45,6 +45,21 @@ test('wrong component counts are rejected', () => {
   assert.throws(() => normalizeBoneRotation({ quat: [0, 0, 0] }));
 });
 
+test('non-numeric euler components are rejected', () => {
+  assert.throws(() => normalizeBoneRotation({ euler: ['a', 'b', 'c'] }));
+});
+
+test('non-numeric quat components are rejected', () => {
+  assert.throws(() => normalizeBoneRotation({ quat: ['a', 'b', 'c', 'd'] }));
+});
+
+test('NaN and Infinity components are rejected', () => {
+  assert.throws(() => normalizeBoneRotation({ euler: [NaN, 0, 0] }));
+  assert.throws(() => normalizeBoneRotation({ euler: [Infinity, 0, 0] }));
+  assert.throws(() => normalizeBoneRotation({ quat: [0, 0, 0, NaN] }));
+  assert.throws(() => normalizeBoneRotation({ quat: [0, 0, 0, Infinity] }));
+});
+
 test('a missing pose name resolves to null rather than throwing', () => {
   const doc = { blend: 12, poses: {} };
   assert.equal(resolvePose(doc, 'crown'), null);
@@ -71,5 +86,10 @@ test('the shipped pose file is valid', () => {
 
 test('validatePoseDoc reports a bad bone entry', () => {
   const doc = { blend: 12, poses: { crown: { bones: { head: {} } } } };
+  assert.equal(validatePoseDoc(doc).length, 1);
+});
+
+test('validatePoseDoc reports a non-object pose', () => {
+  const doc = { blend: 12, poses: { crown: 'oops' } };
   assert.equal(validatePoseDoc(doc).length, 1);
 });

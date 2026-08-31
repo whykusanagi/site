@@ -54,12 +54,14 @@
       border-radius: var(--radius-lg);
     }
 
+    /* The model stays on screen while lore scrolls past it. */
     .model-section {
       max-width: 1100px;
       margin: 3rem auto 5rem;
       text-align: center;
       animation: fadeIn 1.2s ease-in;
-      position: relative;
+      position: sticky;
+      top: 0;
       z-index: 1;
     }
 
@@ -146,13 +148,6 @@
       to { opacity: 1; transform: translateY(0); }
     }
 
-    /* The model stays on screen while lore scrolls past it. */
-    .model-section {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
     .lore-section {
       position: relative;
       z-index: 2;
@@ -161,6 +156,7 @@
       flex-direction: column;
       justify-content: center;
       padding: 2rem 0;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
     }
 
     /* Sticky + momentum scroll is the worst combination on small screens, and
@@ -259,9 +255,12 @@
     // above have already published window.THREE / GLTFLoader / VRMLoaderPlugin.
     // The 100ms readiness poll this replaces could never observe a partial state.
     // Note the absent '?v=' + Date.now(): that cache-buster forced a fresh
-    // download of a 2,461-line file on every single page load.
+    // download of a 2,461-line file on every single page load. A static '?v='
+    // query string keeps the 4-hour cache intact while still letting a version
+    // bump force one atomic re-fetch, so bump the number here when this file
+    // changes rather than reintroducing a dynamic cache-buster.
     const s = document.createElement('script');
-    s.src = 'src/3d/three-vrm-viewer.js';
+    s.src = 'src/3d/three-vrm-viewer.js?v=2';
     document.head.appendChild(s);
   </script>
 
