@@ -137,6 +137,54 @@ When loading images from external URLs:
 Part of the whykusanagi/celeste-tts-bot project.
 © 2025 whykusanagi
 
+## 🕺 Celeste VRM Pose Schema
+
+`static/data/celeste-poses.json` drives the scroll-triggered poses on
+`celeste.html`'s 3D model. It is loaded at runtime by `PoseController`
+(`src/3d/pose-controller.js`) — editing this file changes what the page does
+with **no code change and no rebuild**.
+
+### File shape
+
+```json
+{
+  "blend": 12,
+  "poses": {
+    "crown": {
+      "framing": { "target": "head", "dist": 1.2, "height": 1.6 },
+      "bones": {
+        "neck": { "euler": [-8, 12, 0] },
+        "leftUpperArm": { "quat": [0.0, 0.0, 0.38, 0.92] }
+      }
+    }
+  }
+}
+```
+
+- **`blend`** — how fast the model eases into a pose. Higher is snappier.
+  Default is `12`.
+- **`poses`** — a map of pose name → pose entry. Pose names must match a
+  `data-pose` attribute on a section in `celeste.html` (the scroll poser
+  reads that attribute to pick which pose is active).
+- **`framing`** *(optional)* — steers the camera while this pose is active.
+  - `target`: the bone name the camera looks at.
+  - `dist`: camera distance in metres. Optional — omitting it leaves the
+    current camera distance alone.
+  - `height`: metres, optional.
+- **`bones`** — a map of VRM normalized humanoid bone name → rotation. Keys
+  are the standard VRM humanoid bone names (`head`, `neck`, `spine`, `chest`,
+  `hips`, `leftUpperArm`, ...). Each bone takes **exactly one** of:
+  - `euler`: `[x, y, z]` in degrees, XYZ rotation order.
+  - `quat`: `[x, y, z, w]`, which is what most VRM pose animators export
+    directly.
+
+### Failure behavior
+
+A missing pose name or a malformed pose file is **not an error** — the page
+falls back to the idle animation clip. This is deliberate: the shipped file
+is `{"blend": 12, "poses": {}}`, empty on purpose, and the page must work
+correctly with zero poses authored. Validate the schema with `npm test`.
+
 ---
 
 **Created**: 2025-01-20
