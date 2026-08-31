@@ -111,8 +111,6 @@ class ThreeVRMViewer {
     this.usingSkeletalAnimation = false;  // Tracks if we're using skeletal animation or position-based
 
     // VMD Animation
-    this.vmdAnimation = null;  // Loaded VMD animation clip
-    this.vmdLoaded = false;
     this.waitingForVMD = false; // Flag to wait for VMD before starting entrance
     this.bodyPositionLog = [];  // Track body positions for validation
 
@@ -1125,46 +1123,6 @@ class ThreeVRMViewer {
     });
 
     }
-
-  async loadVMDAnimation(model) {
-    try {
-      // Check if VMDLoader is available
-      if (typeof VMDLoader === 'undefined') {
-        console.warn('⚠️  VMDLoader not available');
-        return Promise.resolve();
-      }
-
-      const vmdLoader = new VMDLoader();
-      const vmdData = await vmdLoader.load('assets/animations/bounce_dance_part1.vmd');
-
-      // Create AnimationMixer if not already created
-      // Find Armature first (bones are nested under it)
-      let armatureFound = null;
-      model.traverse((obj) => {
-        if (obj.name === 'Armature' || obj.name.toLowerCase().includes('skeleton')) {
-          armatureFound = obj;
-        }
-      });
-      
-      if (!this.animationMixer) {
-        const mixerTarget = armatureFound || model;
-        this.animationMixer = new THREE.AnimationMixer(mixerTarget);
-        }
-
-      // Store the animation clip
-      this.vmdAnimation = vmdData.clip;
-      this.vmdLoaded = true;
-
-      // Add to available animations
-      this.availableAnimations.push(vmdData.clip);
-      
-      return Promise.resolve();
-    } catch (error) {
-      console.error('❌ Error loading VMD animation:', error);
-      this.vmdLoaded = false;
-      return Promise.reject(error);
-    }
-  }
 
   playNextExpression() {
     // Pick a random expression
