@@ -67,6 +67,10 @@ class ThreeVRMViewer {
     // idle .vrma dance animation to swing without clipping.
     this.cameraDistance = 1.7;
     this.targetCameraDistance = 1.7;
+    // Framing seam for PoseController: the render loop looks at this point
+    // every frame instead of a hardcoded (0, 1.5, 0), so a pose can steer the
+    // camera by lerping it without the viewer needing to know about poses.
+    this.lookTarget = new THREE.Vector3(0, 1.5, 0);
 
     // Model position offset (for keyboard movement, modifiable via WASD).
     // Y default tuned for the celeste.html hero viewport: -1.0 puts the
@@ -177,6 +181,10 @@ class ThreeVRMViewer {
     this.BLINK_DURATION = 0.2;
 
     this.init();
+
+    // Published so the ES-module pose wiring in celeste.html can reach this
+    // classic-script instance. A module cannot import a classic script.
+    window.vrmViewer = this;
   }
 
   detectTouchDevice() {
@@ -2278,6 +2286,10 @@ class ThreeVRMViewer {
       }
     }
 
+    // Poses write normalized bone rotations, which vrm.update() then propagates
+    // to the raw skeleton - so this must run BEFORE it, not after.
+    if (this.poseController) this.poseController.update(deltaTime);
+
     // CRITICAL: Update VRM system AFTER AnimationMixer
     // This syncs bone transforms and handles physics, spring bones, constraints, etc.
     // Order matters: AnimationMixer updates bone transforms, then VRM processes them
@@ -2317,7 +2329,9 @@ class ThreeVRMViewer {
 
       // Look slightly above mid-body so the model sits in the lower 2/3 of
       // the frame and the dance animation has headroom above the head.
-      this.camera.lookAt(0, 1.5, 0);
+      // lookTarget defaults to (0, 1.5, 0) and PoseController lerps it during
+      // a pose's framing, so this stays identical until a pose moves it.
+      this.camera.lookAt(this.lookTarget);
 
       // Log coordinates periodically to help find good starting position
       const now = Date.now();
