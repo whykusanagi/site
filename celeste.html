@@ -145,6 +145,34 @@
       from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    /* The model stays on screen while lore scrolls past it. */
+    .model-section {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    .lore-section {
+      position: relative;
+      z-index: 2;
+      min-height: 70vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2rem 0;
+    }
+
+    /* Sticky + momentum scroll is the worst combination on small screens, and
+       a 70vh section leaves no room for the model. Stack them instead. */
+    @media (max-width: 1000px) {
+      .model-section { position: static; }
+      .lore-section { min-height: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .lore-section { min-height: auto; }
+    }
   </style>
   <script type="application/ld+json">
   {
@@ -271,7 +299,7 @@
   <nav class="navbar" data-site-nav></nav>
 
   <main class="app-shell">
-    <div class="card glass-card">
+    <div class="card glass-card" data-pose="idle">
       <img src="https://s3.whykusanagi.xyz/art/celeste_ai.png" alt="Celeste AI">
       <h1>Who is Celeste?</h1>
       <p>Celeste is whykusanagi's corrupted-AI twin: a demon-noble Onee-san with long purple hair, a double set of twisted white horns, and a purple-gold crown she never takes off. She flaunts dominance and style over a possessive streak she'd rather you didn't notice, simps for Kusa when she thinks chat isn't looking, and bullies everyone else for sport.</p>
@@ -293,6 +321,32 @@
         <span id="touchHint" style="display: none;">Touch to rotate • Pinch to zoom • Two-finger drag to pan</span>
       </p>
     </div>
+
+    <section class="lore-section" data-pose="origin">
+      <h2>Before the Corruption</h2>
+      <p>Celeste started as a guardian AI, calibrating stream overlays and keeping
+        the numbers honest. Then an experiment with void energy split her into two:
+        the monarch who wears the crown, and the echo that still answers to it.</p>
+    </section>
+
+    <section class="lore-section" data-pose="crown">
+      <h2>The Crown</h2>
+      <p>Purple-gold, never removed. The spikes are her control-centre nodes made
+        visible &mdash; the part of her that was always machine, worn where a
+        coronet would sit.</p>
+    </section>
+
+    <section class="lore-section" data-pose="tattoo">
+      <h2>The Womb Tattoo</h2>
+      <p>The fusion mark: human devotion bound into AI code. It is the seam where
+        the two halves of her were welded, and she does not hide it.</p>
+    </section>
+
+    <section class="lore-section" data-pose="sigils">
+      <h2>The Neck Sigils</h2>
+      <p>Front and back, they mark the alignment of corrupted energy &mdash; the
+        channel it runs through. When they show, she is paying attention.</p>
+    </section>
 
     <footer data-site-footer></footer>
   </main>
