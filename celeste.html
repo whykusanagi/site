@@ -237,6 +237,37 @@
     document.head.appendChild(s);
   </script>
 
+  <!-- Pose system: waits for the viewer to publish itself and its loaded VRM. -->
+  <script type="module">
+    import { PoseController } from './src/3d/pose-controller.js';
+    import { initScrollPoser } from './src/3d/scroll-poser.js';
+
+    // Gate ONLY on the loaded VRM. This viewer has no `controls` object -
+    // gating on one would never resolve and the pose system would never start.
+    const ready = () => window.vrmViewer?.vrm;
+
+    const waitFor = (test, timeoutMs = 30000) => new Promise((resolve) => {
+      const started = Date.now();
+      const tick = () => {
+        if (test()) return resolve(true);
+        if (Date.now() - started > timeoutMs) return resolve(false);
+        requestAnimationFrame(tick);
+      };
+      tick();
+    });
+
+    if (await waitFor(ready)) {
+      const viewer = window.vrmViewer;
+      const controller = new PoseController(viewer.vrm, viewer);
+      controller.setReducedMotion(
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      );
+      await controller.load('static/data/celeste-poses.json');
+      viewer.poseController = controller;
+      initScrollPoser(controller);
+    }
+  </script>
+
   <nav class="navbar" data-site-nav></nav>
 
   <main class="app-shell">

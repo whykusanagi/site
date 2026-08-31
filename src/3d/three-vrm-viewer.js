@@ -181,6 +181,10 @@ class ThreeVRMViewer {
     this.BLINK_DURATION = 0.2;
 
     this.init();
+
+    // Published so the ES-module pose wiring in celeste.html can reach this
+    // classic-script instance. A module cannot import a classic script.
+    window.vrmViewer = this;
   }
 
   detectTouchDevice() {
@@ -2281,6 +2285,10 @@ class ThreeVRMViewer {
         }
       }
     }
+
+    // Poses write normalized bone rotations, which vrm.update() then propagates
+    // to the raw skeleton - so this must run BEFORE it, not after.
+    if (this.poseController) this.poseController.update(deltaTime);
 
     // CRITICAL: Update VRM system AFTER AnimationMixer
     // This syncs bone transforms and handles physics, spring bones, constraints, etc.
