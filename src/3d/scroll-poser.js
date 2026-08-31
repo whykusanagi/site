@@ -13,7 +13,15 @@ export function initScrollPoser(controller, opts = {}) {
   const visible = new Set();
 
   const pick = () => {
-    if (visible.size === 0) return;
+    if (visible.size === 0) {
+      // Scrolled past every section: release control back to the idle clip
+      // instead of leaving the character frozen in the last pose.
+      if (active !== null) {
+        active = null;
+        controller.applyPose(null);
+      }
+      return;
+    }
     const mid = window.innerHeight / 2;
     let best = null;
     let bestDist = Infinity;

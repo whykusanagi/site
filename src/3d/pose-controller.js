@@ -6,17 +6,15 @@
 import { normalizeBoneRotation, resolvePose, blendFactor, validatePoseDoc } from './pose-math.js';
 
 export class PoseController {
-  constructor(vrm, camera, controls) {
+  constructor(vrm, viewer) {
     this.vrm = vrm;
-    this.camera = camera;
-    this.controls = controls;
+    this.viewer = viewer;
     this.doc = null;
     this.blendRate = 12;
     this.reducedMotion = false;
     /** boneName -> THREE.Quaternion target */
     this.targets = new Map();
-    this.framingTarget = null;
-    this.framingDist = null;
+    this.framing = null;
   }
 
   /** Loads pose JSON. A 404 or malformed file warns once and leaves idle. */
@@ -70,28 +68,20 @@ export class PoseController {
     this.setFraming(pose.framing ?? null);
   }
 
-  /** Hands the body back to the idle clip and stops steering the camera. */
+  /** Hands the body back to the idle clip and returns the camera home. */
   release() {
     this.targets.clear();
-    this.framingTarget = null;
-    this.framingDist = null;
+    this.framing = null;
     if (this.vrm?.humanoid) this.vrm.humanoid.autoUpdateHumanBones = true;
+    if (this.viewer) {
+      this.viewer.lookTarget?.set(0, 1.5, 0);
+      this.viewer.targetCameraDistance = 1.7;
+    }
   }
 
+  /** Stores the framing spec; the bone is re-read fresh every update() frame. */
   setFraming(framing) {
-    if (!framing) {
-      this.framingTarget = null;
-      this.framingDist = null;
-      return;
-    }
-    const bone = this.vrm?.humanoid?.getNormalizedBoneNode?.(framing.target);
-    if (!bone || !this.controls) return;
-    const THREE = window.THREE;
-    const target = new THREE.Vector3();
-    bone.getWorldPosition(target);
-    if (typeof framing.height === 'number') target.y = framing.height;
-    this.framingTarget = target;
-    this.framingDist = typeof framing.dist === 'number' ? framing.dist : null;
+    this.framing = framing ?? null;
   }
 
   setReducedMotion(on) {
@@ -108,21 +98,18 @@ export class PoseController {
       if (node) node.quaternion.slerp(targetQuat, t);
     }
 
-    if (this.framingTarget && this.controls && this.camera) {
-      this.controls.target.lerp(this.framingTarget, t);
-      if (this.framingDist !== null) {
-        // Pull the camera to the pose's distance along its current view
-        // direction, so orbit angle is preserved but framing tightens.
+    if (this.framing && this.viewer) {
+      const bone = this.vrm.humanoid.getNormalizedBoneNode(this.framing.target);
+      if (bone) {
         const THREE = window.THREE;
-        const dir = new THREE.Vector3()
-          .subVectors(this.camera.position, this.controls.target)
-          .normalize();
-        const desired = new THREE.Vector3()
-          .copy(this.controls.target)
-          .add(dir.multiplyScalar(this.framingDist));
-        this.camera.position.lerp(desired, t);
+        const point = new THREE.Vector3();
+        bone.getWorldPosition(point);
+        if (typeof this.framing.height === 'number') point.y = this.framing.height;
+        this.viewer.lookTarget.lerp(point, t);
       }
-      this.controls.update();
+      if (typeof this.framing.dist === 'number') {
+        this.viewer.targetCameraDistance = Math.max(0.8, Math.min(3.5, this.framing.dist));
+      }
     }
   }
 }
