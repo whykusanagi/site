@@ -94,7 +94,7 @@ export const LEWD_PHRASES_SFW = [
 // place on load so pickLewdFramePhrases (which copies the pool each call) picks
 // up canonical phrases once resolved. Non-blocking: callers before resolution —
 // and any offline session — get the inline fallback above.
-const PHRASES_JSON_URL = 'https://cdn.whykusanagi.xyz/corrupted-theme/@latest/data/phrases.json';
+const PHRASES_JSON_URL = 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/data/phrases.json';
 
 // phrases.json section shape: { japanese|romaji|english: { category: string[] } }
 function flattenPhraseSection(section) {
