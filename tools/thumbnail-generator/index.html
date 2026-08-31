@@ -2004,6 +2004,16 @@
         // Black drop-shadow is constant across all themes.
         const WARNING_TEXT_SHADOW = '#000000';
 
+        // Boss-name legibility. This is the only string in the overlay that
+        // survives a 320x180 feed tile, so it has to hold against whatever sits
+        // behind it — usually the character, i.e. mid-tone skin. A plain offset
+        // shadow does not: the feed downscales the image ~6x, so the old 4px
+        // offset collapsed to under a pixel and disappeared, leaving gold text
+        // on skin with nothing separating it. An outline and a blurred halo both
+        // shrink as a proportion of the glyph, so they still read at any size.
+        const WARNING_TEXT_OUTLINE = 14;   // px stroke width under the 117px face
+        const WARNING_TEXT_HALO = 26;      // px blur radius for the soft halo
+
         function getActiveWarningTheme() {
             return WARNING_COLOR_THEMES[warningState.colorTheme] ?? WARNING_COLOR_THEMES.magenta;
         }
@@ -2168,10 +2178,24 @@
             ctx.font = '117px VOLT';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
-            ctx.fillStyle = WARNING_TEXT_SHADOW;
-            ctx.globalAlpha = 0.4;
-            ctx.fillText(warningState.bossName, 4, 4);
-            ctx.globalAlpha = 1;
+            ctx.lineJoin = 'round';   // VOLT has sharp corners; mitre spikes without this
+
+            // Soft halo first, painted by stroking with the shadow enabled so the
+            // blur spreads outward from the glyph edge rather than sitting behind
+            // it. Two passes because one pass of a 26px blur is too faint to hold
+            // over skin — compositing it twice deepens it without hardening it.
+            ctx.strokeStyle = WARNING_TEXT_SHADOW;
+            ctx.lineWidth = WARNING_TEXT_OUTLINE;
+            ctx.shadowColor = WARNING_TEXT_SHADOW;
+            ctx.shadowBlur = WARNING_TEXT_HALO;
+            ctx.strokeText(warningState.bossName, 0, 0);
+            ctx.strokeText(warningState.bossName, 0, 0);
+
+            // Then the crisp outline and the fill inside it. Shadow off, or the
+            // fill drags a second halo across its own outline and muddies it.
+            ctx.shadowBlur = 0;
+            ctx.shadowColor = 'transparent';
+            ctx.strokeText(warningState.bossName, 0, 0);
             ctx.fillStyle = theme.text;
             ctx.fillText(warningState.bossName, 0, 0);
             ctx.restore();

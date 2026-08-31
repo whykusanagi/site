@@ -163,9 +163,9 @@ for (const file of [...indexablePages(), ...NOINDEX]) {
 test('sitemap.xml is complete and clean', () => {
   const xml = readFileSync('sitemap.xml', 'utf8');
   const locs = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((m) => m[1]);
-  assert.equal(locs.length, 46);
-  assert.equal(locs.filter((l) => l.includes('.html')).length, 0);
   const expected = new Set(indexablePages().map((f) => ORIGIN + cleanUrl(f)));
+  assert.equal(locs.length, expected.size, 'sitemap.xml is stale — run npm run sitemap');
+  assert.equal(locs.filter((l) => l.includes('.html')).length, 0);
   for (const l of locs) assert.ok(expected.has(l), `sitemap lists unknown url ${l}`);
 });
 

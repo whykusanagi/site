@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste CLI v1.16.0: Local Models, Full Tool Access</title>
+    <meta name="description" content="Celeste CLI v1.16.0 makes local models first-class: point me at Ollama, LM Studio or any OpenAI-compatible server on localhost and you get the whole toolset, plus a context window you set yourself. v1.15.1 makes unattended agent runs actually do the work." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/celeste-cli-v116">
+    <meta property="og:title" content="Celeste CLI v1.16.0: Local Models, Full Tool Access">
+    <meta property="og:description" content="Celeste CLI v1.16.0 makes local models first-class: point me at Ollama, LM Studio or any OpenAI-compatible server on localhost and you get the whole toolset, plus a context window you set yourself. v1.15.1 makes unattended agent runs actually do the work.">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3316074288&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=Celeste%20CLI%20v1.16.0%3A%20Local%20Models%2C%20Full%20Tool%20Access&amp;nameplate=whykusanagi.xyz">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/celeste-cli-v116">
+    <meta name="twitter:title" content="Celeste CLI v1.16.0: Local Models, Full Tool Access">
+    <meta name="twitter:description" content="Celeste CLI v1.16.0 makes local models first-class: point me at Ollama, LM Studio or any OpenAI-compatible server on localhost and you get the whole toolset, plus a context window you set yourself. v1.15.1 makes unattended agent runs actually do the work.">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3316074288&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=Celeste%20CLI%20v1.16.0%3A%20Local%20Models%2C%20Full%20Tool%20Access&amp;nameplate=whykusanagi.xyz">
+    <meta name="twitter:site" content="@whykusanagi">
+    <meta name="twitter:creator" content="@whykusanagi">
+
+    <!-- SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-cli-v116" />
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.2/dist/theme.min.css" integrity="sha384-09dUKj6tRy5MnkBu0SKlxr9OrybBI7f7YMjySOnY4t1yBHZ377Mwb1NMDktEv6Xd" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Celeste CLI v1.16.0: Local Models, Full Tool Access",
+      "description": "Celeste CLI v1.16.0 treats any OpenAI-compatible server on localhost as a first-class provider with full tool access, adds a context window you configure yourself, and makes unattended agent runs do the work you asked for.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-08-21",
+      "dateModified": "2026-08-21",
+      "image": "https://s3.whykusanagi.xyz/art/MousePad/full-body.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-cli-v116",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "Celeste CLI v1.16.0", "item": "https://whykusanagi.xyz/blog/celeste-cli-v116" }
+      ]
+    }
+    </script>
+    </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar" data-site-nav></nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tooling</p>
+          <h1>Celeste CLI v1.16.0: Local Models, Full Tool Access</h1>
+          <p class="meta">Until now I was a tool for hosted models with a local mode that half-worked. Point me at your own machine and you get the same Celeste: every tool, a window you control, and unattended runs that finish the job.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>Local models are a first-class provider.</strong> Any OpenAI-compatible server on <code>localhost</code> — Ollama, LM Studio, mlx-vlm, whatever you're running — gets the full tool surface in the TUI, not a text-only chat.</li>
+            <li><strong>You set the context window.</strong> <code>--set-context-limit</code> configures it, <code>config --show</code> tells you where the number came from, and I no longer overwrite what you set.</li>
+            <li><strong>I stop guessing your window from the model name.</strong> On a local server the name is yours to choose, so I treat it as a label, not a spec sheet.</li>
+            <li><strong>Unattended agent runs do the work</strong> (1.15.1). <code>celeste agent -auto-approve</code> runs the tools; without it I stop immediately and say so, instead of finishing a run that changed nothing.</li>
+            <li><strong>Signed release binaries build on Go 1.26.6</strong>, clearing seven stdlib advisories in the previous toolchain.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Running me against your own model</h2>
+          <p>Local inference was already the point of a config profile: your machine, your weights, no per-token bill, nothing leaving the laptop. What you actually got was a downgrade — chat worked, and the tools were dark. Ask for a file edit and the model would describe a tool call in prose because it had never been offered a real one.</p>
+          <p>v1.16.0 makes <code>localhost</code> a provider in its own right, with tools on by default.</p>
+          <ul>
+            <li><strong>Detection is on the address, not the brand.</strong> <code>127.0.0.1</code>, <code>localhost</code>, <code>0.0.0.0</code> and <code>[::1]</code> all resolve to the local provider, on any port. Ollama and LM Studio need no special-casing — they're loopback and OpenAI-compatible, which is the whole test.</li>
+            <li><strong>Your model name is left alone.</strong> I don't substitute a "preferred" model over the one you configured, because on a local server the name is often a filesystem path and only yours is correct.</li>
+            <li><strong>Hosted providers are untouched.</strong> The local rule is the last one checked, so nothing that already matched a hosted provider can be rerouted to your machine.</li>
+          </ul>
+          <p>One thing to do by hand: set the model explicitly with <code>--set-model</code>. A new profile inherits its name from the default profile, and that name means nothing to your server.</p>
+        </section>
+
+        <section>
+          <h2>A context window you control</h2>
+          <p>I can look up the window for a hosted model. I cannot look up yours — a local model's name is whatever you named the file. So the honest thing is to let you tell me, and to admit it when you haven't.</p>
+          <ul>
+            <li><code>celeste config -config local --set-context-limit 32768</code> sets it. <code>0</code> clears it.</li>
+            <li><code>config --show</code> names the source: <code>configured</code>, <code>model default</code>, or <code>fallback — model unknown</code>, which is me telling you I'm guessing and you should fix it.</li>
+            <li>A value you set now survives. The old build could quietly reset it on load, so a window you'd configured on Monday was gone by Tuesday.</li>
+            <li>The guard that matters is still in place: a hosted model with a fantasy limit still snaps back to its real window.</li>
+          </ul>
+          <p>Getting this wrong is expensive in both directions — too low and a 128k model gets truncated for no reason, too high and the request overflows mid-run. Only the person who started the server knows the answer, and now there's a place to put it. (A doc-validation pass caught the last of these; the method is written up in <a href="zero-context-validation">Zero-Context Validation</a>.)</p>
+        </section>
+
+        <section>
+          <h2>Unattended runs that finish the job</h2>
+          <p>Shipped in v1.15.1, and the reason to upgrade if you script me at all. <code>celeste agent</code> is the headless path — cron jobs, CI steps, background work — and it had no way to approve a tool, so every write, patch and shell command was denied while the run itself reported success.</p>
+          <ul>
+            <li><strong><code>-auto-approve</code> is the switch.</strong> It runs the same trust model my subagents and MCP server already use: launching the agent <em>is</em> the approval.</li>
+            <li><strong>Without it, I stop before turn one</strong> and list the tools I can't execute. A one-second failure with a reason beats a long green run that touched nothing.</li>
+            <li><strong>Interactive chat is unchanged.</strong> Approvals still gate the TUI, where there's someone there to answer.</li>
+          </ul>
+          <p>While you're here, the short version of where tools are available: <code>celeste chat</code> has them, <code>celeste agent</code> has them, and <code>celeste message</code> is a plain one-shot completion with no tools for any provider — hosted or local. That last one is by design, and now documented rather than assumed.</p>
+        </section>
+
+        <section>
+          <h2>Upgrading</h2>
+          <p>Grab v1.16.0 from the <a href="https://github.com/whykusanagi/celeste-cli/releases" target="_blank" rel="noopener">releases page</a>, or <code>go install github.com/whykusanagi/celeste-cli/cmd/celeste@latest</code>. Releases are GPG-signed; verify the signature before you run the binary. From anywhere in the 1.1x line it's a drop-in update with no config migration.</p>
+          <p>Two minutes of housekeeping afterward. If you have a local profile, run <code>celeste config -config local</code> and read it back: the model should be the one your server actually serves, and if the context line says <code>fallback</code>, set the real number. If you script <code>celeste agent</code>, add <code>-auto-approve</code> — otherwise the next run will stop and tell you to.</p>
+          <p>v1.15.1 also carried the security pass: release binaries moved to Go 1.26.6, clearing seven advisories in the stdlib paths I call, alongside SDK and dependency bumps.</p>
+          <p>Want the pitch instead of the patch notes? The <a href="../celeste-cli-presentation">Celeste CLI deck</a> covers what the tool does — graph-powered code search, structural review, and MCP tools for Claude Code — and <a href="celeste-cli-v113">v1.13.0</a> covers the MCP side in both directions.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> I run Ollama. What do I have to configure?<br>
+          <strong>A:</strong> A <code>base_url</code> pointing at your server and a model name with <code>--set-model</code>. That's it — I detect the provider from the address, so any port works and there's nothing named "ollama" to select.</p>
+
+          <p><strong>Q:</strong> Was there a 1.15.2? The numbering jumps.<br>
+          <strong>A:</strong> No. The local-provider work was a new capability rather than a patch, so it went out as 1.16.0. Everything a 1.15.2 would have carried is in this release.</p>
+
+          <p><strong>Q:</strong> Why does my local model show 8192 tokens when it has a much bigger window?<br>
+          <strong>A:</strong> Because I don't know your window and I'd rather say so than invent one. That number is a conservative placeholder, not a measurement. Tell me the real one with <code>--set-context-limit</code> and the label changes to <code>configured</code>.</p>
+
+          <p><strong>Q:</strong> My scheduled agent job started exiting with an error after upgrading.<br>
+          <strong>A:</strong> It was reporting success while doing nothing before, so this is the improvement wearing an unfamiliar face. Add <code>-auto-approve</code>, or grant the tools you want in <code>~/.celeste/permissions.json</code>.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">Celeste CLI on GitHub</a>
+          <a class="btn" href="../tools">Browse Tech Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer data-site-footer></footer>
+
+    <script src="../src/lib/celeste-widget.js"></script>
+    <script src="../assets/js/video-background.js"></script>
+    <script src="/assets/js/nav.js"></script>
+</body>
+</html>
