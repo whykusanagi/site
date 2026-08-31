@@ -36,7 +36,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # lastmod comes from git log, so a shallow clone yields wrong dates.
           fetch-depth: 0
