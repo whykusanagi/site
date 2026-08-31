@@ -178,69 +178,37 @@
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-    import { FBXLoader } from 'three/addons/loaders/FBXLoader.js';
 
     // Make THREE and loaders available globally for non-module scripts
     window.THREE = THREE;
     window.GLTFLoader = GLTFLoader;
-    window.FBXLoader = FBXLoader;
 
     // Try to add loaders to THREE, but don't fail if THREE is frozen
     try {
       if (THREE && !Object.isFrozen(THREE)) {
         THREE.GLTFLoader = GLTFLoader;
-        THREE.FBXLoader = FBXLoader;
       }
     } catch (e) {
-      // THREE might be frozen, that's okay - we have window.GLTFLoader and window.FBXLoader
-      console.log('⚠️  Could not add loaders to THREE (object may be frozen), using window references');
+      // THREE might be frozen, that's okay - we have window.GLTFLoader
+      console.warn('⚠️  Could not add loaders to THREE (object may be frozen), using window references');
     }
 
     // Signal that modules are loaded
     window.__THREE_LOADED = true;
     window.__GLTFLOADER_LOADED = true;
-    window.__FBXLOADER_LOADED = true;
+  </script>
 
-    console.log('✅ Three.js and loaders loaded via ES module');
-    console.log('   THREE available:', typeof THREE !== 'undefined');
-    console.log('   THREE.Scene:', typeof THREE.Scene !== 'undefined');
-    console.log('   GLTFLoader available:', typeof GLTFLoader !== 'undefined');
-    console.log('   FBXLoader available:', typeof FBXLoader !== 'undefined');
-  </script>
-  
-  <!-- Fallback: Load Three.js UMD for compatibility (only if module fails) -->
-  <script>
-    // Wait a bit for ES module to load, then check if THREE is available
-    setTimeout(() => {
-      if (typeof THREE === 'undefined' || typeof THREE.Scene === 'undefined') {
-        console.warn('⚠️  THREE not loaded via ES module, loading UMD fallback');
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.min.js';
-        script.onload = () => {
-          const gltfScript = document.createElement('script');
-          gltfScript.src = 'https://cdn.jsdelivr.net/npm/three@0.180.0/examples/js/loaders/GLTFLoader.js';
-          document.head.appendChild(gltfScript);
-        };
-        document.head.appendChild(script);
-      }
-    }, 100);
-  </script>
-  
   <!-- Load VRM library as ES module and expose globally -->
   <script type="module">
     import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-    
+
     // Make VRMLoaderPlugin and VRMUtils available globally for the viewer
     window.VRMLoaderPlugin = VRMLoaderPlugin;
     window.VRMUtils = VRMUtils;
     window.VRM = { VRMLoaderPlugin, VRMUtils };
-    
+
     // Signal that VRM is loaded
     window.__VRMLOADER_LOADED = true;
-    
-    console.log('✅ three-vrm library loaded via ES module');
-    console.log('   VRMLoaderPlugin available:', typeof VRMLoaderPlugin !== 'undefined');
-    console.log('   VRMUtils available:', typeof VRMUtils !== 'undefined');
   </script>
 
   <!-- Load VRM animation plugin (.vrma loader + lookAt proxy) and expose globally -->
@@ -256,8 +224,17 @@
     window.createVRMAnimationClip = createVRMAnimationClip;
     window.VRMAnimation = { VRMAnimationLoaderPlugin, VRMLookAtQuaternionProxy, createVRMAnimationClip };
     window.__VRMANIMATION_LOADED = true;
+  </script>
 
-    console.log('✅ three-vrm-animation loaded via ES module');
+  <script type="module">
+    // Module scripts are deferred and execute in document order, so the blocks
+    // above have already published window.THREE / GLTFLoader / VRMLoaderPlugin.
+    // The 100ms readiness poll this replaces could never observe a partial state.
+    // Note the absent '?v=' + Date.now(): that cache-buster forced a fresh
+    // download of a 2,461-line file on every single page load.
+    const s = document.createElement('script');
+    s.src = 'src/3d/three-vrm-viewer.js';
+    document.head.appendChild(s);
   </script>
 
   <nav class="navbar" data-site-nav></nav>
@@ -289,35 +266,7 @@
     <footer data-site-footer></footer>
   </main>
 
-  <script src="src/3d/vmd-loader.js"></script>
-  <script src="src/3d/custom-animation-builder.js"></script>
-  <script src="src/3d/fbx-animation-loader.js"></script>
   <script src="src/lib/celeste-widget.js"></script>
-  <!-- Load viewer script AFTER modules have time to load -->
-  <script>
-    // Wait for modules to be ready before loading viewer script
-    (function() {
-      function loadViewer() {
-        const script = document.createElement('script');
-        script.src = 'src/3d/three-vrm-viewer.js?v=' + Date.now();
-        document.head.appendChild(script);
-      }
-      
-      // Wait for ES modules to signal they're loaded, or timeout after 2 seconds
-      if (window.__THREE_LOADED && window.__GLTFLOADER_LOADED) {
-        loadViewer();
-      } else {
-        let attempts = 0;
-        const checkInterval = setInterval(() => {
-          attempts++;
-          if ((window.__THREE_LOADED && window.__GLTFLOADER_LOADED) || attempts >= 20) {
-            clearInterval(checkInterval);
-            loadViewer();
-          }
-        }, 100);
-      }
-    })();
-  </script>
   <script src="/assets/js/nav.js"></script>
 </body>
 </html>
