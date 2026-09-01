@@ -84,6 +84,78 @@
       pointer-events: none; /* no orbit controls - a fixed stage, not a viewer */
     }
 
+    /* ===== Caution tape ===== */
+    .caution {
+      position: fixed;
+      top: var(--stage-top);
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .caution__band {
+      position: absolute;
+      left: -20%;
+      width: 140%;
+      height: 54px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      /* Hazard stripes, drawn rather than imaged so they stay sharp anywhere. */
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(217, 79, 144, 0.92) 0 22px,
+        rgba(20, 4, 14, 0.92) 22px 44px
+      );
+      border-top: 2px solid rgba(255, 138, 200, 0.85);
+      border-bottom: 2px solid rgba(255, 138, 200, 0.85);
+      box-shadow: 0 0 26px rgba(217, 79, 144, 0.5);
+      opacity: 0.5;
+    }
+
+    .caution__band--a { top: 26%; transform: rotate(-14deg); }
+    .caution__band--b { top: 62%; transform: rotate(9deg); }
+
+    /* The scrolling label. Duplicated content in ::before/::after gives a
+       seamless loop without needing JS to measure anything. */
+    .caution__run::before,
+    .caution__run::after {
+      content: 'CONTAINMENT BREACH \00a0\00a0 // \00a0\00a0 18+ \00a0\00a0 // \00a0\00a0 ABYSS.SYS \00a0\00a0 // \00a0\00a0 ';
+      font-family: 'Courier Prime', ui-monospace, monospace;
+      font-weight: 700;
+      font-size: 1.05rem;
+      letter-spacing: 0.18em;
+      color: #ffe9a3;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+      white-space: nowrap;
+    }
+
+    .caution__run {
+      display: flex;
+      white-space: nowrap;
+      animation: caution-scroll 18s linear infinite;
+    }
+
+    .caution__band--b .caution__run { animation-direction: reverse; }
+
+    @keyframes caution-scroll {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+
+    @media (max-width: 1000px) {
+      .caution__band { height: 44px; }
+      .caution__run::before,
+      .caution__run::after { font-size: 0.8rem; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .caution__run { animation: none; }
+    }
+
     /* 64MB behind an unlabelled spinner reads as broken - a real percentage. */
     .loading-screen {
       position: fixed;
@@ -348,6 +420,17 @@
 
   <canvas id="vrmCanvas" aria-hidden="true"></canvas>
 
+  <!-- Animated caution tape, matching the thumbnail generator's warning screen.
+       CSS rather than a port of that tool's canvas renderer: hazard stripes and
+       scrolling text are a gradient and a transform here, and it stays crisp at
+       any viewport size. Sits BEHIND the model (z-index 0, under the canvas) -
+       as an overlay it buried her, and the reference keeps its bands as
+       backdrop too. -->
+  <div class="caution" aria-hidden="true">
+    <div class="caution__band caution__band--a"><div class="caution__run"></div></div>
+    <div class="caution__band caution__band--b"><div class="caution__run"></div></div>
+  </div>
+
   <div class="loading-screen" id="loadingScreen" role="status" aria-live="polite">
     <p class="loading-mark">Celeste</p>
     <div class="loading-track"><div class="loading-fill" id="loadingFill"></div></div>
@@ -545,7 +628,13 @@
       } catch {
         // private mode / storage disabled - fall through to the computed default
       }
-      const defaultOn = window.innerWidth >= 1000 && !reducedMotion;
+      // Bloom defaults OFF: UnrealBloomPass's final composite writes opaque
+      // alpha, so with it on the mandala backdrop and caution tape behind the
+      // canvas disappear entirely. Making bloom transparent needs selective-
+      // bloom machinery (separate render targets, a second pass over a masked
+      // scene) that is not worth it for a glow. The toggle stays for anyone
+      // who wants the glow and does not mind losing the backdrop.
+      const defaultOn = false;
       let enabled = stored === null ? defaultOn : stored === 'on';
 
       let composer;
@@ -557,8 +646,19 @@
           import('three/addons/postprocessing/UnrealBloomPass.js'),
         ]);
 
-        composer = new EffectComposer(stageInstance.renderer);
-        composer.addPass(new RenderPass(stageInstance.scene, stageInstance.camera));
+        // EffectComposer must preserve the canvas alpha, or it renders an
+        // opaque frame and hides the mandala/ticker backdrop behind the canvas
+        // entirely - the whole background layer vanishes whenever bloom is on.
+        // An explicit RGBA target plus clearAlpha 0 on the render pass keeps it.
+        const size = stageInstance.renderer.getSize(new THREE.Vector2());
+        const target = new THREE.WebGLRenderTarget(size.x, size.y, {
+          format: THREE.RGBAFormat,
+          type: THREE.HalfFloatType,
+        });
+        composer = new EffectComposer(stageInstance.renderer, target);
+        const renderPass = new RenderPass(stageInstance.scene, stageInstance.camera);
+        renderPass.clearAlpha = 0;
+        composer.addPass(renderPass);
         composer.addPass(new UnrealBloomPass(
           new THREE.Vector2(window.innerWidth, window.innerHeight),
           0.6,  // strength
