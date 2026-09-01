@@ -90,7 +90,10 @@ export class CelesteStage {
     // Hazard tape as scene geometry rather than a DOM overlay, so it takes
     // perspective and one band crosses in front of the model while the other
     // passes behind her.
-    this.cautionBands = new CautionBands(this.scene);
+    this.cautionBands = new CautionBands(
+      this.scene,
+      this.renderer.capabilities.getMaxAnisotropy(),
+    );
 
     this.clock = new THREE.Clock();
     this._raf = null;
