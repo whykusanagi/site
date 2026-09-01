@@ -37,7 +37,7 @@ const POSE_CLIPS = {
   standing:   'base_standing_pose.vrma',
   jacko:      'jacko_pose.vrma',
   suggestive: 'suggestive_pose.vrma',
-  prone:      'laying_stomach_pose.vrma',
+  prone:      'laying_side_wind.vrma',
 };
 
 const POSE_FADE_SECONDS = 0.35;
@@ -65,6 +65,24 @@ const POSE_EXPRESSIONS = {
   jacko:      { 'Skirt OFF': 1 },
   suggestive: { 'Skirt OFF': 1 },
   prone:      { 'Skirt OFF': 1 },
+};
+
+/**
+ * Per-pose spring-bone wind, as a direction and strength.
+ *
+ * Hair is NOT carried by a .vrma - VRM Animation 1.0 only stores humanoid
+ * bones, so hair posed in an authoring tool does not export (verified: the
+ * clips animate 51 humanoid nodes and zero others). Hair is spring-bone
+ * physics, simulated here.
+ *
+ * This model ships gravityPower: 0 on its spring groups, so the hair holds
+ * position rather than falling. Standing that reads fine; rotated flat for a
+ * laying pose it settles straight into her body, because nothing is pushing
+ * it clear of the colliders. A directional wind is the runtime equivalent of
+ * blowing the hair aside in the posing tool.
+ */
+const POSE_WIND = {
+  prone: { dir: [0.35, 0.55, -0.75], power: 0.28 },
 };
 
 const POSE_ROOT = {
@@ -359,6 +377,7 @@ export class CelesteStage {
     this._setRootRotation(name);
     this._setPoseExpressions(name);
     this._setPoseCamera(name);
+    this._setPoseWind(name);
     this._devPanel?.onPose(name);
 
     const next = (name && this.poseActions.get(name)) || this.idleAction;
@@ -424,6 +443,56 @@ export class CelesteStage {
       manager.setValue(actual, weight);
       this._appliedExpressions.push(actual);
     }
+  }
+
+  /**
+   * Applies a pose's spring-bone wind. Captures each joint's shipped gravity
+   * once so a pose without wind can be restored exactly rather than reset to
+   * an assumed default - this model ships power 0, others may not.
+   */
+  _setPoseWind(name) {
+    const joints = this.vrm?.springBoneManager?.joints;
+    if (!joints) return;
+
+    if (!this._windBaseline) {
+      this._windBaseline = new Map();
+      for (const j of joints) {
+        this._windBaseline.set(j, {
+          dir: j.settings.gravityDir.clone(),
+          power: j.settings.gravityPower,
+        });
+      }
+    }
+
+    const wind = (name && POSE_WIND[name]) || this._windOverride || null;
+    for (const j of joints) {
+      const base = this._windBaseline.get(j);
+      if (wind) {
+        j.settings.gravityDir.set(wind.dir[0], wind.dir[1], wind.dir[2]).normalize();
+        j.settings.gravityPower = wind.power;
+      } else if (base) {
+        j.settings.gravityDir.copy(base.dir);
+        j.settings.gravityPower = base.power;
+      }
+    }
+  }
+
+  /** Panel hook: drive wind live while tuning. */
+  setWindOverride(spec) {
+    this._windOverride = spec;
+    this._setPoseWind(spec ? null : this.devActivePose);
+    if (spec) {
+      const joints = this.vrm?.springBoneManager?.joints ?? [];
+      for (const j of joints) {
+        j.settings.gravityDir.set(spec.dir[0], spec.dir[1], spec.dir[2]).normalize();
+        j.settings.gravityPower = spec.power;
+      }
+    }
+  }
+
+  /** Panel hook: the configured wind for a pose. */
+  configuredWind(name) {
+    return (name && POSE_WIND[name]) || { dir: [0, -1, 0], power: 0 };
   }
 
   /** Applies a pose's camera override, or the default when it has none. */
