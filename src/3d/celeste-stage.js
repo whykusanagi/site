@@ -74,6 +74,9 @@ const POSE_ROOT = {
   prone:      { y: 40 },
   suggestive: { x: -70, y: 15 },
   jacko:      { x: -15 },
+  // A few degrees of yaw so her eye reads between the hands rather than
+  // being covered by them.
+  makima:     { y: -4 },
 };
 
 /**
@@ -88,6 +91,7 @@ const POSE_ROOT = {
 const POSE_CAMERA = {
   suggestive: { lookY: 0.12, dist: 3.65, elevation: 40 },
   jacko:      { lookY: 0.54, dist: 3.50, elevation: 5 },
+  makima:     { lookY: 1.20, dist: 3.50, elevation: 14 },
 };
 
 export class CelesteStage {
