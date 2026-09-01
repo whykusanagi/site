@@ -98,24 +98,39 @@ const POSE_FADE_SECONDS = 0.35;
  * Do NOT set blink / blinkLeft / blinkRight here: idle-life.js drives those
  * every frame and would overwrite whatever this set, which reads as the
  * expression silently not working.
+ *
+ * TUNING NOTE, learned the hard way against the live model: some shapes carry
+ * an eyelid component, so weights interact rather than compose independently.
+ *
+ *   Blush  - closes the eyes. At 0.9 alone it squeezes them shut into >_< arcs;
+ *            by ~0.45 they are already gone. Keep it at or below ~0.2 unless
+ *            you actually want them shut.
+ *   Smug   - narrows the lids. Fine to ~0.5; past that she is squinting.
+ *   Menace - opens/widens, so a little counterweights Smug. Above ~0.4 it
+ *            blanks the iris to solid white, which reads as possessed.
+ *
+ * Every value below was checked on a face-filling camera with idle blinking
+ * frozen - a blink caught mid-frame looks exactly like a bad weight, so tune
+ * with idleLife.reducedMotion = true or you will chase your own tail.
  */
 const POSE_EXPRESSIONS = {
   // "Who I Am" - an invitation with a warning in it. Her face is largely
   // behind her hands in this pose, so this is deliberately understated.
-  makima: { Smug: 0.55, Blush: 0.2 },
+  makima: { Menace: 0.12, Smug: 0.4, Blush: 0.2 },
 
   // "What I Inherited" - grief with excellent bone structure. The only
   // section she is not performing in, so no smirk: just tired and level.
   standing: { 'Dark Circles': 0.4, sad: 0.18, relaxed: 0.25 },
 
   // "Look Closer" - she is enjoying being inspected. "You may look. Only look."
-  jacko: { 'Skirt OFF': 1, Smug: 0.85, Blush: 0.35 },
+  jacko: { 'Skirt OFF': 1, Menace: 0.15, Smug: 0.45, Blush: 0.2 },
 
-  // "The Court" - holding court, and pleased about it.
-  suggestive: { 'Skirt OFF': 1, Teasing: 0.8, 'Heart Pupils': 0.55, Blush: 0.45 },
+  // "The Court" - holding court, and pleased about it. No Smug here: the
+  // heart pupils are the whole point and want the eyes wide.
+  suggestive: { 'Skirt OFF': 1, 'Heart Pupils': 0.9, Blush: 0.2 },
 
   // "The Domain" - the possessive streak, low and unbothered.
-  prone: { 'Skirt OFF': 1, Menace: 0.45, Smug: 0.4 },
+  prone: { 'Skirt OFF': 1, Menace: 0.15, Smug: 0.5 },
 };
 
 /**
