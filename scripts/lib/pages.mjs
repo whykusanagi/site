@@ -43,6 +43,19 @@ export function indexablePages() {
 
 /** Last commit date, falling back to mtime for a file that isn't committed yet. */
 export function lastmod(file) {
+  // A file with uncommitted changes is dated TODAY, not by its last commit.
+  //
+  // Without this the generator is chicken-and-egg with its own CI check:
+  // `git log -1` reports the previous commit's date, so a sitemap generated
+  // before committing an edited page is already stale the moment that commit
+  // lands - and "Generated files are current" fails on the first push of any
+  // PR that touches an HTML file. Dating pending edits today produces the
+  // value the file will have once committed, so one pass is enough.
+  const dirty = execFileSync('git', ['status', '--porcelain', '--', file], {
+    encoding: 'utf8',
+  }).trim();
+  if (dirty) return new Date().toISOString().slice(0, 10);
+
   const out = execFileSync('git', ['log', '-1', '--format=%ad', '--date=short', '--', file], {
     encoding: 'utf8',
   }).trim();
