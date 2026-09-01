@@ -82,7 +82,10 @@ export function initDevPanel(stage) {
   /** Per-pose edits live here so switching sections does not lose your work. */
   const edits = {};
   const current = () => stage.devActivePose || 'idle';
-  const entry = () => (edits[current()] ??= { x: 0, y: 0, z: 0 });
+  // Seed each pose's edits from what actually ships, so the sliders open on
+  // the live value rather than zero - otherwise the first drag throws away the
+  // configured rotation without showing that it did.
+  const entry = () => (edits[current()] ??= stage.configuredRoot(current()));
 
   const apply = () => {
     const e = entry();
