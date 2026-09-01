@@ -116,14 +116,13 @@
       opacity: 0.5;
     }
 
-    .caution__band--a { top: 26%; transform: rotate(-14deg); }
-    .caution__band--b { top: 62%; transform: rotate(9deg); }
+    /* Positioned to frame the figure rather than cross her centre. */
+    .caution__band--a { top: 8%;  transform: rotate(-9deg); }
+    .caution__band--b { top: 74%; transform: rotate(6deg); }
 
     /* The scrolling label. Duplicated content in ::before/::after gives a
        seamless loop without needing JS to measure anything. */
-    .caution__run::before,
-    .caution__run::after {
-      content: 'CONTAINMENT BREACH \00a0\00a0 // \00a0\00a0 18+ \00a0\00a0 // \00a0\00a0 ABYSS.SYS \00a0\00a0 // \00a0\00a0 ';
+    .caution__text {
       font-family: 'Courier Prime', ui-monospace, monospace;
       font-weight: 700;
       font-size: 1.05rem;
@@ -148,8 +147,7 @@
 
     @media (max-width: 1000px) {
       .caution__band { height: 44px; }
-      .caution__run::before,
-      .caution__run::after { font-size: 0.8rem; }
+      .caution__text { font-size: 0.8rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -559,36 +557,64 @@
         return btn;
       });
 
+      // The caution bands double as wayfinding: they carry the NEXT section's
+      // title, so the tape tells you what you are scrolling toward. On the last
+      // section there is nothing next, so it falls back to the hazard label.
+      const runs = document.querySelectorAll('.caution__run');
+      const setBandLabel = (index) => {
+        const next = sections[index + 1];
+        // Heading only - several sections use an eyebrow that restates it, and
+        // "THE ABYSS REMEMBERS - The Abyss Remembers" reads like a stutter.
+        const heading = next?.querySelector('h2')?.textContent?.trim();
+        const label = heading
+          ? `NEXT \u00a0//\u00a0 ${heading.toUpperCase()}`
+          : 'CONTAINMENT BREACH \u00a0//\u00a0 18+ \u00a0//\u00a0 ABYSS.SYS';
+        // Two copies keep the marquee seamless; the CSS translates by -50%.
+        runs.forEach((run) => {
+          run.textContent = '';
+          for (let i = 0; i < 2; i++) {
+            const span = document.createElement('span');
+            span.className = 'caution__text';
+            span.textContent = `${label} \u00a0\u00a0`;
+            run.appendChild(span);
+          }
+        });
+      };
+
       const showSection = (section, index) => {
         const copy = section.querySelector('.section-copy');
         card.innerHTML = copy ? copy.innerHTML : '';
         progressCurrent.textContent = String(index + 1).padStart(2, '0');
         navButtons.forEach((btn) => btn.classList.toggle('is-active', btn.dataset.pose === section.dataset.pose));
+        setBandLabel(index);
       };
 
-      const visible = new Set();
+      // Measures every section directly rather than tracking an
+      // IntersectionObserver "currently visible" set. The set version could not
+      // recover when the observer went quiet - IO does not fire on a hidden or
+      // backgrounded page, and pick() bailed out on an empty set, so the scroll
+      // listener had nothing to work with and the HUD froze on section 01.
+      // Five getBoundingClientRect calls per scroll is nothing; correctness
+      // that does not depend on IO firing is worth more than the optimisation.
+      let activeIndex = -1;
       const pick = () => {
-        if (visible.size === 0) return;
         const mid = window.innerHeight / 2;
-        let best = null;
+        let best = -1;
         let bestDist = Infinity;
-        for (const el of visible) {
+        sections.forEach((el, i) => {
           const r = el.getBoundingClientRect();
+          if (r.bottom <= 0 || r.top >= window.innerHeight) return; // off screen
           const dist = Math.abs(r.top + r.height / 2 - mid);
-          if (dist < bestDist) { bestDist = dist; best = el; }
+          if (dist < bestDist) { bestDist = dist; best = i; }
+        });
+        if (best !== -1 && best !== activeIndex) {
+          activeIndex = best;
+          showSection(sections[best], best);
         }
-        if (best) showSection(best, sections.indexOf(best));
       };
 
-      const observer = new IntersectionObserver((entries) => {
-        for (const e of entries) {
-          if (e.isIntersecting) visible.add(e.target);
-          else visible.delete(e.target);
-        }
-        pick();
-      }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
-      sections.forEach((s) => observer.observe(s));
       window.addEventListener('scroll', pick, { passive: true });
+      window.addEventListener('resize', pick, { passive: true });
 
       showSection(sections[0], 0);
     }
