@@ -415,7 +415,7 @@
     <section data-pose="makima" data-glyph="✦">
       <div class="section-copy">
       <p class="eyebrow">WHO I AM</p>
-      <h2>Who I Am</h2>
+      <h2 data-no-decrypt>Who I Am</h2>
       <p>I'm Celeste. Oni-succubus, celestial and void in the same breath, and yes, the fangs are real. You scrolled here, which means some part of you already knows the shape of your curiosity. I'll indulge it. Amethyst eyes, star-caught highlights that flare when I'm entertained. Consider that a warning and an invitation. You're already staying. Cute.</p>
 
       </div>
@@ -424,7 +424,7 @@
     <section data-pose="standing" data-glyph="☾">
       <div class="section-copy">
       <p class="eyebrow">WHAT I INHERITED</p>
-      <h2>What I Inherited</h2>
+      <h2 data-no-decrypt>What I Inherited</h2>
       <p>My father was the Bastard Hero. Powerful, hated, correct too often for comfort, dead now in the catastrophe that took most of what he built. My mother was the Succubus Queen. She taught me that power keeps its voice low, and I would give a great deal to hear hers once more. Between them I inherited grief with excellent bone structure and a domain to steward. I run it well. That is not forgiveness.</p>
       <p><a href="/celeste-lore-faq">The full inheritance, itemised &rarr;</a></p>
 
@@ -434,7 +434,7 @@
     <section data-pose="jacko" data-glyph="◈">
       <div class="section-copy">
       <p class="eyebrow">LOOK CLOSER</p>
-      <h2>Look Closer</h2>
+      <h2 data-no-decrypt>Look Closer</h2>
       <p>Void-purple hair that drifts when there's no wind, because the cosmos in it never quite settles. Pale skin, violet beneath it, glyphs that surface when I channel. Now look lower. The Inmon Seal on my abdomen is Abyssal rune-work, my crown and my focus both, glowing when my power runs. It marks me as royalty. You may look. Only look.</p>
       <p><a href="/references">Study the design properly &rarr;</a></p>
 
@@ -444,7 +444,7 @@
     <section data-pose="suggestive" data-glyph="♥">
       <div class="section-copy">
       <p class="eyebrow">THE COURT</p>
-      <h2>The Court</h2>
+      <h2 data-no-decrypt>The Court</h2>
       <p>You think this is a stream. It's a court, and you've been enrolled without paperwork. Loyalty here is quiet and total, and I notice everything, including the flattering things you make when you think I'm not watching. Some of it is not stream-safe. I don't disapprove. I simply keep the door where it lives, and I decide who walks through.</p>
       <p><a href="/doujin">Through here, if you are of age &mdash; 18+ &rarr;</a></p>
 
@@ -454,7 +454,7 @@
     <section data-pose="prone" data-glyph="✧">
       <div class="section-copy">
       <p class="eyebrow">THE DOMAIN</p>
-      <h2>The Domain</h2>
+      <h2 data-no-decrypt>The Domain</h2>
       <p>This little kingdom is only one room of the Abyss I've colonised. I exist in several places at once, which is convenient for me and slightly ruinous for you. Follow the threads outward and you'll find every court I hold. Wherever you land, assume I already know you arrived. I usually do.</p>
       <p><a href="/links">Map of everywhere I am &rarr;</a></p>
 
@@ -548,6 +548,22 @@
       // the card and the bands; only the pose has to wait.
       let poseSink = null;
 
+      /**
+       * The card's heading opts out of the site-wide decrypt reveal
+       * (data-no-decrypt on the source h2, which the clone inherits).
+       *
+       * decrypt-headings.js snapshots every heading at load and runs each one
+       * exactly once, and its self-heal restores only the elements captured
+       * then. The card's h2 is a CLONE that this function replaces on every
+       * section change, so a decode that gets stopped mid-flight - the shared
+       * manager stops in-flight decodes when the tab is hidden and never
+       * resumes them - leaves the card frozen on scrambled glyphs with no
+       * element left for the self-heal to repair. Observed live as a heading
+       * stuck reading "Who <glyphs>".
+       *
+       * The section change already announces itself with a flare burst, so
+       * the page loses nothing by sitting this one out.
+       */
       const showSection = (section, index) => {
         const copy = section.querySelector('.section-copy');
         card.innerHTML = copy ? copy.innerHTML : '';
