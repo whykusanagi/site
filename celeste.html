@@ -423,7 +423,6 @@
 
   <script type="module">
     import { CelesteStage } from './src/3d/celeste-stage.js';
-    import { PoseController } from './src/3d/pose-controller.js';
     import { initScrollPoser } from './src/3d/scroll-poser.js';
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -618,10 +617,10 @@
 
       loadingScreen.classList.add('is-hidden');
 
-      const controller = new PoseController(stage.vrm, stage);
-      controller.setReducedMotion(reducedMotion);
-      stage.poseController = controller;
-      await controller.load('static/data/celeste-poses.json');
+      // Poses are .vrma clips crossfaded on the stage's own AnimationMixer -
+      // the path three-vrm intends. scroll-poser only needs something with an
+      // applyPose(name), so hand it the stage directly.
+      const controller = { applyPose: (name) => stage.setPose(name) };
       // Scope to .track: the nav buttons also carry data-pose (they need it to
       // know where to jump), and the unscoped default selector would treat those
       // permanently-visible buttons as candidate sections and steal the pose.

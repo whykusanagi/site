@@ -1,7 +1,7 @@
 /**
  * CelesteStage - the whole page is this: scene, camera, renderer, VRM load,
  * idle clip, render loop. Nothing else - no UI, no scroll driving, no pose
- * math. Those live in celeste.html, scroll-poser.js, and pose-controller.js.
+ * math. Those live in celeste.html and scroll-poser.js.
  *
  * Replaces src/3d/three-vrm-viewer.js (2,461 lines of dead walk/pose
  * buttons, VMD remnants, and an unreachable entrance animation). That file
@@ -12,17 +12,34 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
 
-// pose-controller.js is a plain ES module with no THREE import of its own -
-// it reads `window.THREE` inside its methods (a pattern that predates this
-// file and is left as-is; see pose-controller.js). This is the one place
-// that supplies it, once, as a side effect of importing this module.
-window.THREE = THREE;
-
 const MODEL_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  ? '/models/whykusanagi_nun_succubus.vrm'
-  : 'https://s3.whykusanagi.xyz/models/whykusanagi_nun_succubus.vrm';
+  ? '/models/CorruptedQueenCelestePhairWetA.vrm'
+  : 'https://s3.whykusanagi.xyz/models/CorruptedQueenCelestePhairWetA.vrm';
 
-const IDLE_ANIMATION_URL = 'https://s3.whykusanagi.xyz/animations/celeste_idle.vrma';
+// Pose clips ship with the site rather than from S3: 22KB each, and same-origin
+// means no CORS gate, so they work in local dev as well as production. The much
+// larger idle loop stays on S3.
+const POSE_BASE = 'assets/animations/poses/';
+const ANIMATION_BASE = 'https://s3.whykusanagi.xyz/animations/';
+const IDLE_ANIMATION_URL = ANIMATION_BASE + 'celeste_idle.vrma';
+
+/**
+ * Poses are .vrma clips played through createVRMAnimationClip - the same path
+ * the idle clip uses and the one three-vrm intends. Reading the quaternions out
+ * and applying them to normalized bones by hand looks equivalent and is not: it
+ * has to reproduce the VRM 0.x/1.0 basis difference, the normalized-bone rest
+ * offsets and the hips translation, and getting any of them wrong bends joints
+ * the wrong way. Let the library do it.
+ */
+const POSE_CLIPS = {
+  makima:     'makima_pose.vrma',
+  standing:   'base_standing_pose.vrma',
+  jacko:      'jacko_pose.vrma',
+  suggestive: 'suggestive_pose.vrma',
+  prone:      'laying_stomach_pose.vrma',
+};
+
+const POSE_FADE_SECONDS = 0.35;
 
 export class CelesteStage {
   /**
@@ -43,12 +60,20 @@ export class CelesteStage {
     /** EffectComposer | null. Set externally (bloom); render() prefers it
      * over the direct renderer path when present. */
     this.composer = null;
+    /** poseName -> AnimationAction, populated by loadPoseClips(). */
+    this.poseActions = new Map();
+    this.currentAction = null;
+    this.reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     // Camera state the pose controller WRITES; this class only reads it,
     // every frame, in _applyCamera().
-    this.lookTarget = new THREE.Vector3(0, 1.35, 0);
-    this.targetCameraDistance = 2.2;
-    this.cameraElevation = 0; // degrees; 0 = eye level, 90 = directly overhead
+    // ONE camera for every pose. 35deg vertical FOV means visible height is
+    // 0.63 * distance, so 3.6m shows ~2.3m - the full figure standing, and the
+    // whole floor area a ground pose spreads into. Deliberately fixed: the POV
+    // does not move between sections, only the pose does.
+    this.lookTarget = new THREE.Vector3(0, 0.9, 0);
+    this.targetCameraDistance = 3.6;
+    this.cameraElevation = 12; // degrees; 0 = eye level, 90 = directly overhead
     this.cameraUp = new THREE.Vector3(0, 1, 0);
 
     this.scene = new THREE.Scene();
@@ -155,9 +180,12 @@ export class CelesteStage {
       this.idleAction = this.mixer.clipAction(clip);
       this.idleAction.setLoop(THREE.LoopRepeat, Infinity);
       this.idleAction.play();
+      this.currentAction = this.idleAction;
     } catch (e) {
       console.warn(`[stage] idle clip unavailable (${IDLE_ANIMATION_URL}), holding rest pose:`, e.message);
     }
+
+    await this.loadPoseClips(vrm);
   }
 
   _startLoop() {
@@ -188,6 +216,45 @@ export class CelesteStage {
     this.camera.position.set(this.lookTarget.x, y, this.lookTarget.z + r);
     this.camera.up.copy(this.cameraUp);
     this.camera.lookAt(this.lookTarget);
+  }
+
+  /**
+   * Loads every pose clip onto the shared mixer. Single-keyframe clips, so
+   * playing one simply holds that pose. A clip that fails to load is skipped
+   * with one warning - the section just keeps whatever pose preceded it.
+   */
+  async loadPoseClips(vrm) {
+    if (!this.mixer) this.mixer = new THREE.AnimationMixer(vrm.scene);
+    const loader = new GLTFLoader();
+    loader.register((parser) => new VRMAnimationLoaderPlugin(parser));
+
+    for (const [name, file] of Object.entries(POSE_CLIPS)) {
+      try {
+        const gltf = await loader.loadAsync(POSE_BASE + file);
+        const animation = gltf.userData.vrmAnimations?.[0];
+        if (!animation) throw new Error('no vrmAnimations in file');
+        const action = this.mixer.clipAction(createVRMAnimationClip(animation, vrm));
+        action.setLoop(THREE.LoopRepeat, Infinity);
+        this.poseActions.set(name, action);
+      } catch (e) {
+        console.warn(`[stage] pose clip "${name}" unavailable (${file}):`, e.message);
+      }
+    }
+  }
+
+  /**
+   * Crossfades to a pose clip, or back to the idle loop when name is null or
+   * unknown. The mixer owns the skeleton throughout, so there is no second
+   * system writing bones and nothing to arbitrate between them.
+   */
+  setPose(name) {
+    const next = (name && this.poseActions.get(name)) || this.idleAction;
+    if (!next || next === this.currentAction) return;
+    next.reset().setEffectiveWeight(1).play();
+    if (this.currentAction) {
+      this.currentAction.crossFadeTo(next, this.reducedMotion ? 0 : POSE_FADE_SECONDS, false);
+    }
+    this.currentAction = next;
   }
 
   dispose() {
