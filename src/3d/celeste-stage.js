@@ -11,6 +11,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
+import { CautionBands } from './caution-bands.js';
 
 const MODEL_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? '/models/CorruptedQueenCelestePhairWetA.vrm'
@@ -85,6 +86,11 @@ export class CelesteStage {
     this.renderer.outputColorSpace = THREE.SRGBColorSpace;
 
     this._addLights();
+
+    // Hazard tape as scene geometry rather than a DOM overlay, so it takes
+    // perspective and one band crosses in front of the model while the other
+    // passes behind her.
+    this.cautionBands = new CautionBands(this.scene);
 
     this.clock = new THREE.Clock();
     this._raf = null;
@@ -202,6 +208,8 @@ export class CelesteStage {
       this.poseController?.update(dt);
       this.vrm?.update(dt);
 
+      this.cautionBands?.update(dt, this.reducedMotion);
+
       this._applyCamera();
       (this.composer ?? this.renderer).render(this.scene, this.camera);
     };
@@ -247,6 +255,12 @@ export class CelesteStage {
    * unknown. The mixer owns the skeleton throughout, so there is no second
    * system writing bones and nothing to arbitrate between them.
    */
+  /** Section changed: the bands re-place themselves and take the new label. */
+  setSection(index, label) {
+    this.cautionBands?.setLayout(index);
+    this.cautionBands?.setLabel(label);
+  }
+
   setPose(name) {
     const next = (name && this.poseActions.get(name)) || this.idleAction;
     if (!next || next === this.currentAction) return;
