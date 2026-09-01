@@ -53,7 +53,9 @@ const POSE_FADE_SECONDS = 0.35;
  * end; +90 lays her across the frame instead.
  */
 const POSE_ROOT = {
-  prone: { x: 90 },
+  // Empty on purpose. Two guesses at the right axis for `prone` (z, then x)
+  // were both wrong, which is the argument for the dev panel rather than a
+  // third guess: load ?dev=1, drag the sliders, hit Dump, paste the result.
 };
 
 export class CelesteStage {
@@ -182,7 +184,7 @@ export class CelesteStage {
       // baseline every pose rotation composes onto.
       this.rootBaseline = vrm.scene.quaternion.clone();
       this.rootTarget = this.rootBaseline.clone();
-      this._installRootTuner();
+      this._installDevPanel();
     } catch {
       // already VRM 1.x - nothing to rotate
     }
@@ -291,8 +293,9 @@ export class CelesteStage {
   }
 
   setPose(name) {
-    this._activePose = name;
+    this.devActivePose = name;
     this._setRootRotation(name);
+    this._devPanel?.onPose(name);
 
     const next = (name && this.poseActions.get(name)) || this.idleAction;
     if (!next || next === this.currentAction) return;
@@ -304,23 +307,24 @@ export class CelesteStage {
   }
 
   /**
-   * Live root-rotation tuner, opt-in with ?debugroot=1. Lets you dial the angle
-   * in the browser and read the numbers back, instead of guessing an axis and
-   * redeploying to look at it. Prints the value to paste into POSE_ROOT.
-   *
-   *   celesteRoot(90, 0, 0)   // x, y, z in degrees, applied to the live pose
-   *   celesteRoot()           // back to the pose's configured value
+   * Loads the slider panel when ?dev=1. Dynamic import so the module is never
+   * fetched for a normal visitor.
    */
-  _installRootTuner() {
-    if (new URLSearchParams(window.location.search).get('debugroot') !== '1') return;
-    window.celesteRoot = (x = null, y = 0, z = 0) => {
-      this._rootOverride = x === null ? null : { x, y, z };
-      this._setRootRotation(this._activePose);
-      return this._rootOverride
-        ? `POSE_ROOT entry: { x: ${x}, y: ${y}, z: ${z} }`
-        : 'override cleared - using the configured value';
-    };
-    console.warn('[stage] root tuner active: celesteRoot(x, y, z) in degrees');
+  async _installDevPanel() {
+    if (new URLSearchParams(window.location.search).get('dev') !== '1') return;
+    try {
+      const { initDevPanel } = await import('./dev-panel.js');
+      this._devPanel = initDevPanel(this);
+      this._devPanel.onPose(this.devActivePose);
+    } catch (e) {
+      console.warn('[stage] dev panel unavailable:', e.message);
+    }
+  }
+
+  /** Panel hook: override the configured rotation for the live pose. */
+  setRootOverride(spec) {
+    this._rootOverride = spec;
+    this._setRootRotation(this.devActivePose);
   }
 
   /** Composes this pose's root rotation onto the captured baseline. */
