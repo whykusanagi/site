@@ -509,6 +509,85 @@
       }
     }
 
+    /**
+     * EffectComposer + UnrealBloomPass, strictly additive: if the dynamic
+     * import fails for any reason, stage.composer is simply never set and
+     * the direct (this.composer ?? this.renderer).render() path already
+     * running in CelesteStage is unaffected - nothing here can break the
+     * base render loop.
+     *
+     * Default ON at >=1000px and OFF below/under reduced motion, but only
+     * as the *first-visit* default: an explicit click persists to
+     * localStorage and wins over that computed default on return visits,
+     * reduced motion included - bloom is a static glow, not motion, so a
+     * visitor who opted in keeps their choice.
+     */
+    async function initBloom(stageInstance) {
+      const toggle = document.getElementById('bloomToggle');
+
+      let stored = null;
+      try {
+        stored = window.localStorage.getItem('celeste-bloom');
+      } catch {
+        // private mode / storage disabled - fall through to the computed default
+      }
+      const defaultOn = window.innerWidth >= 1000 && !reducedMotion;
+      let enabled = stored === null ? defaultOn : stored === 'on';
+
+      let composer;
+      try {
+        const [THREE, { EffectComposer }, { RenderPass }, { UnrealBloomPass }] = await Promise.all([
+          import('three'),
+          import('three/addons/postprocessing/EffectComposer.js'),
+          import('three/addons/postprocessing/RenderPass.js'),
+          import('three/addons/postprocessing/UnrealBloomPass.js'),
+        ]);
+
+        composer = new EffectComposer(stageInstance.renderer);
+        composer.addPass(new RenderPass(stageInstance.scene, stageInstance.camera));
+        composer.addPass(new UnrealBloomPass(
+          new THREE.Vector2(window.innerWidth, window.innerHeight),
+          0.6,  // strength
+          0.4,  // radius
+          0.85, // threshold
+        ));
+      } catch (e) {
+        console.warn('[celeste] bloom unavailable:', e?.message ?? e);
+        return;
+      }
+
+      // CelesteStage.resize() only resizes `this.composer` - which is null
+      // whenever bloom is toggled off - so a resize while off would leave
+      // this composer stale for the next time it's toggled back on. Wrap
+      // resize to keep it sized regardless of the toggle state.
+      const baseResize = stageInstance.resize.bind(stageInstance);
+      stageInstance.resize = () => {
+        baseResize();
+        const w = stageInstance.canvas.clientWidth || window.innerWidth;
+        const h = stageInstance.canvas.clientHeight || window.innerHeight;
+        composer.setSize(w, h);
+      };
+      stageInstance.resize();
+
+      const applyState = () => {
+        stageInstance.composer = enabled ? composer : null;
+        toggle.textContent = `Bloom: ${enabled ? 'On' : 'Off'}`;
+        toggle.setAttribute('aria-pressed', String(enabled));
+      };
+      applyState();
+      toggle.hidden = false;
+
+      toggle.addEventListener('click', () => {
+        enabled = !enabled;
+        applyState();
+        try {
+          window.localStorage.setItem('celeste-bloom', enabled ? 'on' : 'off');
+        } catch {
+          // private mode - the toggle still works for the rest of this visit
+        }
+      });
+    }
+
     async function main() {
       const sections = Array.from(document.querySelectorAll('.track [data-pose]'));
       initHud(sections);
@@ -529,6 +608,8 @@
       stage.poseController = controller;
       await controller.load('static/data/celeste-poses.json');
       initScrollPoser(controller);
+
+      initBloom(stage);
     }
 
     main();
