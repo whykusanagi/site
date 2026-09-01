@@ -83,6 +83,7 @@ const POSE_EXPRESSIONS = {
  */
 const POSE_WIND = {
   prone: { dir: [-0.40, -0.20, -1.00], power: 0.85 },
+  jacko: { dir: [0.00, 0.00, -0.55], power: 1.00 },
 };
 
 const POSE_ROOT = {
