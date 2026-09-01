@@ -116,9 +116,27 @@
       opacity: 0.5;
     }
 
-    /* Positioned to frame the figure rather than cross her centre. */
-    .caution__band--a { top: 8%;  transform: rotate(-9deg); }
-    .caution__band--b { top: 74%; transform: rotate(6deg); }
+    /* Placement comes from custom properties so it can shift per section.
+       Transitioned rather than snapped - the bands re-lay themselves as the
+       pose changes, which is what ties them to the scroll. */
+    .caution__band {
+      transition: top 700ms cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 700ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .caution__band--a {
+      top: var(--band-a-top, 8%);
+      transform: rotate(var(--band-a-rot, -9deg));
+    }
+
+    .caution__band--b {
+      top: var(--band-b-top, 74%);
+      transform: rotate(var(--band-b-rot, 6deg));
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .caution__band { transition: none; }
+    }
 
     /* The scrolling label. Duplicated content in ::before/::after gives a
        seamless loop without needing JS to measure anything. */
@@ -561,6 +579,30 @@
       // title, so the tape tells you what you are scrolling toward. On the last
       // section there is nothing next, so it falls back to the hazard label.
       const runs = document.querySelectorAll('.caution__run');
+      const cautionEl = document.querySelector('.caution');
+
+      /**
+       * Where the bands sit for each section. Chosen to stay clear of the face
+       * and the pinned card, and to swing noticeably between steps so the
+       * movement reads as deliberate rather than drift. Index-matched to
+       * `sections`; anything past the end reuses the last entry.
+       */
+      const BAND_LAYOUTS = [
+        { aTop: '8%',  aRot: '-9deg',  bTop: '74%', bRot: '6deg'   },
+        { aTop: '15%', aRot: '-17deg', bTop: '67%', bRot: '11deg'  },
+        { aTop: '5%',  aRot: '-4deg',  bTop: '81%', bRot: '3deg'   },
+        { aTop: '19%', aRot: '13deg',  bTop: '71%', bRot: '-9deg'  },
+        { aTop: '10%', aRot: '-21deg', bTop: '78%', bRot: '15deg'  },
+      ];
+
+      const setBandLayout = (index) => {
+        const l = BAND_LAYOUTS[Math.min(index, BAND_LAYOUTS.length - 1)];
+        cautionEl.style.setProperty('--band-a-top', l.aTop);
+        cautionEl.style.setProperty('--band-a-rot', l.aRot);
+        cautionEl.style.setProperty('--band-b-top', l.bTop);
+        cautionEl.style.setProperty('--band-b-rot', l.bRot);
+      };
+
       const setBandLabel = (index) => {
         const next = sections[index + 1];
         // Heading only - several sections use an eyebrow that restates it, and
@@ -587,6 +629,7 @@
         progressCurrent.textContent = String(index + 1).padStart(2, '0');
         navButtons.forEach((btn) => btn.classList.toggle('is-active', btn.dataset.pose === section.dataset.pose));
         setBandLabel(index);
+        setBandLayout(index);
       };
 
       // Measures every section directly rather than tracking an
