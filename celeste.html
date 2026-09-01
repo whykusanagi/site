@@ -557,8 +557,19 @@
           import('three/addons/postprocessing/UnrealBloomPass.js'),
         ]);
 
-        composer = new EffectComposer(stageInstance.renderer);
-        composer.addPass(new RenderPass(stageInstance.scene, stageInstance.camera));
+        // EffectComposer must preserve the canvas alpha, or it renders an
+        // opaque frame and hides the mandala/ticker backdrop behind the canvas
+        // entirely - the whole background layer vanishes whenever bloom is on.
+        // An explicit RGBA target plus clearAlpha 0 on the render pass keeps it.
+        const size = stageInstance.renderer.getSize(new THREE.Vector2());
+        const target = new THREE.WebGLRenderTarget(size.x, size.y, {
+          format: THREE.RGBAFormat,
+          type: THREE.HalfFloatType,
+        });
+        composer = new EffectComposer(stageInstance.renderer, target);
+        const renderPass = new RenderPass(stageInstance.scene, stageInstance.camera);
+        renderPass.clearAlpha = 0;
+        composer.addPass(renderPass);
         composer.addPass(new UnrealBloomPass(
           new THREE.Vector2(window.innerWidth, window.innerHeight),
           0.6,  // strength
