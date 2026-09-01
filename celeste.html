@@ -84,6 +84,20 @@
       pointer-events: none; /* no orbit controls - a fixed stage, not a viewer */
     }
 
+    /* Transition flares composite over the model on the same fixed box. A
+       separate 2D canvas, not a post pass: EffectComposer renders opaquely
+       and erased the backdrop when bloom tried it. */
+    .stage-flares {
+      position: fixed;
+      top: var(--stage-top);
+      left: 0;
+      z-index: 1;
+      display: block;
+      width: 100%;
+      height: calc(100dvh - var(--stage-top));
+      pointer-events: none;
+    }
+
     /* The stage canvas is position:fixed, so it underlies the whole document -
        a transparent footer let the model bleed through the legal links. Give
        the footer its own opaque ground and push it a screen clear of the last
@@ -253,6 +267,25 @@
       font-size: 0.7rem;
       cursor: pointer;
       transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+      gap: 0.1rem;
+    }
+
+    /* The glyph carries the section; the number is the fallback ordinal for
+       anyone whose font has no glyph for it. */
+    .hud-nav .glyph {
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+
+    .hud-nav .ord {
+      font-size: 0.55rem;
+      opacity: 0.7;
+      letter-spacing: 0.04em;
     }
 
     .hud-nav button:hover { color: var(--text); }
@@ -267,7 +300,7 @@
        block, which hides the stage layers entirely so these are all a
        visitor sees). With JS on, html.js-stage makes them invisible -
        the HUD card mirrors their text instead - while they keep their
-       height so the scroll-poser has distance to key off. */
+       height so the section picker has distance to key off. */
     .track section[data-pose] {
       min-height: 100dvh;
       display: flex;
@@ -379,7 +412,7 @@
   <main class="track" id="track">
     <h1 class="visually-hidden">Celeste AI</h1>
 
-    <section data-pose="makima">
+    <section data-pose="makima" data-glyph="✦">
       <div class="section-copy">
       <p class="eyebrow">WHO I AM</p>
       <h2>Who I Am</h2>
@@ -388,7 +421,7 @@
       </div>
     </section>
 
-    <section data-pose="standing">
+    <section data-pose="standing" data-glyph="☾">
       <div class="section-copy">
       <p class="eyebrow">WHAT I INHERITED</p>
       <h2>What I Inherited</h2>
@@ -398,7 +431,7 @@
       </div>
     </section>
 
-    <section data-pose="jacko">
+    <section data-pose="jacko" data-glyph="◈">
       <div class="section-copy">
       <p class="eyebrow">LOOK CLOSER</p>
       <h2>Look Closer</h2>
@@ -408,7 +441,7 @@
       </div>
     </section>
 
-    <section data-pose="suggestive">
+    <section data-pose="suggestive" data-glyph="♥">
       <div class="section-copy">
       <p class="eyebrow">THE COURT</p>
       <h2>The Court</h2>
@@ -418,7 +451,7 @@
       </div>
     </section>
 
-    <section data-pose="prone">
+    <section data-pose="prone" data-glyph="✧">
       <div class="section-copy">
       <p class="eyebrow">THE DOMAIN</p>
       <h2>The Domain</h2>
@@ -433,13 +466,13 @@
 
   <noscript>
     <style>
-      .stage-bg, #vrmCanvas, .hud, .loading-screen { display: none !important; }
+      .stage-bg, #vrmCanvas, .stage-flares, .hud, .loading-screen { display: none !important; }
     </style>
   </noscript>
 
   <script type="module">
     import { CelesteStage } from './src/3d/celeste-stage.js';
-    import { initScrollPoser } from './src/3d/scroll-poser.js';
+    import { SectionFlares } from './src/3d/section-flares.js';
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -465,9 +498,9 @@
     /**
      * Progress readout, bottom nav, and the pinned card - all driven by
      * whichever section is nearest the viewport middle. Deliberately
-     * separate from scroll-poser.js (which drives pose changes only, and is
-     * closed to reuse by design): this just mirrors section text into the
-     * HUD, it knows nothing about poses.
+     * This is the page's single answer to "which section is showing": the
+     * card, the progress readout, the nav, the caution bands and the model's
+     * pose all follow it.
      */
     function initHud(sections) {
       const progressCurrent = document.getElementById('hudProgressCurrent');
@@ -482,7 +515,14 @@
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.dataset.pose = section.dataset.pose;
-        btn.textContent = String(i + 1).padStart(2, '0');
+        const glyph = document.createElement('span');
+        glyph.className = 'glyph';
+        glyph.setAttribute('aria-hidden', 'true');
+        glyph.textContent = section.dataset.glyph ?? '◆';
+        const ord = document.createElement('span');
+        ord.className = 'ord';
+        ord.textContent = String(i + 1).padStart(2, '0');
+        btn.append(glyph, ord);
         const label = section.querySelector('.eyebrow')?.textContent?.trim();
         btn.setAttribute('aria-label', label ? `Jump to ${label}` : `Jump to section ${i + 1}`);
         btn.addEventListener('click', () => {
@@ -504,12 +544,19 @@
         return heading ? `${heading}   //   ` : null;
       };
 
+      // Set once the model is loaded. Until then section changes still move
+      // the card and the bands; only the pose has to wait.
+      let poseSink = null;
+
       const showSection = (section, index) => {
         const copy = section.querySelector('.section-copy');
         card.innerHTML = copy ? copy.innerHTML : '';
         progressCurrent.textContent = String(index + 1).padStart(2, '0');
-        navButtons.forEach((btn) => btn.classList.toggle('is-active', btn.dataset.pose === section.dataset.pose));
+        // Match on index, not on pose: two sections sharing a pose would
+        // otherwise light up each other's button.
+        navButtons.forEach((btn, i) => btn.classList.toggle('is-active', i === index));
         stage.setSection(index, bandLabelFor(index));
+        poseSink?.(section.dataset.pose);
       };
 
       // Measures every section directly rather than tracking an
@@ -586,7 +633,28 @@
         e.preventDefault();
       });
 
+      activeIndex = 0;
       showSection(sections[0], 0);
+
+      return {
+        /**
+         * Hands the pose over to the stage once it can accept one, and
+         * immediately applies whichever section is already showing.
+         *
+         * The pose used to be chosen by scroll-poser.js, which ran its own
+         * IntersectionObserver and its own nearest-to-middle pick over only
+         * the sections the observer currently called visible. Two independent
+         * pickers meant two answers to "which section is this": the observer
+         * goes quiet on a hidden or backgrounded page and its visible-set
+         * bails out empty, so the model held one section while the card and
+         * the bands had moved on. This picker is now the only one.
+         */
+        attachPose(fn) {
+          poseSink = fn;
+          pick();
+          fn(sections[activeIndex === -1 ? 0 : activeIndex].dataset.pose);
+        },
+      };
     }
 
     /** Ambient corner logo + ticker strip. Wrapped and warned-once: a stream
@@ -700,7 +768,7 @@
 
     async function main() {
       const sections = Array.from(document.querySelectorAll('.track [data-pose]'));
-      initHud(sections);
+      const hud = initHud(sections);
       initTicker();
 
       try {
@@ -714,19 +782,14 @@
       loadingScreen.classList.add('is-hidden');
 
       // Poses are .vrma clips crossfaded on the stage's own AnimationMixer -
-      // the path three-vrm intends. scroll-poser only needs something with an
-      // applyPose(name), so hand it the stage directly.
-      const controller = { applyPose: (name) => stage.setPose(name) };
-      // Scope to .track: the nav buttons also carry data-pose (they need it to
-      // know where to jump), and the unscoped default selector would treat those
-      // permanently-visible buttons as candidate sections and steal the pose.
-      initScrollPoser(controller, { selector: '.track [data-pose]' });
+      // the path three-vrm intends. The HUD picker owns which section is
+      // current, so it also decides the pose; this both seeds the opening
+      // pose (the page used to open on a T-pose without an explicit seed) and
+      // keeps the model, the card and the bands on one answer forever after.
+      hud.attachPose((name) => stage.setPose(name));
 
-      // Seed the opening pose. The observer's first callback can land before
-      // layout settles, so no section is marked visible, pick() takes its
-      // empty-set early return, and the model holds its rest pose until the
-      // first scroll. Without this the page opens on a T-pose.
-      if (sections[0]) controller.applyPose(sections[0].dataset.pose);
+      // Transition flares, over the model and under the HUD.
+      stage.flares = new SectionFlares(document.body, reducedMotion);
 
       initBloom(stage);
     }

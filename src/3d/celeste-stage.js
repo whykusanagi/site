@@ -1,7 +1,7 @@
 /**
  * CelesteStage - the whole page is this: scene, camera, renderer, VRM load,
  * idle clip, render loop. Nothing else - no UI, no scroll driving, no pose
- * math. Those live in celeste.html and scroll-poser.js.
+ * math. Those live in celeste.html.
  *
  * Replaces src/3d/three-vrm-viewer.js (2,461 lines of dead walk/pose
  * buttons, VMD remnants, and an unreachable entrance animation). That file
@@ -12,6 +12,7 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
 import { CautionBands } from './caution-bands.js';
+import { IdleLife } from './idle-life.js';
 
 const MODEL_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? '/models/CorruptedQueenCelestePhairWetA.vrm'
@@ -265,6 +266,7 @@ export class CelesteStage {
     // pose clips (loaded inside _loadIdleClip). Running them any earlier build
     // an empty index and an empty button row - silently, in both cases.
     this._buildExpressionIndex();
+    this.idleLife = new IdleLife(vrm, this.reducedMotion);
     this._installDevPanel();
 
     // Same hook vrm_toolkit's review harnesses expose, for poking at
@@ -311,6 +313,10 @@ export class CelesteStage {
       // them onto the raw skeleton. This must run between mixer.update and
       // render, never after vrm.update, or the pose silently does nothing.
       this.poseController?.update(dt);
+      // Blink/breathe/wink. Same window as the pose clips and for the same
+      // reason: after the mixer so the clip does not overwrite it, before
+      // vrm.update() so it reaches the raw skeleton this frame.
+      this.idleLife?.update(dt);
       this.vrm?.update(dt);
 
       // Ease the root toward its target. Snapping it makes the spring bones
@@ -371,6 +377,13 @@ export class CelesteStage {
   setSection(index, label) {
     this.cautionBands?.setLayout(index);
     this.cautionBands?.setLabel(label);
+    // Only on an actual change: setSection is also called to re-assert the
+    // current section (on resize, or when the pose sink attaches), and a
+    // burst every time would fire on events the visitor did not cause.
+    if (index !== this._sectionIndex) {
+      this._sectionIndex = index;
+      this.flares?.burst();
+    }
   }
 
   setPose(name) {
