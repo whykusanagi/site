@@ -8,6 +8,17 @@ name: Deploy Worker
 # Requires two GitHub Actions secrets:
 #   CLOUDFLARE_API_TOKEN  - token with "Workers Scripts:Edit" (+ the zone for routes)
 #   CLOUDFLARE_ACCOUNT_ID - the Cloudflare account id
+#
+# Neither has ever been set on this repo, so every run of this workflow since
+# at least 2026-07-10 failed with "it's necessary to set a CLOUDFLARE_API_TOKEN".
+# A workflow that is always red is worse than no workflow: it trains everyone
+# to ignore CI, and hides the runs that fail for a real reason. So the deploy
+# step is now gated on the secrets actually being present, and the job reports
+# a skip instead of a failure when they are not. Add the two secrets and it
+# starts deploying with no further change.
+#
+# Until then the Worker deploys manually (`npm run deploy`), which is what
+# CLAUDE.md section 13 already documents as the process.
 # (The Worker's own secrets like CELESTE_SYSTEM_PROMPT are set with
 #  `wrangler secret put`, not here.)
 
@@ -33,7 +44,22 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # Tests only whether the secret is non-empty. Never echoes its value.
+      - name: Check Cloudflare credentials
+        id: creds
+        env:
+          TOKEN_SET: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+          ACCOUNT_SET: ${{ secrets.CLOUDFLARE_ACCOUNT_ID != '' }}
+        run: |
+          if [ "$TOKEN_SET" = "true" ] && [ "$ACCOUNT_SET" = "true" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=Worker deploy skipped::CLOUDFLARE_API_TOKEN and/or CLOUDFLARE_ACCOUNT_ID are not set on this repository, so the Worker was not deployed. Deploy manually with 'npm run deploy', or add the two secrets to enable automatic deploys."
+          fi
+
       - name: Checkout
+        if: steps.creds.outputs.configured == 'true'
         uses: actions/checkout@v7
 
       # No `cache: npm` and no `npm ci`: both require a committed
@@ -42,14 +68,17 @@ jobs:
       # file is not found". If the lock file is ever tracked, switch back to
       # `cache: npm` + `npm ci` for reproducible installs.
       - name: Setup Node
+        if: steps.creds.outputs.configured == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install dependencies
+        if: steps.creds.outputs.configured == 'true'
         run: npm install --no-audit --no-fund
 
       - name: Deploy Worker
+        if: steps.creds.outputs.configured == 'true'
         run: npx wrangler deploy
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
