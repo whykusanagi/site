@@ -106,10 +106,14 @@ export function initDevPanel(stage) {
     panel.appendChild(s.row);
   }
 
-  /** Pushes the current pose's stored values into the three root sliders. */
+  /** Pushes the current pose's stored values into the sliders. Camera reads
+   *  from the stage because a pose may carry its own framing override. */
   function syncRoot() {
     const e = entry();
     for (const axis of ['x', 'y', 'z']) rootSliders[axis].set(e[axis] ?? 0);
+    camDist?.set(+stage.targetCameraDistance.toFixed(2));
+    camElev?.set(Math.round(stage.cameraElevation));
+    camY?.set(+stage.lookTarget.y.toFixed(2));
   }
 
   heading('camera');
@@ -156,10 +160,10 @@ export function initDevPanel(stage) {
       ...(rootLines.length ? rootLines : ['  // no root rotation set']),
       '};',
       '',
-      `// camera defaults`,
-      `lookTarget = new THREE.Vector3(0, ${stage.lookTarget.y.toFixed(2)}, 0);`,
-      `targetCameraDistance = ${stage.targetCameraDistance.toFixed(2)};`,
-      `cameraElevation = ${Math.round(stage.cameraElevation)};`,
+      '// POSE_CAMERA entry for the pose on screen',
+      `  ${current()}: { lookY: ${stage.lookTarget.y.toFixed(2)}, `
+        + `dist: ${stage.targetCameraDistance.toFixed(2)}, `
+        + `elevation: ${Math.round(stage.cameraElevation)} },`,
     ].join('\n');
     out.select();
     try { document.execCommand('copy'); } catch { /* clipboard blocked; text is selectable */ }
