@@ -494,13 +494,14 @@
 
       // The caution bands are geometry in the scene (see caution-bands.js), so
       // the page only decides WHAT they say - the stage owns placement and
-      // motion. They carry the NEXT section's title so the tape tells you what
-      // you are scrolling toward; the last section falls back to the hazard
-      // text. Heading only, because several eyebrows restate the heading and
-      // "THE ABYSS REMEMBERS - The Abyss Remembers" reads like a stutter.
+      // motion. They label the section you are ON. They used to carry the NEXT
+      // title as a teaser, but a band reading "WHAT I INHERITED" while the card
+      // reads "Who I Am" just looks like the tape is off by one. Heading only,
+      // because several eyebrows restate the heading and "THE ABYSS REMEMBERS -
+      // The Abyss Remembers" reads like a stutter.
       const bandLabelFor = (index) => {
-        const heading = sections[index + 1]?.querySelector('h2')?.textContent?.trim();
-        return heading ? `NEXT   //   ${heading}   //   ` : null;
+        const heading = sections[index]?.querySelector('h2')?.textContent?.trim();
+        return heading ? `${heading}   //   ` : null;
       };
 
       const showSection = (section, index) => {
