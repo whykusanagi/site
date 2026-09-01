@@ -68,10 +68,24 @@ const POSE_EXPRESSIONS = {
 };
 
 const POSE_ROOT = {
-  // Tuned in the ?dev=1 panel, not derived. The axis is Y - two reasoned
-  // guesses (z, then x) were both wrong, because this composes onto a baseline
-  // that already carries rotateVRM0's 180-degree Y flip.
-  prone: { y: 40 },
+  // Tuned in the ?dev=1 panel, not derived. Reasoning about these axes is
+  // unreliable: they compose onto a baseline that already carries
+  // rotateVRM0's 180-degree Y flip, so screen-space intuition misleads.
+  prone:      { y: 40 },
+  suggestive: { x: -70, y: 15 },
+};
+
+/**
+ * OPTIONAL per-pose camera. A pose with no entry keeps the single default
+ * framing below, so the view stays put across most of the page - only the
+ * poses that genuinely need a different angle move the camera.
+ *
+ * This exists because the floor poses cannot share a frame with the standing
+ * ones: `suggestive` wants the camera low and pitched down at the ground
+ * (lookY 0.12, elevation 40), which would crop a standing pose entirely.
+ */
+const POSE_CAMERA = {
+  suggestive: { lookY: 0.12, dist: 3.65, elevation: 40 },
 };
 
 export class CelesteStage {
@@ -337,6 +351,7 @@ export class CelesteStage {
     this.devActivePose = name;
     this._setRootRotation(name);
     this._setPoseExpressions(name);
+    this._setPoseCamera(name);
     this._devPanel?.onPose(name);
 
     const next = (name && this.poseActions.get(name)) || this.idleAction;
@@ -404,11 +419,23 @@ export class CelesteStage {
     }
   }
 
+  /** Applies a pose's camera override, or the default when it has none. */
+  _setPoseCamera(name) {
+    const c = (name && POSE_CAMERA[name]) || this.cameraDefaults;
+    this.targetCameraDistance = c.dist;
+    this.cameraElevation = c.elevation;
+    this.lookTarget.y = c.lookY;
+  }
+
+  /** Panel hook: the configured camera for a pose, so the sliders can start
+   *  from the shipped value. */
+  configuredCamera(name) {
+    return { ...this.cameraDefaults, ...((name && POSE_CAMERA[name]) || {}) };
+  }
+
   /** Panel hook: restores the camera to the values this file ships with. */
   resetCamera() {
-    this.targetCameraDistance = this.cameraDefaults.dist;
-    this.cameraElevation = this.cameraDefaults.elevation;
-    this.lookTarget.y = this.cameraDefaults.lookY;
+    this._setPoseCamera(this.devActivePose);
   }
 
   /** Panel hook: the configured root rotation for a pose, so the sliders can
