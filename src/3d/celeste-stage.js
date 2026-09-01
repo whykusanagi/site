@@ -81,10 +81,41 @@ const POSE_FADE_SECONDS = 0.35;
  * normalises VRM 0.x blendshape group names on import and the exact casing it
  * lands on is not worth depending on.
  */
+/**
+ * Per-pose blendshape weights: face AND wardrobe.
+ *
+ * This model carries 97 expressions - the 52 ARKit shapes, the VRM presets
+ * (happy/angry/sad/relaxed/Surprised), and 27 shapes authored for Celeste
+ * specifically. The custom ones cover both mood (Smug, Teasing, Menace,
+ * Blush, Heart Pupils, Dark Circles) and wardrobe (Skirt OFF, Hide Horns,
+ * Hide Stockings, Elf Ears, Short Hair). Both go through the same channel, so
+ * an outfit is just another entry here - no second system needed.
+ *
+ * Names are matched case- and punctuation-insensitively against the model
+ * (see _buildExpressionIndex), so 'Skirt OFF' and 'skirtoff' both resolve,
+ * and anything the model does not have warns once instead of failing.
+ *
+ * Do NOT set blink / blinkLeft / blinkRight here: idle-life.js drives those
+ * every frame and would overwrite whatever this set, which reads as the
+ * expression silently not working.
+ */
 const POSE_EXPRESSIONS = {
-  jacko:      { 'Skirt OFF': 1 },
-  suggestive: { 'Skirt OFF': 1 },
-  prone:      { 'Skirt OFF': 1 },
+  // "Who I Am" - an invitation with a warning in it. Her face is largely
+  // behind her hands in this pose, so this is deliberately understated.
+  makima: { Smug: 0.55, Blush: 0.2 },
+
+  // "What I Inherited" - grief with excellent bone structure. The only
+  // section she is not performing in, so no smirk: just tired and level.
+  standing: { 'Dark Circles': 0.4, sad: 0.18, relaxed: 0.25 },
+
+  // "Look Closer" - she is enjoying being inspected. "You may look. Only look."
+  jacko: { 'Skirt OFF': 1, Smug: 0.85, Blush: 0.35 },
+
+  // "The Court" - holding court, and pleased about it.
+  suggestive: { 'Skirt OFF': 1, Teasing: 0.8, 'Heart Pupils': 0.55, Blush: 0.45 },
+
+  // "The Domain" - the possessive streak, low and unbothered.
+  prone: { 'Skirt OFF': 1, Menace: 0.45, Smug: 0.4 },
 };
 
 /**
@@ -512,7 +543,8 @@ export class CelesteStage {
     }
     this._appliedExpressions = [];
 
-    for (const [wanted, weight] of Object.entries((name && POSE_EXPRESSIONS[name]) || {})) {
+    const spec = this._expressionOverride ?? ((name && POSE_EXPRESSIONS[name]) || {});
+    for (const [wanted, weight] of Object.entries(spec)) {
       const key = wanted.toLowerCase().replace(/[^a-z0-9]/g, '');
       const actual = this._expressionIndex.get(key);
       if (!actual) {
@@ -602,6 +634,33 @@ export class CelesteStage {
   /** Panel hook: the pose names that have clips loaded. */
   poseNames() {
     return [...this.poseActions.keys()];
+  }
+
+  /** Panel hook: what this pose ships with, for seeding the sliders. */
+  configuredExpressions(name) {
+    return { ...((name && POSE_EXPRESSIONS[name]) || {}) };
+  }
+
+  /** Panel hook: override the configured expressions for the live pose. */
+  setExpressionOverride(spec) {
+    this._expressionOverride = spec;
+    this._setPoseExpressions(this.devActivePose);
+  }
+
+  /**
+   * Panel hook: the expressions worth exposing as sliders.
+   *
+   * Everything the model has, minus the shapes that are driven by something
+   * else or are meaningless to author by hand: the ARKit micro-shapes (52 of
+   * them, and the custom shapes are built from these anyway), the visemes,
+   * the look-direction shapes, and the blink family that idle-life.js owns.
+   * What remains is the mood and wardrobe vocabulary.
+   */
+  expressionCatalog() {
+    const skip = /^(neutral|aa|ih|ou|ee|oh|blink|blinkLeft|blinkRight|look(Up|Down|Left|Right))$/i;
+    const arkit = /^(eye|brow|mouth|jaw|cheek|nose|tongue)[A-Z]/;
+    return [...(this._expressionIndex?.values() ?? [])]
+      .filter((n) => !skip.test(n) && !arkit.test(n));
   }
 
   /** Panel hook: override the configured rotation for the live pose. */

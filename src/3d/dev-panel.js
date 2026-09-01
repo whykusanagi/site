@@ -132,6 +132,10 @@ export function initDevPanel(stage) {
     camDist?.set(+stage.targetCameraDistance.toFixed(2));
     camElev?.set(Math.round(stage.cameraElevation));
     camY?.set(+stage.lookTarget.y.toFixed(2));
+
+    const ex = exprEntry();
+    for (const [name, s] of Object.entries(exprSliders)) s.set(ex[name] ?? 0);
+    applyExpr();
   }
 
   heading('hair wind');
@@ -142,6 +146,39 @@ export function initDevPanel(stage) {
   const windZ = slider('dir z', -1, 1, 0.05, 0, (v) => { wind.dir[2] = v; applyWind(); });
   const windP = slider('power', 0, 1, 0.01, 0, (v) => { wind.power = v; applyWind(); });
   panel.append(windX.row, windY.row, windZ.row, windP.row);
+
+  /**
+   * Expression sliders. Built from the model rather than a hardcoded list, so
+   * shapes added to the VRM later show up here without touching this file -
+   * which matters because wardrobe toggles ride the same channel as mood.
+   *
+   * Split into two groups purely for scanability: there are ~30 of them and a
+   * flat wall of sliders is unusable.
+   */
+  const WARDROBE = /skirt|nipple|hide|stocking|tan skin|elf ears|cow ears|short hair|bangs|corrupted body|pubic/i;
+  const exprEdits = {};
+  const exprEntry = () => (exprEdits[current()] ??= stage.configuredExpressions(current()));
+  const applyExpr = () => {
+    const e = exprEntry();
+    // Only send the non-zero ones; an empty object still overrides, which is
+    // how you clear a pose's shipped expressions to see the neutral face.
+    stage.setExpressionOverride(Object.fromEntries(
+      Object.entries(e).filter(([, v]) => v > 0),
+    ));
+  };
+
+  const exprSliders = {};
+  const catalog = stage.expressionCatalog?.() ?? [];
+  for (const [title, want] of [['expression', false], ['wardrobe', true]]) {
+    const names = catalog.filter((n) => WARDROBE.test(n) === want);
+    if (!names.length) continue;
+    heading(title);
+    for (const name of names) {
+      const s = slider(name, 0, 1, 0.05, 0, (v) => { exprEntry()[name] = v; applyExpr(); });
+      exprSliders[name] = s;
+      panel.appendChild(s.row);
+    }
+  }
 
   heading('camera');
   const camDist = slider('dist', 0.8, 8, 0.05, stage.targetCameraDistance,
@@ -159,8 +196,10 @@ export function initDevPanel(stage) {
     // tuned earlier stays modified and reappears the next time you switch to
     // it, which reads as Reset not having worked.
     for (const key of Object.keys(edits)) delete edits[key];
+    for (const key of Object.keys(exprEdits)) delete exprEdits[key];
     stage.setRootOverride(null);
     stage.setWindOverride(null);
+    stage.setExpressionOverride(null);
     stage.resetCamera();
     camDist.set(stage.targetCameraDistance);
     camElev.set(stage.cameraElevation);
@@ -194,6 +233,14 @@ export function initDevPanel(stage) {
              + `power: ${wind.power.toFixed(2)} },`,
            '']
         : []),
+      '// POSE_EXPRESSIONS entry for the pose on screen',
+      (() => {
+        const parts = Object.entries(exprEntry())
+          .filter(([, v]) => v > 0)
+          .map(([n, v]) => `${/[^a-zA-Z0-9]/.test(n) ? `'${n}'` : n}: ${v === 1 ? 1 : +v.toFixed(2)}`);
+        return `  ${current()}: { ${parts.join(', ')} },`;
+      })(),
+      '',
       '// POSE_CAMERA entry for the pose on screen',
       `  ${current()}: { lookY: ${stage.lookTarget.y.toFixed(2)}, `
         + `dist: ${stage.targetCameraDistance.toFixed(2)}, `
