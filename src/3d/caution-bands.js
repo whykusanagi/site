@@ -13,10 +13,17 @@
  */
 import * as THREE from 'three';
 
-const TEXTURE_H = 128;
-const STRIPE_STEP = 96;      // horizontal period of the diagonal stripes
-const FONT_PX = 54;
-const GAP_PX = 220;          // clear space after the label before it repeats
+// Resolution is set by the CLOSEST band, not an average. The front band sits
+// 1.73x nearer the camera than the back one, so it stretches the same texels
+// over 1.73x more screen pixels - at the old 128px height it visibly
+// pixelated while the far band looked fine.
+const TEXTURE_H = 384;
+const STRIPE_STEP = 288;     // horizontal period of the diagonal stripes
+/** Cap height as a fraction of band height. One constant, so both bands
+ *  provably fill to the same depth rather than drifting apart by eye. */
+const FONT_RATIO = 0.46;
+const FONT_PX = Math.round(TEXTURE_H * FONT_RATIO);
+const GAP_PX = 660;          // clear space after the label before it repeats
 
 /** Band placements. z straddles the model so one crosses in front of her. */
 const BANDS = [
@@ -90,8 +97,11 @@ function drawBandTexture(canvas, label, tint) {
   ctx.font = bandFont();
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffe9a3';
-  ctx.shadowColor = 'rgba(0,0,0,0.85)';
-  ctx.shadowBlur = 8;
+  // A soft blur at this resolution eats the stroke edges and is a large part
+  // of why the near band read as thinner. Tight offset shadow instead.
+  ctx.shadowColor = 'rgba(0,0,0,0.9)';
+  ctx.shadowBlur = 2;
+  ctx.shadowOffsetY = 3;
   ctx.fillText(text, GAP_PX / 2, TEXTURE_H / 2);
 
   return tileW;
@@ -108,8 +118,16 @@ function applyTexture(texture, tileW, planeWidth, planeHeight) {
 }
 
 export class CautionBands {
-  constructor(scene) {
+  /**
+   * @param {THREE.Scene} scene
+   * @param {number} [maxAnisotropy] renderer.capabilities.getMaxAnisotropy().
+   *   These planes are yawed and tilted, so they are exactly the case
+   *   anisotropic filtering exists for - without it the text smears along the
+   *   viewing angle and the near band loses its stroke weight.
+   */
+  constructor(scene, maxAnisotropy = 1) {
     this.scene = scene;
+    this.maxAnisotropy = maxAnisotropy;
     this.bands = BANDS.map((spec) => {
       const canvas = document.createElement('canvas');
       const tileW = drawBandTexture(canvas, FALLBACK_LABEL, spec.tint);
@@ -118,6 +136,10 @@ export class CautionBands {
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
       texture.colorSpace = THREE.SRGBColorSpace;
+      texture.anisotropy = this.maxAnisotropy;
+      texture.generateMipmaps = true;
+      texture.minFilter = THREE.LinearMipmapLinearFilter;
+      texture.magFilter = THREE.LinearFilter;
       applyTexture(texture, tileW, spec.width, spec.height);
 
       const mesh = new THREE.Mesh(
