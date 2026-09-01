@@ -84,6 +84,19 @@
       pointer-events: none; /* no orbit controls - a fixed stage, not a viewer */
     }
 
+    /* The stage canvas is position:fixed, so it underlies the whole document -
+       a transparent footer let the model bleed through the legal links. Give
+       the footer its own opaque ground and push it a screen clear of the last
+       section, so it reads as being below the viewer rather than inside it. */
+    .track footer {
+      position: relative;
+      z-index: 3;
+      margin-top: 60dvh;
+      padding: 2.5rem 1rem 3rem;
+      background: #08030d;
+      border-top: 1px solid rgba(217, 79, 144, 0.35);
+    }
+
     /* 64MB behind an unlabelled spinner reads as broken - a real percentage. */
     .loading-screen {
       position: fixed;
@@ -390,7 +403,7 @@
       <p class="eyebrow">LOOK CLOSER</p>
       <h2>Look Closer</h2>
       <p>Void-purple hair that drifts when there's no wind, because the cosmos in it never quite settles. Pale skin, violet beneath it, glyphs that surface when I channel. Now look lower. The Inmon Seal on my abdomen is Abyssal rune-work, my crown and my focus both, glowing when my power runs. It marks me as royalty. You may look. Only look.</p>
-      <p><a href="/art">Study the design properly &rarr;</a></p>
+      <p><a href="/references">Study the design properly &rarr;</a></p>
 
       </div>
     </section>

@@ -154,6 +154,7 @@ export class CelesteStage {
     this.cautionBands = new CautionBands(
       this.scene,
       this.renderer.capabilities.getMaxAnisotropy(),
+      this.lookTarget,
     );
 
     this.clock = new THREE.Clock();
