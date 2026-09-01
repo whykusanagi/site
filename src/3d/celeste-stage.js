@@ -52,6 +52,21 @@ const POSE_FADE_SECONDS = 0.35;
  * counter-clockwise. `prone` is authored head-up, which leaves her standing on
  * end; +90 lays her across the frame instead.
  */
+/**
+ * Blendshapes to switch on per pose. The model ships a "Skirt OFF" group (plus
+ * "Hide Stockings", "Hide Horns", "Hide Crown/Glove acc" if ever wanted), and a
+ * floor pose puts the skirt through the ground otherwise.
+ *
+ * Names are matched case- and separator-insensitively, because three-vrm
+ * normalises VRM 0.x blendshape group names on import and the exact casing it
+ * lands on is not worth depending on.
+ */
+const POSE_EXPRESSIONS = {
+  jacko:      { 'Skirt OFF': 1 },
+  suggestive: { 'Skirt OFF': 1 },
+  prone:      { 'Skirt OFF': 1 },
+};
+
 const POSE_ROOT = {
   // Tuned in the ?dev=1 panel, not derived. The axis is Y - two reasoned
   // guesses (z, then x) were both wrong, because this composes onto a baseline
@@ -185,7 +200,6 @@ export class CelesteStage {
       // baseline every pose rotation composes onto.
       this.rootBaseline = vrm.scene.quaternion.clone();
       this.rootTarget = this.rootBaseline.clone();
-      this._installDevPanel();
     } catch {
       // already VRM 1.x - nothing to rotate
     }
@@ -196,6 +210,23 @@ export class CelesteStage {
     this.vrm = vrm;
 
     await this._loadIdleClip(vrm);
+
+    // Both of these read state that only exists by now: the expression index
+    // needs this.vrm (assigned just above), and the dev panel enumerates the
+    // pose clips (loaded inside _loadIdleClip). Running them any earlier build
+    // an empty index and an empty button row - silently, in both cases.
+    this._buildExpressionIndex();
+    this._installDevPanel();
+
+    // Same hook vrm_toolkit's review harnesses expose, for poking at
+    // expressions from the console while tuning. Dev flag only.
+    if (new URLSearchParams(window.location.search).get('dev') === '1') {
+      window.__vrm = vrm;
+      window.__setExpr = (n, v) => {
+        try { vrm.expressionManager.setValue(n, v); return true; } catch { return false; }
+      };
+    }
+
     this._startLoop();
   }
 
@@ -296,6 +327,7 @@ export class CelesteStage {
   setPose(name) {
     this.devActivePose = name;
     this._setRootRotation(name);
+    this._setPoseExpressions(name);
     this._devPanel?.onPose(name);
 
     const next = (name && this.poseActions.get(name)) || this.idleAction;
@@ -320,6 +352,53 @@ export class CelesteStage {
     } catch (e) {
       console.warn('[stage] dev panel unavailable:', e.message);
     }
+  }
+
+  /**
+   * Builds a lookup from a loose name ("skirtoff") to whatever the expression
+   * is actually called, so POSE_EXPRESSIONS can be written the way the model
+   * spells it regardless of how three-vrm normalised it.
+   */
+  _buildExpressionIndex() {
+    this._expressionIndex = new Map();
+    const manager = this.vrm?.expressionManager;
+    if (!manager) return;
+    const names = manager.expressions?.map((e) => e.expressionName)
+      ?? Object.keys(manager.expressionMap ?? {});
+    for (const name of names) {
+      this._expressionIndex.set(String(name).toLowerCase().replace(/[^a-z0-9]/g, ''), name);
+    }
+    if (new URLSearchParams(window.location.search).get('dev') === '1') {
+      console.warn('[stage] expressions available:', names.join(', '));
+    }
+  }
+
+  /** Applies this pose's blendshapes, clearing whatever the last one set. */
+  _setPoseExpressions(name) {
+    const manager = this.vrm?.expressionManager;
+    if (!manager || !this._expressionIndex) return;
+
+    for (const applied of this._appliedExpressions ?? []) {
+      manager.setValue(applied, 0);
+    }
+    this._appliedExpressions = [];
+
+    for (const [wanted, weight] of Object.entries((name && POSE_EXPRESSIONS[name]) || {})) {
+      const key = wanted.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const actual = this._expressionIndex.get(key);
+      if (!actual) {
+        console.warn(`[stage] no expression matching "${wanted}" on this model`);
+        continue;
+      }
+      manager.setValue(actual, weight);
+      this._appliedExpressions.push(actual);
+    }
+  }
+
+  /** Panel hook: the configured root rotation for a pose, so the sliders can
+   *  start from the shipped value instead of zero. */
+  configuredRoot(name) {
+    return { x: 0, y: 0, z: 0, ...((name && POSE_ROOT[name]) || {}) };
   }
 
   /** Panel hook: the pose names that have clips loaded. */
