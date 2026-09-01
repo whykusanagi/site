@@ -14,6 +14,25 @@ import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-v
 import { CautionBands } from './caution-bands.js';
 import { IdleLife } from './idle-life.js';
 
+/**
+ * Joints the transition flares ignite on. Spread over the whole silhouette -
+ * head, arms, torso, legs - so a burst traces her shape rather than clumping
+ * at her centre of mass.
+ */
+const FLARE_BONES = [
+  'head', 'neck', 'chest', 'spine', 'hips',
+  'leftShoulder', 'rightShoulder',
+  'leftUpperArm', 'rightUpperArm',
+  'leftLowerArm', 'rightLowerArm',
+  'leftHand', 'rightHand',
+  'leftUpperLeg', 'rightUpperLeg',
+  'leftLowerLeg', 'rightLowerLeg',
+  'leftFoot', 'rightFoot',
+];
+
+/** Scratch vector for projection; bodyPoints() runs per flare spawn. */
+const FLARE_PROJECT_VEC = new THREE.Vector3();
+
 const MODEL_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
   ? '/models/CorruptedQueenCelestePhairWetA.vrm'
   : 'https://s3.whykusanagi.xyz/models/CorruptedQueenCelestePhairWetA.vrm';
@@ -273,6 +292,9 @@ export class CelesteStage {
     // expressions from the console while tuning. Dev flag only.
     if (new URLSearchParams(window.location.search).get('dev') === '1') {
       window.__vrm = vrm;
+      // The stage itself, for checking things that need the camera as well as
+      // the model - bodyPoints() being the one that matters.
+      window.__stage = this;
       window.__setExpr = (n, v) => {
         try { vrm.expressionManager.setValue(n, v); return true; } catch { return false; }
       };
@@ -382,8 +404,51 @@ export class CelesteStage {
     // burst every time would fire on events the visitor did not cause.
     if (index !== this._sectionIndex) {
       this._sectionIndex = index;
-      this.flares?.burst();
+      // Pass the provider, not a snapshot: the flares resolve their position
+      // as each one spawns, so they track her through the pose change.
+      this.flares?.burst(() => this.bodyPoints());
     }
+  }
+
+  /**
+   * Where Celeste's joints are on screen right now, normalized 0..1 over the
+   * canvas, for compositing 2D effects onto her.
+   *
+   * Raw bones, not normalized ones: the normalized rig is a parallel
+   * hierarchy for retargeting, while the raw skeleton is what actually got
+   * rendered, so it is the one whose world positions match the pixels.
+   *
+   * @returns {Array<{x: number, y: number}>} empty if she is not loaded or is
+   *   entirely off screen, which the caller treats as "fall back to centre".
+   */
+  bodyPoints() {
+    const vrm = this.vrm;
+    if (!vrm) return [];
+    const humanoid = vrm.humanoid;
+    if (!humanoid) return [];
+
+    // The pose may have advanced since the last render, and setSection is
+    // called from a scroll/keyboard handler rather than from inside the loop.
+    vrm.scene.updateWorldMatrix(true, true);
+    this.camera.updateMatrixWorld();
+
+    const v = FLARE_PROJECT_VEC;
+    const points = [];
+    for (const name of FLARE_BONES) {
+      const node = humanoid.getRawBoneNode?.(name) ?? humanoid.getNormalizedBoneNode?.(name);
+      if (!node) continue;
+      v.setFromMatrixPosition(node.matrixWorld).project(this.camera);
+      // z outside the frustum means behind the camera or clipped; project()
+      // still returns coordinates for those, and they are meaningless.
+      if (v.z < -1 || v.z > 1) continue;
+      const x = (v.x + 1) / 2;
+      const y = (1 - v.y) / 2;
+      // A small margin outside the frame is fine - a flare half off the edge
+      // still reads - but far outside is a joint the visitor cannot see.
+      if (x < -0.15 || x > 1.15 || y < -0.15 || y > 1.15) continue;
+      points.push({ x, y });
+    }
+    return points;
   }
 
   setPose(name) {
