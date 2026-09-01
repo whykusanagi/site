@@ -42,6 +42,20 @@ const POSE_CLIPS = {
 
 const POSE_FADE_SECONDS = 0.35;
 
+/**
+ * Extra root rotation per pose, in degrees, composed ONTO the model's baseline
+ * orientation - never replacing it. VRMUtils.rotateVRM0() bakes a 180-degree Y
+ * rotation into vrm.scene for VRM 0.x exports so the model faces the camera;
+ * writing an absolute rotation here would silently undo that and spin her away.
+ *
+ * z is a roll in screen space: the camera looks down -Z, so positive z reads
+ * counter-clockwise. `prone` is authored head-up, which leaves her standing on
+ * end; +90 lays her across the frame instead.
+ */
+const POSE_ROOT = {
+  prone: { x: 90 },
+};
+
 export class CelesteStage {
   /**
    * @param {HTMLCanvasElement} canvas
@@ -164,6 +178,11 @@ export class CelesteStage {
       // the scene 180 degrees so the model faces the camera. Throws
       // harmlessly if vrm.meta has no VRM0 shape - caught and ignored.
       VRMUtils.rotateVRM0(vrm);
+      // Captured AFTER rotateVRM0 so the 0.x facing correction is part of the
+      // baseline every pose rotation composes onto.
+      this.rootBaseline = vrm.scene.quaternion.clone();
+      this.rootTarget = this.rootBaseline.clone();
+      this._installRootTuner();
     } catch {
       // already VRM 1.x - nothing to rotate
     }
@@ -210,6 +229,13 @@ export class CelesteStage {
       // render, never after vrm.update, or the pose silently does nothing.
       this.poseController?.update(dt);
       this.vrm?.update(dt);
+
+      // Ease the root toward its target. Snapping it makes the spring bones
+      // lash, which on a 90-degree roll is very visible in the hair.
+      if (this.vrm && this.rootTarget) {
+        const t = this.reducedMotion ? 1 : 1 - Math.exp(-6 * dt);
+        this.vrm.scene.quaternion.slerp(this.rootTarget, t);
+      }
 
       this.cautionBands?.update(dt, this.reducedMotion);
 
@@ -265,6 +291,9 @@ export class CelesteStage {
   }
 
   setPose(name) {
+    this._activePose = name;
+    this._setRootRotation(name);
+
     const next = (name && this.poseActions.get(name)) || this.idleAction;
     if (!next || next === this.currentAction) return;
     next.reset().setEffectiveWeight(1).play();
@@ -272,6 +301,46 @@ export class CelesteStage {
       this.currentAction.crossFadeTo(next, this.reducedMotion ? 0 : POSE_FADE_SECONDS, false);
     }
     this.currentAction = next;
+  }
+
+  /**
+   * Live root-rotation tuner, opt-in with ?debugroot=1. Lets you dial the angle
+   * in the browser and read the numbers back, instead of guessing an axis and
+   * redeploying to look at it. Prints the value to paste into POSE_ROOT.
+   *
+   *   celesteRoot(90, 0, 0)   // x, y, z in degrees, applied to the live pose
+   *   celesteRoot()           // back to the pose's configured value
+   */
+  _installRootTuner() {
+    if (new URLSearchParams(window.location.search).get('debugroot') !== '1') return;
+    window.celesteRoot = (x = null, y = 0, z = 0) => {
+      this._rootOverride = x === null ? null : { x, y, z };
+      this._setRootRotation(this._activePose);
+      return this._rootOverride
+        ? `POSE_ROOT entry: { x: ${x}, y: ${y}, z: ${z} }`
+        : 'override cleared - using the configured value';
+    };
+    console.warn('[stage] root tuner active: celesteRoot(x, y, z) in degrees');
+  }
+
+  /** Composes this pose's root rotation onto the captured baseline. */
+  _setRootRotation(name) {
+    if (!this.rootBaseline) return;
+    const spec = this._rootOverride || (name && POSE_ROOT[name]) || null;
+    const target = this.rootBaseline.clone();
+    if (spec) {
+      const euler = new THREE.Euler(
+        THREE.MathUtils.degToRad(spec.x ?? 0),
+        THREE.MathUtils.degToRad(spec.y ?? 0),
+        THREE.MathUtils.degToRad(spec.z ?? 0),
+      );
+      // PRE-multiply: this is a roll in WORLD space, which is what "rotate her
+      // counter-clockwise on screen" means. Post-multiplying rotates about the
+      // model's LOCAL z, and the baseline's 180-degree Y flip (from rotateVRM0)
+      // inverts that axis - so a positive angle came out clockwise.
+      target.premultiply(new THREE.Quaternion().setFromEuler(euler));
+    }
+    this.rootTarget = target;
   }
 
   dispose() {
