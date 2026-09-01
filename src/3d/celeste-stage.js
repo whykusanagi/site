@@ -53,9 +53,10 @@ const POSE_FADE_SECONDS = 0.35;
  * end; +90 lays her across the frame instead.
  */
 const POSE_ROOT = {
-  // Empty on purpose. Two guesses at the right axis for `prone` (z, then x)
-  // were both wrong, which is the argument for the dev panel rather than a
-  // third guess: load ?dev=1, drag the sliders, hit Dump, paste the result.
+  // Tuned in the ?dev=1 panel, not derived. The axis is Y - two reasoned
+  // guesses (z, then x) were both wrong, because this composes onto a baseline
+  // that already carries rotateVRM0's 180-degree Y flip.
+  prone: { y: 40 },
 };
 
 export class CelesteStage {
@@ -88,8 +89,8 @@ export class CelesteStage {
     // 0.63 * distance, so 3.6m shows ~2.3m - the full figure standing, and the
     // whole floor area a ground pose spreads into. Deliberately fixed: the POV
     // does not move between sections, only the pose does.
-    this.lookTarget = new THREE.Vector3(0, 0.9, 0);
-    this.targetCameraDistance = 3.6;
+    this.lookTarget = new THREE.Vector3(0, 1.20, 0);
+    this.targetCameraDistance = 3.50;
     this.cameraElevation = 12; // degrees; 0 = eye level, 90 = directly overhead
     this.cameraUp = new THREE.Vector3(0, 1, 0);
 
@@ -319,6 +320,11 @@ export class CelesteStage {
     } catch (e) {
       console.warn('[stage] dev panel unavailable:', e.message);
     }
+  }
+
+  /** Panel hook: the pose names that have clips loaded. */
+  poseNames() {
+    return [...this.poseActions.keys()];
   }
 
   /** Panel hook: override the configured rotation for the live pose. */
