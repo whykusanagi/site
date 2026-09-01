@@ -107,6 +107,15 @@ export class CelesteStage {
     this.lookTarget = new THREE.Vector3(0, 1.20, 0);
     this.targetCameraDistance = 3.50;
     this.cameraElevation = 12; // degrees; 0 = eye level, 90 = directly overhead
+
+    /** The shipped camera values, captured before anything can edit them, so
+     *  the dev panel's Reset returns to what actually ships rather than to a
+     *  second copy of the numbers that could drift out of sync. */
+    this.cameraDefaults = {
+      dist: this.targetCameraDistance,
+      elevation: this.cameraElevation,
+      lookY: this.lookTarget.y,
+    };
     this.cameraUp = new THREE.Vector3(0, 1, 0);
 
     this.scene = new THREE.Scene();
@@ -393,6 +402,13 @@ export class CelesteStage {
       manager.setValue(actual, weight);
       this._appliedExpressions.push(actual);
     }
+  }
+
+  /** Panel hook: restores the camera to the values this file ships with. */
+  resetCamera() {
+    this.targetCameraDistance = this.cameraDefaults.dist;
+    this.cameraElevation = this.cameraDefaults.elevation;
+    this.lookTarget.y = this.cameraDefaults.lookY;
   }
 
   /** Panel hook: the configured root rotation for a pose, so the sliders can

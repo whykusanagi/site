@@ -106,6 +106,12 @@ export function initDevPanel(stage) {
     panel.appendChild(s.row);
   }
 
+  /** Pushes the current pose's stored values into the three root sliders. */
+  function syncRoot() {
+    const e = entry();
+    for (const axis of ['x', 'y', 'z']) rootSliders[axis].set(e[axis] ?? 0);
+  }
+
   heading('camera');
   const camDist = slider('dist', 0.8, 8, 0.05, stage.targetCameraDistance,
     (v) => { stage.targetCameraDistance = v; });
@@ -114,6 +120,23 @@ export function initDevPanel(stage) {
   const camY = slider('look y', 0, 2.2, 0.01, stage.lookTarget.y,
     (v) => { stage.lookTarget.y = v; });
   panel.append(camDist.row, camElev.row, camY.row);
+
+  const reset = document.createElement('button');
+  reset.textContent = 'Reset to shipped values';
+  reset.addEventListener('click', () => {
+    // Drop every pose's edits, not just the visible one - otherwise a pose you
+    // tuned earlier stays modified and reappears the next time you switch to
+    // it, which reads as Reset not having worked.
+    for (const key of Object.keys(edits)) delete edits[key];
+    stage.setRootOverride(null);
+    stage.resetCamera();
+    camDist.set(stage.targetCameraDistance);
+    camElev.set(stage.cameraElevation);
+    camY.set(stage.lookTarget.y);
+    syncRoot();
+    out.value = '';
+  });
+  panel.appendChild(reset);
 
   heading('output');
   const out = document.createElement('textarea');
@@ -148,8 +171,7 @@ export function initDevPanel(stage) {
     onPose(name) {
       poseLabel.textContent = `pose: ${name || 'idle'}`;
       for (const [n, b] of Object.entries(poseButtons)) b.classList.toggle('on', n === name);
-      const e = entry();
-      for (const axis of ['x', 'y', 'z']) rootSliders[axis].set(e[axis] ?? 0);
+      syncRoot();
     },
   };
 }
