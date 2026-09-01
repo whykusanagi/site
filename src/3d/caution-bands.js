@@ -170,7 +170,7 @@ export class CautionBands {
       mesh.renderOrder = spec.z > 0 ? 2 : -1;
       scene.add(mesh);
 
-      return { spec, canvas, texture, mesh, target: { y: 1, rot: 0, yaw: 0 } };
+      return { spec, canvas, texture, mesh, tileW, target: { y: 1, rot: 0, yaw: 0 } };
     });
 
     this.setLayout(0);
@@ -187,6 +187,22 @@ export class CautionBands {
       // and repeat recomputed - otherwise the new text either clips at the wrap
       // or renders at the previous label's aspect.
       const tileW = drawBandTexture(band.canvas, label, band.spec.tint);
+
+      // Resizing the canvas invalidates the GPU texture: its storage was
+      // allocated at the OLD tile width, and needsUpdate alone re-uploads
+      // into that storage, so the previous label stays on screen. dispose()
+      // makes three.js reallocate on the next render.
+      //
+      // This is why the tape appeared to stick on some sections and not
+      // others. tileW is rounded up to a whole number of stripe periods, so
+      // labels of similar length land on the SAME tile width and update
+      // fine - "The Court" and "The Domain" both match "Who I Am" - while
+      // "What I Inherited" and "Look Closer" each resize and did not.
+      if (tileW !== band.tileW) {
+        band.texture.dispose();
+        band.tileW = tileW;
+      }
+
       applyTexture(band.texture, tileW, band.spec.width, band.spec.height);
       band.texture.needsUpdate = true;
     }
