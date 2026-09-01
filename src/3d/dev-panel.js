@@ -74,7 +74,15 @@ export function initDevPanel(stage) {
   for (const name of stage.poseNames()) {
     const b = document.createElement('button');
     b.textContent = name;
-    b.addEventListener('click', () => stage.setPose(name));
+    // Scroll to the matching section as well as setting the pose. Setting it
+    // alone left the scroll poser pointing at a different section, and its
+    // next event snapped the pose straight back - the button looked like it
+    // had failed. Moving the page keeps both in agreement.
+    b.addEventListener('click', () => {
+      const section = document.querySelector(`.track [data-pose="${name}"]`);
+      if (section) section.scrollIntoView({ behavior: 'instant', block: 'center' });
+      stage.setPose(name);
+    });
     poseRow.appendChild(b);
     poseButtons[name] = b;
   }
@@ -109,12 +117,25 @@ export function initDevPanel(stage) {
   /** Pushes the current pose's stored values into the sliders. Camera reads
    *  from the stage because a pose may carry its own framing override. */
   function syncRoot() {
+    const cw = stage.configuredWind(current());
+    wind.dir = [...cw.dir];
+    wind.power = cw.power;
+    windX?.set(cw.dir[0]); windY?.set(cw.dir[1]); windZ?.set(cw.dir[2]); windP?.set(cw.power);
     const e = entry();
     for (const axis of ['x', 'y', 'z']) rootSliders[axis].set(e[axis] ?? 0);
     camDist?.set(+stage.targetCameraDistance.toFixed(2));
     camElev?.set(Math.round(stage.cameraElevation));
     camY?.set(+stage.lookTarget.y.toFixed(2));
   }
+
+  heading('hair wind');
+  const wind = { dir: [0, -1, 0], power: 0 };
+  const applyWind = () => stage.setWindOverride(wind.power > 0 ? { ...wind } : null);
+  const windX = slider('dir x', -1, 1, 0.05, 0, (v) => { wind.dir[0] = v; applyWind(); });
+  const windY = slider('dir y', -1, 1, 0.05, -1, (v) => { wind.dir[1] = v; applyWind(); });
+  const windZ = slider('dir z', -1, 1, 0.05, 0, (v) => { wind.dir[2] = v; applyWind(); });
+  const windP = slider('power', 0, 1, 0.01, 0, (v) => { wind.power = v; applyWind(); });
+  panel.append(windX.row, windY.row, windZ.row, windP.row);
 
   heading('camera');
   const camDist = slider('dist', 0.8, 8, 0.05, stage.targetCameraDistance,
@@ -133,6 +154,7 @@ export function initDevPanel(stage) {
     // it, which reads as Reset not having worked.
     for (const key of Object.keys(edits)) delete edits[key];
     stage.setRootOverride(null);
+    stage.setWindOverride(null);
     stage.resetCamera();
     camDist.set(stage.targetCameraDistance);
     camElev.set(stage.cameraElevation);
@@ -160,6 +182,12 @@ export function initDevPanel(stage) {
       ...(rootLines.length ? rootLines : ['  // no root rotation set']),
       '};',
       '',
+      ...(wind.power > 0
+        ? ['// POSE_WIND entry',
+           `  ${current()}: { dir: [${wind.dir.map((n) => n.toFixed(2)).join(', ')}], `
+             + `power: ${wind.power.toFixed(2)} },`,
+           '']
+        : []),
       '// POSE_CAMERA entry for the pose on screen',
       `  ${current()}: { lookY: ${stage.lookTarget.y.toFixed(2)}, `
         + `dist: ${stage.targetCameraDistance.toFixed(2)}, `
