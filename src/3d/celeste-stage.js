@@ -82,7 +82,7 @@ const POSE_EXPRESSIONS = {
  * blowing the hair aside in the posing tool.
  */
 const POSE_WIND = {
-  prone: { dir: [0.35, 0.55, -0.75], power: 0.28 },
+  prone: { dir: [-0.40, -0.20, -1.00], power: 0.85 },
 };
 
 const POSE_ROOT = {

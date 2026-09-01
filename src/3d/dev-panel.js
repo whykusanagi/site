@@ -80,7 +80,13 @@ export function initDevPanel(stage) {
     // had failed. Moving the page keeps both in agreement.
     b.addEventListener('click', () => {
       const section = document.querySelector(`.track [data-pose="${name}"]`);
-      if (section) section.scrollIntoView({ behavior: 'instant', block: 'center' });
+      if (section) {
+        section.scrollIntoView({ behavior: 'instant', block: 'center' });
+        // An instant scrollIntoView does not reliably emit a scroll event, so
+        // the HUD kept showing the previous section's card and progress while
+        // the page had actually moved. Nudge the listeners explicitly.
+        window.dispatchEvent(new Event('scroll'));
+      }
       stage.setPose(name);
     });
     poseRow.appendChild(b);
