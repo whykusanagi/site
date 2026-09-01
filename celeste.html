@@ -51,9 +51,23 @@
        .stage-bg (mandala + ticker, z0) -> #vrmCanvas (z1) -> .hud (z2)
        -> .track (normal flow: five section spacers + footer). */
 
+    /* The site nav stays pinned above the model; the stage begins beneath it. */
+    :root { --stage-top: 56px; }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+    }
+
     .stage-bg {
       position: fixed;
-      inset: 0;
+      top: var(--stage-top);
+      left: 0;
+      right: 0;
+      bottom: 0;
       z-index: 0;
       overflow: hidden;
       background: linear-gradient(180deg, rgba(5, 0, 16, 0.92), rgba(10, 10, 10, 0.92) 50%, rgba(15, 10, 25, 0.96));
@@ -61,11 +75,12 @@
 
     #vrmCanvas {
       position: fixed;
-      inset: 0;
+      top: var(--stage-top);
+      left: 0;
       z-index: 1;
       display: block;
       width: 100%;
-      height: 100dvh;
+      height: calc(100dvh - var(--stage-top));
       pointer-events: none; /* no orbit controls - a fixed stage, not a viewer */
     }
 
@@ -607,7 +622,16 @@
       controller.setReducedMotion(reducedMotion);
       stage.poseController = controller;
       await controller.load('static/data/celeste-poses.json');
-      initScrollPoser(controller);
+      // Scope to .track: the nav buttons also carry data-pose (they need it to
+      // know where to jump), and the unscoped default selector would treat those
+      // permanently-visible buttons as candidate sections and steal the pose.
+      initScrollPoser(controller, { selector: '.track [data-pose]' });
+
+      // Seed the opening pose. The observer's first callback can land before
+      // layout settles, so no section is marked visible, pick() takes its
+      // empty-set early return, and the model holds its rest pose until the
+      // first scroll. Without this the page opens on a T-pose.
+      if (sections[0]) controller.applyPose(sections[0].dataset.pose);
 
       initBloom(stage);
     }

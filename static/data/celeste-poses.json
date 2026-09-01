@@ -1,14 +1,14 @@
 {
-  "_schema": "See tools/README.md. hipsOffset is metres relative to the standing baseline, not absolute - keeps poses rig-independent.",
+  "_schema": "See tools/README.md. hipsOffset is metres relative to the standing baseline, not absolute - keeps poses rig-independent. Camera FOV is 35deg vertical: visible height = 0.63 * dist, so a full-body shot of a ~1.7m figure needs dist ~3.2.",
   "blend": 12,
   "poses": {
     "makima": {
       "_note": "upright, neutral - the default",
       "hipsOffset": 0.0329,
       "framing": {
-        "target": "spine",
-        "dist": 2.2,
-        "elevation": 0
+        "target": "hips",
+        "dist": 3.3,
+        "elevation": 5
       },
       "bones": {
         "hips": {
@@ -425,9 +425,9 @@
       "_note": "stylized standing lean",
       "hipsOffset": 0,
       "framing": {
-        "target": "spine",
-        "dist": 2.4,
-        "elevation": 0
+        "target": "hips",
+        "dist": 3.4,
+        "elevation": 5
       },
       "bones": {
         "hips": {
@@ -844,9 +844,9 @@
       "_note": "hands and knees, arched back",
       "hipsOffset": -0.2474,
       "framing": {
-        "target": "chest",
-        "dist": 1.8,
-        "elevation": 35
+        "target": "hips",
+        "dist": 2.9,
+        "elevation": 30
       },
       "bones": {
         "hips": {
@@ -1263,9 +1263,9 @@
       "_note": "seated on the floor",
       "hipsOffset": -0.7347,
       "framing": {
-        "target": "chest",
-        "dist": 2,
-        "elevation": 45
+        "target": "hips",
+        "dist": 2.9,
+        "elevation": 35
       },
       "bones": {
         "hips": {
@@ -1682,9 +1682,9 @@
       "_note": "prone. Export kept hips at standing height, so the offset is a hand-set estimate - tune this first.",
       "hipsOffset": -0.735,
       "framing": {
-        "target": "chest",
-        "dist": 2.4,
-        "elevation": 90,
+        "target": "hips",
+        "dist": 3.2,
+        "elevation": 75,
         "up": [
           0,
           0,
