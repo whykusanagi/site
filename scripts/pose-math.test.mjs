@@ -12,6 +12,7 @@ import {
   blendFactor,
   validatePoseDoc,
 } from '../src/3d/pose-math.js';
+import { hipsTargetY, resolveCameraUp } from '../src/3d/pose-controller.js';
 
 test('euler degrees convert to radians preserving XYZ order', () => {
   const [x, y, z] = eulerDegreesToRadians([180, 90, -45]);
@@ -92,4 +93,28 @@ test('validatePoseDoc reports a bad bone entry', () => {
 test('validatePoseDoc reports a non-object pose', () => {
   const doc = { blend: 12, poses: { crown: 'oops' } };
   assert.equal(validatePoseDoc(doc).length, 1);
+});
+
+test('hipsTargetY adds the offset onto the rest Y', () => {
+  assert.equal(hipsTargetY(0.92, -0.735), 0.92 - 0.735);
+  assert.equal(hipsTargetY(0.92, 0), 0.92);
+});
+
+test('hipsTargetY treats a missing or non-finite offset as zero', () => {
+  assert.equal(hipsTargetY(0.92, undefined), 0.92);
+  assert.equal(hipsTargetY(0.92, null), 0.92);
+  assert.equal(hipsTargetY(0.92, NaN), 0.92);
+  assert.equal(hipsTargetY(0.92, 'oops'), 0.92);
+});
+
+test('resolveCameraUp passes through a valid [x,y,z]', () => {
+  assert.deepEqual(resolveCameraUp([0, 0, -1]), [0, 0, -1]);
+});
+
+test('resolveCameraUp defaults to world-up when absent or malformed', () => {
+  assert.deepEqual(resolveCameraUp(undefined), [0, 1, 0]);
+  assert.deepEqual(resolveCameraUp(null), [0, 1, 0]);
+  assert.deepEqual(resolveCameraUp([0, 1]), [0, 1, 0]);
+  assert.deepEqual(resolveCameraUp([0, 1, NaN]), [0, 1, 0]);
+  assert.deepEqual(resolveCameraUp('up'), [0, 1, 0]);
 });
