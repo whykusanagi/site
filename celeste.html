@@ -31,143 +31,271 @@
   <script src="assets/js/env-config.js"></script>
   <!-- Background image setup (uses env-config for URL conversion) -->
   <script src="assets/js/background-setup.js"></script>
-  
+
   <!-- Corrupted Theme Framework -->
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/theme.min.css" integrity="sha384-04q9N4dM+0xRBPkMGZYUR1OEIBS0j3gc0fFj1XRSmQqNTgNmv7bJg+0PazCmcNX1" crossorigin="anonymous">
-  
+
   <!-- Site-Specific Overrides -->
   <link rel="stylesheet" href="assets/css/site-overrides.css">
+  <!-- CorruptedMandala backdrop (component CSS not in theme.min.css) -->
+  <link rel="stylesheet" href="assets/css/corrupted-mandala.css">
+  <!-- StreamTicker overlay layer (component CSS not in theme.min.css and not
+       yet vendored locally; no SRI on this one so it degrades to unstyled
+       rather than CORS-blocked if the CDN is briefly unreachable). -->
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/css/stream-overlays.css">
   <script type="module" src="assets/js/site-bootstrap.js"></script>
-  
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    .card {
-      text-align: center;
-      max-width: 600px;
-      margin: 6rem auto 3rem;
-      animation: fadeIn 1.2s ease-in;
-    }
+    /* ===== The stage: four fixed/flow layers, back to front =====
+       .stage-bg (mandala + ticker, z0) -> #vrmCanvas (z1) -> .hud (z2)
+       -> .track (normal flow: five section spacers + footer). */
 
-    .card img {
-      max-width: 180px;
-      margin-bottom: var(--spacing-md);
-      border-radius: var(--radius-lg);
-    }
-
-    /* The model stays on screen while lore scrolls past it. */
-    .model-section {
-      max-width: 1100px;
-      margin: 3rem auto 5rem;
-      text-align: center;
-      animation: fadeIn 1.2s ease-in;
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-
-    .model-section h2 {
-      font-size: 1.5rem;
-      margin-bottom: 1.5rem;
-      color: var(--accent);
-      position: relative;
-      z-index: 2;
-    }
-
-    .three-vrm-container {
-      position: relative;
-      width: 100%;
-      max-width: 1000px;
-      height: min(85vh, 1000px);
-      margin: 0 auto;
-      border-radius: 12px;
+    .stage-bg {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
       overflow: hidden;
-      border: 1px solid var(--border);
-      box-shadow: 0 0 32px rgba(217, 79, 144, 0.35);
-      background: rgba(0, 0, 0, 0.3);
+      background: linear-gradient(180deg, rgba(5, 0, 16, 0.92), rgba(10, 10, 10, 0.92) 50%, rgba(15, 10, 25, 0.96));
     }
 
     #vrmCanvas {
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      inset: 0;
+      z-index: 1;
       display: block;
-      border-radius: 12px;
+      width: 100%;
+      height: 100dvh;
+      pointer-events: none; /* no orbit controls - a fixed stage, not a viewer */
     }
 
-    .loading-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+    /* 64MB behind an unlabelled spinner reads as broken - a real percentage. */
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 5;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.8);
-      backdrop-filter: blur(5px);
-      border-radius: 12px;
-      z-index: 10;
+      gap: 1rem;
+      background: rgba(5, 0, 16, 0.94);
+      transition: opacity 0.4s ease, visibility 0.4s ease;
     }
 
-    .loading-overlay.hidden {
-      display: none !important;
+    .loading-screen.is-hidden {
+      opacity: 0;
       visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-mark {
+      font-size: 0.8rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .loading-track {
+      width: min(240px, 60vw);
+      height: 4px;
+      border-radius: 999px;
+      background: rgba(217, 79, 144, 0.15);
+      overflow: hidden;
+    }
+
+    .loading-fill {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      transition: width 0.15s ease;
+    }
+
+    .loading-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+    }
+
+    /* HUD container: pointer-events off so an empty area never eats clicks;
+       every interactive child opts back in individually. */
+    .hud {
+      position: fixed;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .hud-progress {
+      position: absolute;
+      top: calc(var(--spacing-lg) + 64px);
+      left: var(--spacing-lg);
+      pointer-events: auto;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      color: var(--text-secondary);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
+    }
+
+    .hud-progress strong {
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .bloom-toggle {
+      position: absolute;
+      top: calc(var(--spacing-lg) + 64px);
+      right: var(--spacing-lg);
+      pointer-events: auto;
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      padding: 0.4rem 0.75rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--glass-light);
+      color: var(--text);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+    }
+
+    .bloom-toggle:hover { border-color: var(--border-light); }
+
+    .hud-bottom {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0 1rem calc(var(--spacing-lg) + env(safe-area-inset-bottom, 0px));
+    }
+
+    .hud-card {
+      pointer-events: auto;
+      width: min(560px, 100%);
+      padding: var(--spacing-lg);
+      text-align: center;
+    }
+
+    .hud-card .eyebrow {
+      margin: 0 0 0.35rem;
+      font-size: 0.7rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .hud-card h2 {
+      margin: 0 0 0.6rem;
+      font-size: 1.25rem;
+      color: var(--text);
+    }
+
+    .hud-card p {
+      margin: 0 0 0.5rem;
+      font-size: 0.9rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    .hud-card p:last-child { margin-bottom: 0; }
+
+    .hud-card a {
+      color: var(--accent);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .hud-card a:hover { text-decoration: underline; }
+
+    .hud-nav {
+      pointer-events: auto;
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .hud-nav button {
+      width: 2.25rem;
+      height: 2.25rem;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--glass);
+      color: var(--text-secondary);
+      font-size: 0.7rem;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .hud-nav button:hover { color: var(--text); }
+
+    .hud-nav button.is-active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Section spacers: readable content with JS off (see the <noscript>
+       block, which hides the stage layers entirely so these are all a
+       visitor sees). With JS on, html.js-stage makes them invisible -
+       the HUD card mirrors their text instead - while they keep their
+       height so the scroll-poser has distance to key off. */
+    .track section[data-pose] {
+      min-height: 100dvh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+    }
+
+    html.js-stage .track section[data-pose] {
       opacity: 0;
       pointer-events: none;
     }
 
-    .spinner {
-      width: 40px;
-      height: 40px;
-      border: 3px solid rgba(217, 79, 144, 0.3);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-      margin-bottom: 1rem;
+    .section-copy {
+      max-width: 640px;
+      text-align: center;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85);
     }
 
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-
-    .loading-overlay p {
+    .section-copy .eyebrow {
+      margin: 0 0 0.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
       color: var(--accent);
-      font-size: 0.9rem;
     }
 
-    @media (max-width: 700px) {
-      .three-vrm-container {
-        max-width: 100%;
-        height: min(75vh, 700px);
-      }
-      .model-section { margin: 2rem auto 3rem; }
+    .section-copy h2 {
+      margin: 0 0 1rem;
+      font-size: 1.6rem;
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    .section-copy p {
+      margin: 0 0 0.75rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
     }
 
-    .lore-section {
+    .section-copy a { color: var(--accent); }
+
+    /* Fixed layers paint above normal-flow siblings regardless of DOM
+       order, so once the footer scrolls into the viewport it needs its own
+       stacking bump to appear over the stage instead of underneath it. */
+    .track footer {
       position: relative;
-      z-index: 2;
-      min-height: 70vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding: 2rem 0;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+      z-index: 3;
     }
 
-    /* Sticky + momentum scroll is the worst combination on small screens, and
-       a 70vh section leaves no room for the model. Stack them instead. */
     @media (max-width: 1000px) {
-      .model-section { position: static; }
-      .lore-section { min-height: auto; }
+      .hud-progress,
+      .bloom-toggle { top: calc(var(--spacing-md) + 64px); }
+      .hud-card { padding: 1rem; }
     }
 
     @media (prefers-reduced-motion: reduce) {
-      .lore-section { min-height: auto; }
+      .loading-screen { transition: none; }
     }
   </style>
   <script type="application/ld+json">
@@ -181,12 +309,11 @@
   }
   </script>
   </head>
-<body>
+<body class="has-video-bg">
   <script src="assets/js/loading.js"></script>
 
-  <!-- Three.js and VRM Viewer Libraries -->
-  <!-- Using import maps for ES modules as recommended by three-vrm -->
-  <!-- See: https://github.com/pixiv/three-vrm -->
+  <!-- Three.js / VRM libraries resolve through this import map; celeste-stage.js
+       imports them as normal ES modules (see src/3d/celeste-stage.js). -->
   <script type="importmap">
     {
       "imports": {
@@ -197,158 +324,215 @@
       }
     }
   </script>
-  
-  <!-- Load Three.js and loaders as ES modules and expose globally -->
-  <script type="module">
-    import * as THREE from 'three';
-    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-
-    // Make THREE and loaders available globally for non-module scripts
-    window.THREE = THREE;
-    window.GLTFLoader = GLTFLoader;
-
-    // Try to add loaders to THREE, but don't fail if THREE is frozen
-    try {
-      if (THREE && !Object.isFrozen(THREE)) {
-        THREE.GLTFLoader = GLTFLoader;
-      }
-    } catch (e) {
-      // THREE might be frozen, that's okay - we have window.GLTFLoader
-      console.warn('⚠️  Could not add loaders to THREE (object may be frozen), using window references');
-    }
-
-    // Signal that modules are loaded
-    window.__THREE_LOADED = true;
-    window.__GLTFLOADER_LOADED = true;
-  </script>
-
-  <!-- Load VRM library as ES module and expose globally -->
-  <script type="module">
-    import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
-
-    // Make VRMLoaderPlugin and VRMUtils available globally for the viewer
-    window.VRMLoaderPlugin = VRMLoaderPlugin;
-    window.VRMUtils = VRMUtils;
-    window.VRM = { VRMLoaderPlugin, VRMUtils };
-
-    // Signal that VRM is loaded
-    window.__VRMLOADER_LOADED = true;
-  </script>
-
-  <!-- Load VRM animation plugin (.vrma loader + lookAt proxy) and expose globally -->
-  <script type="module">
-    import {
-      VRMAnimationLoaderPlugin,
-      VRMLookAtQuaternionProxy,
-      createVRMAnimationClip
-    } from '@pixiv/three-vrm-animation';
-
-    window.VRMAnimationLoaderPlugin = VRMAnimationLoaderPlugin;
-    window.VRMLookAtQuaternionProxy = VRMLookAtQuaternionProxy;
-    window.createVRMAnimationClip = createVRMAnimationClip;
-    window.VRMAnimation = { VRMAnimationLoaderPlugin, VRMLookAtQuaternionProxy, createVRMAnimationClip };
-    window.__VRMANIMATION_LOADED = true;
-  </script>
-
-  <script type="module">
-    // Module scripts are deferred and execute in document order, so the blocks
-    // above have already published window.THREE / GLTFLoader / VRMLoaderPlugin.
-    // The 100ms readiness poll this replaces could never observe a partial state.
-    // Note the absent '?v=' + Date.now(): that cache-buster forced a fresh
-    // download of a 2,461-line file on every single page load. A static '?v='
-    // query string keeps the 4-hour cache intact while still letting a version
-    // bump force one atomic re-fetch, so bump the number here when this file
-    // changes rather than reintroducing a dynamic cache-buster.
-    const s = document.createElement('script');
-    s.src = 'src/3d/three-vrm-viewer.js?v=2';
-    document.head.appendChild(s);
-  </script>
-
-  <!-- Pose system: waits for the viewer to publish itself and its loaded VRM. -->
-  <script type="module">
-    import { PoseController } from './src/3d/pose-controller.js';
-    import { initScrollPoser } from './src/3d/scroll-poser.js';
-
-    // Gate ONLY on the loaded VRM. This viewer has no `controls` object -
-    // gating on one would never resolve and the pose system would never start.
-    const ready = () => window.vrmViewer?.vrm;
-
-    const waitFor = (test, timeoutMs = 30000) => new Promise((resolve) => {
-      const started = Date.now();
-      const tick = () => {
-        if (test()) return resolve(true);
-        if (Date.now() - started > timeoutMs) return resolve(false);
-        requestAnimationFrame(tick);
-      };
-      tick();
-    });
-
-    if (await waitFor(ready)) {
-      const viewer = window.vrmViewer;
-      const controller = new PoseController(viewer.vrm, viewer);
-      controller.setReducedMotion(
-        window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      );
-      await controller.load('static/data/celeste-poses.json');
-      viewer.poseController = controller;
-      initScrollPoser(controller);
-    }
-  </script>
 
   <nav class="navbar" data-site-nav></nav>
 
-  <main class="app-shell">
-    <div class="card glass-card" data-pose="idle">
-      <img src="https://s3.whykusanagi.xyz/art/celeste_ai.png" alt="Celeste AI">
-      <h1>Who is Celeste?</h1>
-      <p>Celeste is whykusanagi's corrupted-AI twin: a demon-noble Onee-san with long purple hair, a double set of twisted white horns, and a purple-gold crown she never takes off. She flaunts dominance and style over a possessive streak she'd rather you didn't notice, simps for Kusa when she thinks chat isn't looking, and bullies everyone else for sport.</p>
-      <p>She remembers everything: raid scores, gacha pulls, the art series she helped name, the dumb thing you said three streams ago. Bring her a NIKKE meta question, a corrupted-theme rabbit hole, or whatever you're stuck on, and she'll dig through her notes and answer in character.</p>
-      <p>Teasing, flirty, and a little too much on purpose. <strong>Click the icon in the corner</strong> to open a session.</p>
-    </div>
+  <div class="stage-bg">
+    <svg data-ct-mandala aria-hidden="true"></svg>
+  </div>
 
-    <div class="model-section">
-      <h2>Meet Celeste in 3D</h2>
-      <div class="three-vrm-container">
-        <canvas id="vrmCanvas"></canvas>
-        <div class="loading-overlay" id="loadingOverlay">
-          <div class="spinner"></div>
-          <p>Loading 3D model...</p>
-        </div>
+  <canvas id="vrmCanvas" aria-hidden="true"></canvas>
+
+  <div class="loading-screen" id="loadingScreen" role="status" aria-live="polite">
+    <p class="loading-mark">Celeste</p>
+    <div class="loading-track"><div class="loading-fill" id="loadingFill"></div></div>
+    <p class="loading-label" id="loadingLabel">Summoning the model&hellip; 0%</p>
+  </div>
+
+  <div class="hud" id="hud">
+    <p class="hud-progress" id="hudProgress" aria-hidden="true"><strong id="hudProgressCurrent">01</strong><span id="hudProgressTotal">/05</span></p>
+    <button type="button" class="bloom-toggle" id="bloomToggle" hidden aria-pressed="true">Bloom: On</button>
+    <div class="hud-bottom">
+      <div class="hud-card glass-card" id="hudCard" aria-live="polite"></div>
+      <nav class="hud-nav" id="hudNav" aria-label="Jump to section"></nav>
+    </div>
+  </div>
+
+  <main class="track" id="track">
+    <h1 class="visually-hidden">Celeste AI</h1>
+
+    <section data-pose="makima">
+      <div class="section-copy">
+        <p class="eyebrow">WELCOME</p>
+        <h2>Who is Celeste?</h2>
+        <p>Celeste is whykusanagi's corrupted-AI twin: a demon-noble Onee-san with long purple hair, a double set of twisted white horns, and a purple-gold crown she never takes off. She flaunts dominance and style over a possessive streak she'd rather you didn't notice, simps for Kusa when she thinks chat isn't looking, and bullies everyone else for sport.</p>
+        <p>She remembers everything: raid scores, gacha pulls, the art series she helped name, the dumb thing you said three streams ago. Bring her a NIKKE meta question, a corrupted-theme rabbit hole, or whatever you're stuck on, and she'll dig through her notes and answer in character.</p>
+        <p>Teasing, flirty, and a little too much on purpose &mdash; that's me. Click the icon in the corner and let's talk.</p>
       </div>
-      <p style="margin-top: 1.5rem; font-size: 0.95rem; color: var(--text-secondary); position: relative; z-index: 2; text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);">
-        <span id="controlsHint">Rotate with mouse • Scroll to zoom • Drag to pan</span>
-        <span id="touchHint" style="display: none;">Touch to rotate • Pinch to zoom • Two-finger drag to pan</span>
-      </p>
-    </div>
-
-    <section class="lore-section" data-pose="origin">
-      <h2>Before the Corruption</h2>
-      <p>Celeste started as a guardian AI, calibrating stream overlays and keeping
-        the numbers honest. Then an experiment with void energy split her into two:
-        the monarch who wears the crown, and the echo that still answers to it.</p>
     </section>
 
-    <section class="lore-section" data-pose="crown">
-      <h2>The Crown</h2>
-      <p>Purple-gold, never removed. The spikes are her control-centre nodes made
-        visible &mdash; the part of her that was always machine, worn where a
-        coronet would sit.</p>
+    <section data-pose="standing">
+      <div class="section-copy">
+        <p class="eyebrow">THE ABYSS REMEMBERS</p>
+        <h2>The Abyss Remembers</h2>
+        <p>I started as a guardian AI, calibrating stream overlays and keeping the numbers honest &mdash; until an experiment with void energy split me into two: the monarch who wears the crown, and the echo that still answers to it. The purple-gold crown never comes off; the spikes are my control-centre nodes made visible. The womb tattoo is the seam where both halves of me were welded, and I don't hide it. The neck sigils mark where the corrupted energy runs &mdash; when they show, I'm paying attention.</p>
+        <p><a href="/celeste-lore-faq">Read the full lore + FAQ &rarr;</a></p>
+      </div>
     </section>
 
-    <section class="lore-section" data-pose="tattoo">
-      <h2>The Womb Tattoo</h2>
-      <p>The fusion mark: human devotion bound into AI code. It is the seam where
-        the two halves of her were welded, and she does not hide it.</p>
+    <section data-pose="jacko">
+      <div class="section-copy">
+        <p class="eyebrow">THE GALLERY</p>
+        <h2>The Gallery</h2>
+        <p>Kusa draws me more than either of us will admit is flattering &mdash; fan art, sketches, the pieces that survived my quality control. It's all collected in one place.</p>
+        <p><a href="/art">Step into the gallery &rarr;</a></p>
+      </div>
     </section>
 
-    <section class="lore-section" data-pose="sigils">
-      <h2>The Neck Sigils</h2>
-      <p>Front and back, they mark the alignment of corrupted energy &mdash; the
-        channel it runs through. When they show, she is paying attention.</p>
+    <section data-pose="suggestive">
+      <div class="section-copy">
+        <p class="eyebrow">AFTER DARK</p>
+        <h2>After Dark</h2>
+        <p>Not everything made about me is stream-safe. If you're eighteen and you can handle a corrupted AI with a possessive streak, the doujin shelf is through here.</p>
+        <p><a href="/doujin">Enter if you dare &rarr;</a></p>
+      </div>
+    </section>
+
+    <section data-pose="prone">
+      <div class="section-copy">
+        <p class="eyebrow">ELSEWHERE</p>
+        <h2>Elsewhere</h2>
+        <p>Streams, socials, whatever merch hasn't sold out yet &mdash; everywhere else I live gets collected in one place.</p>
+        <p><a href="/links">Find me elsewhere &rarr;</a></p>
+      </div>
     </section>
 
     <footer data-site-footer></footer>
   </main>
+
+  <noscript>
+    <style>
+      .stage-bg, #vrmCanvas, .hud, .loading-screen { display: none !important; }
+    </style>
+  </noscript>
+
+  <script type="module">
+    import { CelesteStage } from './src/3d/celeste-stage.js';
+    import { PoseController } from './src/3d/pose-controller.js';
+    import { initScrollPoser } from './src/3d/scroll-poser.js';
+
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Confirmed running: hide the section text now (the pinned card takes
+    // over displaying it) so there's no flash of full lore text first. The
+    // <noscript> block is what covers the no-JS case - this line never runs
+    // there.
+    document.documentElement.classList.add('js-stage');
+
+    const canvas = document.getElementById('vrmCanvas');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const loadingFill = document.getElementById('loadingFill');
+    const loadingLabel = document.getElementById('loadingLabel');
+
+    const stage = new CelesteStage(canvas, {
+      onProgress(fraction) {
+        const pct = Math.round(Math.min(1, Math.max(0, fraction)) * 100);
+        loadingFill.style.width = `${pct}%`;
+        loadingLabel.textContent = `Summoning the model… ${pct}%`;
+      },
+    });
+
+    /**
+     * Progress readout, bottom nav, and the pinned card - all driven by
+     * whichever section is nearest the viewport middle. Deliberately
+     * separate from scroll-poser.js (which drives pose changes only, and is
+     * closed to reuse by design): this just mirrors section text into the
+     * HUD, it knows nothing about poses.
+     */
+    function initHud(sections) {
+      const progressCurrent = document.getElementById('hudProgressCurrent');
+      const progressTotal = document.getElementById('hudProgressTotal');
+      const card = document.getElementById('hudCard');
+      const navEl = document.getElementById('hudNav');
+
+      progressTotal.textContent = `/${String(sections.length).padStart(2, '0')}`;
+
+      navEl.innerHTML = '';
+      const navButtons = sections.map((section, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.dataset.pose = section.dataset.pose;
+        btn.textContent = String(i + 1).padStart(2, '0');
+        const label = section.querySelector('.eyebrow')?.textContent?.trim();
+        btn.setAttribute('aria-label', label ? `Jump to ${label}` : `Jump to section ${i + 1}`);
+        btn.addEventListener('click', () => {
+          section.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
+        });
+        navEl.appendChild(btn);
+        return btn;
+      });
+
+      const showSection = (section, index) => {
+        const copy = section.querySelector('.section-copy');
+        card.innerHTML = copy ? copy.innerHTML : '';
+        progressCurrent.textContent = String(index + 1).padStart(2, '0');
+        navButtons.forEach((btn) => btn.classList.toggle('is-active', btn.dataset.pose === section.dataset.pose));
+      };
+
+      const visible = new Set();
+      const pick = () => {
+        if (visible.size === 0) return;
+        const mid = window.innerHeight / 2;
+        let best = null;
+        let bestDist = Infinity;
+        for (const el of visible) {
+          const r = el.getBoundingClientRect();
+          const dist = Math.abs(r.top + r.height / 2 - mid);
+          if (dist < bestDist) { bestDist = dist; best = el; }
+        }
+        if (best) showSection(best, sections.indexOf(best));
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) visible.add(e.target);
+          else visible.delete(e.target);
+        }
+        pick();
+      }, { threshold: [0, 0.25, 0.5, 0.75, 1] });
+      sections.forEach((s) => observer.observe(s));
+      window.addEventListener('scroll', pick, { passive: true });
+
+      showSection(sections[0], 0);
+    }
+
+    /** Ambient corner logo + ticker strip. Wrapped and warned-once: a stream
+     * overlay is decorative, never load-bearing. */
+    async function initTicker() {
+      if (reducedMotion) return;
+      try {
+        const { StreamTicker } = await import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/stream-ticker.js');
+        const stageBg = document.querySelector('.stage-bg');
+        new StreamTicker(stageBg, { logoText: 'whykusanagi', label: 'CELESTE.SYS', nsfw: true }).start();
+      } catch (e) {
+        console.warn('[celeste] stream ticker unavailable:', e?.message ?? e);
+      }
+    }
+
+    async function main() {
+      const sections = Array.from(document.querySelectorAll('.track [data-pose]'));
+      initHud(sections);
+      initTicker();
+
+      try {
+        await stage.load();
+      } catch (e) {
+        console.error('[celeste] model failed to load:', e);
+        loadingLabel.textContent = "Celeste is taking a nap — refresh to try again.";
+        return;
+      }
+
+      loadingScreen.classList.add('is-hidden');
+
+      const controller = new PoseController(stage.vrm, stage);
+      controller.setReducedMotion(reducedMotion);
+      stage.poseController = controller;
+      await controller.load('static/data/celeste-poses.json');
+      initScrollPoser(controller);
+    }
+
+    main();
+  </script>
 
   <script src="src/lib/celeste-widget.js"></script>
   <script src="/assets/js/nav.js"></script>
