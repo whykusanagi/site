@@ -43,6 +43,15 @@
        yet vendored locally; no SRI on this one so it degrades to unstyled
        rather than CORS-blocked if the CDN is briefly unreachable). -->
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/css/stream-overlays.css">
+
+  <!-- The transition flares are a CDN module with two of its own imports, and
+       measured >10s to arrive when first requested after the VRM download.
+       Section changes in that window drew nothing, which is exactly how the
+       feature looked broken. Preloading fetches it alongside everything else
+       instead of behind the model. -->
+  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/corrupted-flares.js" crossorigin="anonymous">
+  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/core/corruption-charsets.js" crossorigin="anonymous">
+  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/core/random-utils.js" crossorigin="anonymous">
   <script type="module" src="assets/js/site-bootstrap.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -797,6 +806,12 @@
       const hud = initHud(sections);
       initTicker();
 
+      // Built BEFORE the model loads: its constructor kicks off the CDN import
+      // for the flare recipes, and waiting until after stage.load() put that
+      // request behind a multi-megabyte VRM download. Nothing draws until the
+      // model is up anyway, so there is no cost to starting early.
+      stage.flares = new SectionFlares(document.body, reducedMotion);
+
       try {
         await stage.load();
       } catch (e) {
@@ -813,9 +828,6 @@
       // pose (the page used to open on a T-pose without an explicit seed) and
       // keeps the model, the card and the bands on one answer forever after.
       hud.attachPose((name) => stage.setPose(name));
-
-      // Transition flares, over the model and under the HUD.
-      stage.flares = new SectionFlares(document.body, reducedMotion);
 
       initBloom(stage);
     }
