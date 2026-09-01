@@ -510,6 +510,24 @@
 
       progressTotal.textContent = `/${String(sections.length).padStart(2, '0')}`;
 
+      /**
+       * The one way to move between sections: scroll there, then drive the
+       * HUD directly rather than waiting for the scroll listener.
+       *
+       * scrollIntoView does not reliably emit a scroll event, and smooth
+       * scrolling reports the old position for a while, so the card would
+       * otherwise lag a section behind the model.
+       */
+      const goToIndex = (next) => {
+        if (next === activeIndex) return;
+        sections[next].scrollIntoView({
+          behavior: reducedMotion ? 'auto' : 'smooth',
+          block: 'center',
+        });
+        activeIndex = next;
+        showSection(sections[next], next);
+      };
+
       navEl.innerHTML = '';
       const navButtons = sections.map((section, i) => {
         const btn = document.createElement('button');
@@ -525,9 +543,11 @@
         btn.append(glyph, ord);
         const label = section.querySelector('.eyebrow')?.textContent?.trim();
         btn.setAttribute('aria-label', label ? `Jump to ${label}` : `Jump to section ${i + 1}`);
-        btn.addEventListener('click', () => {
-          section.scrollIntoView({ behavior: reducedMotion ? 'auto' : 'smooth', block: 'center' });
-        });
+        // Routed through goToIndex rather than scrolling and hoping: under
+        // prefers-reduced-motion the scroll is instant, and an instant
+        // scrollIntoView does not reliably emit a scroll event, so the HUD
+        // would have had nothing to react to.
+        btn.addEventListener('click', () => goToIndex(i));
         navEl.appendChild(btn);
         return btn;
       });
@@ -615,17 +635,7 @@
        */
       const goToSection = (delta) => {
         const from = activeIndex === -1 ? 0 : activeIndex;
-        const next = Math.min(sections.length - 1, Math.max(0, from + delta));
-        if (next === activeIndex) return;
-        sections[next].scrollIntoView({
-          behavior: reducedMotion ? 'auto' : 'smooth',
-          block: 'center',
-        });
-        // scrollIntoView does not reliably emit a scroll event, and smooth
-        // scrolling reports the old position for a while, so drive the HUD
-        // directly rather than waiting for the listener to catch up.
-        activeIndex = next;
-        showSection(sections[next], next);
+        goToIndex(Math.min(sections.length - 1, Math.max(0, from + delta)));
       };
 
       window.addEventListener('keydown', (e) => {
