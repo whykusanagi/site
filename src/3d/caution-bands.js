@@ -13,8 +13,10 @@
  */
 import * as THREE from 'three';
 
-const TEXTURE_W = 2048;
 const TEXTURE_H = 128;
+const STRIPE_STEP = 96;      // horizontal period of the diagonal stripes
+const FONT_PX = 54;
+const GAP_PX = 220;          // clear space after the label before it repeats
 
 /** Band placements. z straddles the model so one crosses in front of her. */
 const BANDS = [
@@ -31,45 +33,78 @@ const LAYOUTS = [
   [{ y: 1.80, rot: -0.37, yaw: 0.22 }, { y: 0.22, rot: 0.27, yaw: -0.18 }],
 ];
 
-const FALLBACK_LABEL = 'CONTAINMENT BREACH   //   18+   //   ABYSS.SYS   //   ';
+const FALLBACK_LABEL = 'CONTAINMENT BREACH   //   18+   //   ABYSS.SYS';
 
+const bandFont = () => `bold ${FONT_PX}px "Courier Prime", ui-monospace, monospace`;
+
+/**
+ * Draws ONE tile: the label once, plus stripes, sized so the tile repeats
+ * seamlessly. Three things have to line up or the seam shows:
+ *
+ *   - the tile width must be a whole number of stripe periods, else the
+ *     diagonal pattern jumps at the wrap;
+ *   - the label must be drawn exactly once per tile. Drawing it every
+ *     `textWidth` px inside a fixed-width canvas clipped the last copy
+ *     mid-word, which is how "THE ABYSS" ended up butted against the next
+ *     "NEXT" as "THE ABYSSNEXT";
+ *   - the caller must derive texture.repeat from the tile's aspect, or the
+ *     glyphs get squeezed (see applyTexture).
+ *
+ * Returns the tile width in px so the caller can do that last part.
+ */
 function drawBandTexture(canvas, label, tint) {
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, TEXTURE_W, TEXTURE_H);
+  const measure = canvas.getContext('2d');
+  measure.font = bandFont();
+  const text = (label || FALLBACK_LABEL).toUpperCase();
+  const textW = measure.measureText(text).width;
 
-  // Diagonal hazard stripes.
-  ctx.save();
+  // Round the tile up to a whole number of stripe periods so the stripes wrap.
+  const tileW = Math.ceil((textW + GAP_PX) / STRIPE_STEP) * STRIPE_STEP;
+  canvas.width = tileW;
+  canvas.height = TEXTURE_H;
+
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, tileW, TEXTURE_H);
+
+  // Diagonal hazard stripes. The parallelogram repeats every STRIPE_STEP, and
+  // tileW is a multiple of it, so the left and right edges match exactly.
   ctx.fillStyle = tint;
-  ctx.fillRect(0, 0, TEXTURE_W, TEXTURE_H);
+  ctx.fillRect(0, 0, tileW, TEXTURE_H);
   ctx.fillStyle = 'rgba(14, 3, 10, 0.92)';
-  const step = 96;
-  for (let x = -TEXTURE_H; x < TEXTURE_W + TEXTURE_H; x += step) {
+  for (let x = -TEXTURE_H; x < tileW + TEXTURE_H; x += STRIPE_STEP) {
     ctx.beginPath();
     ctx.moveTo(x, 0);
-    ctx.lineTo(x + step / 2, 0);
-    ctx.lineTo(x + step / 2 - TEXTURE_H, TEXTURE_H);
+    ctx.lineTo(x + STRIPE_STEP / 2, 0);
+    ctx.lineTo(x + STRIPE_STEP / 2 - TEXTURE_H, TEXTURE_H);
     ctx.lineTo(x - TEXTURE_H, TEXTURE_H);
     ctx.closePath();
     ctx.fill();
   }
-  ctx.restore();
 
   // Edge rails.
   ctx.fillStyle = 'rgba(255, 150, 205, 0.9)';
-  ctx.fillRect(0, 0, TEXTURE_W, 4);
-  ctx.fillRect(0, TEXTURE_H - 4, TEXTURE_W, 4);
+  ctx.fillRect(0, 0, tileW, 4);
+  ctx.fillRect(0, TEXTURE_H - 4, tileW, 4);
 
-  // Label, repeated so it tiles seamlessly with the texture wrap.
-  const text = (label || FALLBACK_LABEL).toUpperCase() + '   ';
-  ctx.font = 'bold 54px "Courier Prime", ui-monospace, monospace';
+  // The label, exactly once, with the gap trailing it.
+  ctx.font = bandFont();
   ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffe9a3';
   ctx.shadowColor = 'rgba(0,0,0,0.85)';
   ctx.shadowBlur = 8;
-  const unit = ctx.measureText(text).width;
-  for (let x = 0; x < TEXTURE_W + unit; x += unit) {
-    ctx.fillText(text, x, TEXTURE_H / 2);
-  }
+  ctx.fillText(text, GAP_PX / 2, TEXTURE_H / 2);
+
+  return tileW;
+}
+
+/**
+ * Sets texture.repeat so one tile keeps the aspect it was drawn at. Without
+ * this the tile is stretched to whatever width the plane gives it and the
+ * glyphs shear - the "unnatural warp".
+ */
+function applyTexture(texture, tileW, planeWidth, planeHeight) {
+  const tileWorldWidth = planeHeight * (tileW / TEXTURE_H);
+  texture.repeat.set(planeWidth / tileWorldWidth, 1);
 }
 
 export class CautionBands {
@@ -77,15 +112,13 @@ export class CautionBands {
     this.scene = scene;
     this.bands = BANDS.map((spec) => {
       const canvas = document.createElement('canvas');
-      canvas.width = TEXTURE_W;
-      canvas.height = TEXTURE_H;
-      drawBandTexture(canvas, FALLBACK_LABEL, spec.tint);
+      const tileW = drawBandTexture(canvas, FALLBACK_LABEL, spec.tint);
 
       const texture = new THREE.CanvasTexture(canvas);
       texture.wrapS = THREE.RepeatWrapping;
       texture.wrapT = THREE.ClampToEdgeWrapping;
-      texture.repeat.set(4, 1);
       texture.colorSpace = THREE.SRGBColorSpace;
+      applyTexture(texture, tileW, spec.width, spec.height);
 
       const mesh = new THREE.Mesh(
         new THREE.PlaneGeometry(spec.width, spec.height),
@@ -117,7 +150,11 @@ export class CautionBands {
   /** Redraws both textures with the given label (null restores the hazard text). */
   setLabel(label) {
     for (const band of this.bands) {
-      drawBandTexture(band.canvas, label, band.spec.tint);
+      // A different label is a different width, so the tile has to be re-sized
+      // and repeat recomputed - otherwise the new text either clips at the wrap
+      // or renders at the previous label's aspect.
+      const tileW = drawBandTexture(band.canvas, label, band.spec.tint);
+      applyTexture(band.texture, tileW, band.spec.width, band.spec.height);
       band.texture.needsUpdate = true;
     }
   }
