@@ -538,6 +538,53 @@
       window.addEventListener('scroll', pick, { passive: true });
       window.addEventListener('resize', pick, { passive: true });
 
+      /**
+       * Arrow keys move a whole section at a time. Line-scrolling through a
+       * ~100dvh section means holding the key down to cross a single one,
+       * which is why this page needed it: the sections ARE the navigation.
+       *
+       * Deliberately conservative about hijacking:
+       *   - never when a field, textarea, select or contenteditable has focus
+       *     (the Celeste chat widget and the dev panel both take typing)
+       *   - never with a modifier held, so browser shortcuts still work
+       *   - only preventDefault on keys actually handled
+       */
+      const goToSection = (delta) => {
+        const from = activeIndex === -1 ? 0 : activeIndex;
+        const next = Math.min(sections.length - 1, Math.max(0, from + delta));
+        if (next === activeIndex) return;
+        sections[next].scrollIntoView({
+          behavior: reducedMotion ? 'auto' : 'smooth',
+          block: 'center',
+        });
+        // scrollIntoView does not reliably emit a scroll event, and smooth
+        // scrolling reports the old position for a while, so drive the HUD
+        // directly rather than waiting for the listener to catch up.
+        activeIndex = next;
+        showSection(sections[next], next);
+      };
+
+      window.addEventListener('keydown', (e) => {
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        const el = document.activeElement;
+        if (el && (el.isContentEditable
+          || ['INPUT', 'TEXTAREA', 'SELECT'].includes(el.tagName))) return;
+
+        switch (e.key) {
+          case 'ArrowDown': case 'ArrowRight': case 'PageDown':
+            goToSection(1); break;
+          case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+            goToSection(-1); break;
+          case 'Home':
+            goToSection(-sections.length); break;
+          case 'End':
+            goToSection(sections.length); break;
+          default:
+            return;
+        }
+        e.preventDefault();
+      });
+
       showSection(sections[0], 0);
     }
 
