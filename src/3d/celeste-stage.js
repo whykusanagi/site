@@ -623,7 +623,13 @@ export class CelesteStage {
 
   /** Applies a pose's camera override, or the default when it has none. */
   _setPoseCamera(name) {
-    const c = (name && POSE_CAMERA[name]) || this.cameraDefaults;
+    // Merge over the defaults rather than replacing them, so a POSE_CAMERA
+    // entry can set just the one value it cares about. Replacing meant a
+    // partial entry - the natural way to write "this pose only needs a lower
+    // angle" - left dist undefined, which reaches _applyCamera as NaN and
+    // blanks the canvas. Worse, the dev panel reads configuredCamera(), which
+    // already merged, so it showed healthy numbers over a black page.
+    const c = this.configuredCamera(name);
     this.targetCameraDistance = c.dist;
     this.cameraElevation = c.elevation;
     this.lookTarget.y = c.lookY;
