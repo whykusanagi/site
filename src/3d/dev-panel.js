@@ -27,6 +27,9 @@ const PANEL_CSS = `
 .devpanel textarea{width:100%;height:96px;margin-top:6px;font:11px/1.4 ui-monospace,monospace;
   background:#08030d;color:#9fe;border:1px solid rgba(217,79,144,.4);border-radius:6px;padding:6px}
 .devpanel .pose{color:#9fe}
+.devpanel .poses{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 2px}
+.devpanel .poses button{width:auto;flex:1 1 46%;margin:0;padding:4px 2px;font-size:11px}
+.devpanel .poses button.on{background:rgba(217,79,144,.6);color:#fff}
 `;
 
 function slider(label, min, max, step, value, onInput) {
@@ -59,6 +62,22 @@ export function initDevPanel(stage) {
   const poseLabel = document.createElement('div');
   poseLabel.className = 'pose';
   panel.appendChild(poseLabel);
+
+  // Jump straight to a pose. Without this you had to scroll to section 05 to
+  // touch `prone`, and any slider you moved before that silently edited
+  // whichever pose was on screen instead - which looks exactly like the panel
+  // doing nothing.
+  const poseRow = document.createElement('div');
+  poseRow.className = 'poses';
+  panel.appendChild(poseRow);
+  const poseButtons = {};
+  for (const name of stage.poseNames()) {
+    const b = document.createElement('button');
+    b.textContent = name;
+    b.addEventListener('click', () => stage.setPose(name));
+    poseRow.appendChild(b);
+    poseButtons[name] = b;
+  }
 
   /** Per-pose edits live here so switching sections does not lose your work. */
   const edits = {};
@@ -125,6 +144,7 @@ export function initDevPanel(stage) {
   return {
     onPose(name) {
       poseLabel.textContent = `pose: ${name || 'idle'}`;
+      for (const [n, b] of Object.entries(poseButtons)) b.classList.toggle('on', n === name);
       const e = entry();
       for (const axis of ['x', 'y', 'z']) rootSliders[axis].set(e[axis] ?? 0);
     },

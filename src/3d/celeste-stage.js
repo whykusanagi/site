@@ -321,6 +321,11 @@ export class CelesteStage {
     }
   }
 
+  /** Panel hook: the pose names that have clips loaded. */
+  poseNames() {
+    return [...this.poseActions.keys()];
+  }
+
   /** Panel hook: override the configured rotation for the live pose. */
   setRootOverride(spec) {
     this._rootOverride = spec;
