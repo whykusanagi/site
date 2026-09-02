@@ -139,14 +139,20 @@ for (const file of [...indexablePages(), ...NOINDEX]) {
     assert.ok(types.includes('BreadcrumbList'), 'no BreadcrumbList');
   });
 
-  // 9. per-post og:image comes from the render API with a fixed seed
-  if (isPost) {
-    test(`${file}: og:image is a seeded micro-gfx card`, () => {
-      const re = /^https:\/\/whykusanagi\.xyz\/api\/micro-gfx\?(?=.*\bformat=card\b)(?=.*\bseed=\d+\b).+/;
-      assert.match(meta(head, 'property', 'og:image').content, re);
-      assert.match(meta(head, 'name', 'twitter:image').content, re);
-    });
-  }
+  // 9. og:image is a seeded micro-gfx card on EVERY page, not just posts.
+  // A shared A4 portrait in a 1.91:1 slot centre-crops to a midsection.
+  test(`${file}: og:image is a seeded micro-gfx card`, () => {
+    const re = /^https:\/\/whykusanagi\.xyz\/api\/micro-gfx\?(?=.*\bformat=card\b)(?=.*\bseed=\d+\b).+/;
+    assert.match(meta(head, 'property', 'og:image').content, re);
+    assert.match(meta(head, 'name', 'twitter:image').content, re);
+  });
+
+  // 9b. Slack and LinkedIn need explicit dimensions to lay the card out
+  // before the image arrives.
+  test(`${file}: og:image declares its dimensions`, () => {
+    assert.equal(meta(head, 'property', 'og:image:width')?.content, '1200');
+    assert.equal(meta(head, 'property', 'og:image:height')?.content, '630');
+  });
 
   // 10. no .html URLs anywhere
   test(`${file}: no .html links`, () => {
