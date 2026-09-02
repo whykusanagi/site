@@ -12,6 +12,7 @@
  * costs nothing per frame.
  */
 import * as THREE from 'three';
+import { BANDS_DEFAULT } from './poses.js';
 
 // Resolution is set by the CLOSEST band, not an average. The front band sits
 // 1.73x nearer the camera than the back one, so it stretches the same texels
@@ -31,23 +32,6 @@ const BANDS = [
   { key: 'b', width: 14, height: 0.62, speed: -0.028, z: 0.85, tint: '#c2407f' },
 ];
 
-/**
- * Per-section pose for each band: height OFFSET from whatever the camera is
- * looking at, plus tilt and yaw.
- *
- * These were absolute world heights, chosen when the camera looked at y=0.9.
- * Poses now carry their own framing - the default look target is 1.20 and
- * `suggestive` drops it to 0.12 - so fixed heights drifted out of frame
- * entirely. Anchoring to lookTarget keeps the bands bracketing the subject
- * whatever the camera is doing.
- */
-const LAYOUTS = [
-  [{ dy: 0.95, rot: -0.16, yaw: 0.10 }, { dy: -0.62, rot: 0.11, yaw: -0.08 }],
-  [{ dy: 0.82, rot: -0.30, yaw: 0.18 }, { dy: -0.48, rot: 0.20, yaw: -0.14 }],
-  [{ dy: 1.05, rot: -0.07, yaw: 0.05 }, { dy: -0.72, rot: 0.06, yaw: -0.04 }],
-  [{ dy: 0.70, rot: 0.24, yaw: -0.16 }, { dy: -0.40, rot: -0.17, yaw: 0.12 }],
-  [{ dy: 0.90, rot: -0.37, yaw: 0.22 }, { dy: -0.68, rot: 0.27, yaw: -0.18 }],
-];
 
 const FALLBACK_LABEL = 'CONTAINMENT BREACH   //   18+   //   ABYSS.SYS';
 
@@ -173,7 +157,7 @@ export class CautionBands {
       return { spec, canvas, texture, mesh, tileW, target: { y: 1, rot: 0, yaw: 0 } };
     });
 
-    this.setLayout(0);
+    this.setLayout(BANDS_DEFAULT);
     this.bands.forEach((b) => {
       b.mesh.position.y = this._targetY(b);
       b.mesh.rotation.set(0, b.target.yaw, b.target.rot);
@@ -209,9 +193,12 @@ export class CautionBands {
   }
 
   /** Chooses the per-section placement; update() eases toward it. */
-  setLayout(index) {
-    const layout = LAYOUTS[Math.min(index, LAYOUTS.length - 1)];
-    this.bands.forEach((band, i) => { band.target = layout[i]; });
+  setLayout(layout) {
+    if (!layout) return;
+    // A record short of a band reuses the last entry rather than throwing
+    // 60 times a second. The drift test is what actually catches the mistake;
+    // this only keeps a bad record from taking the page down with it.
+    this.bands.forEach((band, i) => { band.target = layout[i] ?? layout[layout.length - 1]; });
   }
 
   /** Absolute height for a band: the camera's subject plus its offset. */

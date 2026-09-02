@@ -215,36 +215,37 @@ export function initDevPanel(stage) {
   const dump = document.createElement('button');
   dump.textContent = 'Dump config';
   dump.addEventListener('click', () => {
-    const rootLines = Object.entries(edits)
-      .filter(([, e]) => e.x || e.y || e.z)
-      .map(([pose, e]) => {
-        const parts = ['x', 'y', 'z'].filter((a) => e[a]).map((a) => `${a}: ${e[a]}`);
-        return `  ${pose}: { ${parts.join(', ')} },`;
-      });
+    // Emits ONE pose record, ready to paste into src/3d/poses.js. It used to
+    // print four fragments for four different tables, which meant hand-merging
+    // them into four places and was exactly the drift the record format
+    // removes.
+    const pose = current();
+    const q = (n) => (/[^a-zA-Z0-9_]/.test(n) ? `'${n}'` : n);
+    const r = entry();
+    const cam = { lookY: +stage.lookTarget.y.toFixed(2),
+                  dist: +stage.targetCameraDistance.toFixed(2),
+                  elevation: Math.round(stage.cameraElevation) };
+    const expr = Object.entries(exprEntry())
+      .filter(([, v]) => v > 0)
+      .map(([n, v]) => `${q(n)}: ${v === 1 ? 1 : +v.toFixed(2)}`);
+    const rootParts = ['x', 'y', 'z'].filter((a) => r[a]).map((a) => `${a}: ${r[a]}`);
+    const bands = stage.configuredBands(pose) ?? [];
+
     out.value = [
-      '// src/3d/celeste-stage.js',
-      'const POSE_ROOT = {',
-      ...(rootLines.length ? rootLines : ['  // no root rotation set']),
-      '};',
-      '',
+      '// src/3d/poses.js',
+      `  ${q(pose)}: {`,
+      `    clip: '${stage.configuredClip(pose) ?? '?.vrma'}',`,
+      ...(expr.length ? [`    expressions: { ${expr.join(', ')} },`] : []),
+      ...(rootParts.length ? [`    root: { ${rootParts.join(', ')} },`] : []),
+      `    camera: { lookY: ${cam.lookY}, dist: ${cam.dist}, elevation: ${cam.elevation} },`,
       ...(wind.power > 0
-        ? ['// POSE_WIND entry',
-           `  ${current()}: { dir: [${wind.dir.map((n) => n.toFixed(2)).join(', ')}], `
-             + `power: ${wind.power.toFixed(2)} },`,
-           '']
+        ? [`    wind: { dir: [${wind.dir.map((n) => n.toFixed(2)).join(', ')}], `
+           + `power: ${wind.power.toFixed(2)} },`]
         : []),
-      '// POSE_EXPRESSIONS entry for the pose on screen',
-      (() => {
-        const parts = Object.entries(exprEntry())
-          .filter(([, v]) => v > 0)
-          .map(([n, v]) => `${/[^a-zA-Z0-9]/.test(n) ? `'${n}'` : n}: ${v === 1 ? 1 : +v.toFixed(2)}`);
-        return `  ${current()}: { ${parts.join(', ')} },`;
-      })(),
-      '',
-      '// POSE_CAMERA entry for the pose on screen',
-      `  ${current()}: { lookY: ${stage.lookTarget.y.toFixed(2)}, `
-        + `dist: ${stage.targetCameraDistance.toFixed(2)}, `
-        + `elevation: ${Math.round(stage.cameraElevation)} },`,
+      '    bands: [',
+      ...bands.map((b) => `      { dy: ${b.dy}, rot: ${b.rot}, yaw: ${b.yaw} },`),
+      '    ],',
+      '  },',
     ].join('\n');
     out.select();
     try { document.execCommand('copy'); } catch { /* clipboard blocked; text is selectable */ }
