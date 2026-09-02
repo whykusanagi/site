@@ -239,6 +239,30 @@
         setActive(active) {
             this.active = !!active;
             this.svg.classList.toggle('active', this.active);
+
+            // The class alone is not enough, because export does not rasterise
+            // the live DOM. exportThumbnail() calls html2canvas with
+            // `foreignObjectRendering: true`, which serialises the document
+            // into an SVG <foreignObject>. External stylesheets are not
+            // reliably inlined on that path, so the ONE thing hiding this
+            // composition - `#iconography-svg { display: none }` over in
+            // css/iconography-mode.css - was dropped, and an SVG with no
+            // display rule renders. The mandorla, the counter-rotating phrase
+            // rings and the star field then appeared in exports that never
+            // asked for iconography, while the live page looked correct.
+            //
+            // An inline style serialises with the element, so it survives the
+            // foreignObject path. data-html2canvas-ignore is html2canvas's own
+            // opt-out, applied while cloning and therefore before any of this
+            // matters. Both, because they fail in different ways and neither
+            // costs anything.
+            this.svg.style.display = this.active ? '' : 'none';
+            if (this.active) {
+                this.svg.removeAttribute('data-html2canvas-ignore');
+            } else {
+                this.svg.setAttribute('data-html2canvas-ignore', 'true');
+            }
+
             if (this.controls) this.controls.classList.toggle('active', this.active);
             // Apply or clear container-level classes (logo position + fit-circle)
             const container = document.getElementById('thumbnail-container');
