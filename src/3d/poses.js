@@ -67,9 +67,9 @@ export const BANDS_DEFAULT = [
 export const POSES = {
   makima: {
     clip: 'makima_pose.vrma',
-    // An invitation with a warning in it. Understated: her face is largely
-    // behind her hands here.
-    expressions: { Menace: 0.12, Smug: 0.4, Blush: 0.2 },
+    // Delighted you came. Heart pupils read through the gap in her hands,
+    // which is what the root yaw below exists to open up.
+    expressions: { Blush: 0.2, 'Heart Pupils': 1, happy: 1 },
     // A few degrees of yaw so her eye reads between the hands rather than
     // being covered by them.
     root: { y: -4 },
@@ -82,9 +82,10 @@ export const POSES = {
 
   standing: {
     clip: 'base_standing_pose.vrma',
-    // The inheritance section is the one place she is not performing, so no
-    // smirk: tired and level.
-    expressions: { 'Dark Circles': 0.4, sad: 0.18, relaxed: 0.25 },
+    // The inheritance section is the one place she is not performing: settled
+    // rather than playing to the room, with Sparkle doing the work instead of
+    // a smirk.
+    expressions: { relaxed: 0.35, Sparkle: 1 },
     bands: [
       { dy: 0.82, rot: -0.30, yaw: 0.18 },
       { dy: -0.48, rot: 0.20, yaw: -0.14 },
@@ -93,7 +94,9 @@ export const POSES = {
 
   jacko: {
     clip: 'jacko_pose.vrma',
-    expressions: { 'Skirt OFF': 1, Menace: 0.15, Smug: 0.45, Blush: 0.2 },
+    // "You may look. Only look." Teasing at full weight closes the eyes into
+    // arcs, which is the intent here rather than a mis-tune.
+    expressions: { 'Skirt OFF': 1, Teasing: 1 },
     root: { x: -15 },
     camera: { lookY: 0.54, dist: 3.50, elevation: 5 },
     wind: { dir: [0.00, 0.00, -0.55], power: 1.00 },
@@ -105,8 +108,9 @@ export const POSES = {
 
   suggestive: {
     clip: 'suggestive_pose.vrma',
-    // No Smug: the heart pupils are the point and want the eyes wide.
-    expressions: { 'Skirt OFF': 1, 'Heart Pupils': 0.9, Blush: 0.2 },
+    // No Smug and Blush held low: both narrow the lids, and the heart pupils
+    // are the point here so the eyes want to stay open.
+    expressions: { 'Skirt OFF': 1, 'Heart Pupils': 1, Blush: 0.2, Surprised: 0.55 },
     root: { x: -70, y: 15 },
     // The floor poses cannot share a frame with the standing ones: this wants
     // the camera low and pitched down, which would crop a standing pose.
@@ -120,7 +124,8 @@ export const POSES = {
 
   prone: {
     clip: 'laying_side_wind.vrma',
-    expressions: { 'Skirt OFF': 1, Menace: 0.15, Smug: 0.5 },
+    // Holding her own domain, unbothered. Smug at full weight is deliberate.
+    expressions: { 'Skirt OFF': 1, Smug: 1, relaxed: 0.1 },
     // Authored head-up, which leaves her standing on end; this lays her
     // across the frame instead.
     root: { y: 40 },
