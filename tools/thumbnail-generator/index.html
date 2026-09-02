@@ -117,10 +117,20 @@
            pulse in particular — keep advancing and would break reproducibility.
            Pausing holds each star at its negative-delay phase, so the frozen
            frame still shows the full small/large glow mix. */
+        /* Seeded capture freezes every animation at a FIXED point in its own
+           timeline, not at whatever point wall-clock happened to reach.
+           `animation-play-state: paused` alone pauses wherever the animation
+           got to, and how far it got depends on how long the page took to
+           load — so two renders of the same ?seed= came back different.
+           A negative delay seeks each animation to that offset first, which
+           is what makes the frozen frame reproducible across environments.
+           -2s: past the first keyframe of everything here, so the freeze
+           lands on a developed frame rather than a cold one. */
         body.render-frozen *,
         body.render-frozen *::before,
         body.render-frozen *::after {
             animation-play-state: paused !important;
+            animation-delay: -2s !important;
             transition: none !important;
         }
 
