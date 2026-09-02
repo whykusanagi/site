@@ -30,7 +30,9 @@ import { CorruptedParticlesBackground } from 'https://cdn.whykusanagi.xyz/corrup
 // performance one: on celeste.html this canvas animates every frame beneath a
 // 92-96% opaque backdrop, so it is pure cost with nothing visible on top.
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-!reduceMotion && !document.getElementById('vrmCanvas') && new CorruptedParticlesBackground({ nsfw: true, count: 15 });
+if (!reduceMotion && !document.getElementById('vrmCanvas')) {
+  new CorruptedParticlesBackground({ nsfw: true, count: 15 });
+}
 // === DecryptReveal headings (sitewide) ===
 import './decrypt-headings.js';
 // === PhraseCycle: intentionally not wired ===
