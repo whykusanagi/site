@@ -411,7 +411,10 @@
   // Auto-initialize on page load (if not disabled)
   if (typeof window !== 'undefined') {
     // Check for data attribute to disable auto-init
-    if (!document.documentElement.hasAttribute('data-no-corruption-loading')) {
+    // WCAG 2.2.2: eight seconds of unskippable full-screen glitch is exactly
+    // the animation this setting exists to stop.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduceMotion && !document.documentElement.hasAttribute('data-no-corruption-loading')) {
       // Wait for DOM to be ready
       if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', () => {
