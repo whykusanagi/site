@@ -30,7 +30,6 @@ for (const file of allPages()) {
   test(`${file}: loads Font Awesome for the nav icons`, () => {
     // nav.js injects icon markup; without the stylesheet the navbar renders
     // eight blank squares, which is what countdown.html did.
-    if (!/data-site-nav/.test(html)) return;
     assert.match(html, /font-?awesome/i, 'nav present but Font Awesome missing');
   });
 }

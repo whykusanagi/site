@@ -11,6 +11,8 @@ import { ORIGIN, indexablePages, cleanUrl, allPages } from './lib/pages.mjs';
 const NOINDEX = new Set([
   'tools/thumbnail-generator/index.html',
   'tools/neo-deco-portrait/index.html',
+  'celeste-cli-presentation.html',
+  'celeste-ops-presentation.html',
 ]);
 
 const KNOWN_TYPES = new Set([
@@ -186,13 +188,28 @@ test('sitemap.xml is complete and clean', () => {
 test('corrupted-theme is pinned to one version everywhere', () => {
   const versions = new Set();
   const hashes = new Set();
+  // Pages whose theme <link> is missing (or has an empty) integrity= don't
+  // add anything to `hashes`, so they're invisible to the set-size checks
+  // below - a version bump applied to every page without refreshing the SRI
+  // hash would leave `hashes.size === 1` (the stale hash, unanimous) and
+  // sail through undetected. Track those links directly instead.
+  const badIntegrity = [];
   for (const file of allPages()) {
     const html = readFileSync(file, 'utf8');
     for (const m of html.matchAll(/corrupted-theme\/@([0-9.]+)/g)) versions.add(m[1]);
     for (const m of html.matchAll(/theme\.min\.css"[^>]*integrity="([^"]+)"/g)) hashes.add(m[1]);
+    for (const m of html.matchAll(/<link\b[^>]*corrupted-theme[^>]*theme\.min\.css[^>]*>/g)) {
+      if (!/\sintegrity="sha384-[^"]+"/.test(m[0])) badIntegrity.push(file);
+    }
   }
   assert.equal(versions.size, 1, `theme version split across ${[...versions].join(', ')}`);
-  assert.ok(hashes.size <= 1, `theme.min.css SRI hash differs: ${[...hashes].join(' vs ')}`);
+  // Was `assert.ok(hashes.size <= 1, ...)`, which passes vacuously when every
+  // page dropped integrity= (hashes.size === 0, and 0 <= 1) - the exact
+  // scenario a bumped-but-unrefreshed SRI hash produces once every page also
+  // agrees on the missing-hash "value". equal() makes an empty set fail too.
+  assert.equal(hashes.size, 1, `theme.min.css SRI hash differs (or is missing everywhere): ${[...hashes].join(' vs ')}`);
+  assert.deepEqual(badIntegrity, [],
+    `theme link missing a non-empty integrity="sha384-..." on: ${badIntegrity.join(', ')}`);
 });
 
 test('package.json agrees with the pinned theme version', () => {

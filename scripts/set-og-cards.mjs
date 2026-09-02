@@ -104,10 +104,14 @@ for (const file of indexablePages()) {
   // Add the dimension tags directly after og:image if they are not there
   // yet - every indexable page needs these, posts included, since the
   // render API's output is always 1200x630 regardless of who requested it.
+  // Match the og:image line's own leading whitespace rather than hardcoding
+  // two spaces - some heads indent at 4, and a hardcoded indent drops the
+  // new lines out of step with every other tag around them.
   if (!/property="og:image:width"/.test(html)) {
     html = html.replace(
-      /(<meta\s+property="og:image"\s+content="[^"]*">)/i,
-      `$1\n  <meta property="og:image:width" content="1200">\n  <meta property="og:image:height" content="630">`,
+      /^([ \t]*)(<meta\s+property="og:image"\s+content="[^"]*">)/im,
+      (_m, indent, tag) =>
+        `${indent}${tag}\n${indent}<meta property="og:image:width" content="1200">\n${indent}<meta property="og:image:height" content="630">`,
     );
   }
 
