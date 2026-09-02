@@ -58,6 +58,7 @@
 
 <!-- ───── corrupted-theme CSS (locally hosted; site CSP blocks unpkg) ───── -->
 <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/theme.min.css" integrity="sha384-04q9N4dM+0xRBPkMGZYUR1OEIBS0j3gc0fFj1XRSmQqNTgNmv7bJg+0PazCmcNX1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <script type="module" src="../assets/js/site-bootstrap.js"></script>
 
 <!-- Display font -->
@@ -479,6 +480,8 @@
 </head>
 
 <body>
+
+<nav class="navbar" data-site-nav></nav>
 
 <!-- glass-backdrop is a fixed background overlay; sits behind everything -->
 <div class="glass-backdrop"></div>
@@ -1055,6 +1058,9 @@
 
 <!-- ───── corrupted-theme JS (auto-glitches .corrupted-multilang; cdn.whykusanagi.xyz is whitelisted in site CSP) ───── -->
 <script src="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/corrupted-text.global.js" integrity="sha384-bqSoNlkNdxHXdCQK9u5r1T0AdxckV/Dme1PbZiIUenfYiUtkDKBeoQEG1Lrs2HY6" crossorigin="anonymous"></script>
+
+<footer data-site-footer></footer>
+<script src="/assets/js/nav.js"></script>
 
 </body>
 </html>

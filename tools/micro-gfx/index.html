@@ -28,6 +28,7 @@
   <link rel="preload" href="../thumbnail-generator/fonts/CourierPrime-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="preload" href="../thumbnail-generator/fonts/CourierPrime-Bold.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/theme.min.css" integrity="sha384-04q9N4dM+0xRBPkMGZYUR1OEIBS0j3gc0fFj1XRSmQqNTgNmv7bJg+0PazCmcNX1" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0a0a; color: #f5f1f8; font-family: system-ui, sans-serif; }
@@ -61,6 +62,12 @@
     body[data-embed] #preview-pane { padding: 0; background: none; border-radius: 0; }
     body[data-embed] #stage { max-width: none; max-height: none; box-shadow: none; }
     body[data-embed] #stage svg { max-width: none; max-height: none; width: 100vw; height: 100vh; }
+    /* Site nav/footer must never appear in the /api/micro-gfx screenshot -
+       every og:image card on the site renders through this page. nav.js
+       replaces both mounts with plain <nav class="navbar"> / <footer>
+       elements (no data-* attrs survive), so target by tag/class instead. */
+    body[data-embed] .navbar,
+    body[data-embed] footer { display: none !important; }
 
     /* Courier New does not exist on Cloudflare's headless Linux Chrome, which
        would silently substitute and make /api/micro-gfx renders disagree with
@@ -98,6 +105,7 @@
   </script>
   </head>
 <body>
+  <nav class="navbar" data-site-nav></nav>
   <div id="app">
     <div id="preview-pane"><div id="stage"></div></div>
     <div id="controls-pane">
@@ -148,6 +156,9 @@
 
     </div>
   </div>
+
+  <footer data-site-footer></footer>
+  <script src="/assets/js/nav.js"></script>
 
   <script type="module">
   import { MicroGfx } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/micro-gfx.js';

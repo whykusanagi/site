@@ -21,6 +21,7 @@
   <meta name="twitter:description" content="Generate branded corrupted-theme backgrounds: canvas presets, dual halftone layers, spectrum and EVA patterns, FX overlays, and one-click PNG export.">
   <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=53925&amp;eyebrow=WHYKUSANAGI&amp;title=Background+Generator+%E2%80%94+Corrupted+Theme%E2%80%A6&amp;nameplate=whykusanagi.xyz">
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/theme.min.css" integrity="sha384-04q9N4dM+0xRBPkMGZYUR1OEIBS0j3gc0fFj1XRSmQqNTgNmv7bJg+0PazCmcNX1" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; background: #0a0a0a; color: #f5f1f8; font-family: system-ui, sans-serif; }
@@ -54,6 +55,7 @@
   </script>
   </head>
 <body>
+  <nav class="navbar" data-site-nav></nav>
   <div id="app">
     <div id="preview-pane">
       <svg id="stage" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid meet"></svg>
@@ -230,6 +232,10 @@
       </div>
     </div>
   </div>
+
+  <footer data-site-footer></footer>
+  <script src="/assets/js/nav.js"></script>
+
   <script type="module">
   import { LEWD_PHRASES_SFW, LEWD_PHRASES_NSFW } from '../thumbnail-generator/js/lewd-frame.js';
   function rollPhrase(nsfw) {

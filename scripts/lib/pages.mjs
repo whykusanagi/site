@@ -18,6 +18,8 @@ export const EXCLUDED = new Set([
   'art.html',                                // 302s to / per _redirects
   'tools/thumbnail-generator/index.html',    // /api/thumbnail render target
   'tools/neo-deco-portrait/index.html',      // render target, no inbound links
+  'celeste-cli-presentation.html',           // pitch deck, not an article
+  'celeste-ops-presentation.html',           // pitch deck, not an article
 ]);
 
 /**

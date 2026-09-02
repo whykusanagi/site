@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Celeste CLI — Graph-Powered Code Intelligence</title>
 <meta name="description" content="How Celeste CLI indexes a codebase into a call graph, then fuses MinHash and BM25 search with structural reranking to find code by concept, not by name.">
+<meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://whykusanagi.xyz/celeste-cli-presentation">
 <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
 <meta property="og:type" content="website">
@@ -21,6 +22,7 @@
 <meta name="twitter:description" content="How Celeste CLI indexes a codebase into a call graph, then fuses MinHash and BM25 search with structural reranking to find code by concept, not by name.">
 <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=39077&amp;eyebrow=WHYKUSANAGI&amp;title=Celeste+CLI+%E2%80%94+Graph-Powered+Code%E2%80%A6&amp;nameplate=whykusanagi.xyz">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
 :root{
   --bg:#08080f;--sur:#111118;--sur2:#13131f;
@@ -181,6 +183,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 </script>
 </head>
 <body>
+<nav class="navbar" data-site-nav></nav>
 <div class="scan-wipe"></div>
 <div class="deck">
 
@@ -1474,5 +1477,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   }
 })();
 </script>
+<footer data-site-footer></footer>
+<script src="/assets/js/nav.js"></script>
 </body>
 </html>

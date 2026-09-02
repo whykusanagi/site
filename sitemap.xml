@@ -110,13 +110,13 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/blog/ld-advisory</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://whykusanagi.xyz/blog/ld-advisory-part-2</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -170,13 +170,13 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/tools</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://whykusanagi.xyz/tools/background-generator/</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -188,7 +188,7 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/assets</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -199,26 +199,14 @@
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://whykusanagi.xyz/celeste-cli-presentation</loc>
-    <lastmod>2026-09-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>https://whykusanagi.xyz/celeste-ops-presentation</loc>
-    <lastmod>2026-09-01</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
     <loc>https://whykusanagi.xyz/countdown</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
     <loc>https://whykusanagi.xyz/doujin</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
@@ -254,7 +242,7 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/dmca</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
@@ -266,7 +254,7 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/refunds</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
