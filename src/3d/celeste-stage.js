@@ -299,13 +299,27 @@ export class CelesteStage {
     const vrm = gltf.userData.vrm;
     if (!vrm) throw new Error('VRMLoaderPlugin did not attach a VRM to gltf.userData.vrm');
 
-    try {
-      VRMUtils.removeUnnecessaryVertices(gltf.scene);
-      VRMUtils.combineSkeletons(gltf.scene);
-      VRMUtils.combineMorphs(vrm);
-    } catch (e) {
-      console.warn('[stage] VRMUtils optimization skipped:', e.message);
+    // These were one try/catch. They are not equally optional, and sharing a
+    // catch meant an early throw silently skipped the rest.
+    //
+    // The first two are genuine optimisations - losing one costs memory and
+    // nothing else. combineMorphs is different: this model carries 1603 morph
+    // targets, and without the combine three.js allocates a morph texture per
+    // mesh sized for every target. Skipping it silently is how you get a tab
+    // that dies on a memory spike instead of an error you can read.
+    for (const [label, fn] of [
+      ['removeUnnecessaryVertices', () => VRMUtils.removeUnnecessaryVertices(gltf.scene)],
+      ['combineSkeletons', () => VRMUtils.combineSkeletons(gltf.scene)],
+    ]) {
+      try {
+        fn();
+      } catch (e) {
+        console.warn(`[stage] VRMUtils.${label} skipped:`, e.message);
+      }
     }
+    // Deliberately uncaught: main()'s catch turns this into the readable
+    // fallback rather than letting the page proceed into the allocation.
+    VRMUtils.combineMorphs(vrm);
     try {
       // No-op on VRM 1.x exports; VRM 0.x exports face -Z and this rotates
       // the scene 180 degrees so the model faces the camera. Throws

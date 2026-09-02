@@ -7,3 +7,9 @@
   Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Pose clips are content-addressed by name and never edited in place - a new
+# pose is a new file. Without this they inherit the default and revalidate on
+# every navigation, which is a round-trip per clip.
+/assets/animations/*
+  Cache-Control: public, max-age=31536000, immutable
