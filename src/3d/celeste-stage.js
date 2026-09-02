@@ -33,6 +33,17 @@ const FLARE_BONES = [
   'leftFoot', 'rightFoot',
 ];
 
+/**
+ * Per-frame root rotation above which spring bones are re-seated instead of
+ * simulated. ~0.6 degrees/frame: far above anything idle motion produces
+ * (which moves no root at all), far below the ~4 degrees/frame that starts a
+ * section 05 -> 01 jump.
+ */
+const ROOT_SWING_RESET_RAD = 0.01;
+
+/** Scratch quaternion for measuring the root swing; the loop allocates none. */
+const ROOT_SWING_SCRATCH = new THREE.Quaternion();
+
 /** Scratch vector for projection; bodyPoints() runs per flare spawn. */
 const FLARE_PROJECT_VEC = new THREE.Vector3();
 
@@ -367,13 +378,32 @@ export class CelesteStage {
       // reason: after the mixer so the clip does not overwrite it, before
       // vrm.update() so it reaches the raw skeleton this frame.
       this.idleLife?.update(dt);
-      this.vrm?.update(dt);
 
-      // Ease the root toward its target. Snapping it makes the spring bones
-      // lash, which on a 90-degree roll is very visible in the hair.
+      // Ease the root toward its target BEFORE vrm.update(), so the spring
+      // bones simulate against the root they are actually attached to this
+      // frame. Rotating the root afterwards meant every frame of a swing
+      // moved the whole rig out from under springs that had already been
+      // integrated, injecting a fresh velocity each time.
+      let rootSwing = 0;
       if (this.vrm && this.rootTarget) {
         const t = this.reducedMotion ? 1 : 1 - Math.exp(-6 * dt);
+        const before = ROOT_SWING_SCRATCH.copy(this.vrm.scene.quaternion);
         this.vrm.scene.quaternion.slerp(this.rootTarget, t);
+        rootSwing = before.angleTo(this.vrm.scene.quaternion);
+      }
+
+      this.vrm?.update(dt);
+
+      // A fast root swing is a teleport as far as the springs are concerned:
+      // section 05 -> 01 rotates the rig ~44 degrees, and the breast and hair
+      // joints integrate that as velocity and fly out into cones before they
+      // settle. Re-seat them at rest for the frames where the swing is large,
+      // so they follow the body rigidly through the move and resume
+      // simulating once it slows. Idle motion never reaches this threshold -
+      // idle-life moves the spine and chest, not the root - so ordinary
+      // secondary motion is untouched.
+      if (rootSwing > ROOT_SWING_RESET_RAD) {
+        this.vrm.springBoneManager?.reset();
       }
 
       this.cautionBands?.update(dt, this.reducedMotion);
