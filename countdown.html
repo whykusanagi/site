@@ -89,9 +89,17 @@
     <p><strong>Q:</strong> What if a URL value is invalid?<br><strong>A:</strong> Invalid preset values fall back to defaults.</p>
   </main>
   <script>
+    // Embed mode means "this page is inside an OBS browser source", which the
+    // widget signals with its own parameters. It must NOT mean "the URL has a
+    // query string": a shared link carries utm_source, and treating that as
+    // embed rendered a bare timer on an empty page.
+    const EMBED_PARAMS = ['bg', 'character', 'date', 'event', 'objectPosition', 'overlay', 'shape', 'theme', 'title'];
+    const params = new URLSearchParams(window.location.search);
+    const isEmbed = EMBED_PARAMS.some((p) => params.has(p));
+
     // Widget-only OBS overlay when URL has countdown params: hide docs + strip
     // chrome/background (the overlay-mode CSS above makes the widget transparent).
-    if (window.location.search.length > 0) {
+    if (isEmbed) {
       document.getElementById('countdown-docs').style.display = 'none';
       document.body.classList.add('overlay-mode');
     }
