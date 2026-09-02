@@ -494,6 +494,7 @@
   <script type="module">
     import { CelesteStage } from './src/3d/celeste-stage.js';
     import { SectionFlares } from './src/3d/section-flares.js';
+    import { rafDebounce } from './src/3d/raf-debounce.js';
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -661,7 +662,7 @@
       };
 
       window.addEventListener('scroll', pick, { passive: true });
-      window.addEventListener('resize', pick, { passive: true });
+      window.addEventListener('resize', rafDebounce(pick), { passive: true });
 
       /**
        * Arrow keys move a whole section at a time. Line-scrolling through a

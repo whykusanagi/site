@@ -26,6 +26,8 @@
  * follow her through the pose change instead of hanging in stale air.
  */
 
+import { rafDebounce } from './raf-debounce.js';
+
 const FLARES_URL = 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/corrupted-flares.js';
 
 /**
@@ -67,7 +69,7 @@ export class SectionFlares {
     this.ctx = canvas.getContext('2d');
 
     this._resize();
-    this._onResize = () => this._resize();
+    this._onResize = rafDebounce(() => this._resize());
     window.addEventListener('resize', this._onResize, { passive: true });
 
     // Decorative, so a CDN failure must not break the page - but it should not

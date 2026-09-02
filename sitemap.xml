@@ -14,7 +14,7 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/celeste</loc>
-    <lastmod>2026-09-01</lastmod>
+    <lastmod>2026-09-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
@@ -110,13 +110,13 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/blog/ld-advisory</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://whykusanagi.xyz/blog/ld-advisory-part-2</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -176,13 +176,13 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/tools/background-generator/</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://whykusanagi.xyz/tools/micro-gfx/</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -200,7 +200,7 @@
   </url>
   <url>
     <loc>https://whykusanagi.xyz/countdown</loc>
-    <lastmod>2026-09-02</lastmod>
+    <lastmod>2026-09-01</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
