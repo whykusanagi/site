@@ -26,7 +26,13 @@ if (hashtagEl) {
 // internally and always forces DPR=1 on the background canvas (no dpr option needed).
 // count:15 = low density (default is 25). nsfw:true enables adult-content particles.
 import { CorruptedParticlesBackground } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/corrupted-particles-background.js';
-new CorruptedParticlesBackground({ nsfw: true, count: 15 });
+// Two gates. Reduced motion is the accessibility one. The canvas check is a
+// performance one: on celeste.html this canvas animates every frame beneath a
+// 92-96% opaque backdrop, so it is pure cost with nothing visible on top.
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!reduceMotion && !document.getElementById('vrmCanvas')) {
+  new CorruptedParticlesBackground({ nsfw: true, count: 15 });
+}
 // === DecryptReveal headings (sitewide) ===
 import './decrypt-headings.js';
 // === PhraseCycle: intentionally not wired ===

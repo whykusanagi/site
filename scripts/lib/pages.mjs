@@ -18,6 +18,8 @@ export const EXCLUDED = new Set([
   'art.html',                                // 302s to / per _redirects
   'tools/thumbnail-generator/index.html',    // /api/thumbnail render target
   'tools/neo-deco-portrait/index.html',      // render target, no inbound links
+  'celeste-cli-presentation.html',           // pitch deck, not an article
+  'celeste-ops-presentation.html',           // pitch deck, not an article
 ]);
 
 /**
@@ -41,6 +43,15 @@ export function indexablePages() {
   return allPages().filter((f) => !EXCLUDED.has(f));
 }
 
+/**
+ * True for a real blog post. blog/index.html is the listing page, not a
+ * post - it needs the same non-post treatment (seeded social card, etc.) as
+ * any other page.
+ */
+export function isPost(file) {
+  return file.startsWith('blog/') && file !== 'blog/index.html';
+}
+
 /** Last commit date, falling back to mtime for a file that isn't committed yet. */
 export function lastmod(file) {
   // A file with uncommitted changes is dated TODAY, not by its last commit.
@@ -54,7 +65,13 @@ export function lastmod(file) {
   const dirty = execFileSync('git', ['status', '--porcelain', '--', file], {
     encoding: 'utf8',
   }).trim();
-  if (dirty) return new Date().toISOString().slice(0, 10);
+  // Both branches of this function must render dates in the same timezone,
+  // or the two disagree by a day for part of the clock and `npm run sitemap`
+  // never converges. `git log --date=short` below renders in the committer's
+  // *local* timezone, so this branch has to match with a local date too -
+  // `toISOString()` is UTC, which drifts a day ahead of the local branch for
+  // anyone west of UTC after ~17:00 local (this machine is UTC-7).
+  if (dirty) return new Date().toLocaleDateString('en-CA');
 
   const out = execFileSync('git', ['log', '-1', '--format=%ad', '--date=short', '--', file], {
     encoding: 'utf8',

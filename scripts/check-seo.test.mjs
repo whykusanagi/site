@@ -5,12 +5,14 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ORIGIN, indexablePages, cleanUrl } from './lib/pages.mjs';
+import { ORIGIN, indexablePages, cleanUrl, allPages } from './lib/pages.mjs';
 
 /** noindex render targets: metadata-exempt, but must carry the noindex tag. */
 const NOINDEX = new Set([
   'tools/thumbnail-generator/index.html',
   'tools/neo-deco-portrait/index.html',
+  'celeste-cli-presentation.html',
+  'celeste-ops-presentation.html',
 ]);
 
 const KNOWN_TYPES = new Set([
@@ -63,7 +65,6 @@ for (const file of [...indexablePages(), ...NOINDEX]) {
   const html = readFileSync(file, 'utf8');
   const head = headOf(html);
   const canonical = ORIGIN + cleanUrl(file);
-  const isPost = file.startsWith('blog/') && file !== 'blog/index.html';
 
   if (NOINDEX.has(file)) {
     test(`${file}: is noindex`, () => {
@@ -139,14 +140,29 @@ for (const file of [...indexablePages(), ...NOINDEX]) {
     assert.ok(types.includes('BreadcrumbList'), 'no BreadcrumbList');
   });
 
-  // 9. per-post og:image comes from the render API with a fixed seed
-  if (isPost) {
-    test(`${file}: og:image is a seeded micro-gfx card`, () => {
-      const re = /^https:\/\/whykusanagi\.xyz\/api\/micro-gfx\?(?=.*\bformat=card\b)(?=.*\bseed=\d+\b).+/;
-      assert.match(meta(head, 'property', 'og:image').content, re);
-      assert.match(meta(head, 'name', 'twitter:image').content, re);
-    });
-  }
+  // 9. og:image is a seeded micro-gfx card on EVERY page, not just posts.
+  // A shared A4 portrait in a 1.91:1 slot centre-crops to a midsection.
+  test(`${file}: og:image is a seeded micro-gfx card`, () => {
+    const re = /^https:\/\/whykusanagi\.xyz\/api\/micro-gfx\?(?=.*\bformat=card\b)(?=.*\bseed=\d+\b).+/;
+    assert.match(meta(head, 'property', 'og:image').content, re);
+    assert.match(meta(head, 'name', 'twitter:image').content, re);
+  });
+
+  // 9b. Slack and LinkedIn need explicit dimensions to lay the card out
+  // before the image arrives.
+  test(`${file}: og:image declares its dimensions`, () => {
+    assert.equal(meta(head, 'property', 'og:image:width')?.content, '1200');
+    assert.equal(meta(head, 'property', 'og:image:height')?.content, '630');
+  });
+
+  // 9c. set-og-cards.mjs must HTML-decode og:title before building the card
+  // URL. A raw copy sends the literal text "&amp;" to the render API (which
+  // then re-encodes it as %26amp%3B) instead of a bare "&" (%26), and the
+  // card visibly shows "&amp;" instead of "&".
+  test(`${file}: og:image title is not double HTML-encoded`, () => {
+    assert.doesNotMatch(meta(head, 'property', 'og:image').content, /%26amp%3B/);
+    assert.doesNotMatch(meta(head, 'name', 'twitter:image').content, /%26amp%3B/);
+  });
 
   // 10. no .html URLs anywhere
   test(`${file}: no .html links`, () => {
@@ -167,6 +183,44 @@ test('sitemap.xml is complete and clean', () => {
   assert.equal(locs.length, expected.size, 'sitemap.xml is stale — run npm run sitemap');
   assert.equal(locs.filter((l) => l.includes('.html')).length, 0);
   for (const l of locs) assert.ok(expected.has(l), `sitemap lists unknown url ${l}`);
+});
+
+test('corrupted-theme is pinned to one version everywhere', () => {
+  const versions = new Set();
+  const hashes = new Set();
+  // Pages whose theme <link> is missing (or has an empty) integrity= don't
+  // add anything to `hashes`, so they're invisible to the set-size checks
+  // below - a version bump applied to every page without refreshing the SRI
+  // hash would leave `hashes.size === 1` (the stale hash, unanimous) and
+  // sail through undetected. Track those links directly instead.
+  const badIntegrity = [];
+  for (const file of allPages()) {
+    const html = readFileSync(file, 'utf8');
+    for (const m of html.matchAll(/corrupted-theme\/@([0-9.]+)/g)) versions.add(m[1]);
+    for (const m of html.matchAll(/theme\.min\.css"[^>]*integrity="([^"]+)"/g)) hashes.add(m[1]);
+    for (const m of html.matchAll(/<link\b[^>]*corrupted-theme[^>]*theme\.min\.css[^>]*>/g)) {
+      if (!/\sintegrity="sha384-[^"]+"/.test(m[0])) badIntegrity.push(file);
+    }
+  }
+  assert.equal(versions.size, 1, `theme version split across ${[...versions].join(', ')}`);
+  // Was `assert.ok(hashes.size <= 1, ...)`, which passes vacuously when every
+  // page dropped integrity= (hashes.size === 0, and 0 <= 1) - the exact
+  // scenario a bumped-but-unrefreshed SRI hash produces once every page also
+  // agrees on the missing-hash "value". equal() makes an empty set fail too.
+  assert.equal(hashes.size, 1, `theme.min.css SRI hash differs (or is missing everywhere): ${[...hashes].join(' vs ')}`);
+  assert.deepEqual(badIntegrity, [],
+    `theme link missing a non-empty integrity="sha384-..." on: ${badIntegrity.join(', ')}`);
+});
+
+test('package.json agrees with the pinned theme version', () => {
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  const declared = (pkg.dependencies?.['@whykusanagi/corrupted-theme']
+    ?? pkg.devDependencies?.['@whykusanagi/corrupted-theme'] ?? '').replace(/^[\^~]/, '');
+  if (!declared) return; // not a dependency here, nothing to reconcile
+  const html = readFileSync('index.html', 'utf8');
+  const used = html.match(/corrupted-theme\/@([0-9.]+)/)?.[1];
+  assert.equal(declared, used,
+    `package.json says ${declared} but the pages load @${used}`);
 });
 
 test('robots.txt declares a policy and points at the sitemap', () => {

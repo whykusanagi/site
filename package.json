@@ -11,6 +11,7 @@
     "sitemap": "node scripts/gen-sitemap.mjs",
     "feed": "node scripts/gen-feed.mjs",
     "warm-og": "node scripts/warm-og.mjs",
+    "og-cards": "node scripts/set-og-cards.mjs",
     "test": "node --test scripts/*.test.mjs",
     "test:tap": "node --test --test-reporter=tap scripts/*.test.mjs"
   },
@@ -23,7 +24,7 @@
   "license": "MIT",
   "devDependencies": {
     "wrangler": "^4.110.0",
-    "@whykusanagi/corrupted-theme": "^0.3.2"
+    "@whykusanagi/corrupted-theme": "0.3.3"
   },
   "engines": {
     "node": ">=18.0.0"

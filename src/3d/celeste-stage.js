@@ -14,6 +14,7 @@ import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-v
 import { CautionBands } from './caution-bands.js';
 import { IdleLife } from './idle-life.js';
 import { POSES, poseConfig, poseNames } from './poses.js';
+import { rafDebounce } from './raf-debounce.js';
 
 /**
  * Joints the transition flares ignite on. Spread over the whole silhouette -
@@ -199,7 +200,7 @@ export class CelesteStage {
 
     this.clock = new THREE.Clock();
     this._raf = null;
-    this._onResize = () => this.resize();
+    this._onResize = rafDebounce(() => this.resize());
     window.addEventListener('resize', this._onResize);
     this.resize();
   }
@@ -225,6 +226,10 @@ export class CelesteStage {
     const w = this.canvas.clientWidth || window.innerWidth;
     const h = this.canvas.clientHeight || window.innerHeight;
     if (w === 0 || h === 0) return;
+    // Guard on real dimension change: resize fires for orientation, zoom, and
+    // a mobile URL bar sliding, and most of those leave the canvas box alone.
+    if (w === this._lastW && h === this._lastH) return;
+    this._lastW = w; this._lastH = h;
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);

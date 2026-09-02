@@ -10,7 +10,9 @@
     <meta property="og:url" content="https://whykusanagi.xyz/countdown">
     <meta property="og:title" content="Countdown Widget | whykusanagi">
     <meta property="og:description" content="Embeddable countdown widget with JSON presets and URL parameter overrides for event, theme, character, overlay, shape, date, and title.">
-    <meta property="og:image" content="https://s3.whykusanagi.xyz/art/MousePad/full-body.png">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=30135&amp;eyebrow=WHYKUSANAGI&amp;title=Countdown+Widget+%7C+whykusanagi&amp;nameplate=whykusanagi.xyz">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="og:site_name" content="whykusanagi">
 
     <!-- Twitter -->
@@ -18,7 +20,7 @@
     <meta name="twitter:url" content="https://whykusanagi.xyz/countdown">
     <meta name="twitter:title" content="Countdown Widget | whykusanagi">
     <meta name="twitter:description" content="Embeddable countdown widget with JSON presets and URL parameter overrides for event, theme, character, overlay, shape, date, and title.">
-    <meta name="twitter:image" content="https://s3.whykusanagi.xyz/art/MousePad/full-body.png">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=30135&amp;eyebrow=WHYKUSANAGI&amp;title=Countdown+Widget+%7C+whykusanagi&amp;nameplate=whykusanagi.xyz">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://whykusanagi.xyz/countdown">
     <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
@@ -28,7 +30,8 @@
     
   <!-- Corrupted Theme Framework (for CSS variables) -->
     <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/theme.min.css" integrity="sha384-04q9N4dM+0xRBPkMGZYUR1OEIBS0j3gc0fFj1XRSmQqNTgNmv7bJg+0PazCmcNX1" crossorigin="anonymous">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
     <!-- Site-Specific Overrides (dark background + readable text on direct view) -->
     <link rel="stylesheet" href="assets/css/site-overrides.css">
     <script type="module" src="assets/js/site-bootstrap.js"></script>
@@ -86,9 +89,17 @@
     <p><strong>Q:</strong> What if a URL value is invalid?<br><strong>A:</strong> Invalid preset values fall back to defaults.</p>
   </main>
   <script>
+    // Embed mode means "this page is inside an OBS browser source", which the
+    // widget signals with its own parameters. It must NOT mean "the URL has a
+    // query string": a shared link carries utm_source, and treating that as
+    // embed rendered a bare timer on an empty page.
+    const EMBED_PARAMS = ['bg', 'character', 'date', 'event', 'objectPosition', 'overlay', 'shape', 'theme', 'title'];
+    const params = new URLSearchParams(window.location.search);
+    const isEmbed = EMBED_PARAMS.some((p) => params.has(p));
+
     // Widget-only OBS overlay when URL has countdown params: hide docs + strip
     // chrome/background (the overlay-mode CSS above makes the widget transparent).
-    if (window.location.search.length > 0) {
+    if (isEmbed) {
       document.getElementById('countdown-docs').style.display = 'none';
       document.body.classList.add('overlay-mode');
     }
