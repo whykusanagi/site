@@ -204,6 +204,42 @@
       font-size: 1rem;
     }
 
+    /* Outfit picker. Shares the bloom toggle's language and stacks under it,
+       so the top-right corner reads as one group of stage controls. */
+    .outfit-picker {
+      position: absolute;
+      top: calc(var(--spacing-lg) + 108px);
+      right: var(--spacing-lg);
+      pointer-events: auto;
+      display: flex;
+      gap: 0.35rem;
+    }
+
+    .outfit-picker button {
+      font-size: 0.7rem;
+      letter-spacing: 0.05em;
+      padding: 0.4rem 0.7rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border);
+      background: var(--glass-light);
+      color: var(--text-secondary);
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all var(--transition-fast);
+    }
+
+    .outfit-picker button:hover:not(:disabled) { color: var(--text); }
+
+    .outfit-picker button[aria-pressed="true"] {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* A swap is a multi-megabyte download; the buttons go inert until it
+       lands so a visitor cannot queue three at once. */
+    .outfit-picker button:disabled { opacity: 0.5; cursor: progress; }
+
     .bloom-toggle {
       position: absolute;
       top: calc(var(--spacing-lg) + 64px);
@@ -373,6 +409,7 @@
     @media (max-width: 1000px) {
       .hud-progress,
       .bloom-toggle { top: calc(var(--spacing-md) + 64px); }
+      .outfit-picker { top: calc(var(--spacing-md) + 108px); }
       .hud-card { padding: 1rem; }
     }
 
@@ -437,6 +474,7 @@
   <div class="hud" id="hud">
     <p class="hud-progress" id="hudProgress" aria-hidden="true"><strong id="hudProgressCurrent">01</strong><span id="hudProgressTotal">/05</span></p>
     <button type="button" class="bloom-toggle" id="bloomToggle" hidden aria-pressed="true">Bloom: On</button>
+    <div class="outfit-picker" id="outfitPicker" role="group" aria-label="Outfit" hidden></div>
     <div class="hud-bottom">
       <div class="hud-card glass-card" id="hudCard" aria-live="polite"></div>
       <nav class="hud-nav" id="hudNav" aria-label="Jump to section"></nav>
@@ -507,6 +545,7 @@
   <script type="module">
     import { CelesteStage } from './src/3d/celeste-stage.js';
     import { SectionFlares } from './src/3d/section-flares.js';
+    import { MODELS, DEFAULT_MODEL, normalizeModel } from './src/3d/models.js';
     import { rafDebounce } from './src/3d/raf-debounce.js';
 
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -738,6 +777,79 @@
       };
     }
 
+    /**
+     * Outfit picker: swaps the model on the stage.
+     *
+     * Each model is ~36 MiB, so this is strictly lazy - nothing but the
+     * default is fetched until someone asks for it. The buttons go inert
+     * during a swap because queueing three downloads would be worse than
+     * waiting for one, and the loading screen comes back with real byte
+     * progress rather than a spinner, for the same reason it does on first
+     * load: a silent multi-megabyte wait reads as a broken page.
+     *
+     * The choice is remembered per browser. It is a convenience, not state
+     * anything depends on, so every read and write is wrapped - private mode
+     * throws on access and that must not take the picker down with it.
+     */
+    const OUTFIT_KEY = 'celeste-outfit';
+
+    function storedOutfit() {
+      try {
+        return normalizeModel(window.localStorage.getItem(OUTFIT_KEY));
+      } catch {
+        return DEFAULT_MODEL;
+      }
+    }
+
+    function initOutfitPicker(stage) {
+      const picker = document.getElementById('outfitPicker');
+      if (!picker) return;
+
+      const buttons = Object.entries(MODELS).map(([key, model]) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = model.label;
+        btn.dataset.model = key;
+        btn.setAttribute('aria-pressed', String(key === stage.modelKey));
+        picker.appendChild(btn);
+        return btn;
+      });
+
+      const setBusy = (busy) => buttons.forEach((b) => { b.disabled = busy; });
+      const syncPressed = () => buttons.forEach((b) => {
+        b.setAttribute('aria-pressed', String(b.dataset.model === stage.modelKey));
+      });
+
+      for (const btn of buttons) {
+        btn.addEventListener('click', async () => {
+          const key = btn.dataset.model;
+          if (key === stage.modelKey) return;
+
+          setBusy(true);
+          loadingScreen.classList.remove('is-hidden');
+          loadingLabel.textContent = `Summoning ${MODELS[key].label}\u2026`;
+          loadingFill.style.width = '0%';
+
+          const ok = await stage.setModel(key, (fraction) => {
+            const pct = Math.round(fraction * 100);
+            loadingFill.style.width = `${pct}%`;
+            loadingLabel.textContent = `Summoning ${MODELS[key].label}\u2026 ${pct}%`;
+          });
+
+          if (ok) {
+            try { window.localStorage.setItem(OUTFIT_KEY, key); } catch { /* private mode */ }
+          } else {
+            loadingLabel.textContent = 'That outfit is not available right now.';
+          }
+          syncPressed();
+          loadingScreen.classList.add('is-hidden');
+          setBusy(false);
+        });
+      }
+
+      picker.hidden = false;
+    }
+
     /** Ambient corner logo + ticker strip. Wrapped and warned-once: a stream
      * overlay is decorative, never load-bearing. */
     async function initTicker() {
@@ -859,7 +971,7 @@
       stage.flares = new SectionFlares(document.body, reducedMotion);
 
       try {
-        await stage.load();
+        await stage.load(storedOutfit());
       } catch (e) {
         console.error('[celeste] model failed to load:', e);
         loadingLabel.textContent = "Celeste is taking a nap — refresh to try again.";
@@ -881,6 +993,7 @@
       // keeps the model, the card and the bands on one answer forever after.
       hud.attachPose((name) => stage.setPose(name));
 
+      initOutfitPicker(stage);
       initBloom(stage);
     }
 
