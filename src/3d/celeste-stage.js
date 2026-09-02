@@ -14,6 +14,7 @@ import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-v
 import { CautionBands } from './caution-bands.js';
 import { IdleLife } from './idle-life.js';
 import { POSES, poseConfig, poseNames } from './poses.js';
+import { DEFAULT_MODEL, modelUrl, normalizeModel } from './models.js';
 import { rafDebounce } from './raf-debounce.js';
 
 /**
@@ -35,9 +36,7 @@ const FLARE_BONES = [
 /** Scratch vector for projection; bodyPoints() runs per flare spawn. */
 const FLARE_PROJECT_VEC = new THREE.Vector3();
 
-const MODEL_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  ? '/models/CorruptedQueenCelestePhairWetB.vrm'
-  : 'https://s3.whykusanagi.xyz/models/CorruptedQueenCelestePhairWetB.vrm';
+
 
 // Pose clips ship with the site rather than from S3: 22KB each, and same-origin
 // means no CORS gate, so they work in local dev as well as production. The much
@@ -239,13 +238,22 @@ export class CelesteStage {
   /** Loads the VRM and idle clip. Resolves once the model is in the scene
    * and the render loop is running. A missing idle clip warns once and
    * continues - the model just holds its rest pose. */
-  async load() {
+  /**
+   * Loads a model onto the stage. Called once on boot, and again by
+   * setModel() for every swap - so everything it sets up must be safe to
+   * REBUILD, not just to build. Anything derived from the VRM (expression
+   * index, idle life, pose actions) is rebuilt here rather than assumed.
+   *
+   * @param {string} [key] a MODELS key; defaults to the shipped model.
+   */
+  async load(key = DEFAULT_MODEL) {
+    this.modelKey = normalizeModel(key);
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMLoaderPlugin(parser));
 
     const gltf = await new Promise((resolve, reject) => {
       loader.load(
-        MODEL_URL,
+        modelUrl(this.modelKey),
         resolve,
         (event) => {
           if (this.onProgress && event.lengthComputable) {
@@ -551,7 +559,14 @@ export class CelesteStage {
       const key = wanted.toLowerCase().replace(/[^a-z0-9]/g, '');
       const actual = this._expressionIndex.get(key);
       if (!actual) {
-        console.warn(`[stage] no expression matching "${wanted}" on this model`);
+        // Once per shape per model, not once per pose change. Three poses set
+        // "Skirt OFF" and the alternate models have no skirt, so browsing five
+        // sections would otherwise print the same warning three times.
+        this._warnedShapes ??= new Set();
+        if (!this._warnedShapes.has(wanted)) {
+          this._warnedShapes.add(wanted);
+          console.warn(`[stage] no expression matching "${wanted}" on this model`);
+        }
         continue;
       }
       manager.setValue(actual, weight);
@@ -708,14 +723,96 @@ export class CelesteStage {
     this.rootTarget = target;
   }
 
+  /**
+   * Swaps the model, keeping the current pose and framing.
+   *
+   * Sequenced tear-down-then-load rather than load-then-swap: holding two
+   * ~36 MiB models in GPU memory at once is exactly the spike this page cannot
+   * absorb, and it is already near the VRAM ceiling with one.
+   *
+   * @param {string} key a MODELS key
+   * @param {(fraction: number) => void} [onProgress] download progress 0..1
+   * @returns {Promise<boolean>} false if the key is already active or a swap
+   *   is in flight; true once the new model is up
+   */
+  async setModel(key, onProgress) {
+    const next = normalizeModel(key);
+    if (next === this.modelKey || this._swapping) return false;
+    this._swapping = true;
+
+    // Remember what to restore. The pose survives the swap; a swap that
+    // silently reset her to section 1 would read as a bug.
+    const pose = this.devActivePose;
+    const previousKey = this.modelKey;
+    const previousProgress = this.onProgress;
+    if (onProgress) this.onProgress = onProgress;
+
+    try {
+      this._unloadModel();
+      await this.load(next);
+      // Re-apply through the normal path so root, expressions, camera, wind
+      // and band placement all come from the pose record rather than being
+      // reconstructed here.
+      if (pose) this.setPose(pose);
+      return true;
+    } catch (e) {
+      console.error(`[stage] model "${next}" failed to load:`, e);
+      // Put the previous one back rather than leaving an empty stage.
+      try {
+        await this.load(previousKey);
+        if (pose) this.setPose(pose);
+      } catch (inner) {
+        console.error('[stage] could not restore the previous model:', inner.message);
+      }
+      return false;
+    } finally {
+      this.onProgress = previousProgress;
+      this._swapping = false;
+    }
+  }
+
+  /**
+   * Releases everything tied to the current model.
+   *
+   * Order matters. The mixer holds AnimationActions bound to the old
+   * skeleton, so it has to be torn down before the scene graph goes - and
+   * uncacheRoot is what actually drops the mixer's internal references;
+   * stopAllAction alone leaves them bound and the old rig reachable.
+   */
+  _unloadModel() {
+    if (this.mixer) {
+      this.mixer.stopAllAction();
+      if (this.vrm) this.mixer.uncacheRoot(this.vrm.scene);
+      this.mixer = null;
+    }
+    this.poseActions.clear();
+    this.idleAction = null;
+    this.currentAction = null;
+
+    if (this.vrm) {
+      this.scene.remove(this.vrm.scene);
+      // deepDispose walks the graph freeing geometries, materials and
+      // textures. Without it each swap strands a full model on the GPU.
+      VRMUtils.deepDispose?.(this.vrm.scene);
+      this.vrm = null;
+    }
+
+    this.idleLife = null;
+    this._expressionIndex = null;
+    this._appliedExpressions = [];
+    this.rootBaseline = null;
+    this.rootTarget = null;
+    // Missing-shape warnings are per-model: a shape absent from bodycon may
+    // exist on the next one, so the "already warned" set cannot outlive it.
+    this._warnedShapes = null;
+  }
+
   dispose() {
     if (this._raf !== null) cancelAnimationFrame(this._raf);
     window.removeEventListener('resize', this._onResize);
-    this.mixer?.stopAllAction();
-    if (this.vrm) {
-      this.scene.remove(this.vrm.scene);
-      VRMUtils.deepDispose?.(this.vrm.scene);
-    }
+    this._unloadModel();
+    this.cautionBands?.dispose();
+    this.flares?.dispose();
     this.renderer.dispose();
   }
 }
