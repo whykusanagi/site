@@ -36,8 +36,8 @@ const FLARE_BONES = [
 const FLARE_PROJECT_VEC = new THREE.Vector3();
 
 const MODEL_URL = ['localhost', '127.0.0.1'].includes(window.location.hostname)
-  ? '/models/CorruptedQueenCelestePhairWetA.vrm'
-  : 'https://s3.whykusanagi.xyz/models/CorruptedQueenCelestePhairWetA.vrm';
+  ? '/models/CorruptedQueenCelestePhairWetB.vrm'
+  : 'https://s3.whykusanagi.xyz/models/CorruptedQueenCelestePhairWetB.vrm';
 
 // Pose clips ship with the site rather than from S3: 22KB each, and same-origin
 // means no CORS gate, so they work in local dev as well as production. The much
