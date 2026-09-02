@@ -5,7 +5,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { ORIGIN, indexablePages, cleanUrl } from './lib/pages.mjs';
+import { ORIGIN, indexablePages, cleanUrl, allPages } from './lib/pages.mjs';
 
 /** noindex render targets: metadata-exempt, but must carry the noindex tag. */
 const NOINDEX = new Set([
@@ -181,6 +181,29 @@ test('sitemap.xml is complete and clean', () => {
   assert.equal(locs.length, expected.size, 'sitemap.xml is stale — run npm run sitemap');
   assert.equal(locs.filter((l) => l.includes('.html')).length, 0);
   for (const l of locs) assert.ok(expected.has(l), `sitemap lists unknown url ${l}`);
+});
+
+test('corrupted-theme is pinned to one version everywhere', () => {
+  const versions = new Set();
+  const hashes = new Set();
+  for (const file of allPages()) {
+    const html = readFileSync(file, 'utf8');
+    for (const m of html.matchAll(/corrupted-theme\/@([0-9.]+)/g)) versions.add(m[1]);
+    for (const m of html.matchAll(/theme\.min\.css"[^>]*integrity="([^"]+)"/g)) hashes.add(m[1]);
+  }
+  assert.equal(versions.size, 1, `theme version split across ${[...versions].join(', ')}`);
+  assert.ok(hashes.size <= 1, `theme.min.css SRI hash differs: ${[...hashes].join(' vs ')}`);
+});
+
+test('package.json agrees with the pinned theme version', () => {
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
+  const declared = (pkg.dependencies?.['@whykusanagi/corrupted-theme']
+    ?? pkg.devDependencies?.['@whykusanagi/corrupted-theme'] ?? '').replace(/^[\^~]/, '');
+  if (!declared) return; // not a dependency here, nothing to reconcile
+  const html = readFileSync('index.html', 'utf8');
+  const used = html.match(/corrupted-theme\/@([0-9.]+)/)?.[1];
+  assert.equal(declared, used,
+    `package.json says ${declared} but the pages load @${used}`);
 });
 
 test('robots.txt declares a policy and points at the sitemap', () => {

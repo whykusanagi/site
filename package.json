@@ -24,7 +24,7 @@
   "license": "MIT",
   "devDependencies": {
     "wrangler": "^4.110.0",
-    "@whykusanagi/corrupted-theme": "^0.3.2"
+    "@whykusanagi/corrupted-theme": "0.3.3"
   },
   "engines": {
     "node": ">=18.0.0"
