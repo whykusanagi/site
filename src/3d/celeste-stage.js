@@ -13,6 +13,7 @@ import { VRMLoaderPlugin, VRMUtils } from '@pixiv/three-vrm';
 import { VRMAnimationLoaderPlugin, createVRMAnimationClip } from '@pixiv/three-vrm-animation';
 import { CautionBands } from './caution-bands.js';
 import { IdleLife } from './idle-life.js';
+import { POSES, poseConfig, poseNames } from './poses.js';
 
 /**
  * Joints the transition flares ignite on. Spread over the whole silhouette -
@@ -52,13 +53,6 @@ const IDLE_ANIMATION_URL = ANIMATION_BASE + 'celeste_idle.vrma';
  * offsets and the hips translation, and getting any of them wrong bends joints
  * the wrong way. Let the library do it.
  */
-const POSE_CLIPS = {
-  makima:     'makima_pose.vrma',
-  standing:   'base_standing_pose.vrma',
-  jacko:      'jacko_pose.vrma',
-  suggestive: 'suggestive_pose.vrma',
-  prone:      'laying_side_wind.vrma',
-};
 
 const POSE_FADE_SECONDS = 0.35;
 
@@ -113,25 +107,6 @@ const POSE_FADE_SECONDS = 0.35;
  * frozen - a blink caught mid-frame looks exactly like a bad weight, so tune
  * with idleLife.reducedMotion = true or you will chase your own tail.
  */
-const POSE_EXPRESSIONS = {
-  // "Who I Am" - an invitation with a warning in it. Her face is largely
-  // behind her hands in this pose, so this is deliberately understated.
-  makima: { Menace: 0.12, Smug: 0.4, Blush: 0.2 },
-
-  // "What I Inherited" - grief with excellent bone structure. The only
-  // section she is not performing in, so no smirk: just tired and level.
-  standing: { 'Dark Circles': 0.4, sad: 0.18, relaxed: 0.25 },
-
-  // "Look Closer" - she is enjoying being inspected. "You may look. Only look."
-  jacko: { 'Skirt OFF': 1, Menace: 0.15, Smug: 0.45, Blush: 0.2 },
-
-  // "The Court" - holding court, and pleased about it. No Smug here: the
-  // heart pupils are the whole point and want the eyes wide.
-  suggestive: { 'Skirt OFF': 1, 'Heart Pupils': 0.9, Blush: 0.2 },
-
-  // "The Domain" - the possessive streak, low and unbothered.
-  prone: { 'Skirt OFF': 1, Menace: 0.15, Smug: 0.5 },
-};
 
 /**
  * Per-pose spring-bone wind, as a direction and strength.
@@ -147,22 +122,7 @@ const POSE_EXPRESSIONS = {
  * it clear of the colliders. A directional wind is the runtime equivalent of
  * blowing the hair aside in the posing tool.
  */
-const POSE_WIND = {
-  prone: { dir: [-0.40, -0.20, -1.00], power: 0.85 },
-  jacko: { dir: [0.00, 0.00, -0.55], power: 1.00 },
-};
 
-const POSE_ROOT = {
-  // Tuned in the ?dev=1 panel, not derived. Reasoning about these axes is
-  // unreliable: they compose onto a baseline that already carries
-  // rotateVRM0's 180-degree Y flip, so screen-space intuition misleads.
-  prone:      { y: 40 },
-  suggestive: { x: -70, y: 15 },
-  jacko:      { x: -15 },
-  // A few degrees of yaw so her eye reads between the hands rather than
-  // being covered by them.
-  makima:     { y: -4 },
-};
 
 /**
  * OPTIONAL per-pose camera. A pose with no entry keeps the single default
@@ -173,11 +133,6 @@ const POSE_ROOT = {
  * ones: `suggestive` wants the camera low and pitched down at the ground
  * (lookY 0.12, elevation 40), which would crop a standing pose entirely.
  */
-const POSE_CAMERA = {
-  suggestive: { lookY: 0.12, dist: 3.65, elevation: 40 },
-  jacko:      { lookY: 0.54, dist: 3.50, elevation: 5 },
-  makima:     { lookY: 1.20, dist: 3.50, elevation: 14 },
-};
 
 export class CelesteStage {
   /**
@@ -436,18 +391,26 @@ export class CelesteStage {
     const loader = new GLTFLoader();
     loader.register((parser) => new VRMAnimationLoaderPlugin(parser));
 
-    for (const [name, file] of Object.entries(POSE_CLIPS)) {
+    // In parallel, not one at a time. This runs on the critical path - load()
+    // does not resolve until it finishes, and the loading screen does not lift
+    // until load() resolves - so a serial loop charged a full round-trip per
+    // pose. Five poses was about a second of dead time on mobile after the
+    // model was already decoded; fifteen would have been three.
+    //
+    // A clip that fails is warned about and skipped, exactly as before: one
+    // missing pose falls back to the idle loop rather than failing the page.
+    await Promise.all(Object.entries(POSES).map(async ([name, pose]) => {
       try {
-        const gltf = await loader.loadAsync(POSE_BASE + file);
+        const gltf = await loader.loadAsync(POSE_BASE + pose.clip);
         const animation = gltf.userData.vrmAnimations?.[0];
         if (!animation) throw new Error('no vrmAnimations in file');
         const action = this.mixer.clipAction(createVRMAnimationClip(animation, vrm));
         action.setLoop(THREE.LoopRepeat, Infinity);
         this.poseActions.set(name, action);
       } catch (e) {
-        console.warn(`[stage] pose clip "${name}" unavailable (${file}):`, e.message);
+        console.warn(`[stage] pose clip "${name}" unavailable (${pose.clip}):`, e.message);
       }
-    }
+    }));
   }
 
   /**
@@ -457,7 +420,9 @@ export class CelesteStage {
    */
   /** Section changed: the bands re-place themselves and take the new label. */
   setSection(index, label) {
-    this.cautionBands?.setLayout(index);
+    // Only the label here. Band PLACEMENT belongs to the pose and is set in
+    // setPose(): the page calls setSection first and setPose second, so
+    // reading the pose from here would place the bands one section behind.
     this.cautionBands?.setLabel(label);
     // Only on an actual change: setSection is also called to re-assert the
     // current section (on resize, or when the pose sink attaches), and a
@@ -513,6 +478,10 @@ export class CelesteStage {
 
   setPose(name) {
     this.devActivePose = name;
+    // Bands are placed per POSE, not per section ordinal. That is the whole
+    // point of the pose record: the old ordinal table silently reused its
+    // last row for any section beyond its length.
+    this.cautionBands?.setLayout(poseConfig(name, 'bands'));
     this._setRootRotation(name);
     this._setPoseExpressions(name);
     this._setPoseCamera(name);
@@ -572,7 +541,7 @@ export class CelesteStage {
     }
     this._appliedExpressions = [];
 
-    const spec = this._expressionOverride ?? ((name && POSE_EXPRESSIONS[name]) || {});
+    const spec = this._expressionOverride ?? poseConfig(name, 'expressions');
     for (const [wanted, weight] of Object.entries(spec)) {
       const key = wanted.toLowerCase().replace(/[^a-z0-9]/g, '');
       const actual = this._expressionIndex.get(key);
@@ -604,7 +573,7 @@ export class CelesteStage {
       }
     }
 
-    const wind = (name && POSE_WIND[name]) || this._windOverride || null;
+    const wind = (name && POSES[name]?.wind) || this._windOverride || null;
     for (const j of joints) {
       const base = this._windBaseline.get(j);
       if (wind) {
@@ -632,7 +601,7 @@ export class CelesteStage {
 
   /** Panel hook: the configured wind for a pose. */
   configuredWind(name) {
-    return (name && POSE_WIND[name]) || { dir: [0, -1, 0], power: 0 };
+    return poseConfig(name, 'wind');
   }
 
   /** Applies a pose's camera override, or the default when it has none. */
@@ -652,7 +621,7 @@ export class CelesteStage {
   /** Panel hook: the configured camera for a pose, so the sliders can start
    *  from the shipped value. */
   configuredCamera(name) {
-    return { ...this.cameraDefaults, ...((name && POSE_CAMERA[name]) || {}) };
+    return poseConfig(name, 'camera');
   }
 
   /** Panel hook: restores the camera to the values this file ships with. */
@@ -663,7 +632,7 @@ export class CelesteStage {
   /** Panel hook: the configured root rotation for a pose, so the sliders can
    *  start from the shipped value instead of zero. */
   configuredRoot(name) {
-    return { x: 0, y: 0, z: 0, ...((name && POSE_ROOT[name]) || {}) };
+    return poseConfig(name, 'root');
   }
 
   /** Panel hook: the pose names that have clips loaded. */
@@ -671,9 +640,19 @@ export class CelesteStage {
     return [...this.poseActions.keys()];
   }
 
+  /** Panel hook: the clip this pose plays, for the dumped record. */
+  configuredClip(name) {
+    return poseConfig(name, 'clip');
+  }
+
+  /** Panel hook: this pose's band placements, for the dumped record. */
+  configuredBands(name) {
+    return poseConfig(name, 'bands');
+  }
+
   /** Panel hook: what this pose ships with, for seeding the sliders. */
   configuredExpressions(name) {
-    return { ...((name && POSE_EXPRESSIONS[name]) || {}) };
+    return poseConfig(name, 'expressions');
   }
 
   /** Panel hook: override the configured expressions for the live pose. */
@@ -707,7 +686,7 @@ export class CelesteStage {
   /** Composes this pose's root rotation onto the captured baseline. */
   _setRootRotation(name) {
     if (!this.rootBaseline) return;
-    const spec = this._rootOverride || (name && POSE_ROOT[name]) || null;
+    const spec = this._rootOverride || (name && POSES[name]?.root) || null;
     const target = this.rootBaseline.clone();
     if (spec) {
       const euler = new THREE.Euler(
