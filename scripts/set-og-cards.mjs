@@ -1,6 +1,8 @@
 /**
- * Points every indexable page's og:image / twitter:image at the render API's
- * card endpoint, which returns a correct 1200x630 image.
+ * Points every indexable non-post page's og:image / twitter:image at the
+ * render API's card endpoint, which returns a correct 1200x630 image, and
+ * makes sure every indexable page (posts included) declares that image's
+ * dimensions.
  *
  * Before this, 19 non-blog pages shared one 2480x3508 A4 portrait. In a
  * summary_large_image slot (1.91:1) that centre-crops to a midsection.
@@ -12,7 +14,7 @@
  * Idempotent: safe to re-run. Run it after adding a page.
  */
 import { readFileSync, writeFileSync } from 'node:fs';
-import { indexablePages, ORIGIN } from './lib/pages.mjs';
+import { indexablePages, isPost, ORIGIN } from './lib/pages.mjs';
 
 /** Stable per-file seed. FNV-1a, kept small so the URL stays readable. */
 function seedFor(file) {
@@ -27,12 +29,28 @@ function seedFor(file) {
 const attr = (html, kind, name) =>
   html.match(new RegExp(`<meta\\s+${kind}="${name}"\\s+content="([^"]*)"`, 'i'))?.[1] ?? null;
 
+/**
+ * Cut at a word boundary, never mid-word - the render API doesn't wrap the
+ * title, so anything that overflows the card just clips silently. 40 is not
+ * a guess: verified empirically against the two longest non-post titles in
+ * the set (index.html at 76 chars, bastard-hero.html at 59) plus the next
+ * two longest (assets.html, tools/micro-gfx/index.html) by rendering each
+ * candidate and checking the card - see task-2-report.md fix-round section.
+ */
+function truncateTitle(title, limit = 40) {
+  if (title.length <= limit) return title;
+  const cut = title.slice(0, limit);
+  const lastSpace = cut.lastIndexOf(' ');
+  const trimmed = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+  return `${trimmed}…`;
+}
+
 function cardUrl(file, title) {
   const q = new URLSearchParams({
     format: 'card',
     seed: String(seedFor(file)),
     eyebrow: 'WHYKUSANAGI',
-    title,
+    title: truncateTitle(title),
     nameplate: 'whykusanagi.xyz',
   });
   // &amp; because this lands inside an HTML attribute.
@@ -41,22 +59,27 @@ function cardUrl(file, title) {
 
 let changed = 0;
 for (const file of indexablePages()) {
-  if (file.startsWith('blog/')) continue; // posts already have their own cards
   let html = readFileSync(file, 'utf8');
+  const before = html;
 
-  const title = attr(html, 'property', 'og:title');
-  if (!title) {
-    console.warn(`[og-cards] ${file}: no og:title, skipped`);
-    continue;
+  // Real posts already have their own seeded card - blog/index.html is a
+  // listing page, not a post (see isPost in lib/pages.mjs), so it still
+  // gets one here like any other non-post page.
+  if (!isPost(file)) {
+    const title = attr(html, 'property', 'og:title');
+    if (!title) {
+      console.warn(`[og-cards] ${file}: no og:title, card not updated`);
+    } else {
+      const url = cardUrl(file, title);
+      html = html
+        .replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i, `$1${url}$2`)
+        .replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i, `$1${url}$2`);
+    }
   }
 
-  const url = cardUrl(file, title);
-  const before = html;
-  html = html
-    .replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i, `$1${url}$2`)
-    .replace(/(<meta\s+name="twitter:image"\s+content=")[^"]*(")/i, `$1${url}$2`);
-
-  // Add the dimension tags directly after og:image if they are not there yet.
+  // Add the dimension tags directly after og:image if they are not there
+  // yet - every indexable page needs these, posts included, since the
+  // render API's output is always 1200x630 regardless of who requested it.
   if (!/property="og:image:width"/.test(html)) {
     html = html.replace(
       /(<meta\s+property="og:image"\s+content="[^"]*">)/i,

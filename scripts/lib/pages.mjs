@@ -41,6 +41,16 @@ export function indexablePages() {
   return allPages().filter((f) => !EXCLUDED.has(f));
 }
 
+/**
+ * True for a real blog post. blog/index.html is the listing page, not a
+ * post - it needs the same non-post treatment (seeded social card, etc.) as
+ * any other page. Shared by check-seo.test.mjs and set-og-cards.mjs so the
+ * two can't drift apart on what counts as a post.
+ */
+export function isPost(file) {
+  return file.startsWith('blog/') && file !== 'blog/index.html';
+}
+
 /** Last commit date, falling back to mtime for a file that isn't committed yet. */
 export function lastmod(file) {
   // A file with uncommitted changes is dated TODAY, not by its last commit.

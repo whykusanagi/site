@@ -63,7 +63,6 @@ for (const file of [...indexablePages(), ...NOINDEX]) {
   const html = readFileSync(file, 'utf8');
   const head = headOf(html);
   const canonical = ORIGIN + cleanUrl(file);
-  const isPost = file.startsWith('blog/') && file !== 'blog/index.html';
 
   if (NOINDEX.has(file)) {
     test(`${file}: is noindex`, () => {
