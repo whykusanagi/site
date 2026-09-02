@@ -153,6 +153,15 @@ for (const file of [...indexablePages(), ...NOINDEX]) {
     assert.equal(meta(head, 'property', 'og:image:height')?.content, '630');
   });
 
+  // 9c. set-og-cards.mjs must HTML-decode og:title before building the card
+  // URL. A raw copy sends the literal text "&amp;" to the render API (which
+  // then re-encodes it as %26amp%3B) instead of a bare "&" (%26), and the
+  // card visibly shows "&amp;" instead of "&".
+  test(`${file}: og:image title is not double HTML-encoded`, () => {
+    assert.doesNotMatch(meta(head, 'property', 'og:image').content, /%26amp%3B/);
+    assert.doesNotMatch(meta(head, 'name', 'twitter:image').content, /%26amp%3B/);
+  });
+
   // 10. no .html URLs anywhere
   test(`${file}: no .html links`, () => {
     const abs = html.match(/https:\/\/whykusanagi\.xyz\/[^"'\s]*\.html/g);

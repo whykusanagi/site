@@ -30,6 +30,27 @@ const attr = (html, kind, name) =>
   html.match(new RegExp(`<meta\\s+${kind}="${name}"\\s+content="([^"]*)"`, 'i'))?.[1] ?? null;
 
 /**
+ * attr() returns the raw attribute text, entities and all - og:title values
+ * that contain "&" are authored as "&amp;" in source, so a naive read hands
+ * the render API the literal five characters "&amp;" instead of "&". Decode
+ * the handful of entities the site's titles actually use before the title
+ * goes anywhere near a URL or a truncation length.
+ *
+ * &amp; must decode last. If it went first, an already-escaped entity like
+ * "&amp;lt;" would collapse in two passes ("&amp;lt;" -> "&lt;" -> "<")
+ * instead of yielding the literal text "&lt;" the author wrote.
+ */
+function decodeEntities(s) {
+  return s
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, '&');
+}
+
+/**
  * Cut at a word boundary, never mid-word - the render API doesn't wrap the
  * title, so anything that overflows the card just clips silently. 40 is not
  * a guess: verified empirically against the two longest non-post titles in
@@ -66,10 +87,13 @@ for (const file of indexablePages()) {
   // listing page, not a post (see isPost in lib/pages.mjs), so it still
   // gets one here like any other non-post page.
   if (!isPost(file)) {
-    const title = attr(html, 'property', 'og:title');
-    if (!title) {
+    const rawTitle = attr(html, 'property', 'og:title');
+    if (!rawTitle) {
       console.warn(`[og-cards] ${file}: no og:title, card not updated`);
     } else {
+      // Decode before truncating so the 40-char limit counts characters a
+      // reader sees, not entity noise like "&amp;" (5 chars for one "&").
+      const title = decodeEntities(rawTitle);
       const url = cardUrl(file, title);
       html = html
         .replace(/(<meta\s+property="og:image"\s+content=")[^"]*(")/i, `$1${url}$2`)
