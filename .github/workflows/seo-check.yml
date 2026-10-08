@@ -40,6 +40,7 @@ jobs:
         with:
           # lastmod comes from git log, so a shallow clone yields wrong dates.
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
