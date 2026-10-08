@@ -7,6 +7,13 @@
     <language>en</language>
     <atom:link href="https://whykusanagi.xyz/feed.xml" rel="self" type="application/rss+xml"/>
     <item>
+      <title>Corrupted Theme 0.3.4: a whole page from one stylesheet</title>
+      <link>https://whykusanagi.xyz/blog/corrupted-theme-v034</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/corrupted-theme-v034</guid>
+      <pubDate>Thu, 08 Oct 2026 00:00:00 GMT</pubDate>
+      <description>Corrupted Theme 0.3.4 turns editorial.css into a complete page vocabulary — cards, ranks, meters, charts and post chrome. A consuming site can delete its own post stylesheet.</description>
+    </item>
+    <item>
       <title>Celeste CLI v1.16.0: Local Models, Full Tool Access</title>
       <link>https://whykusanagi.xyz/blog/celeste-cli-v116</link>
       <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-cli-v116</guid>

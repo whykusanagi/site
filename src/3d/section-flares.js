@@ -28,7 +28,7 @@
 
 import { rafDebounce } from './raf-debounce.js';
 
-const FLARES_URL = 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/corrupted-flares.js';
+const FLARES_URL = 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/corrupted-flares.js';
 
 /**
  * Recipes that read as "something just happened" at a glance. The theme ships

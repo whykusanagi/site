@@ -39,7 +39,7 @@
   <script src="assets/js/background-setup.js"></script>
 
   <!-- Corrupted Theme Framework -->
-  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/dist/theme.min.css" integrity="sha384-04q9N4dM+0xRBPkMGZYUR1OEIBS0j3gc0fFj1XRSmQqNTgNmv7bJg+0PazCmcNX1" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
 
   <!-- Site-Specific Overrides -->
   <link rel="stylesheet" href="assets/css/site-overrides.css">
@@ -48,7 +48,7 @@
   <!-- StreamTicker overlay layer (component CSS not in theme.min.css and not
        yet vendored locally; no SRI on this one so it degrades to unstyled
        rather than CORS-blocked if the CDN is briefly unreachable). -->
-  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/css/stream-overlays.css">
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/css/stream-overlays.css">
 
   <!-- The model and the three.js graph both come from other origins, and the
        model is the largest asset on the site. Warming the connections costs
@@ -61,9 +61,9 @@
        Section changes in that window drew nothing, which is exactly how the
        feature looked broken. Preloading fetches it alongside everything else
        instead of behind the model. -->
-  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/corrupted-flares.js" crossorigin="anonymous">
-  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/core/corruption-charsets.js" crossorigin="anonymous">
-  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/core/random-utils.js" crossorigin="anonymous">
+  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/corrupted-flares.js" crossorigin="anonymous">
+  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/core/corruption-charsets.js" crossorigin="anonymous">
+  <link rel="modulepreload" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/core/random-utils.js" crossorigin="anonymous">
   <script type="module" src="assets/js/site-bootstrap.js"></script>
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
@@ -855,7 +855,7 @@
     async function initTicker() {
       if (reducedMotion) return;
       try {
-        const { StreamTicker } = await import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.3/src/lib/stream-ticker.js');
+        const { StreamTicker } = await import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/stream-ticker.js');
         const stageBg = document.querySelector('.stage-bg');
         new StreamTicker(stageBg, { logoText: 'whykusanagi', label: 'CELESTE.SYS', nsfw: true }).start();
       } catch (e) {

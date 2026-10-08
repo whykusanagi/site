@@ -8,6 +8,7 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "build": "echo 'No build required for Cloudflare Workers'",
+    "theme:sync": "node scripts/sync-theme-pin.mjs",
     "sitemap": "node scripts/gen-sitemap.mjs",
     "feed": "node scripts/gen-feed.mjs",
     "warm-og": "node scripts/warm-og.mjs",
@@ -24,7 +25,7 @@
   "license": "MIT",
   "devDependencies": {
     "wrangler": "^4.110.0",
-    "@whykusanagi/corrupted-theme": "0.3.3"
+    "@whykusanagi/corrupted-theme": "0.3.4"
   },
   "engines": {
     "node": ">=18.0.0"
