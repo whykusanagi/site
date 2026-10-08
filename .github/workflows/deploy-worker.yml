@@ -61,6 +61,8 @@ jobs:
       - name: Checkout
         if: steps.creds.outputs.configured == 'true'
         uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       # No `cache: npm` and no `npm ci`: both require a committed
       # package-lock.json, which .gitignore deliberately excludes. That

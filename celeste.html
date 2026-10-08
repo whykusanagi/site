@@ -680,7 +680,7 @@
        */
       const showSection = (section, index) => {
         const copy = section.querySelector('.section-copy');
-        card.innerHTML = copy ? copy.innerHTML : '';
+        card.replaceChildren(...(copy ? copy.cloneNode(true).childNodes : []));
         progressCurrent.textContent = String(index + 1).padStart(2, '0');
         // Match on index, not on pose: two sections sharing a pose would
         // otherwise light up each other's button.
