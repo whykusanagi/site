@@ -45,7 +45,7 @@ function serveFile(filePath, res) {
   // Security: prevent directory traversal. A bare prefix check also admits
   // a sibling such as `${ROOT_DIR}-evil`; path.relative() does not.
   const rel = path.relative(ROOT_DIR, fullPath);
-  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+  if (rel === '..' || rel.startsWith(`..${path.sep}`) || path.isAbsolute(rel)) {
     res.writeHead(403);
     res.end('Forbidden');
     return;
@@ -97,10 +97,12 @@ const server = http.createServer((req, res) => {
   // Parse URL
   const url = new URL(req.url, `http://${req.headers.host}`);
   // Decode before joining so `%2e%2e` meets the containment check as `..`.
-  let filePath;
+  // A decoded NUL would make fs.stat throw synchronously and kill the process.
+  let filePath = null;
   try {
     filePath = decodeURIComponent(url.pathname);
-  } catch {
+  } catch { /* malformed escape */ }
+  if (filePath === null || filePath.includes('\0')) {
     res.writeHead(400);
     res.end('Bad Request');
     return;
@@ -118,6 +120,6 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, HOST, () => {
-  console.log(`📁 Static file server running on http://${HOST}:${PORT}`);
+  console.log(`📁 Static file server running on http://${HOST}:${server.address().port}`);
 });
 
