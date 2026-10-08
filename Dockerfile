@@ -1,7 +1,7 @@
 # Dockerfile for whykusanagi portfolio site
 # Static site with Celeste widget API proxy (all in one container)
 
-FROM node:18-slim
+FROM node:22-slim
 
 LABEL maintainer="whykusanagi"
 LABEL description="whykusanagi portfolio - Virtual Streamer & Digital Artist"
