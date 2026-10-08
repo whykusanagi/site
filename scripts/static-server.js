@@ -41,9 +41,11 @@ function getMimeType(filePath) {
 
 function serveFile(filePath, res) {
   const fullPath = path.join(ROOT_DIR, filePath);
-  
-  // Security: prevent directory traversal
-  if (!fullPath.startsWith(ROOT_DIR)) {
+
+  // Security: prevent directory traversal. A bare prefix check also admits
+  // a sibling such as `${ROOT_DIR}-evil`; path.relative() does not.
+  const rel = path.relative(ROOT_DIR, fullPath);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
     res.writeHead(403);
     res.end('Forbidden');
     return;
@@ -94,7 +96,15 @@ function serveFileContent(filePath, res) {
 const server = http.createServer((req, res) => {
   // Parse URL
   const url = new URL(req.url, `http://${req.headers.host}`);
-  let filePath = url.pathname;
+  // Decode before joining so `%2e%2e` meets the containment check as `..`.
+  let filePath;
+  try {
+    filePath = decodeURIComponent(url.pathname);
+  } catch {
+    res.writeHead(400);
+    res.end('Bad Request');
+    return;
+  }
 
   // Default to index.html for root
   if (filePath === '/') {
