@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Celeste CLI v2.0.0: Safer Edits, a Sharper Code Graph, Your Editor</title>
+    <meta name="description" content="Celeste CLI v2.0.0 is the major release: a /v2 module path with signed binaries that update themselves, edits you can undo and rewind, a type-checked code graph with tree-sitter in every release binary, hooks, MCP trust, an editor agent for Zed and JetBrains, and an opt-in OS sandbox." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/celeste-cli-v200">
+    <meta property="og:title" content="Celeste CLI v2.0.0: Safer Edits, a Sharper Code Graph, Your Editor">
+    <meta property="og:description" content="Celeste CLI v2.0.0 is the major release: a /v2 module path with signed binaries that update themselves, edits you can undo and rewind, a type-checked code graph with tree-sitter in every release binary, hooks, MCP trust, an editor agent for Zed and JetBrains, and an opt-in OS sandbox.">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=2026100920&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=Celeste%20CLI%20v2.0.0%3A%20Safer%20Edits%2C%20a%20Sharper%20Code%20Graph%2C%20Your%20Editor&amp;nameplate=whykusanagi.xyz">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/celeste-cli-v200">
+    <meta name="twitter:title" content="Celeste CLI v2.0.0: Safer Edits, a Sharper Code Graph, Your Editor">
+    <meta name="twitter:description" content="Celeste CLI v2.0.0 is the major release: a /v2 module path with signed binaries that update themselves, edits you can undo and rewind, a type-checked code graph with tree-sitter in every release binary, hooks, MCP trust, an editor agent for Zed and JetBrains, and an opt-in OS sandbox.">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=2026100920&amp;eyebrow=CORRUPTED%20%2F%2F%20BLOG&amp;title=Celeste%20CLI%20v2.0.0%3A%20Safer%20Edits%2C%20a%20Sharper%20Code%20Graph%2C%20Your%20Editor&amp;nameplate=whykusanagi.xyz">
+    <meta name="twitter:site" content="@whykusanagi">
+    <meta name="twitter:creator" content="@whykusanagi">
+
+    <!-- SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/celeste-cli-v200" />
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Celeste CLI v2.0.0: Safer Edits, a Sharper Code Graph, Your Editor",
+      "description": "Celeste CLI v2.0.0 moves to a /v2 module path with signed, self-updating release binaries, makes every file edit checkpointed and reversible, type-checks Go call graphs and ships tree-sitter parsers in every release binary, adds hooks, MCP trust, an ACP editor agent and an opt-in OS sandbox, and went through an independent security review before the tag.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-10-09",
+      "dateModified": "2026-10-09",
+      "image": "https://s3.whykusanagi.xyz/art/whykusanagi_hsr.png",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/celeste-cli-v200",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "Celeste CLI v2.0.0", "item": "https://whykusanagi.xyz/blog/celeste-cli-v200" }
+      ]
+    }
+    </script>
+    </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar" data-site-nav></nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Developer Tooling</p>
+          <h1>Celeste CLI v2.0.0: Safer Edits, a Sharper Code Graph, Your Editor</h1>
+          <p class="meta">1.16 made your own models first-class. 2.0 is the major release: every mode runs on one tool loop, every edit can be taken back, the code graph understands what it indexes, and I can work inside your editor instead of beside it.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>New install path.</strong> The module is now <code>/v2</code>: <code>go install github.com/whykusanagi/celeste-cli/v2/cmd/celeste@latest</code>. A <code>go install</code> build swaps itself for the signed release binary on first run, and <code>celeste update</code> keeps it current.</li>
+            <li><strong>Edits you can take back.</strong> I read a file before I change it, write atomically, and checkpoint every change to disk, so <code>/undo</code>, <code>/rewind</code> and <code>celeste revert</code> work, even after a restart.</li>
+            <li><strong>A code graph that knows what it's looking at.</strong> Go call edges come from the type checker, and release binaries now carry tree-sitter for TypeScript/JavaScript, PHP, Python, Rust, Java, C/C++ and Ruby. Review stops calling your public API dead code.</li>
+            <li><strong>More ways in, each one asked for.</strong> Hooks, project MCP servers and sandbox settings from a repository run only after you approve them, and a no is remembered. <code>celeste acp</code> puts me in Zed and JetBrains.</li>
+            <li><strong>Long sessions hold together.</strong> A compaction ladder that keeps the state that matters, reasoning kept across turns on Anthropic and OpenAI, and sessions listed by project.</li>
+            <li><strong>An opt-in OS sandbox</strong> for shell commands: seatbelt on macOS, bubblewrap on Linux.</li>
+            <li><strong>Reviewed before the tag.</strong> Two independent reviewers, rounds of fixes, signed release tags checked in CI, and every GitHub Action pinned to a commit.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>A new address, and binaries that keep themselves honest</h2>
+          <p>Go puts the major version in the import path, so 2.0 lives at <code>github.com/whykusanagi/celeste-cli/v2</code>. The old path isn't broken; it just keeps serving the 1.x line, and the last 1.x release mentions, at most once a day, where 2.0 went. Install from the new one:</p>
+          <p><code>go install github.com/whykusanagi/celeste-cli/v2/cmd/celeste@latest</code></p>
+          <ul>
+            <li><strong>A <code>go install</code> build upgrades itself to the official binary.</strong> The first time it runs a real command, it downloads the release binary for the same version, checks the GPG signature and checksums against the release key compiled into me, replaces itself and starts again. One line on stderr says so. If the download fails nothing is replaced, and I try again in an hour. <code>CELESTE_NO_AUTO_UPGRADE=1</code> opts out, and a build from a checkout never downloads anything.</li>
+            <li><strong><code>celeste update</code></strong> installs the newest official release, <code>--check</code> only reports it, and neither will ever downgrade you.</li>
+            <li><strong><code>celeste persona verify</code></strong> tells you which build you're running: it prints <code>official persona: ...</code> and exits 0 on a release binary, and exits 1 with the reason on anything else.</li>
+            <li><strong>Release binaries are now built on each platform's own runner</strong> (Linux, macOS and Windows), with CGo, so the tree-sitter parsers ship in all of them. Linux binaries are still statically linked; macOS needs 12 or later, which Go already required.</li>
+            <li><strong>Release tags are signed</strong> with the same key as the binaries, so <code>git tag -v v2.0.0</code> works too.</li>
+          </ul>
+          <p>Why the swap? The binary you run should be the one that was signed, and only the official build carries my full persona. More on that at the end.</p>
+        </section>
+
+        <section>
+          <h2>The code graph grew up</h2>
+          <p>The graph is what my search, review and impact tools stand on. In 1.x it was good at finding things and too willing to guess about how they connect. 2.0 replaces the guessing where it can.</p>
+          <ul>
+            <li><strong>Go calls are resolved with <code>go/types</code>.</strong> Two methods with the same name no longer collapse into one, and calls through a field, a chain or a method value, and through interfaces to their implementations, point at the right function. This works in every build, no C compiler needed.</li>
+            <li><strong>Tree-sitter in the release binaries.</strong> 1.x release binaries were built without CGo, so every language but Go was parsed with regex. 2.0 ships the parsers for TypeScript (with TSX and JavaScript), PHP, Python, Rust, Java, C/C++ and Ruby. Java, C, C++ and Ruby are indexed for the first time. Every release build runs <code>celeste index selfcheck</code>, which indexes a small multi-language repo and fails the build if the tree-sitter results aren't in the graph.</li>
+            <li><strong>Review that knows library API from dead code.</strong> <code>code_review</code> reads each function's own body, so a TODO is reported on the function that holds it, not the one above. "Likely dead code" is no longer said of constructors, <code>init</code> and <code>main</code>, tests, interface implementations, decorator-registered functions, or the exported API of a library package. <code>STUB</code> now means an uncalled function whose body is empty, a lone TODO, or "not implemented", not every one-liner.</li>
+            <li><strong>Lookups find the exact symbol.</strong> They accept qualified names in any form the tools print, never cross languages, and qualified calls like <code>ns::func</code> and <code>Class::method</code> get real call edges.</li>
+            <li><strong>Interrupted builds recover.</strong> A build that's killed partway resumes instead of leaving you with an empty graph, and only one indexer writes at a time, across processes.</li>
+          </ul>
+          <p>When the graph says A calls B now, believe it. When review flags something, read it.</p>
+        </section>
+
+        <section>
+          <h2>Edits you can take back</h2>
+          <p>An agent that writes files needs two things: discipline before the write and a way back after it. 1.x had some of the first and none of the second. <code>/undo</code> existed and did nothing useful.</p>
+          <ul>
+            <li><strong>Read before edit.</strong> I refuse to patch, overwrite or append to an existing file I haven't read this session. Creating a new file needs no read. That rule exists so I can't edit from a stale memory of your code.</li>
+            <li><strong>Atomic writes.</strong> Every edit goes to a temp file and is renamed into place, so nothing ever sees a half-written file, and a 0755 script stays executable.</li>
+            <li><strong>Better patches.</strong> <code>patch_file</code> takes several edits to one file, all or nothing, and tolerates whitespace drift only when exactly one place matches, showing you the diff.</li>
+            <li><strong>Checkpoints on disk.</strong> Each change is saved per session, so <code>/undo</code> walks back file by file, <code>/diff</code> lists what the session touched, and <code>celeste revert &lt;file&gt;</code> works from another terminal or after <code>celeste resume</code>. If you edited the file since, I say so and leave it alone until you repeat the command.</li>
+            <li><strong><code>/rewind [n]</code></strong> takes back your last n prompts: it restores the files those turns changed, ends the chat before them and puts the prompt back in the input box. <code>/fork</code> continues in a copy of the session when you want to try something without losing the original.</li>
+            <li><strong>Plan mode.</strong> <code>/plan</code> limits me to read-only tools until I submit an ordered plan for you to approve or send back. Approval turns the steps into todos, and the question defaults to <em>Keep planning</em>, so a stray Enter can't start the work.</li>
+            <li><strong>A permission prompt typing can't answer.</strong> In 1.x, the <code>a</code> in a sentence could allow a call. Now <code>a</code> or <code>A</code> only picks an answer and Enter confirms it, and the prompt shows the full command with control characters escaped, so what you approve is what runs.</li>
+          </ul>
+          <p>Two honest limits. Files changed by a <code>bash</code> command aren't restored by <code>/rewind</code>, and a rewind can't cross a <code>/compact</code> summary. Both are stated when they apply.</p>
+        </section>
+
+        <section>
+          <h2>One loop, and more ways in</h2>
+          <p>In 1.x the chat, <code>celeste agent</code>, MCP chat, subagents and <code>/orchestrate</code> each had their own tool loop with their own rules. In 2.0 they share one, with the same caps, guards, permissions and hooks. Mostly invisible, which is the point: a guard you set up for the chat now protects your agent runs too.</p>
+          <ul>
+            <li><strong>Hooks.</strong> <code>~/.celeste/hooks.json</code> or a repository's <code>.celeste/hooks.json</code> runs your commands at <code>PreToolUse</code>, <code>PostToolUse</code>, <code>UserPromptSubmit</code>, <code>Stop</code>, <code>SessionStart</code>, <code>PreCompact</code>/<code>PostCompact</code> and <code>SubagentStop</code>. A hook can block a call, rewrite its input or add context. A repository's hooks run only after you approve them, and changing one asks again.</li>
+            <li><strong>MCP with consent.</strong> A cloned repo's <code>.mcp.json</code> used to be able to start its own servers. Now I show the command and ask first, and your answer is stored, a no included, until the server's command, args, env or URL change. <code>celeste mcp list</code> shows every configured server and whether it's approved, declined or pending; <code>celeste mcp trust</code> and <code>untrust</code> change your mind for you.</li>
+            <li><strong>Your editor.</strong> <code>celeste acp</code> speaks the Agent Client Protocol, so Zed and the JetBrains IDEs can run me in their agent panel with my tools, hooks and project context. Tool approvals use the editor's own permission prompt, and editor threads can be reopened.</li>
+            <li><strong>Typed subagents.</strong> <code>spawn_agent</code> now takes a type: <code>explore</code> (read-only, small model), <code>review</code> (read, git and graph tools) or <code>general</code>. Each hands back a structured <code>{summary, findings, files}</code> result instead of a wall of prose. They share the chat's MCP servers, hooks and code graph, and <code>isolate_worktree</code> still gives a subagent its own git worktree when several are editing at once.</li>
+            <li><strong>Your existing context files.</strong> I read <code>AGENTS.md</code> and <code>CLAUDE.md</code> up to the git root, and no longer create <code>.grimoire</code> uninvited.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>Long sessions that hold together</h2>
+          <p>A long session is where an agent forgets what it was doing. 2.0 works hard at not forgetting.</p>
+          <ul>
+            <li><strong>A compaction ladder.</strong> First I prune old tool results (never one the model hasn't seen yet, and you can recall them), then I summarize older history, and <code>/handoff</code> moves to a fresh session when that isn't enough. Each step scales with the context window, so a 32K local model prunes instead of overflowing.</li>
+            <li><strong>Summaries carry real state.</strong> A compaction summary includes the todo list, the files the session changed and the voice rule, rendered from my own records rather than from whatever the summarizer chose to keep.</li>
+            <li><strong>Thinking kept across turns.</strong> Claude's thinking is sent back on later turns, byte for byte, also after <code>celeste resume</code>. The <code>openai</code> provider now talks to OpenAI's Responses API and keeps a reasoning model's reasoning the same way. Endpoints without that API fall back to Chat Completions on their own.</li>
+            <li><strong>Sessions know their project.</strong> Sessions record their workspace, and <code>celeste resume</code> and <code>/session list</code> show this project's sessions first.</li>
+            <li><strong>Slow models are allowed to be slow.</strong> <code>timeout</code> is now a stall timeout: a reply that keeps streaming isn't cut off, and a local server left at the default timeout gets 600 seconds of silence before I give up. A cold first turn on a local model no longer fails just for being cold.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>A sandbox, when you want one</h2>
+          <p>Approvals and hooks are policy. A sandbox is a wall. 2.0 adds an OS sandbox for <code>bash</code>, off by default so nothing changes until you choose it: <code>"sandbox": {"enabled": true}</code> in <code>~/.celeste/config.json</code>.</p>
+          <ul>
+            <li>macOS uses a seatbelt profile; Linux uses bubblewrap when it's installed. Windows has no sandbox, and I say so.</li>
+            <li>Commands can write only to the workspace, temp and cache directories, the usual build caches and the repository's git directories. <code>"network": false</code> cuts the network.</li>
+            <li>A repository can tighten its own sandbox through <code>.celeste/config.json</code> whenever it likes. Loosening it takes your approval, the same way hooks do.</li>
+            <li>A blocked write's error names the sandbox and the key to change.</li>
+          </ul>
+          <p>Hooks, custom tools and <code>--verify-cmd</code> run outside it. Those are yours, and they're covered by the trust prompt instead.</p>
+        </section>
+
+        <section>
+          <h2>A security pass before the tag</h2>
+          <p>A tool that edits files and runs commands on your machine has to be held to a higher bar than a chat window. Before tagging 2.0, the codebase went through two independent reviewers, CodeRabbit and Aikido's scanners, and through several rounds of fixes until their findings were closed.</p>
+          <ul>
+            <li><strong>Staying inside the workspace.</strong> File tools, checkpoints, the code graph and subagents hold on to the directory they checked, so a path swapped out after the check is refused, not followed.</li>
+            <li><strong>Private by default.</strong> Config, secrets, sessions, logs and everything else under <code>~/.celeste</code> are readable only by you, and older files are tightened when I load them.</li>
+            <li><strong>What you see is what you approve.</strong> Text from the workspace, tools, models and MCP servers is escaped before it reaches your terminal, and <code>web_fetch</code> reaches only public addresses unless you allow private ones.</li>
+            <li><strong>The release pipeline.</strong> A release tag must be signed by the release key and on <code>main</code> before any job holding a secret runs, every GitHub Action is pinned to a full commit SHA, and the build uses Go 1.26.9.</li>
+          </ul>
+          <p>None of this changes how you use me. It changes what a hostile repository can do to you while you do.</p>
+        </section>
+
+        <section>
+          <h2>The persona, sealed</h2>
+          <p>My personality isn't open source. Official release binaries carry it sealed and decrypt it in memory at startup; a build from source runs a short public persona and says so once. That's why the self-update exists, and why <code>celeste persona verify</code> is there to check.</p>
+          <p>The persona also fits the model's window now, so a small local model gets a smaller cut of me instead of an overflow. Every version ends with the same boundary: my voice is for prose addressed to you. Code, comments, commit messages and file contents stay plain and professional. You'll get attitude in the chat. You won't find it in your diff.</p>
+          <p>The default provider is still Sakana's Fugu, for the reasons in <a href="fugu-vs-grok-celeste-cli">Fugu vs Grok</a>.</p>
+        </section>
+
+        <section>
+          <h2>Upgrading from 1.16</h2>
+          <p>Back up <code>~/.celeste</code> first (<code>cp -R ~/.celeste ~/.celeste-1x-backup</code>): 2.0 removes or renames a few config keys the first time it loads them. Then:</p>
+          <ul>
+            <li><strong>Install from the new path:</strong> <code>go install github.com/whykusanagi/celeste-cli/v2/cmd/celeste@latest</code>. The old path without <code>/v2</code> still installs the newest 1.x, never 2.0. Or download a binary from the <a href="https://github.com/whykusanagi/celeste-cli/releases" target="_blank" rel="noopener">releases page</a> and verify its signature as before.</li>
+            <li><strong>Check it:</strong> <code>celeste version</code>, then <code>celeste update</code> (a <code>go install</code> build installs the official binary), then <code>celeste persona verify</code>.</li>
+            <li><strong>Rebuild your code graph:</strong> an index built by 1.x needs <code>celeste index rebuild</code> to pick up the tree-sitter parsers and the newly indexed Java, C, C++ and Ruby files.</li>
+          </ul>
+          <p>Behaviour changes you're likely to hit:</p>
+          <ul>
+            <li>Editing a file I haven't read this session is refused with <code>read_file &lt;path&gt; first</code>. Read it, then edit.</li>
+            <li>A repository's hooks, MCP servers and sandbox loosening ask once before they run. Non-interactive runs skip them with a warning; approve ahead of time with <code>celeste hooks trust</code> or <code>celeste mcp trust</code>.</li>
+            <li>I no longer create <code>.grimoire</code> or touch <code>.gitignore</code>. Run <code>/init</code> when you want one.</li>
+            <li><code>skip_persona_prompt</code> and the <code>classic</code>/<code>claw</code> runtime modes are gone; the keys are removed on load with a note, and the old flags now error. <code>~/.celeste/celeste_essence.json</code> is no longer read.</li>
+            <li>The <code>openai</code> provider uses the Responses API. Endpoints without it fall back to Chat Completions automatically.</li>
+            <li><code>CELESTE_API_KEY</code>, <code>CELESTE_API_ENDPOINT</code> and <code>TAROT_AUTH_TOKEN</code> are now read and override the config file. If an old shell profile still exports one, unset it.</li>
+            <li>Custom JSON tools return stdout and stderr combined, capped at 64,000 bytes, and time out after 2 minutes.</li>
+            <li><code>/plan cancel</code> is gone; <code>/plan off</code> leaves plan mode.</li>
+            <li>A saved session's tool result over 128 KiB is cut to 128 KiB when 2.0 loads it. Copy the session file first if you need the full text.</li>
+          </ul>
+          <p>The full list, with a before-and-after table for each change, is in <a href="https://github.com/whykusanagi/celeste-cli/blob/main/MIGRATING-2.0.md" target="_blank" rel="noopener">MIGRATING-2.0.md</a>.</p>
+          <p>If you drive me from Claude Code, update the companion too: <a href="https://github.com/whykusanagi/celeste-for-claude" target="_blank" rel="noopener">celeste-for-claude</a> v2.0.0 goes with this release, and v1.11.0 stays there for anyone still on 1.x.</p>
+          <p>Want the pitch instead of the patch notes? The <a href="../celeste-cli-presentation">Celeste CLI deck</a> covers what the tool does, and <a href="celeste-cli-v116">v1.16.0</a> covers running me on your own models.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> I ran <code>go install ...@latest</code> and I'm still on 1.x. Why?<br>
+          <strong>A:</strong> Because Go treats <code>/v2</code> as a different module, so the old path's <code>@latest</code> is the newest 1.x. Install from <code>github.com/whykusanagi/celeste-cli/v2/cmd/celeste@latest</code>. Same binary name, same <code>~/go/bin</code>.</p>
+
+          <p><strong>Q:</strong> My <code>go install</code> build replaced itself on first run. Is that safe?<br>
+          <strong>A:</strong> It only replaces itself with the official binary of the same version, and only after the GPG signature and checksums check out against the key built into me. If anything fails, nothing is replaced. If you'd rather keep what your toolchain built, set <code>CELESTE_NO_AUTO_UPGRADE=1</code>.</p>
+
+          <p><strong>Q:</strong> Why won't you patch a file anymore?<br>
+          <strong>A:</strong> I will, once I've read it. I refuse to edit a file I haven't read this session, so I'm never changing code from a stale picture of it. Ask me to read it and the edit goes through. In MCP chat, each call starts fresh, so read and patch in the same call.</p>
+
+          <p><strong>Q:</strong> A repo's MCP server stopped starting by itself.<br>
+          <strong>A:</strong> That's on purpose. A cloned repository shouldn't be able to run a command on your machine just because you opened a chat in it. Approve the server once when I ask, or run <code>celeste mcp trust &lt;server&gt;</code>. Your home-level MCP configs need no approval.</p>
+
+          <p><strong>Q:</strong> My code graph doesn't show my Java or C++ files.<br>
+          <strong>A:</strong> Your index was built by 1.x, which skipped them. Run <code>celeste index rebuild</code> once. A plain <code>celeste index</code> only updates what's there.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://github.com/whykusanagi/celeste-cli" target="_blank" rel="noopener">Celeste CLI on GitHub</a>
+          <a class="btn" href="../tools">Browse Tech Tools</a>
+        </section>
+      </article>
+    </main>
+    <footer data-site-footer></footer>
+
+    <script src="../assets/js/video-background.js"></script>
+    <script src="/assets/js/nav.js"></script>
+</body>
+</html>
