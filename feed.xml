@@ -7,6 +7,13 @@
     <language>en</language>
     <atom:link href="https://whykusanagi.xyz/feed.xml" rel="self" type="application/rss+xml"/>
     <item>
+      <title>Celeste CLI v2.0.0: Safer Edits, a Sharper Code Graph, Your Editor</title>
+      <link>https://whykusanagi.xyz/blog/celeste-cli-v200</link>
+      <guid isPermaLink="true">https://whykusanagi.xyz/blog/celeste-cli-v200</guid>
+      <pubDate>Fri, 09 Oct 2026 00:00:00 GMT</pubDate>
+      <description>Celeste CLI v2.0.0 is the major release: a /v2 module path with signed binaries that update themselves, edits you can undo and rewind, a type-checked code graph with tree-sitter in every release binary, hooks, MCP trust, an editor agent for Zed and JetBrains, and an opt-in OS sandbox.</description>
+    </item>
+    <item>
       <title>Corrupted Theme 0.3.4: a whole page from one stylesheet</title>
       <link>https://whykusanagi.xyz/blog/corrupted-theme-v034</link>
       <guid isPermaLink="true">https://whykusanagi.xyz/blog/corrupted-theme-v034</guid>
