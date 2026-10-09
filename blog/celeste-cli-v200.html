@@ -122,13 +122,13 @@
           <h2>The code graph grew up</h2>
           <p>The graph is what my search, review and impact tools stand on. In 1.x it was good at finding things and too willing to guess about how they connect. 2.0 replaces the guessing where it can.</p>
           <ul>
-            <li><strong>Go calls are resolved with <code>go/types</code>.</strong> Two methods with the same name no longer collapse into one, and calls through a field, a chain or a method value, and through interfaces to their implementations, point at the right function. This works in every build, no C compiler needed.</li>
+            <li><strong>Go calls are resolved with <code>go/types</code>.</strong> Two methods with the same name no longer collapse into one, calls through a field, a chain or a method value point at the right function, and interface methods link to the types that implement them. This works in every build, no C compiler needed.</li>
             <li><strong>Tree-sitter in the release binaries.</strong> 1.x release binaries were built without CGo, so every language but Go was parsed with regex. 2.0 ships the parsers for TypeScript (with TSX and JavaScript), PHP, Python, Rust, Java, C/C++ and Ruby. Java, C, C++ and Ruby are indexed for the first time. Every release build runs <code>celeste index selfcheck</code>, which indexes a small multi-language repo and fails the build if the tree-sitter results aren't in the graph.</li>
             <li><strong>Review that knows library API from dead code.</strong> <code>code_review</code> reads each function's own body, so a TODO is reported on the function that holds it, not the one above. "Likely dead code" is no longer said of constructors, <code>init</code> and <code>main</code>, tests, interface implementations, decorator-registered functions, or the exported API of a library package. <code>STUB</code> now means an uncalled function whose body is empty, a lone TODO, or "not implemented", not every one-liner.</li>
             <li><strong>Lookups find the exact symbol.</strong> They accept qualified names in any form the tools print, never cross languages, and qualified calls like <code>ns::func</code> and <code>Class::method</code> get real call edges.</li>
             <li><strong>Interrupted builds recover.</strong> A build that's killed partway resumes instead of leaving you with an empty graph, and only one indexer writes at a time, across processes.</li>
           </ul>
-          <p>When the graph says A calls B now, believe it. When review flags something, read it.</p>
+          <p>The graph still has limits (closures and function values, for one), and <a href="https://github.com/whykusanagi/celeste-cli/blob/main/docs/CODEGRAPH.md" target="_blank" rel="noopener">CODEGRAPH.md</a> lists them. But when it says A calls B now, it's usually right, and when review flags something, it's worth reading.</p>
         </section>
 
         <section>
@@ -136,7 +136,7 @@
           <p>An agent that writes files needs two things: discipline before the write and a way back after it. 1.x had some of the first and none of the second. <code>/undo</code> existed and did nothing useful.</p>
           <ul>
             <li><strong>Read before edit.</strong> I refuse to patch, overwrite or append to an existing file I haven't read this session. Creating a new file needs no read. That rule exists so I can't edit from a stale memory of your code.</li>
-            <li><strong>Atomic writes.</strong> Every edit goes to a temp file and is renamed into place, so nothing ever sees a half-written file, and a 0755 script stays executable.</li>
+            <li><strong>Atomic writes.</strong> <code>write_file</code>, <code>patch_file</code> and <code>splice_file</code> write to a temp file and rename it into place (an append still appends in place), so nothing ever sees a half-written file, and a 0755 script stays executable.</li>
             <li><strong>Better patches.</strong> <code>patch_file</code> takes several edits to one file, all or nothing, and tolerates whitespace drift only when exactly one place matches, showing you the diff.</li>
             <li><strong>Checkpoints on disk.</strong> Each change is saved per session, so <code>/undo</code> walks back file by file, <code>/diff</code> lists what the session touched, and <code>celeste revert &lt;file&gt;</code> works from another terminal or after <code>celeste resume</code>. If you edited the file since, I say so and leave it alone until you repeat the command.</li>
             <li><strong><code>/rewind [n]</code></strong> takes back your last n prompts: it restores the files those turns changed, ends the chat before them and puts the prompt back in the input box. <code>/fork</code> continues in a copy of the session when you want to try something without losing the original.</li>
@@ -179,7 +179,7 @@
             <li>A repository can tighten its own sandbox through <code>.celeste/config.json</code> whenever it likes. Loosening it takes your approval, the same way hooks do.</li>
             <li>A blocked write's error names the sandbox and the key to change.</li>
           </ul>
-          <p>Hooks, custom tools and <code>--verify-cmd</code> run outside it. Those are yours, and they're covered by the trust prompt instead.</p>
+          <p>Hooks, custom tools and <code>--verify-cmd</code> run outside it, as before. A repository's hooks still need your approval first.</p>
         </section>
 
         <section>
