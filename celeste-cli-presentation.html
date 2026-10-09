@@ -1005,7 +1005,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <div class="cb"><code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">.grimoire</code>, <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">.grimoire.local</code> and <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">.celeste/grimoire/*.md</code> merge; <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">@./</code> includes stay in the repo.</div>
       </div>
       <div style="padding:9px 12px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;font-size:14px;color:var(--txt2);">
-        2.0 never writes into your project unasked. 10+ commits behind HEAD adds a staleness note.
+        2.0 never writes into your project unasked. More than 10 commits behind HEAD adds a staleness note.
       </div>
     </div>
   </div>
@@ -1331,7 +1331,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     <div class="c3" style="flex:1;">
       <div class="card" style="border-top:3px solid var(--pk);display:flex;flex-direction:column;gap:8px;">
         <div class="ct">Signed Releases &amp; Self-Update</div>
-        <div class="cb">Binaries for macOS (Intel, Apple silicon), Linux (amd64, arm64) and Windows (amd64), with GPG-signed checksums. The release workflow publishes only a tag signed by the release key. A <code style="color:var(--pk);">go install</code> build fetches the official binary of its version, checks the signature and checksums, and replaces itself. <code style="color:var(--pk);">celeste update</code> moves to a newer release and never downgrades.</div>
+        <div class="cb">Binaries for macOS, Linux (amd64, arm64) and Windows, with GPG-signed checksums; only a tag signed by the release key is published. A <code style="color:var(--pk);">go install</code> build fetches the official binary of its version, checks the signature and checksums, and replaces itself. <code style="color:var(--pk);">celeste update</code> moves to a newer release and never downgrades.</div>
       </div>
       <div class="card" style="border-top:3px solid var(--pu);display:flex;flex-direction:column;gap:8px;">
         <div class="ct">A Sealed Official Persona</div>
@@ -1342,7 +1342,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <div class="cb">Before 2.0 was tagged, CodeRabbit and Aikido reviewed the codebase, and the fixes shipped in 2.0: workspace confinement for file tools, owner-only files under <code style="color:var(--grn);">~/.celeste</code>, escaped terminal output, bounded MCP transports, private networks refused by <code style="color:var(--grn);">web_fetch</code>, and a signed-tag release gate.</div>
       </div>
     </div>
-    <div class="term" style="width:300px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;font-size:13px;">
+    <div class="term" style="width:260px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;font-size:13px;">
       <div style="color:var(--txt3);"># check the binary you run</div>
       <div><span class="prompt">$</span> <span class="cmd">celeste persona verify</span></div>
       <div><span class="val">official persona: ...</span></div>
