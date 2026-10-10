@@ -3,24 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Celeste CLI — Graph-Powered Code Intelligence</title>
-<meta name="description" content="How Celeste CLI indexes a codebase into a call graph, then fuses MinHash and BM25 search with structural reranking to find code by concept, not by name.">
+<title>Celeste CLI 2.0 — Graph-Powered Code Intelligence</title>
+<meta name="description" content="Celeste CLI 2.0 indexes a codebase into a type-checked call graph, finds code by concept with MinHash and BM25 search, and serves it to Claude Code, Zed and JetBrains.">
 <meta name="robots" content="noindex, follow">
 <link rel="canonical" href="https://whykusanagi.xyz/celeste-cli-presentation">
 <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://whykusanagi.xyz/celeste-cli-presentation">
-<meta property="og:title" content="Celeste CLI — Graph-Powered Code Intelligence">
-<meta property="og:description" content="How Celeste CLI indexes a codebase into a call graph, then fuses MinHash and BM25 search with structural reranking to find code by concept, not by name.">
-<meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=39077&amp;eyebrow=WHYKUSANAGI&amp;title=Celeste+CLI+%E2%80%94+Graph-Powered+Code%E2%80%A6&amp;nameplate=whykusanagi.xyz">
+<meta property="og:title" content="Celeste CLI 2.0 — Graph-Powered Code Intelligence">
+<meta property="og:description" content="Celeste CLI 2.0 indexes a codebase into a type-checked call graph, finds code by concept with MinHash and BM25 search, and serves it to Claude Code, Zed and JetBrains.">
+<meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=39077&amp;eyebrow=WHYKUSANAGI&amp;title=Celeste+CLI+2.0+%E2%80%94+Graph-Powered+Code%E2%80%A6&amp;nameplate=whykusanagi.xyz">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
 <meta property="og:site_name" content="whykusanagi">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:url" content="https://whykusanagi.xyz/celeste-cli-presentation">
-<meta name="twitter:title" content="Celeste CLI — Graph-Powered Code Intelligence">
-<meta name="twitter:description" content="How Celeste CLI indexes a codebase into a call graph, then fuses MinHash and BM25 search with structural reranking to find code by concept, not by name.">
-<meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=39077&amp;eyebrow=WHYKUSANAGI&amp;title=Celeste+CLI+%E2%80%94+Graph-Powered+Code%E2%80%A6&amp;nameplate=whykusanagi.xyz">
+<meta name="twitter:title" content="Celeste CLI 2.0 — Graph-Powered Code Intelligence">
+<meta name="twitter:description" content="Celeste CLI 2.0 indexes a codebase into a type-checked call graph, finds code by concept with MinHash and BM25 search, and serves it to Claude Code, Zed and JetBrains.">
+<meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=39077&amp;eyebrow=WHYKUSANAGI&amp;title=Celeste+CLI+2.0+%E2%80%94+Graph-Powered+Code%E2%80%A6&amp;nameplate=whykusanagi.xyz">
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 <style>
@@ -189,8 +189,8 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
 <!-- ══ 01 TITLE ══ -->
 <div class="slide active" id="s1" style="overflow:visible;">
-  <h1 class="sr-only">Celeste CLI v1.13</h1>
-  <div class="sh"><span class="sl">Celeste CLI &middot; v1.11.2</span><span class="sc">01 / 13</span></div>
+  <h1 class="sr-only">Celeste CLI v2.0.0</h1>
+  <div class="sh"><span class="sl">Celeste CLI &middot; v2.0.0</span><span class="sc">01 / 16</span></div>
 
   <!-- Graph + Celeste circle — absolutely positioned on the slide canvas, NOT in flex flow -->
   <div class="print-hero" style="position:absolute;right:30px;top:50%;transform:translateY(-50%);width:540px;height:540px;z-index:2;pointer-events:none;">
@@ -252,16 +252,16 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       <div class="glitch" data-text="CELESTE CLI" style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(42px,5.5vw,72px);line-height:1.02;letter-spacing:-.03em;color:var(--wht);" id="titleMain">CELESTE<span style="color:var(--pk);"> CLI</span></div>
       <div style="margin-top:14px;font-family:'Syne',sans-serif;font-weight:600;font-size:clamp(15px,1.6vw,20px);color:var(--pu);letter-spacing:-.01em;">Graph-Powered Code Intelligence for AI Development</div>
       <div style="margin-top:24px;display:flex;gap:8px;flex-wrap:wrap;">
-        <span class="badge badge-pk">v1.11.2</span>
+        <span class="badge badge-pk">v2.0.0</span>
         <span class="badge badge-pu">Go 1.26+</span>
         <span class="badge badge-grn">MIT</span>
-        <span class="badge badge-cy">73 MB binary</span>
-        <span class="badge badge-amb">Zero runtime deps</span>
+        <span class="badge badge-cy">macOS &middot; Linux &middot; Windows</span>
+        <span class="badge badge-amb">Signed single binary</span>
       </div>
       <div style="margin-top:36px;display:flex;gap:32px;flex-wrap:wrap;">
         <div class="tm-item">Presenter<span>whykusanagi</span></div>
         <div class="tm-item">Repository<span>github.com/whykusanagi/celeste-cli</span></div>
-        <div class="tm-item">Companion<span>celeste-for-claude &middot; celeste-stopwords</span></div>
+        <div class="tm-item">Companion<span>celeste-for-claude v2.0.0 &middot; celeste-stopwords</span></div>
       </div>
       <div style="margin-top:18px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);letter-spacing:.08em;">Character artwork by ikawasa23 &middot; x.com/ikawasa23</div>
   </div>
@@ -270,7 +270,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
 <!-- ══ 02 MEET CELESTE ══ -->
 <div class="slide" id="s2">
-  <div class="sh"><span class="sl">The Product</span><span class="sc">02 / 13</span></div>
+  <div class="sh"><span class="sl">The Product</span><span class="sc">02 / 16</span></div>
   <div class="h2" style="margin-bottom:12px;">Meet Celeste</div>
   <div style="flex:1;display:flex;gap:16px;min-height:0;">
     <!-- Left: TUI mockup — matches real celeste TUI layout exactly -->
@@ -303,7 +303,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         </div>
         <!-- Context bar: ◆ tokens: 8.4K / 1.0M ░░░░░░░ -->
         <div style="padding:3px 14px;flex-shrink:0;font-size:11px;color:var(--txt3);border-top:1px solid var(--bdr);">
-          &#9670; tokens: 8.4K / 1.0M <span style="letter-spacing:2px;">&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;</span> 0% &nbsp;&#9474;&nbsp; compact: 0 &nbsp;&#9474;&nbsp; turn: 1
+          &#9670; tokens: 8.4K / 1.0M <span style="letter-spacing:2px;">&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;&#9617;</span> 0% &nbsp;&#9474;&nbsp; turn: 1
         </div>
         <!-- Input: ❯ Type a message or 'help'... -->
         <div style="padding:6px 14px;flex-shrink:0;border-top:1px solid var(--bdr);">
@@ -312,7 +312,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <!-- Skills panel -->
         <div style="padding:8px 14px;flex-shrink:0;border-top:1px solid var(--bdr);background:rgba(139,92,246,0.03);font-size:12px;display:flex;flex-direction:column;gap:2px;">
           <div><span style="color:var(--pu);">Skills: enabled (45 loaded)</span></div>
-          <div style="color:var(--txt2);">Backend: sakana | Model: fugu</div>
+          <div style="color:var(--txt2);">Backend: sakana | Model: fugu | Mode: auto</div>
           <div style="color:var(--grn);">Last completed: code_search</div>
           <div style="color:var(--txt3);">Hint: type `skills` to browse available tool functions.</div>
         </div>
@@ -326,15 +326,15 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     <div style="flex:1;display:flex;flex-direction:column;gap:12px;">
       <div class="card" style="border-top:3px solid var(--pk);">
         <div class="ct">An Agentic AI Coding Assistant</div>
-        <div class="cb">Celeste is a standalone Go binary (54MB, zero deps) that combines a premium corruption-aesthetic TUI with graph-based code intelligence. She indexes your codebase into a persistent code graph, then serves semantic search, structural code review, and dependency analysis — locally, offline, no embeddings needed.</div>
+        <div class="cb">A single signed Go binary for macOS, Linux and Windows: a corruption-aesthetic TUI plus graph-based code intelligence. She indexes your codebase into a persistent code graph, then serves semantic search, structural review and dependency analysis locally, with no embeddings.</div>
       </div>
       <div class="card" style="border-top:3px solid var(--pu);">
-        <div class="ct">Built for Claude Code &amp; Cursor</div>
-        <div class="cb">Via MCP, Celeste exposes her code graph directly to Claude Code, Cursor, or any MCP client. Five direct tools (<code style="color:var(--pk);">celeste_index</code>, <code style="color:var(--pk);">celeste_code_search</code>, <code style="color:var(--pk);">celeste_code_review</code>, <code style="color:var(--pk);">celeste_code_graph</code>, <code style="color:var(--pk);">celeste_code_symbols</code>) return verbatim results with no chat-LLM round-trip.</div>
+        <div class="ct">Built for Claude Code, Cursor &amp; Your Editor</div>
+        <div class="cb">Via MCP, Celeste exposes her code graph to Claude Code, Cursor or any MCP client. Five direct tools (<code style="color:var(--pk);">celeste_index</code>, <code style="color:var(--pk);">celeste_code_search</code>, <code style="color:var(--pk);">celeste_code_review</code>, <code style="color:var(--pk);">celeste_code_graph</code>, <code style="color:var(--pk);">celeste_code_symbols</code>) return verbatim results with no chat-LLM round-trip. In Zed and JetBrains, <code style="color:var(--pk);">celeste acp</code> runs her in the editor's agent panel.</div>
       </div>
       <div class="card" style="border-top:3px solid var(--grn);">
         <div class="ct">A Companion, Not a Replacement</div>
-        <div class="cb">Celeste doesn't replace your LLM — she augments it. Claude stays in control; Celeste provides the graph intelligence. Four runtime modes: interactive Chat, autonomous Agent, DAG-orchestrated Subagents, and Orchestrator with model debate.</div>
+        <div class="cb">Celeste doesn't replace your LLM — she augments it. Claude stays in control; Celeste provides the graph intelligence. On her own: Chat, autonomous Agent runs, typed Subagents and an Orchestrator with a reviewer model.</div>
       </div>
     </div>
   </div>
@@ -343,7 +343,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
 <!-- ══ 03 THE PROBLEM ══ -->
 <div class="slide" id="s3">
-  <div class="sh"><span class="sl">The Problem</span><span class="sc">03 / 13</span></div>
+  <div class="sh"><span class="sl">The Problem</span><span class="sc">03 / 16</span></div>
   <div class="h2" style="margin-bottom:12px;">Code Search Is Broken</div>
   <div style="flex:1;display:flex;gap:16px;min-height:0;">
 
@@ -376,7 +376,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
     <!-- RIGHT: The Solution -->
     <div style="flex:1;background:var(--sur);border:1px solid rgba(16,185,129,.3);border-top:3px solid var(--grn);border-radius:10px;padding:20px 22px;display:flex;flex-direction:column;">
-      <div style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--grn);margin-bottom:16px;">What Celeste v1.11.2 gives you</div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--grn);margin-bottom:16px;">What Celeste v2.0.0 gives you</div>
       <div style="display:flex;flex-direction:column;gap:14px;flex:1;">
         <div style="display:flex;gap:10px;align-items:flex-start;">
           <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -388,11 +388,11 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         </div>
         <div style="display:flex;gap:10px;align-items:flex-start;">
           <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Stopwords v1.0.0</strong> &mdash; statistically derived from 32 OSS repos. Filters noise before MinHash. JQueryStatic is gone.</div>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Stopwords v1.0.0</strong> &mdash; statistically derived from an Apache-2.0/MIT open-source corpus. Filters noise before MinHash. JQueryStatic is gone.</div>
         </div>
         <div style="display:flex;gap:10px;align-items:flex-start;">
           <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Call-graph edges</strong> &mdash; tree-sitter CGo parses 10 languages. Understand which functions actually call which.</div>
+          <div style="font-size:16px;color:var(--txt2);line-height:1.55;"><strong style="color:var(--wht);">Call-graph edges</strong> &mdash; go/types for Go, tree-sitter for TS/JS, PHP, Python, Rust, Java, C/C++ and Ruby in the release binaries. Understand which functions actually call which.</div>
         </div>
         <div style="display:flex;gap:10px;align-items:flex-start;">
           <svg width="16" height="16" viewBox="0 0 16 16" style="flex-shrink:0;margin-top:3px;"><polyline points="2,9 6,13 14,3" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -418,7 +418,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       <text x="694" y="40" text-anchor="end" dominant-baseline="central" font-size="10" fill="#10b981" font-family="'DM Mono',monospace" font-weight="600">70% (+59%)</text>
     </svg>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
-      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">grafana &middot; 77,420 symbols &middot; 5 queries &middot; top 10 per query</span>
+      <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">grafana benchmark &middot; 5 queries &middot; top 10 per query &middot; measured at v1.9.0</span>
       <span style="font-family:'DM Mono',monospace;font-size:12px;color:var(--txt3);">no embeddings &middot; no vector DB &middot; offline</span>
     </div>
   </div>
@@ -426,7 +426,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
 
 <!-- ══ 04 CODE GRAPH SVG ══ -->
 <div class="slide" id="s4">
-  <div class="sh"><span class="sl">Code Graph</span><span class="sc">04 / 13</span></div>
+  <div class="sh"><span class="sl">Code Graph</span><span class="sc">04 / 16</span></div>
   <div class="h2" style="margin-bottom:2px;">The Code Graph</div>
   <div style="display:flex;gap:16px;margin-bottom:4px;flex-shrink:0;align-items:baseline;">
     <div style="flex-shrink:0;padding:6px 12px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:6px;">
@@ -596,21 +596,57 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     </svg>
   </div>
   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:6px;flex-shrink:0;">
-    <span class="badge badge-pk">grafana · 57,497 symbols</span>
-    <span class="badge badge-pu">13,543 call edges</span>
+    <span class="badge badge-pk">go/types call edges for Go</span>
+    <span class="badge badge-pu">tree-sitter in release binaries</span>
     <span class="badge badge-grn">MinHash + BM25 fusion</span>
-    <span class="badge badge-amb">Go · Python · Rust · TS · Java · C · C++ · Ruby</span>
+    <span class="badge badge-amb">Go · TS/JS · PHP · Python · Rust · Java · C/C++ · Ruby</span>
     <span class="badge badge-cy">graph snapshots · change impact</span>
   </div>
 </div>
 
-<!-- ══ 05 SEARCH QUALITY ══ -->
+<!-- ══ 05 CODE GRAPH 2.0 ══ -->
 <div class="slide" id="s5">
-  <div class="sh"><span class="sl">Search Quality</span><span class="sc">05 / 13</span></div>
+  <div class="sh"><span class="sl">Code Graph &middot; 2.0</span><span class="sc">05 / 16</span></div>
+  <div class="h2" style="margin-bottom:6px;">A Sharper Graph</div>
+  <div class="bt" style="margin-bottom:12px;flex-shrink:0;">2.0 rebuilt how edges are resolved, what review calls dead, and what happens when an index is interrupted.</div>
+  <div class="c3" style="flex:1;min-height:0;grid-template-rows:1fr 1fr;">
+    <div class="card" style="border-top:3px solid var(--pk);">
+      <div class="ct">go/types Call Resolution</div>
+      <div class="cb">Go call edges come from the type checker, so each edge points at the exact function or method. No same-name collapse: <code style="color:var(--pk);">t.Update()</code> reaches the <code style="color:var(--pk);">Update</code> of <code style="color:var(--pk);">t</code>'s type. Calls through fields, function values and interfaces resolve, and interface methods get <code style="color:var(--pk);">implements</code> edges.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pu);">
+      <div class="ct">Tree-sitter in Release Binaries</div>
+      <div class="cb">2.0 release binaries are built with CGo on each platform and parse TypeScript/JavaScript, PHP, Python, Rust, Java, C/C++ and Ruby with tree-sitter. 1.x releases used regex for everything but Go and skipped Java, C, C++ and Ruby. Every release runs <code style="color:var(--pu);">celeste index selfcheck</code> before it ships.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--grn);">
+      <div class="ct">Library-API-Aware Review</div>
+      <div class="cb"><code style="color:var(--grn);">code_review</code> reads each function's own body. &ldquo;Likely dead code&rdquo; is no longer said of constructors, <code style="color:var(--grn);">init</code>/<code style="color:var(--grn);">main</code>, tests, interface implementations and overrides, decorator-registered handlers, or a library's exported API.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--cy);">
+      <div class="ct">Qualified Lookups</div>
+      <div class="cb">Ask for <code style="color:var(--cy);">(*acp.session).update</code>, <code style="color:var(--cy);">AppModel.update</code>, <code style="color:var(--cy);">Foo::add</code> or <code style="color:var(--cy);">core.Foo.add</code> and get that exact symbol. Qualified calls (<code style="color:var(--cy);">ns::func</code>, <code style="color:var(--cy);">Class::method</code>) get call edges, and heuristic edges never cross languages.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--amb);">
+      <div class="ct">An Index That Recovers</div>
+      <div class="cb">A build that is cancelled or killed is finished by the next update instead of emptying the graph. One indexer writes at a time across processes. Query tools say when there is no index, rather than answering &ldquo;no findings&rdquo;.</div>
+    </div>
+    <div class="term" style="display:flex;flex-direction:column;justify-content:center;">
+      <div style="color:var(--txt3);font-size:13px;"># upgrading from 1.x: index Java, C, C++, Ruby too</div>
+      <div><span class="prompt">$</span> <span class="cmd">celeste index rebuild</span></div>
+      <div style="margin-top:6px;color:var(--txt3);font-size:13px;"># after code changes</div>
+      <div><span class="prompt">$</span> <span class="cmd">celeste index</span></div>
+      <div><span class="prompt">$</span> <span class="cmd">celeste index status</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 06 SEARCH QUALITY ══ -->
+<div class="slide" id="s6">
+  <div class="sh"><span class="sl">Search Quality</span><span class="sc">06 / 16</span></div>
   <div class="h2" style="margin-bottom:4px;">Precision That Ships</div>
   <div style="padding:9px 16px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;margin-bottom:6px;display:flex;align-items:center;gap:14px;flex-shrink:0;">
     <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:22px;color:var(--pk);">22/50 &rarr; 35/50</div>
-    <div style="font-size:15px;color:var(--txt2);">relevant results across 5 benchmark queries (top 10 per query)</div>
+    <div style="font-size:15px;color:var(--txt2);">relevant results across 5 grafana benchmark queries (top 10 per query, measured at v1.9.0)</div>
     <div style="margin-left:auto;font-family:'Syne',sans-serif;font-weight:700;font-size:17px;color:var(--grn);">+59%</div>
   </div>
   <div style="flex:1;display:flex;flex-direction:column;gap:10px;min-height:0;">
@@ -709,7 +745,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
     </div>
     <div style="flex:1;padding:10px 14px;background:var(--pudim);border:1px solid var(--puglow);border-radius:8px;">
       <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">BM25 + Stopwords</div>
-      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">IDF scoring surfaces rare, meaningful tokens. 500 stop words filter noise before MinHash.</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">IDF scoring surfaces rare, meaningful tokens. Under 500 stop words filter noise before MinHash.</div>
     </div>
     <div style="flex:1;padding:10px 14px;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:8px;">
       <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--grn);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">Path-based test filter</div>
@@ -718,9 +754,9 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   </div>
 </div>
 
-<!-- ══ 06 SEARCH PIPELINE FLOW ══ -->
-<div class="slide" id="s6">
-  <div class="sh"><span class="sl">Search Pipeline</span><span class="sc">06 / 13</span></div>
+<!-- ══ 07 SEARCH PIPELINE FLOW ══ -->
+<div class="slide" id="s7">
+  <div class="sh"><span class="sl">Search Pipeline</span><span class="sc">07 / 16</span></div>
   <div class="h2" style="margin-bottom:4px;">How Search Works</div>
   <div style="font-size:14px;color:var(--txt2);line-height:1.5;margin-bottom:6px;flex-shrink:0;">Your query enters two parallel paths. <strong style="color:var(--pu);">MinHash</strong> compares token fingerprints for structural similarity. <strong style="color:var(--pk);">BM25</strong> scores how rare and relevant each token is. The results merge via <strong style="color:var(--grn);">Reciprocal Rank Fusion</strong>, then get reranked by call-graph structure.</div>
   <div class="dw" style="flex:1;min-height:0;">
@@ -836,7 +872,7 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   <div style="display:flex;gap:10px;flex-shrink:0;margin-top:6px;">
     <div style="flex:1;padding:10px 14px;background:var(--sur);border:1px solid var(--bdr);border-top:2px solid var(--pu);border-radius:8px;">
       <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pu);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">MinHash Path</div>
-      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">Splits identifiers by camelCase/snake_case, removes stop words, then hashes each token set into a 128-slot fingerprint. LSH band tables make lookup 20x faster than brute-force comparison.</div>
+      <div style="font-size:13px;color:var(--txt2);line-height:1.5;">Splits identifiers by camelCase/snake_case, removes stop words, then hashes each token set into a 128-slot fingerprint. LSH band tables cut lookup time 20x against brute force at grafana scale (77,420 symbols).</div>
     </div>
     <div style="flex:1;padding:10px 14px;background:var(--sur);border:1px solid var(--bdr);border-top:2px solid var(--pk);border-radius:8px;">
       <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--pk);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px;">BM25 Path</div>
@@ -849,9 +885,9 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
   </div>
 </div>
 
-<!-- ══ 07 DIRECT MCP TOOLS ══ -->
-<div class="slide" id="s7">
-  <div class="sh"><span class="sl">MCP Tools</span><span class="sc">07 / 13</span></div>
+<!-- ══ 08 DIRECT MCP TOOLS ══ -->
+<div class="slide" id="s8">
+  <div class="sh"><span class="sl">MCP &middot; Claude Code</span><span class="sc">08 / 16</span></div>
   <div class="h2" style="margin-bottom:10px;">No Middleman</div>
   <div style="flex:1;display:flex;gap:14px;min-height:0;">
     <div style="flex:1;min-height:0;">
@@ -861,8 +897,8 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
           <marker id="ga2" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3z" fill="#10b981"/></marker>
         </defs>
 
-        <text x="150" y="16" text-anchor="middle" font-size="10" fill="#ef4444" font-family="'DM Mono',monospace" letter-spacing="1.5">BEFORE</text>
-        <text x="468" y="16" text-anchor="middle" font-size="10" fill="#10b981" font-family="'DM Mono',monospace" letter-spacing="1.5">AFTER v1.11.2</text>
+        <text x="150" y="16" text-anchor="middle" font-size="10" fill="#ef4444" font-family="'DM Mono',monospace" letter-spacing="1.5">VIA A CHAT MODEL</text>
+        <text x="468" y="16" text-anchor="middle" font-size="10" fill="#10b981" font-family="'DM Mono',monospace" letter-spacing="1.5">DIRECT TOOLS</text>
         <line x1="310" y1="6" x2="310" y2="264" stroke="#1e1b2e" stroke-width="1" stroke-dasharray="4,3"/>
 
         <!-- BEFORE chain -->
@@ -896,81 +932,88 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <text x="466" y="220" text-anchor="middle" dominant-baseline="central" font-size="10" fill="#7a7085" font-family="'DM Mono',monospace">no max_tokens ceiling &middot; streaming progress</text>
       </svg>
     </div>
-    <div style="width:215px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;">
-      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">5 Direct MCP Tools</div>
+    <div style="width:300px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;">
+      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">8 MCP Tools &middot; celeste serve</div>
       <div style="display:flex;flex-wrap:wrap;gap:5px;">
         <span class="badge badge-pk" style="font-size:13px;">celeste_index</span>
         <span class="badge badge-pk" style="font-size:13px;">celeste_code_search</span>
         <span class="badge badge-pk" style="font-size:13px;">celeste_code_review</span>
         <span class="badge badge-pk" style="font-size:13px;">celeste_code_graph</span>
         <span class="badge badge-pk" style="font-size:13px;">celeste_code_symbols</span>
+        <span class="badge badge-pu" style="font-size:13px;">celeste</span>
+        <span class="badge badge-pu" style="font-size:13px;">celeste_content</span>
+        <span class="badge badge-pu" style="font-size:13px;">celeste_status</span>
       </div>
       <div class="card" style="margin-top:4px;">
-        <div class="ct" style="font-size:15px;">Streaming Progress</div>
-        <div class="cb" style="font-size:14px;">Reindex notifications stream in real-time. Claude Code sees "Indexed 4,231 symbols..." as it happens.</div>
+        <div class="ct" style="font-size:15px;">One-Command Install</div>
+        <div class="cb" style="font-size:14px;"><code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">celeste mcp install</code> wires Claude Desktop, Claude Code and Cursor (Codex gets a TOML block).</div>
       </div>
       <div class="card">
-        <div class="ct" style="font-size:15px;">No LLM Round-trip</div>
-        <div class="cb" style="font-size:14px;">Direct call returns raw codegraph results. No max_tokens ceiling. No lossy summarization.</div>
+        <div class="ct" style="font-size:15px;">celeste-for-claude v2.0.0</div>
+        <div class="cb" style="font-size:14px;">The Claude Code plugin for celeste 2.0: six skills (review, search, graph, context, docs, content) on top of the direct tools.</div>
       </div>
       <div class="card">
-        <div class="ct" style="font-size:15px;">8 Total MCP Tools</div>
-        <div class="cb" style="font-size:14px;">5 direct codegraph + 3 persona tools. Served by <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">celeste serve</code> on localhost.</div>
+        <div class="ct" style="font-size:15px;">And an MCP Client</div>
+        <div class="cb" style="font-size:14px;">stdio, SSE and streamable HTTP. A repo's servers start only once approved: <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">celeste mcp list</code>, <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">trust</code>.</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ 08 .GRIMOIRE ══ -->
-<div class="slide" id="s8">
-  <div class="sh"><span class="sl">.grimoire &middot; Project Memory</span><span class="sc">08 / 13</span></div>
+<!-- ══ 09 .GRIMOIRE ══ -->
+<div class="slide" id="s9">
+  <div class="sh"><span class="sl">.grimoire &middot; Project Memory</span><span class="sc">09 / 16</span></div>
   <div class="h2" style="margin-bottom:10px;">Project Memory</div>
   <div style="flex:1;display:flex;gap:14px;min-height:0;">
     <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
       <div class="term" style="flex:1;">
-        <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--txt3);margin-bottom:10px;"># .grimoire &mdash; auto-initialized on first run, git-stamped</div>
-        <div><span class="prompt">project:</span> <span class="val">celeste-stopwords</span></div>
-        <div><span class="prompt">version:</span> <span class="val">0.1.0</span></div>
-        <div><span class="prompt">git_sha:</span> <span class="val">39cd8fe</span></div>
-        <div><span class="prompt">indexed_at:</span> <span class="val">2026-04-13T09:15:22Z</span></div>
-        <div style="margin-top:8px;"><span class="prompt">@include:</span> <span class="val">./docs/architecture.grimoire</span></div>
-        <div style="margin-top:8px;"><span class="key">memories:</span></div>
-        <div style="padding-left:16px;"><span class="out">- "Pipeline uses celeste codegraph for tokenization"</span></div>
-        <div style="padding-left:16px;"><span class="out">- "Acceptance: &lt;500 stop words, &gt;30% FP reduction"</span></div>
-        <div style="padding-left:16px;"><span class="out">- "Corpus: 32 OSS repos, Apache-2.0 or MIT only"</span></div>
-        <div style="margin-top:8px;"><span class="key">hooks:</span></div>
-        <div style="padding-left:16px;"><span class="out">pre_tool: ["go vet ./..."]</span></div>
-        <div style="padding-left:16px;"><span class="out">post_write: ["go build ./..."]</span></div>
-        <div style="margin-top:10px;color:var(--amb);font-size:13px;">&#9888; grimoire is 3 commits behind HEAD &mdash; run <span style="color:var(--pk);">celeste init</span> to refresh</div>
+        <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.1em;color:var(--txt3);margin-bottom:10px;"># .grimoire &mdash; written by celeste init or /init, git-stamped</div>
+        <div><span class="out">&lt;!--</span></div>
+        <div><span class="prompt">last_updated:</span> <span class="val">2026-10-05 09:15:22</span></div>
+        <div><span class="prompt">git_hash:</span> <span class="val">39cd8fe</span> &nbsp;<span class="prompt">git_branch:</span> <span class="val">main</span></div>
+        <div><span class="prompt">git_commit_count:</span> <span class="val">412</span></div>
+        <div><span class="out">--&gt;</span></div>
+        <div style="margin-top:6px;"><span class="key"># Grimoire: go project</span></div>
+        <div style="margin-top:4px;"><span class="key">## Bindings</span></div>
+        <div style="padding-left:16px;"><span class="out">- This is a Go project</span></div>
+        <div><span class="key">## Rituals</span></div>
+        <div style="padding-left:16px;"><span class="out">- Always run tests before committing: `go test ./...`</span></div>
+        <div><span class="key">## Incantations</span></div>
+        <div style="padding-left:16px;"><span class="val">@./docs/ARCHITECTURE.md</span></div>
+        <div><span class="key">## Wards</span></div>
+        <div style="padding-left:16px;"><span class="out">- Do not modify .env or secrets files</span></div>
+        <div><span class="key">## Hooks</span> <span class="out">&middot; ### PreToolUse</span></div>
+        <div style="padding-left:16px;"><span class="out">- bash: ./scripts/check.sh {{command}}</span></div>
+        <div style="margin-top:10px;color:var(--amb);font-size:13px;">&#9888; Note: Grimoire is 23 commits behind HEAD (4d ago)</div>
       </div>
     </div>
     <div style="width:270px;flex-shrink:0;display:flex;flex-direction:column;gap:9px;">
       <div class="card" style="border-left:3px solid var(--pk);">
         <div class="ct">Memories</div>
-        <div class="cb">Persistent project facts injected into every LLM system prompt. Survive session resets. Git-stamped for provenance.</div>
+        <div class="cb">Project facts saved with <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">celeste remember</code> or <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pk);">save_memory</code>, added to every session's prompt.</div>
       </div>
       <div class="card" style="border-left:3px solid var(--pu);">
-        <div class="ct">Sessions</div>
-        <div class="cb">JSONL auto-save with resume. Browse and reload any past conversation. Full message history with timestamps.</div>
+        <div class="ct">AGENTS.md &amp; CLAUDE.md</div>
+        <div class="cb">Read up to the git root, under the grimoire, which wins on conflict. <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--pu);">/init agents</code> writes one.</div>
       </div>
       <div class="card" style="border-left:3px solid var(--grn);">
-        <div class="ct">Checkpoints</div>
-        <div class="cb">File-level undo/revert via snapshot backup on every write. <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--grn);">/revert</code> rolls back any agent change.</div>
+        <div class="ct">Sessions</div>
+        <div class="cb">JSONL auto-save and resume, this project first; <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--grn);">/fork</code> continues in a copy.</div>
       </div>
       <div class="card" style="border-left:3px solid var(--amb);">
-        <div class="ct">@include Composition</div>
-        <div class="cb">Compose multiple .grimoire fragments. Monorepo teams split context by subsystem and merge at runtime.</div>
+        <div class="ct">Layers &amp; Includes</div>
+        <div class="cb"><code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">.grimoire</code>, <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">.grimoire.local</code> and <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">.celeste/grimoire/*.md</code> merge; <code style="font-family:'DM Mono',monospace;font-size:13px;color:var(--amb);">@./</code> includes stay in the repo.</div>
       </div>
       <div style="padding:9px 12px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;font-size:14px;color:var(--txt2);">
-        Staleness tracking warns when grimoire is older than recent commits. Auto-reinit on <code style="font-family:'DM Mono',monospace;color:var(--pk);">celeste init</code>.
+        2.0 never writes into your project unasked. More than 10 commits behind HEAD adds a staleness note.
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ 09 RUNTIME MODES ══ -->
-<div class="slide" id="s9">
-  <div class="sh"><span class="sl">Runtime Modes</span><span class="sc">09 / 13</span></div>
+<!-- ══ 10 RUNTIME MODES ══ -->
+<div class="slide" id="s10">
+  <div class="sh"><span class="sl">Runtime Modes</span><span class="sc">10 / 16</span></div>
   <div class="h2" style="margin-bottom:10px;">Four Ways to Work</div>
   <div style="flex:1;display:flex;gap:9px;min-height:0;">
     <div style="flex:1;background:var(--sur);border:1px solid var(--bdr);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
@@ -979,10 +1022,11 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Chat</div>
       </div>
       <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--cy);letter-spacing:.1em;">celeste chat</div>
-      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Interactive with auto-looping tool calls. 50-turn safety cap.</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Interactive with auto-looping tool calls. 25-turn safety cap.</div>
       <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
+        <div><span class="prompt">$</span> <span class="cmd">celeste version</span></div>
+        <div><span class="out">Celeste CLI 2.0.0 (bubbletea-tui)</span></div>
         <div><span class="prompt">$</span> <span class="cmd">celeste chat</span></div>
-        <div><span class="out">Celeste v1.11.2 &middot; codegraph loaded</span></div>
         <div style="margin-top:3px;"><span class="prompt">You:</span> <span class="cmd">find database pool code</span></div>
         <div><span class="key">[code_search]</span> <span class="val">&rarr; ConnectionPool...</span></div>
       </div>
@@ -993,22 +1037,22 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Agent</div>
       </div>
       <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--pk);letter-spacing:.1em;">celeste agent --goal "..."</div>
-      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Autonomous multi-turn with planning, file I/O, checkpointing.</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Autonomous runs with planning, file I/O, checkpoints and resume. Unattended runs pass <code style="color:var(--pk);">--auto-approve</code>.</div>
       <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
-        <div><span class="prompt">$</span> <span class="cmd">celeste agent --goal "fix retry"</span></div>
+        <div><span class="prompt">$</span> <span class="cmd">celeste agent --auto-approve \</span></div>
+        <div><span class="cmd">&nbsp;&nbsp;--goal "fix retry"</span></div>
         <div><span class="key">[read_file]</span> <span class="val">retry.go</span></div>
         <div><span class="key">[patch_file]</span> <span class="val">backoff fix applied</span></div>
-        <div><span class="key">[checkpoint]</span> <span class="val">saved</span></div>
       </div>
     </div>
     <div style="flex:1;background:var(--sur);border:1px solid rgba(245,158,11,0.25);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:6px;">
       <div style="display:flex;align-items:center;gap:8px;">
         <div style="width:8px;height:8px;border-radius:50%;background:var(--amb);flex-shrink:0;"></div>
-        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Subagent DAG</div>
-        <span class="badge badge-amb" style="font-size:10px;padding:2px 6px;">NEW</span>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Subagents</div>
+        <span class="badge badge-amb" style="font-size:10px;padding:2px 6px;">TYPED</span>
       </div>
-      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amb);letter-spacing:.1em;">spawn_agent task_id: depends_on:</div>
-      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Element-named agents (&#22320;&#28779;&#27700;&#20809;&#38343;&#39080;) with auto-detected DAG dependencies.</div>
+      <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--amb);letter-spacing:.1em;">spawn_agent type: depends_on:</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;"><code style="color:var(--amb);">explore</code>, <code style="color:var(--amb);">review</code> or <code style="color:var(--amb);">general</code>, each returning validated JSON. Element-named, with DAG dependencies and optional git worktrees.</div>
       <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
         <div><span class="out">&#10003; &#12308;&#28779; hi&#12309; ch1.txt</span> <span style="color:var(--txt3);">15.6s</span></div>
         <div><span class="out">&#10003; &#12308;&#27700; mizu&#12309; ch2.txt</span> <span style="color:var(--txt3);">31.7s</span></div>
@@ -1022,27 +1066,52 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--wht);">Orchestrator</div>
       </div>
       <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--pu);letter-spacing:.1em;">/orchestrate &lt;goal&gt;</div>
-      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">Agent + reviewer model debate loop. Production-grade output.</div>
+      <div style="font-size:14px;color:var(--txt2);line-height:1.5;">An agent run plus a second reviewer model that critiques and debates the output.</div>
       <div class="term" style="flex:1;font-size:12px;line-height:1.6;">
         <div><span class="prompt">You:</span> <span class="cmd">/orchestrate refactor auth</span></div>
         <div><span class="key">[agent]</span> <span class="out">drafts implementation</span></div>
         <div><span class="key">[reviewer]</span> <span class="out">finds edge case</span></div>
-        <div><span class="val">consensus: 2 rounds</span></div>
+        <div><span class="key">[agent]</span> <span class="out">revises</span></div>
       </div>
     </div>
   </div>
   <div style="margin-top:9px;padding:9px 14px;background:var(--pudim);border:1px solid var(--puglow);border-radius:8px;font-size:14px;color:var(--txt2);flex-shrink:0;">
-    <strong style="color:var(--amb);">Subagent DAG</strong> auto-detects task dependencies from goal text, sequences execution, and recovers partial results on failure. <strong style="color:var(--pu);">Orchestrator</strong> adds a debate/review loop &mdash; no other open-source CLI offers either.
+    <strong style="color:var(--pu);">One tool loop in 2.0:</strong> chat, agent runs, MCP chat, subagents and <code style="color:var(--pu);">/orchestrate</code> lanes share the same caps, guards, permissions and hooks. In Zed or JetBrains, <strong style="color:var(--pk);">celeste acp</strong> runs the chat in the editor's agent panel.
   </div>
 </div>
 
-<!-- ══ 10 TOOLS & PROVIDERS ══ -->
-<div class="slide" id="s10">
-  <div class="sh"><span class="sl">Tools &amp; Providers</span><span class="sc">10 / 13</span></div>
+<!-- ══ 11 GUARDRAILS ══ -->
+<div class="slide" id="s11">
+  <div class="sh"><span class="sl">Guardrails &middot; 2.0</span><span class="sc">11 / 16</span></div>
+  <div class="h2" style="margin-bottom:6px;">Plan First, Undo Anything</div>
+  <div class="bt" style="margin-bottom:12px;flex-shrink:0;">Four controls that make it safe to let an agent touch your repository.</div>
+  <div style="flex:1;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:12px;min-height:0;">
+    <div class="card" style="border-top:3px solid var(--pu);display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;"><div class="ct" style="margin-bottom:0;">Plan Mode</div><span class="badge badge-pu">/plan</span></div>
+      <div class="cb">Read-only tools until the model calls <code style="color:var(--pu);">submit_plan</code> with 1&ndash;30 ordered steps. You approve it or send it back; approval saves <code style="color:var(--pu);">.celeste/plan.json</code>, adds a todo per step and unlocks every tool in the same turn. Typed text never approves by accident.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--grn);display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;"><div class="ct" style="margin-bottom:0;">Checkpoints</div><span class="badge badge-grn">/undo &middot; /rewind</span></div>
+      <div class="cb">Every file change is checkpointed on disk per session, so it survives <code style="color:var(--grn);">celeste resume</code>. <code style="color:var(--grn);">/undo</code> walks back one file change, <code style="color:var(--grn);">/rewind [n]</code> takes back the last n prompts and their files, <code style="color:var(--grn);">/diff</code> lists what changed, <code style="color:var(--grn);">celeste revert</code> works from the shell. Changes made by <code style="color:var(--grn);">bash</code> are not tracked.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--pk);display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;"><div class="ct" style="margin-bottom:0;">Hooks</div><span class="badge badge-pk">hooks.json</span></div>
+      <div class="cb">Your own commands on 8 events, <code style="color:var(--pk);">PreToolUse</code> through <code style="color:var(--pk);">SubagentStop</code>, with JSON on stdin and stdout. A hook can block a call, rewrite its input or add context. A repository's hooks run only after <code style="color:var(--pk);">celeste hooks trust</code>, and a no is remembered.</div>
+    </div>
+    <div class="card" style="border-top:3px solid var(--amb);display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;"><div class="ct" style="margin-bottom:0;">OS Sandbox</div><span class="badge badge-amb">opt-in</span></div>
+      <div class="cb">With <code style="color:var(--amb);">"sandbox": {"enabled": true}</code>, <code style="color:var(--amb);">bash</code> runs under seatbelt on macOS or bubblewrap on Linux and writes only to the workspace, temp and build-cache directories; <code style="color:var(--amb);">"network": false</code> cuts the network. Off by default in 2.0; Windows has no sandbox.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 12 TOOLS & PROVIDERS ══ -->
+<div class="slide" id="s12">
+  <div class="sh"><span class="sl">Tools &amp; Providers</span><span class="sc">12 / 16</span></div>
   <div class="h2" style="margin-bottom:10px;">Built-In Power</div>
   <div style="flex:1;display:flex;gap:12px;min-height:0;">
     <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
-      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">45+ Built-in Tools &middot; 7 Categories</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">48 Built-in Tools &middot; plus MCP &amp; custom tools</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;flex:1;overflow-y:auto;">
         <!-- Dev Tools -->
         <div class="card" style="padding:12px 14px;">
@@ -1051,20 +1120,20 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
               <span style="font-size:14px;">&#9881;</span>
               <div class="ct" style="font-size:14px;margin-bottom:0;">Dev Tools</div>
             </div>
-            <span class="badge badge-pk" style="font-size:11px;padding:2px 7px;">15+</span>
+            <span class="badge badge-pk" style="font-size:11px;padding:2px 7px;">10</span>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
-            <code style="color:var(--pk);">bash</code> shell execution &middot; <code style="color:var(--pk);">read_file</code> <code style="color:var(--pk);">write_file</code> <code style="color:var(--pk);">patch_file</code><br/>
-            <code style="color:var(--pk);">search_files</code> regex &middot; <code style="color:var(--pk);">list_dir</code> &middot; <code style="color:var(--pk);">git_status</code> <code style="color:var(--pk);">git_log</code><br/>
-            <code style="color:var(--txt3);">permissions</code> &middot; <code style="color:var(--txt3);">spawn_agent</code> &middot; <code style="color:var(--txt3);">checkpoint</code>
+            <code style="color:var(--pk);">bash</code> shell &middot; <code style="color:var(--pk);">read_file</code> <code style="color:var(--pk);">write_file</code> <code style="color:var(--pk);">patch_file</code><br/>
+            <code style="color:var(--pk);">splice_file</code> &middot; <code style="color:var(--pk);">list_files</code> &middot; <code style="color:var(--pk);">search</code> regex<br/>
+            <code style="color:var(--txt3);">git_status</code> &middot; <code style="color:var(--txt3);">git_log</code> &middot; <code style="color:var(--txt3);">recall_tool_result</code>
           </div>
         </div>
-        <!-- Code Intelligence -->
+        <!-- Code Graph -->
         <div class="card" style="padding:12px 14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <span style="font-size:14px;">&#9670;</span>
-              <div class="ct" style="font-size:14px;margin-bottom:0;">Code Intelligence</div>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Code Graph</div>
             </div>
             <span class="badge badge-pu" style="font-size:11px;padding:2px 7px;">6</span>
           </div>
@@ -1072,53 +1141,51 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
             <code style="color:var(--pu);">code_search</code> MinHash+BM25 semantic<br/>
             <code style="color:var(--pu);">code_review</code> structural 6-category<br/>
             <code style="color:var(--pu);">code_graph</code> callers/callees &middot; <code style="color:var(--pu);">code_symbols</code> list<br/>
-            <code style="color:var(--txt3);">extended_thinking</code> &middot; <code style="color:var(--txt3);">code_impact</code>
+            <code style="color:var(--txt3);">code_impact</code> blast radius &middot; <code style="color:var(--txt3);">code_snapshot</code>
           </div>
         </div>
-        <!-- Direct MCP -->
+        <!-- Agent workflow -->
         <div class="card" style="padding:12px 14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <span style="font-size:14px;">&#9889;</span>
-              <div class="ct" style="font-size:14px;margin-bottom:0;">Direct MCP</div>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Agent Workflow</div>
             </div>
-            <span class="badge badge-pk" style="font-size:11px;padding:2px 7px;">5</span>
+            <span class="badge badge-pk" style="font-size:11px;padding:2px 7px;">4</span>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
-            <code style="color:var(--pk);">celeste_index</code> rebuild graph<br/>
-            <code style="color:var(--pk);">celeste_code_search</code> verbatim results<br/>
-            <code style="color:var(--pk);">celeste_code_review</code> no LLM round-trip<br/>
-            <code style="color:var(--txt3);">celeste_code_graph</code> &middot; <code style="color:var(--txt3);">celeste_code_symbols</code>
+            <code style="color:var(--pk);">todo</code> task list &middot; <code style="color:var(--pk);">ask</code> multiple choice<br/>
+            <code style="color:var(--pk);">find_tools</code> BM25 tool discovery<br/>
+            <code style="color:var(--pk);">save_memory</code> &middot; chat adds <code style="color:var(--txt3);">spawn_agent</code> <code style="color:var(--txt3);">post_message</code>
           </div>
         </div>
-        <!-- Web -->
+        <!-- Web & Info -->
         <div class="card" style="padding:12px 14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <span style="font-size:14px;">&#127760;</span>
-              <div class="ct" style="font-size:14px;margin-bottom:0;">Web</div>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Web, Info &amp; Media</div>
             </div>
-            <span class="badge badge-cy" style="font-size:11px;padding:2px 7px;">8</span>
+            <span class="badge badge-cy" style="font-size:11px;padding:2px 7px;">9</span>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
-            <code style="color:var(--cy);">web_search</code> &middot; <code style="color:var(--cy);">web_fetch</code> scrape pages<br/>
-            <code style="color:var(--cy);">weather</code> &middot; <code style="color:var(--cy);">currency</code> conversion<br/>
-            <code style="color:var(--txt3);">twitch_stream</code> &middot; <code style="color:var(--txt3);">youtube</code> &middot; <code style="color:var(--txt3);">qr_code</code> &middot; <code style="color:var(--txt3);">image_gen</code>
+            <code style="color:var(--cy);">web_search</code> &middot; <code style="color:var(--cy);">web_fetch</code> public hosts by default<br/>
+            <code style="color:var(--cy);">get_weather</code> &middot; <code style="color:var(--cy);">convert_currency</code> &middot; <code style="color:var(--cy);">collections_search</code><br/>
+            <code style="color:var(--txt3);">check_twitch_live</code> &middot; <code style="color:var(--txt3);">get_youtube_videos</code> &middot; <code style="color:var(--txt3);">upscale_image</code> &middot; <code style="color:var(--txt3);">tarot_reading</code>
           </div>
         </div>
-        <!-- Crypto & Security -->
+        <!-- Blockchain -->
         <div class="card" style="padding:12px 14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <span style="font-size:14px;">&#128274;</span>
-              <div class="ct" style="font-size:14px;margin-bottom:0;">Crypto &amp; Security</div>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Blockchain</div>
             </div>
-            <span class="badge badge-amb" style="font-size:11px;padding:2px 7px;">7</span>
+            <span class="badge badge-amb" style="font-size:11px;padding:2px 7px;">4</span>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
-            <code style="color:var(--amb);">ipfs_pin</code> &middot; <code style="color:var(--amb);">alchemy</code> blockchain query<br/>
-            <code style="color:var(--amb);">wallet_monitor</code> balance tracking<br/>
-            <code style="color:var(--txt3);">hash_gen</code> &middot; <code style="color:var(--txt3);">uuid</code> &middot; <code style="color:var(--txt3);">password_gen</code> &middot; <code style="color:var(--txt3);">base64</code>
+            <code style="color:var(--amb);">ipfs</code> &middot; <code style="color:var(--amb);">alchemy</code> blockchain query<br/>
+            <code style="color:var(--amb);">wallet_security</code> &middot; <code style="color:var(--amb);">blockmon</code> chain watch
           </div>
         </div>
         <!-- Audio / TTS -->
@@ -1128,42 +1195,45 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
               <span style="font-size:14px;">&#127925;</span>
               <div class="ct" style="font-size:14px;margin-bottom:0;">Audio / TTS</div>
             </div>
-            <span class="badge badge-amb" style="font-size:11px;padding:2px 7px;">NEW</span>
+            <span class="badge badge-amb" style="font-size:11px;padding:2px 7px;">2</span>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.7;color:var(--txt2);">
             <code style="color:var(--amb);">generate_speech</code> ElevenLabs TTS<br/>
-            <code style="color:var(--amb);">sound_effect</code> &middot; <code style="color:var(--amb);">mix</code> ffmpeg multi-track<br/>
-            <code style="color:var(--txt3);">audio_render</code> project timeline &middot; <code style="color:var(--txt3);">batch</code> &middot; Gantt viz
+            <code style="color:var(--amb);">audio_render</code> render a timeline manifest
           </div>
         </div>
-        <!-- Productivity -->
+        <!-- Utilities & Productivity -->
         <div class="card" style="padding:12px 14px;grid-column:span 2;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
             <div style="display:flex;align-items:center;gap:6px;">
               <span style="font-size:14px;">&#128203;</span>
-              <div class="ct" style="font-size:14px;margin-bottom:0;">Productivity</div>
+              <div class="ct" style="font-size:14px;margin-bottom:0;">Utilities &amp; Productivity</div>
             </div>
-            <span class="badge badge-grn" style="font-size:11px;padding:2px 7px;">4</span>
+            <span class="badge badge-grn" style="font-size:11px;padding:2px 7px;">13</span>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:11px;line-height:1.5;color:var(--txt2);">
-            <code style="color:var(--grn);">reminders</code> scheduled alerts &middot; <code style="color:var(--grn);">notes</code> persistent scratch &middot; <code style="color:var(--grn);">todo</code> task tracking &middot; all stored locally in <code style="color:var(--txt3);">~/.celeste</code>
+            <code style="color:var(--grn);">set_reminder</code> <code style="color:var(--grn);">list_reminders</code> &middot; <code style="color:var(--grn);">save_note</code> <code style="color:var(--grn);">get_note</code> <code style="color:var(--grn);">list_notes</code> stored in <code style="color:var(--txt3);">~/.celeste</code> &middot; units, timezones, hashes, base64, UUIDs, passwords, QR codes
           </div>
         </div>
       </div>
     </div>
     <div style="width:250px;flex-shrink:0;display:flex;flex-direction:column;gap:7px;">
-      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">8 LLM Providers</div>
+      <div style="font-family:'DM Mono',monospace;font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:var(--txt3);">9 Chat Providers</div>
       <div style="display:flex;align-items:center;gap:8px;padding:9px 11px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;">
         <span style="color:var(--pk);font-size:15px;">&#9733;</span>
         <div style="flex:1;"><div style="font-size:15px;color:var(--wht);font-weight:500;">Sakana AI / Fugu</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">DEFAULT &middot; 1M context &middot; fugu</div></div>
         <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
-        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Grok / xAI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">2M context &middot; grok-4-1-fast</div></div>
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Local models</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">Ollama &middot; LM Studio &middot; no key</div></div>
         <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
-        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">OpenAI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">gpt-4.1-mini / gpt-4.1</div></div>
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Grok / xAI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">grok-4.20 non-reasoning</div></div>
+        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">OpenAI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">Responses API</div></div>
         <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
@@ -1171,51 +1241,48 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
-        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Google Gemini</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">gemini-2.5-flash &middot; free tier</div></div>
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Google Gemini</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">gemini-flash-latest</div></div>
         <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
-        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Venice.ai</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">NSFW &middot; image generation</div></div>
-        <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
-      </div>
-      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
-        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Vertex AI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">enterprise &middot; GCP project</div></div>
-        <span class="badge badge-amb" style="font-size:13px;">&#9888;</span>
       </div>
       <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
         <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">OpenRouter</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">multi-provider &middot; parallel fn calls</div></div>
         <span class="badge badge-grn" style="font-size:13px;">&#10003;</span>
       </div>
-      <div style="padding:7px 10px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">
-        Zero runtime deps &middot; 73 MB binary &middot; offline capable
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Venice.ai</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">NSFW &middot; images</div></div>
+        <span class="badge badge-amb" style="font-size:13px;">&#9888;</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:8px 11px;background:var(--sur);border:1px solid var(--bdr);border-radius:8px;">
+        <div style="flex:1;"><div style="font-size:15px;color:var(--wht);">Vertex AI</div><div style="font-size:13px;color:var(--txt2);font-family:'DM Mono',monospace;">enterprise &middot; GCP project</div></div>
+        <span class="badge badge-amb" style="font-size:13px;">&#9888;</span>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ══ 11 ARCHITECTURE ══ -->
-<div class="slide" id="s11">
-  <div class="sh"><span class="sl">Architecture</span><span class="sc">11 / 13</span></div>
+<!-- ══ 13 ARCHITECTURE ══ -->
+<div class="slide" id="s13">
+  <div class="sh"><span class="sl">Architecture</span><span class="sc">13 / 16</span></div>
   <div class="h2" style="margin-bottom:10px;">Under the Hood</div>
   <div class="dw">
     <svg viewBox="0 0 700 310" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">
-      <title>Celeste CLI layered architecture: TUI, LLM Backends, Tool System, Codegraph Engine, MCP Server, Persistence</title>
+      <title>Celeste CLI layered architecture: TUI, LLM Backends, Tool Loop, Codegraph Engine, MCP Server and ACP, Persistence</title>
       <line x1="350" y1="46" x2="350" y2="276" stroke="#1e1b2e" stroke-width="1" stroke-dasharray="3,4" opacity=".4"/>
 
       <!-- L1: TUI -->
       <rect x="12" y="10" width="676" height="34" rx="7" fill="#13131f" stroke="#d94f90" stroke-width="1.8"/>
       <rect x="12" y="10" width="5" height="34" rx="3" fill="#d94f90"/>
-      <text x="350" y="27" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'Syne',sans-serif" letter-spacing=".04em">TUI &mdash; Bubble Tea &middot; flicker-free &middot; corrupted theme &middot; markdown &middot; streaming</text>
+      <text x="350" y="27" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'Syne',sans-serif" letter-spacing=".04em">TUI &mdash; Bubble Tea &middot; corrupted theme &middot; streaming &middot; plan mode &middot; /undo &middot; /rewind</text>
 
       <!-- L2: LLM Backends -->
       <rect x="12" y="56" width="676" height="34" rx="7" fill="#13131f" stroke="#8b5cf6" stroke-width="1.6"/>
       <rect x="12" y="56" width="5" height="34" rx="3" fill="#8b5cf6"/>
-      <text x="350" y="73" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#8b5cf6" font-weight="600" font-family="'DM Sans',sans-serif">LLM Backends (8) &mdash; Sakana &middot; Grok &middot; OpenAI &middot; Anthropic &middot; Gemini &middot; Venice &middot; Vertex &middot; OpenRouter</text>
+      <text x="350" y="73" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#8b5cf6" font-weight="600" font-family="'DM Sans',sans-serif">LLM Backends (9) &mdash; Sakana &middot; Local &middot; Grok &middot; OpenAI &middot; Anthropic &middot; Gemini &middot; Vertex &middot; Venice &middot; OpenRouter</text>
 
       <!-- L3: Tool System -->
       <rect x="12" y="102" width="676" height="34" rx="7" fill="#13131f" stroke="#10b981" stroke-width="1.6"/>
       <rect x="12" y="102" width="5" height="34" rx="3" fill="#10b981"/>
-      <text x="350" y="119" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#10b981" font-weight="600" font-family="'DM Sans',sans-serif">Tool System (40+) &mdash; Dev &middot; Web &middot; Crypto &middot; Productivity &middot; Blockchain &middot; Git &middot; Permissions</text>
+      <text x="350" y="119" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#10b981" font-weight="600" font-family="'DM Sans',sans-serif">One Tool Loop &mdash; 48 built-in tools &middot; MCP client &middot; hooks &middot; permissions &middot; opt-in sandbox &middot; subagents</text>
 
       <!-- L4: Codegraph Engine -->
       <rect x="12" y="148" width="676" height="52" rx="7" fill="#13131f" stroke="#0891b2" stroke-width="1.8"/>
@@ -1227,131 +1294,152 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       <text x="179" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">MinHash+BM25</text>
       <rect x="240" y="180" width="86" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1.4" opacity=".9"/>
       <text x="283" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#0891b2" font-family="'DM Mono',monospace" font-weight="500">LSH 64&times;2</text>
-      <rect x="334" y="180" width="86" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
-      <text x="377" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">tree-sitter 10L</text>
-      <rect x="428" y="180" width="100" height="16" rx="5" fill="#0a1218" stroke="#d94f90" stroke-width="1" opacity=".8"/>
-      <text x="478" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#d94f90" font-family="'DM Mono',monospace">stopwords v1.0</text>
-      <rect x="536" y="180" width="100" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
-      <text x="586" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">struct rerank</text>
+      <rect x="334" y="180" width="128" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
+      <text x="398" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">go/types + tree-sitter</text>
+      <rect x="470" y="180" width="96" height="16" rx="5" fill="#0a1218" stroke="#d94f90" stroke-width="1" opacity=".8"/>
+      <text x="518" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#d94f90" font-family="'DM Mono',monospace">stopwords v1.0</text>
+      <rect x="574" y="180" width="96" height="16" rx="5" fill="#0a1218" stroke="#0891b2" stroke-width="1" opacity=".7"/>
+      <text x="622" y="188" text-anchor="middle" dominant-baseline="central" font-size="9" fill="#7a7085" font-family="'DM Mono',monospace">struct rerank</text>
 
       <!-- L5: MCP Server -->
       <rect x="12" y="212" width="676" height="50" rx="7" fill="#13131f" stroke="#d94f90" stroke-width="1.8"/>
       <rect x="12" y="212" width="5" height="50" rx="3" fill="#d94f90"/>
-      <text x="350" y="228" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'Syne',sans-serif">MCP Server (8 tools)</text>
+      <text x="350" y="228" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#d94f90" font-weight="700" font-family="'Syne',sans-serif">MCP Server (8 tools) &middot; ACP agent for Zed &amp; JetBrains</text>
       <rect x="28" y="242" width="124" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
-      <text x="90" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">3 persona tools</text>
+      <text x="90" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">3 chat/content/status</text>
       <rect x="160" y="242" width="152" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
       <text x="236" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#d94f90" font-family="'DM Mono',monospace">5 direct codegraph tools</text>
       <rect x="320" y="242" width="160" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
       <text x="400" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">streaming progress notifs</text>
       <rect x="488" y="242" width="100" height="16" rx="5" fill="#0a0a12" stroke="#d94f90" stroke-width="1" opacity=".65"/>
-      <text x="538" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">localhost server</text>
+      <text x="538" y="250" text-anchor="middle" dominant-baseline="central" font-size="9.5" fill="#7a7085" font-family="'DM Mono',monospace">stdio &middot; SSE</text>
 
       <!-- L6: Persistence -->
       <rect x="12" y="274" width="676" height="32" rx="7" fill="#111118" stroke="#2a2440" stroke-width="1.4"/>
       <rect x="12" y="274" width="5" height="32" rx="3" fill="#3a3050"/>
-      <text x="350" y="290" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#7a7085" font-weight="400" font-family="'DM Mono',monospace" letter-spacing=".04em">Persistence &mdash; sessions &middot; memories &middot; grimoire &middot; checkpoints &middot; codegraph.db</text>
+      <text x="350" y="290" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#7a7085" font-weight="400" font-family="'DM Mono',monospace" letter-spacing=".04em">Persistence &mdash; sessions &middot; memories &middot; grimoire &middot; checkpoints &middot; trusted.json &middot; codegraph.db</text>
     </svg>
   </div>
 </div>
 
-<!-- ══ 12 COMPETITIVE POSITIONING ══ -->
-<div class="slide" id="s12">
-  <div class="sh"><span class="sl">Competitive Positioning</span><span class="sc">12 / 13</span></div>
+<!-- ══ 14 TRUST ══ -->
+<div class="slide" id="s14">
+  <div class="sh"><span class="sl">Trust &middot; 2.0</span><span class="sc">14 / 16</span></div>
+  <div class="h2" style="margin-bottom:6px;">Signed, Sealed, Reviewed</div>
+  <div class="bt" style="margin-bottom:12px;flex-shrink:0;">What you install is what was released, and you can check it yourself.</div>
+  <div style="flex:1;display:flex;gap:14px;min-height:0;">
+    <div class="c3" style="flex:1;">
+      <div class="card" style="border-top:3px solid var(--pk);display:flex;flex-direction:column;gap:8px;">
+        <div class="ct">Signed Releases &amp; Self-Update</div>
+        <div class="cb">Binaries for macOS, Linux (amd64, arm64) and Windows, with GPG-signed checksums; only a tag signed by the release key is published. A <code style="color:var(--pk);">go install</code> build fetches the official binary of its version, checks the signature and checksums, and replaces itself. <code style="color:var(--pk);">celeste update</code> moves to a newer release and never downgrades.</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--pu);display:flex;flex-direction:column;gap:8px;">
+        <div class="ct">A Sealed Official Persona</div>
+        <div class="cb">Celeste's persona ships encrypted (all rights reserved; the rest of celeste is MIT). Official release binaries carry the key and decrypt it in memory, never to disk. A build from source runs a short public persona and says so. <code style="color:var(--pu);">celeste persona verify</code> tells you which one you have.</div>
+      </div>
+      <div class="card" style="border-top:3px solid var(--grn);display:flex;flex-direction:column;gap:8px;">
+        <div class="ct">Reviewed Before Release</div>
+        <div class="cb">Before 2.0 was tagged, CodeRabbit and Aikido reviewed the codebase, and the fixes shipped in 2.0: workspace confinement for file tools, owner-only files under <code style="color:var(--grn);">~/.celeste</code>, escaped terminal output, bounded MCP transports, private networks refused by <code style="color:var(--grn);">web_fetch</code>, and a signed-tag release gate.</div>
+      </div>
+    </div>
+    <div class="term" style="width:260px;flex-shrink:0;display:flex;flex-direction:column;justify-content:center;font-size:13px;">
+      <div style="color:var(--txt3);"># check the binary you run</div>
+      <div><span class="prompt">$</span> <span class="cmd">celeste persona verify</span></div>
+      <div><span class="val">official persona: ...</span></div>
+      <div style="margin-top:8px;color:var(--txt3);"># look for a newer release</div>
+      <div><span class="prompt">$</span> <span class="cmd">celeste update --check</span></div>
+      <div style="margin-top:8px;color:var(--txt3);"># keep the binary go install built</div>
+      <div><span class="cmd">CELESTE_NO_AUTO_UPGRADE=1</span></div>
+      <div style="margin-top:8px;color:var(--txt3);"># manual verification steps</div>
+      <div><span class="key">VERIFY.md</span> <span class="out">in the repository</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 15 COMPETITIVE POSITIONING ══ -->
+<div class="slide" id="s15">
+  <div class="sh"><span class="sl">Competitive Positioning</span><span class="sc">15 / 16</span></div>
   <div class="h2" style="margin-bottom:10px;">Why Celeste</div>
   <div style="flex:1;overflow:hidden;min-height:0;">
     <table class="dt" style="font-size:15px;">
       <thead>
         <tr>
-          <th style="width:190px;">Feature</th>
-          <th style="color:var(--pk);">Celeste v1.11.2</th>
-          <th>OpenClaw</th>
-          <th>gptme</th>
-          <th>Aider</th>
+          <th style="width:170px;">Feature</th>
+          <th style="color:var(--pk);">Celeste v2.0.0</th>
+          <th>Claude Code</th>
+          <th>Codex CLI</th>
+          <th>opencode</th>
+          <th>Gemini CLI</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td class="str">Language / Runtime</td>
-          <td class="win">Go (compiled)</td>
-          <td class="muted">Node.js</td>
-          <td class="muted">Python</td>
-          <td class="muted">Python</td>
-        </tr>
-        <tr>
-          <td class="str">Deploy size</td>
-          <td class="win">73 MB binary</td>
-          <td class="muted">~393 MB + node</td>
-          <td class="muted">~150 MB + py</td>
-          <td class="muted">~80 MB + py</td>
-        </tr>
-        <tr>
-          <td class="str">Code graph</td>
-          <td class="win">MinHash + BM25 + tree-sitter (10 langs)</td>
-          <td class="muted">embeddings only</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
-        </tr>
-        <tr>
-          <td class="str">Semantic search</td>
-          <td class="win">no embeddings, pure MinHash</td>
-          <td class="muted">vector DB required</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
-        </tr>
-        <tr>
-          <td class="str">Code review</td>
-          <td class="win">structural (6 categories)</td>
-          <td class="muted">LLM only</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
+          <td class="str">Code graph &amp; structural review</td>
+          <td class="win">persistent symbol + call-edge index, concept search, structural review</td>
+          <td class="muted">/code-review; graph unverified</td>
+          <td class="muted">reviews local changes; graph unverified</td>
+          <td class="muted">unverified</td>
+          <td class="muted">unverified</td>
         </tr>
         <tr>
           <td class="str">MCP server</td>
-          <td class="win">8 tools, 5 direct codegraph</td>
-          <td class="muted">partial</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
+          <td class="win">celeste serve: 8 tools, 5 direct code-graph</td>
+          <td class="muted">claude mcp serve (its tools)</td>
+          <td class="muted">codex mcp-server</td>
+          <td class="muted">unverified</td>
+          <td class="muted">unverified</td>
         </tr>
         <tr>
-          <td class="str">Runtime modes</td>
-          <td class="win">Chat &middot; Agent &middot; DAG Subagents &middot; Orchestrator</td>
-          <td class="muted">Chat only</td>
-          <td class="muted">Chat + Agent</td>
-          <td class="muted">Chat only</td>
+          <td class="str">Editor agent (ACP)</td>
+          <td class="win">celeste acp</td>
+          <td class="muted">through Zed's adapter</td>
+          <td class="muted">through an adapter</td>
+          <td class="muted">opencode acp</td>
+          <td class="muted">gemini --acp</td>
         </tr>
         <tr>
-          <td class="str">Multi-agent</td>
-          <td class="win">DAG dependencies &middot; element-named</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
+          <td class="str">Subagents</td>
+          <td class="win">typed (explore, review, general), DAG, worktrees</td>
+          <td class="muted">custom subagents, agent teams</td>
+          <td class="muted">subagents, custom agents</td>
+          <td class="muted">General, Explore, Scout</td>
+          <td class="muted">subagents as tools</td>
         </tr>
         <tr>
-          <td class="str">Personality</td>
-          <td class="win">Celeste (lore, grimoire)</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
-          <td class="muted">none</td>
+          <td class="str">Checkpoints &amp; rewind</td>
+          <td class="win">/undo, /diff, /rewind, /fork, celeste revert</td>
+          <td class="muted">/rewind code and/or chat</td>
+          <td class="muted">/fork; file rewind unverified</td>
+          <td class="muted">/undo, /redo (git repo)</td>
+          <td class="muted">/rewind, checkpointing</td>
         </tr>
         <tr>
-          <td class="str">Embeddings needed</td>
-          <td class="ok">&#10003; none required</td>
-          <td style="color:var(--red);font-family:'DM Mono',monospace;font-size:14px;">required</td>
-          <td class="muted">n/a</td>
-          <td class="muted">n/a</td>
+          <td class="str">Sandbox</td>
+          <td class="win">opt-in seatbelt / bubblewrap</td>
+          <td class="muted">Seatbelt, bubblewrap</td>
+          <td class="muted">Seatbelt, bubblewrap</td>
+          <td class="muted">unverified</td>
+          <td class="muted">Seatbelt, containers</td>
+        </tr>
+        <tr>
+          <td class="str">Local models</td>
+          <td class="win">any OpenAI-compatible server, LAN too, no key</td>
+          <td class="muted">unverified</td>
+          <td class="muted">--oss: Ollama, LM Studio</td>
+          <td class="muted">Ollama, LM Studio, llama.cpp</td>
+          <td class="muted">local Gemma for routing only</td>
         </tr>
       </tbody>
     </table>
   </div>
   <div style="margin-top:9px;padding:9px 14px;background:var(--pkdim);border:1px solid var(--pkglow);border-radius:8px;font-size:15px;color:var(--txt2);flex-shrink:0;">
-    The only open-source AI coding tool that combines <strong style="color:var(--pk);">graph-based code intelligence</strong> (10 languages), <strong style="color:var(--amb);">DAG-orchestrated subagents</strong>, and a <strong style="color:var(--pu);">companion personality</strong> &mdash; no embeddings, no runtime deps, single binary.
+    None of these ship what Celeste keeps: a <strong style="color:var(--pk);">code graph with structural review</strong>, an <strong style="color:var(--amb);">MCP server built around that graph</strong>, and a <strong style="color:var(--pu);">character</strong>. <span style="color:var(--txt3);font-size:13px;">Other columns: each tool's public docs, read 2026-10-02 (celeste-cli docs/COMPARISON.md); &ldquo;unverified&rdquo; means no source confirmed it.</span>
   </div>
 </div>
 
-<!-- ══ 13 CLOSING CTA ══ -->
-<div class="slide" id="s13" style="overflow:visible;">
-  <div class="sh"><span class="sl">Get Started</span><span class="sc">13 / 13</span></div>
+<!-- ══ 16 CLOSING CTA ══ -->
+<div class="slide" id="s16" style="overflow:visible;">
+  <div class="sh"><span class="sl">Get Started</span><span class="sc">16 / 16</span></div>
 
   <!-- Graph + Celeste circle — absolutely positioned, same pattern as slide 1 -->
   <div class="print-hero" style="position:absolute;right:30px;top:50%;transform:translateY(-50%);width:540px;height:540px;z-index:2;pointer-events:none;">
@@ -1387,11 +1475,13 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
       <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(36px,4.8vw,60px);line-height:1.02;letter-spacing:-.03em;color:var(--wht);" id="ctaTitle">GET STARTED</div>
       <div style="margin-top:22px;background:#0a0a12;border:1px solid var(--bdr2);border-radius:8px;padding:14px 18px;max-width:540px;">
         <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);margin-bottom:5px;"># install</div>
-        <div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--pk);">go install github.com/whykusanagi/celeste-cli/cmd/celeste@v1.11.2</div>
-        <div style="margin-top:9px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);"># first run &middot; Sakana / Fugu (default)</div>
-        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste config --init sakana</div>
-        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste -config sakana config --set-key <span style="color:var(--pu);">$SAKANA_KEY</span></div>
-        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste -config sakana chat</div>
+        <div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--pk);">go install github.com/whykusanagi/celeste-cli/v2/cmd/celeste@latest</div>
+        <div style="margin-top:5px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);"># or a signed binary for macOS, Linux or Windows from GitHub Releases</div>
+        <div style="margin-top:9px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);"># first run &middot; Sakana / Fugu is the default</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste config --set-key <span style="color:var(--pu);">$SAKANA_KEY</span></div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste chat</div>
+        <div style="margin-top:9px;font-family:'DM Mono',monospace;font-size:13px;color:var(--txt3);"># give Claude Code, Claude Desktop and Cursor the code graph</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">celeste mcp install</div>
       </div>
       <div style="margin-top:20px;display:flex;flex-direction:column;gap:7px;">
         <div style="display:flex;align-items:center;gap:10px;">
@@ -1400,18 +1490,22 @@ body::before{content:'';position:fixed;inset:0;background-image:radial-gradient(
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <span class="badge badge-pu" style="padding:2px 7px;font-size:13px;">&#8599;</span>
-          <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">github.com/whykusanagi/celeste-for-claude</span>
+          <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">github.com/whykusanagi/celeste-for-claude <span style="color:var(--txt3);">&middot; v2.0.0</span></span>
         </div>
         <div style="display:flex;align-items:center;gap:10px;">
           <span class="badge badge-cy" style="padding:2px 7px;font-size:13px;">&#8599;</span>
           <span style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);">github.com/whykusanagi/celeste-stopwords <span style="color:var(--txt3);">&middot; CC BY 4.0</span></span>
         </div>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="badge badge-grn" style="padding:2px 7px;font-size:13px;">&#8599;</span>
+          <a href="blog/celeste-cli-v200" style="font-family:'DM Mono',monospace;font-size:14px;color:var(--txt2);text-decoration:none;">Release notes: Celeste CLI 2.0.0 <span style="color:var(--txt3);">&middot; blog</span></a>
+        </div>
       </div>
       <div style="margin-top:24px;display:flex;gap:24px;flex-wrap:wrap;">
         <div class="tm-item">Built by<span>whykusanagi</span></div>
-        <div class="tm-item">License<span>MIT &middot; open source</span></div>
+        <div class="tm-item">License<span>MIT &middot; persona all rights reserved</span></div>
         <div class="tm-item">Character<span>ikawasa23</span></div>
-        <div class="tm-item">Version<span>v1.11.2 &middot; Go 1.26+</span></div>
+        <div class="tm-item">Version<span>v2.0.0 &middot; Go 1.26+</span></div>
       </div>
     </div>
   <div class="bar-bot"></div>
