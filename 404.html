@@ -9,123 +9,36 @@
   <link rel="canonical" href="https://whykusanagi.xyz/404">
 
   <!-- Corrupted Theme Framework -->
-  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
-
-  <!-- Site-Specific Overrides -->
-  <link rel="stylesheet" href="/assets/css/site-overrides.css">
-  <script type="module" src="/assets/js/site-bootstrap.js"></script>
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-
-  <style>
-    .error-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 60vh;
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .error-code {
-      font-size: 8rem;
-      font-weight: bold;
-      color: var(--accent);
-      text-shadow:
-        0 0 20px rgba(217, 79, 144, 0.8),
-        0 0 40px rgba(139, 92, 246, 0.6);
-      margin: 0;
-      line-height: 1;
-    }
-
-    .error-message {
-      font-size: 2rem;
-      color: var(--text);
-      margin: 1rem 0 2rem 0;
-    }
-
-    .error-description {
-      font-size: 1.2rem;
-      color: var(--text-muted);
-      max-width: 600px;
-      margin: 0 auto 2rem auto;
-    }
-
-    .error-links {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .error-link {
-      display: inline-block;
-      padding: 0.75rem 1.5rem;
-      background: linear-gradient(135deg, var(--purple-primary), var(--pink-primary));
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-      font-weight: 500;
-    }
-
-    .error-link:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 20px rgba(217, 79, 144, 0.4);
-    }
-
-    @media (max-width: 768px) {
-      .error-code {
-        font-size: 5rem;
-      }
-      .error-message {
-        font-size: 1.5rem;
-      }
-      .error-description {
-        font-size: 1rem;
-      }
-    }
-  </style>
 </head>
 <body>
-  <script src="/assets/js/loading.js"></script>
-
-  <!-- Video background -->
-  <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
-    <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
-    <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
-  </video>
-  <div class="glass-backdrop"></div>
-
   <nav class="navbar" data-site-nav></nav>
 
-  <main class="app-shell">
-    <div class="error-container">
-      <h1 class="error-code">404</h1>
-      <h2 class="error-message">Page Not Found</h2>
-      <p class="error-description">
-        The page you're looking for has been corrupted, deleted, or never existed in this reality.
-        <br>
-        Celeste couldn't find it in the archives either.
-      </p>
-      <div class="error-links">
-        <a href="/" class="error-link">
-          <i class="fas fa-home"></i> Return Home
-        </a>
-        <a href="/celeste" class="error-link">
-          <i class="fas fa-robot"></i> Ask Celeste
-        </a>
-        <a href="/blog/" class="error-link">
-          <i class="fas fa-blog"></i> Browse Blog
-        </a>
-      </div>
+  <main class="error-page">
+    <h1 class="error-code" data-no-decrypt>404</h1>
+    <h2 class="error-title" data-no-decrypt>Page Not Found</h2>
+    <p class="error-line">
+      The page you're looking for has been corrupted, deleted, or never existed in this reality.
+      <br>
+      Celeste couldn't find it in the archives either.
+    </p>
+    <div class="error-links">
+      <a href="/">
+        <i class="fas fa-home"></i> Return Home
+      </a>
+      <a href="/celeste">
+        <i class="fas fa-robot"></i> Ask Celeste
+      </a>
+      <a href="/blog/">
+        <i class="fas fa-blog"></i> Browse Blog
+      </a>
     </div>
-
-    <footer data-site-footer></footer>
   </main>
 
-  <script src="/assets/js/video-background.js"></script>
+  <footer data-site-footer></footer>
+
   <script src="/assets/js/nav.js"></script>
 </body>
 </html>

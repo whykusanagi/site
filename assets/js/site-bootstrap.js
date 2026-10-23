@@ -3,10 +3,10 @@
 // page. Each component block gates on DOM presence so unused modules stay out
 // of pages that don't need them.
 //
-// Pinned to corrupted-theme @ assets/js/corrupted-theme/VERSION.
+// Theme CDN versions are synchronized from package.json by npm run theme:sync.
 
 // === Toast (sitewide singleton — exposed on window for inline callers) ===
-import { Toast } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/toast.js';
+import { Toast } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/toast.js';
 window.Toast = Toast;
 
 // Click-to-copy hashtag on links.html (also a live Toast demo)
@@ -25,7 +25,7 @@ if (hashtagEl) {
 // CorruptedParticlesBackground is a class. Instantiating it handles DOMContentLoaded
 // internally and always forces DPR=1 on the background canvas (no dpr option needed).
 // count:15 = low density (default is 25). nsfw:true enables adult-content particles.
-import { CorruptedParticlesBackground } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/corrupted-particles-background.js';
+import { CorruptedParticlesBackground } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/corrupted-particles-background.js';
 // Two gates. Reduced motion is the accessibility one. The canvas check is a
 // performance one: on celeste.html this canvas animates every frame beneath a
 // 92-96% opaque backdrop, so it is pure cost with nothing visible on top.
@@ -35,14 +35,11 @@ if (!reduceMotion && !document.getElementById('vrmCanvas')) {
 }
 // === DecryptReveal headings (sitewide) ===
 import './decrypt-headings.js';
-// === PhraseCycle: intentionally not wired ===
-// loading.js is a custom 72hr-throttled immersive boot screen with persona-specific
-// multi-language phrases — different shape from PhraseCycle (a generic rotator
-// settling on a value). No #loading-text element exists. Keeping loading.js as-is.
+// The boot screen uses the package corruption-loading module via loading.js.
 
 // === Index-only: CRTEffects ambient layer + TerminalBoot/TitleDecoder hero ===
 if (document.body.classList.contains('crt-on')) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/crt-effects.js').then(({ CRTEffects }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/crt-effects.js').then(({ CRTEffects }) => {
     new CRTEffects(document.body, {
       autoStart:        true,
       scanlines:        true,
@@ -61,7 +58,7 @@ if (document.body.classList.contains('crt-on')) {
 // it never loads on pages without it.
 const mandalaEl = document.querySelector('[data-ct-mandala]');
 if (mandalaEl) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/corrupted-mandala.js').then(({ CorruptedMandala }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/corrupted-mandala.js').then(({ CorruptedMandala }) => {
     new CorruptedMandala(mandalaEl, {
       labelTop:    'WHYKUSANAGI',
       labelBottom: 'ABYSS.SYS',
@@ -74,7 +71,7 @@ if (mandalaEl) {
 
 const heroEl = document.querySelector('[data-ct-animation="hero-boot"]');
 if (heroEl) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/animation-blocks.js').then(async ({ TerminalBoot, TitleDecoder }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/animation-blocks.js').then(async ({ TerminalBoot, TitleDecoder }) => {
     const finalText = heroEl.textContent.trim();
 
     // Hide h1 native text so only the animation overlay is visible during the sequence.
@@ -108,7 +105,7 @@ if (heroEl) {
 // === links.html-only: ClockWidget ===
 const clockEl = document.getElementById('clock-widget');
 if (clockEl) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/clock-widget.js').then(({ ClockWidget }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/clock-widget.js').then(({ ClockWidget }) => {
     new ClockWidget(clockEl, {
       timezones: ['Asia/Tokyo', 'America/Los_Angeles', 'UTC'],
       format:    '12h',
@@ -130,7 +127,7 @@ function initNsfwReveal() {
   const targets = document.querySelectorAll('[data-nsfw-reveal]');
   if (!targets.length) return;
 
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/src/lib/nsfw-reveal.js').then(({ NsfwReveal }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/nsfw-reveal.js').then(({ NsfwReveal }) => {
     targets.forEach(el => {
       const nr = new NsfwReveal(el, { warning: '18+ — click to reveal' });
       // nsfw:true site default → reveal immediately (content visible on load).
@@ -145,3 +142,23 @@ initNsfwReveal();
 
 // art.html: gallery is populated asynchronously from JSON; wait for the signal.
 document.addEventListener('gallery:loaded', initNsfwReveal, { once: true });
+
+// Reference sheets use the theme lightbox; real image links remain usable without JS.
+const referenceGallery = document.querySelector('[data-reference-gallery]');
+if (referenceGallery) {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/lightbox.js').then(({ Lightbox }) => {
+    const anchors = [...referenceGallery.querySelectorAll('.reference-item a')];
+    const lightbox = new Lightbox(null);
+    lightbox.setImages(anchors.map(anchor => ({
+      src: anchor.href,
+      alt: anchor.querySelector('img').alt,
+      caption: anchor.parentElement.querySelector('.reference-caption').textContent,
+      isNsfw: false,
+    })));
+    anchors.forEach((anchor, index) => anchor.addEventListener('click', event => {
+      if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      lightbox.open(index);
+    }));
+  });
+}

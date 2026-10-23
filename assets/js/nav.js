@@ -75,11 +75,4 @@
     footerMount.replaceWith(footer);
   }
 
-  // Deploy safety net: a previously-cached site-bootstrap.js injected its own
-  // hamburger, which duplicates the toggle during the cache window. Once
-  // everything has run, keep only the first (ours). No-ops once the old script
-  // stops being served.
-  window.addEventListener('load', () => {
-    document.querySelectorAll('.navbar-content .navbar-toggle').forEach((t, i) => { if (i) t.remove(); });
-  });
 })();

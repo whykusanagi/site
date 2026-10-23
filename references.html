@@ -33,61 +33,13 @@
   <script src="assets/js/background-setup.js"></script>
   
   <!-- Corrupted Theme Framework -->
-  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
   
   <!-- Site-Specific Overrides -->
   <link rel="stylesheet" href="assets/css/site-overrides.css">
   <script type="module" src="assets/js/site-bootstrap.js"></script>
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
-  <style>
-    /* Modal styles - using hash-based navigation */
-    .modal {
-      display: none;
-      position: fixed;
-      z-index: var(--z-modal);
-      inset: 0;
-      background-color: rgba(5, 0, 16, 0.95);
-      backdrop-filter: blur(6px);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .modal img {
-      max-width: 90vw;
-      max-height: 90vh;
-      border-radius: var(--radius-lg);
-      border: 2px solid var(--accent);
-      box-shadow: 0 0 18px rgba(217, 79, 144, 0.6);
-    }
-
-    .modal:target {
-      display: flex;
-    }
-
-    .modal-close {
-      position: absolute;
-      top: 2rem;
-      right: 2rem;
-      color: var(--text);
-      font-size: 2rem;
-      cursor: pointer;
-      z-index: calc(var(--z-modal) + 1);
-      background: rgba(217, 79, 144, 0.2);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-md);
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all var(--transition-normal);
-    }
-
-    .modal-close:hover {
-      background: rgba(217, 79, 144, 0.4);
-    }
-  </style>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -109,28 +61,17 @@
       <h1 class="reference-title">Character Reference Art</h1>
       <p style="text-align: center; color: var(--text-secondary); margin-bottom: 1.5rem;">Official reference sheets for proportions and outfit details, so art stays on-model. Click any image to open full size.</p>
 
-      <div class="reference-container">
+      <div class="reference-container" data-reference-gallery>
         <div class="reference-item">
-          <a href="#img1"><img src="https://s3.whykusanagi.xyz/ref/CorruptedReferenceSheet.png" alt="Corrupted Queen"></a>
+          <a href="https://s3.whykusanagi.xyz/ref/CorruptedReferenceSheet.png"><img src="https://s3.whykusanagi.xyz/ref/CorruptedReferenceSheet.png" alt="Corrupted Queen"></a>
           <div class="reference-caption">Corrupted Queen by pureisi</div>
         </div>
         <div class="reference-item">
-          <a href="#img2"><img src="https://s3.whykusanagi.xyz/ref/whykusanagiCRS.png" alt="WhyKusanagi Reference"></a>
+          <a href="https://s3.whykusanagi.xyz/ref/whykusanagiCRS.png"><img src="https://s3.whykusanagi.xyz/ref/whykusanagiCRS.png" alt="WhyKusanagi Reference"></a>
           <div class="reference-caption">WhyKusanagi Reference by Risuneei</div>
         </div>
       </div>
     </section>
-
-    <!-- Modals -->
-    <div id="img1" class="modal">
-      <span class="modal-close" onclick="location.hash='';">&times;</span>
-      <img src="https://s3.whykusanagi.xyz/ref/CorruptedReferenceSheet.png" alt="Full - Corrupted Queen">
-    </div>
-
-    <div id="img2" class="modal">
-      <span class="modal-close" onclick="location.hash='';">&times;</span>
-      <img src="https://s3.whykusanagi.xyz/ref/whykusanagiCRS.png" alt="Full - WhyKusanagi Reference">
-    </div>
 
     <footer data-site-footer></footer>
   </main>

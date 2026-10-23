@@ -34,7 +34,7 @@
   <script src="assets/js/json-asset-loader.js"></script>
   
   <!-- Corrupted Theme Framework -->
-  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
   
   <!-- Site-Specific Overrides -->
   <link rel="stylesheet" href="assets/css/site-overrides.css">
@@ -61,17 +61,12 @@
       <div class="gallery-container" id="gallery"></div>
     </section>
 
-    <div class="lightbox" id="lightbox">
-      <img src="" alt="Preview" />
-    </div>
 
     <footer data-site-footer></footer>
   </main>
 
-  <script>
+  <script type="module">
     const galleryContainer = document.getElementById("gallery");
-    const lightbox = document.getElementById("lightbox");
-    const lightboxImg = lightbox.querySelector("img");
 
     async function loadGallery() {
       // Use JSONAssetLoader to automatically convert S3 URLs in the data
@@ -93,11 +88,6 @@
           img.dataset.nsfwReveal = "";
         }
 
-        // Open lightbox on image click (NsfwReveal overlay intercepts first click when locked)
-        img.addEventListener("click", () => {
-          lightboxImg.src = item.src;
-          lightbox.classList.add("active");
-        });
 
         const caption = document.createElement("div");
         caption.className = "gallery-caption";
@@ -112,24 +102,15 @@
       document.dispatchEvent(new CustomEvent("gallery:loaded"));
     }
 
-    loadGallery();
-
-    document.querySelectorAll(".filter-bar .btn").forEach(button => {
-      button.addEventListener("click", () => {
-        document.querySelector(".filter-bar .btn.active")?.classList.remove("active");
-        button.classList.add("active");
-        const filter = button.getAttribute("data-filter");
-
-        document.querySelectorAll(".gallery-item").forEach(item => {
-          const tags = item.getAttribute("data-tags").split(" ");
-          item.style.display = filter === "all" || tags.includes(filter) ? "block" : "none";
-        });
-      });
-    });
-
-    lightbox.addEventListener("click", () => {
-      lightbox.classList.remove("active");
-      lightboxImg.src = "";
+    await loadGallery();
+    const { initGallery, destroyGallery } = await import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/gallery.js');
+    // Replace the module's default auto-init with the site's filter selector and
+    // existing open-by-default content policy, without duplicate event handlers.
+    destroyGallery();
+    initGallery('#gallery', {
+      filterBtnSelector: '.filter-bar .btn',
+      enableNsfw: false,
+      filterAnimation: !window.matchMedia('(prefers-reduced-motion: reduce)').matches,
     });
   </script>
 

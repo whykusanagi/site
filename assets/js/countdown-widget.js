@@ -249,6 +249,10 @@ async function applyOverlayPreset(config, overlayName) {
  * @returns {Promise<CountdownConfig>}
  */
 async function loadConfigFromJson(eventName) {
+  // Match the theme's filename allowlist before building a preset request URL.
+  if (typeof eventName !== 'string' || !/^[A-Za-z0-9_-]+$/.test(eventName)) {
+    throw new Error('[CountdownWidget] invalid event name');
+  }
   const url = `${WIDGET_OPTIONS.configPath}/${eventName}.json`;
   
   try {
@@ -260,7 +264,7 @@ async function loadConfigFromJson(eventName) {
     
     return await response.json();
   } catch (error) {
-    console.error(`[CountdownWidget] Error loading config for "${eventName}":`, error);
+    console.error('[CountdownWidget] Error loading config for event:', eventName, error);
     throw error;
   }
 }

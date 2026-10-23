@@ -35,7 +35,7 @@
     <script src="../assets/js/background-setup.js"></script>
 
     <!-- Theme + Overrides -->
-    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
     <link rel="stylesheet" href="../assets/css/site-overrides.css">
   <script type="module" src="../assets/js/site-bootstrap.js"></script>
 
@@ -274,134 +274,6 @@
     <footer data-site-footer></footer>
 
     <script src="../assets/js/video-background.js"></script>
-    <script>
-      // Auto-scroll functionality for the scrollable column
-      (function() {
-        const scrollableColumn = document.querySelector('.scrollable-column');
-        if (!scrollableColumn) return;
-
-        let scrollDirection = 1; // 1 for down, -1 for up
-        const scrollSpeed = 0.3; // pixels per frame (slower = smoother)
-        const pauseAtBottom = 3000; // pause for 3 seconds at bottom
-        const pauseAtTop = 2000; // pause for 2 seconds at top
-        let pauseTimer = 0;
-        let isPaused = false;
-        let maxScroll = 0;
-        let autoScrollActive = true;
-        let rafId = null;
-
-        function updateMaxScroll() {
-          maxScroll = scrollableColumn.scrollHeight - scrollableColumn.clientHeight;
-        }
-
-        function autoScroll() {
-          if (!autoScrollActive || userInteracting) {
-            rafId = requestAnimationFrame(autoScroll);
-            return;
-          }
-
-          if (isPaused) {
-            pauseTimer -= 16; // ~60fps
-            if (pauseTimer <= 0) {
-              isPaused = false;
-              scrollDirection *= -1; // Reverse direction
-            }
-            rafId = requestAnimationFrame(autoScroll);
-            return;
-          }
-
-          updateMaxScroll();
-          
-          if (maxScroll <= 0) {
-            // Content doesn't need scrolling
-            rafId = requestAnimationFrame(autoScroll);
-            return;
-          }
-
-          // Get current scroll position from the element
-          let currentScroll = scrollableColumn.scrollTop;
-          currentScroll += scrollSpeed * scrollDirection;
-
-          // Check if we've reached the bottom
-          if (currentScroll >= maxScroll) {
-            currentScroll = maxScroll;
-            if (scrollDirection === 1) {
-              isPaused = true;
-              pauseTimer = pauseAtBottom;
-            }
-          }
-          // Check if we've reached the top
-          else if (currentScroll <= 0) {
-            currentScroll = 0;
-            if (scrollDirection === -1) {
-              isPaused = true;
-              pauseTimer = pauseAtTop;
-            }
-          }
-
-          scrollableColumn.scrollTop = currentScroll;
-          rafId = requestAnimationFrame(autoScroll);
-        }
-
-        // Pause auto-scroll on user interaction
-        let userInteracting = false;
-        let interactionTimeout;
-        let lastUserScrollTime = 0;
-
-        // Sync scroll position when user manually scrolls
-        function syncScrollPosition() {
-          lastUserScrollTime = Date.now();
-          userInteracting = true;
-          clearTimeout(interactionTimeout);
-          interactionTimeout = setTimeout(() => {
-            userInteracting = false;
-          }, 3000); // Longer pause after user interaction
-        }
-
-        scrollableColumn.addEventListener('mouseenter', () => {
-          userInteracting = true;
-        });
-
-        scrollableColumn.addEventListener('mouseleave', () => {
-          // Only resume if user hasn't scrolled recently
-          if (Date.now() - lastUserScrollTime > 2000) {
-            userInteracting = false;
-          }
-        });
-
-        scrollableColumn.addEventListener('wheel', (e) => {
-          syncScrollPosition();
-        }, { passive: true });
-
-        scrollableColumn.addEventListener('scroll', () => {
-          syncScrollPosition();
-        }, { passive: true });
-
-        scrollableColumn.addEventListener('touchstart', () => {
-          syncScrollPosition();
-        }, { passive: true });
-
-        scrollableColumn.addEventListener('touchmove', () => {
-          syncScrollPosition();
-        }, { passive: true });
-
-        scrollableColumn.addEventListener('touchend', () => {
-          interactionTimeout = setTimeout(() => {
-            if (Date.now() - lastUserScrollTime > 2000) {
-              userInteracting = false;
-            }
-          }, 2000);
-        });
-
-        // Start auto-scroll after a short delay
-        setTimeout(() => {
-          updateMaxScroll();
-          if (maxScroll > 0) {
-            autoScroll();
-          }
-        }, 1000);
-      })();
-    </script>
     <script src="/assets/js/nav.js"></script>
 </body>
 </html>
