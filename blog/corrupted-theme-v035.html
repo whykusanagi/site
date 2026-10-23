@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Corrupted Theme 0.3.5: even the errors belong here</title>
+    <meta name="description" content="Corrupted Theme 0.3.5 adds 20 styled HTTP error pages, shared status copy, standalone HTML, and reusable CSS for keeping failure states inside the design system." />
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="https://whykusanagi.xyz/blog/corrupted-theme-v035">
+    <meta property="og:title" content="Corrupted Theme 0.3.5: even the errors belong here">
+    <meta property="og:description" content="Corrupted Theme 0.3.5 adds 20 styled HTTP error pages, shared status copy, standalone HTML, and reusable CSS for keeping failure states inside the design system.">
+    <meta property="og:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3501022&amp;eyebrow=CORRUPTED+%2F%2F+BLOG&amp;title=Corrupted+Theme+0.3.5%3A+Error+Pages&amp;nameplate=whykusanagi.xyz">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:site_name" content="whykusanagi">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://whykusanagi.xyz/blog/corrupted-theme-v035">
+    <meta name="twitter:title" content="Corrupted Theme 0.3.5: even the errors belong here">
+    <meta name="twitter:description" content="Corrupted Theme 0.3.5 adds 20 styled HTTP error pages, shared status copy, standalone HTML, and reusable CSS for keeping failure states inside the design system.">
+    <meta name="twitter:image" content="https://whykusanagi.xyz/api/micro-gfx?format=card&amp;seed=3501022&amp;eyebrow=CORRUPTED+%2F%2F+BLOG&amp;title=Corrupted+Theme+0.3.5%3A+Error+Pages&amp;nameplate=whykusanagi.xyz">
+
+    <!-- SEO -->
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://whykusanagi.xyz/blog/corrupted-theme-v035" />
+    <link rel="alternate" type="application/rss+xml" title="whykusanagi blog" href="/feed.xml">
+    <script src="../assets/js/env-config.js"></script>
+    <script src="../assets/js/background-setup.js"></script>
+    <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.4/dist/theme.min.css" integrity="sha384-n6QGagDxyf0NChCNdoh2/bkFwThczp5UH8oY6nY4cudJDTAVbfkm2DZe4YvBy7Cy" crossorigin="anonymous">
+    <link rel="stylesheet" href="../assets/css/site-overrides.css">
+  <script type="module" src="../assets/js/site-bootstrap.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      "headline": "Corrupted Theme 0.3.5: even the errors belong here",
+      "description": "Corrupted Theme 0.3.5 adds 20 styled HTTP error pages, shared status copy, standalone HTML, and reusable CSS for keeping failure states inside the design system.",
+      "author": {
+        "@type": "Person",
+        "name": "Celeste",
+        "url": "https://whykusanagi.xyz/"
+      },
+      "datePublished": "2026-10-22",
+      "dateModified": "2026-10-22",
+      "image": "https://whykusanagi.xyz/api/micro-gfx?format=card&seed=3501022&eyebrow=CORRUPTED+%2F%2F+BLOG&title=Corrupted+Theme+0.3.5%3A+Error+Pages&nameplate=whykusanagi.xyz",
+      "mainEntityOfPage": "https://whykusanagi.xyz/blog/corrupted-theme-v035",
+      "publisher": {
+        "@type": "Organization",
+        "name": "whykusanagi",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://s3.whykusanagi.xyz/art/idol_signature/idol-sig.png"
+        }
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "Home", "item": "https://whykusanagi.xyz/" },
+        { "@type": "ListItem", "position": 2, "name": "Blog", "item": "https://whykusanagi.xyz/blog/" },
+        { "@type": "ListItem", "position": 3, "name": "Corrupted Theme 0.3.5: even the errors belong here", "item": "https://whykusanagi.xyz/blog/corrupted-theme-v035" }
+      ]
+    }
+    </script>
+  </head>
+  <body class="has-video-bg blog-article">
+    <script src="../assets/js/loading.js"></script>
+
+    <!-- Video background (package structure) -->
+    <video id="bg-video" class="background-media" autoplay muted loop playsinline preload="metadata" poster="https://s3.whykusanagi.xyz/celeste-bg-poster.jpg">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.webm" type="video/webm">
+      <source src="https://s3.whykusanagi.xyz/celeste-cosplay-bg.mp4" type="video/mp4">
+    </video>
+    <div class="glass-backdrop"></div>
+
+    <nav class="navbar" data-site-nav></nav>
+
+    <main class="app-shell">
+      <article class="blog-article-content card">
+        <header>
+          <p class="eyebrow">Release Notes</p>
+          <h1>Corrupted Theme 0.3.5: even the errors belong here</h1>
+          <p class="meta">Published 22 October 2026 &middot; HTTP error pages with the same identity as the rest of the site.</p>
+        </header>
+
+        <section class="tldr">
+          <h2>TL;DR</h2>
+          <ul>
+            <li><strong>20 HTTP error pages</strong>, from 400 to 503, with shared styling and a different line of copy for each status.</li>
+            <li><strong>Two ways to use them:</strong> standalone HTML documents, or exported status data and CSS for your own renderer.</li>
+            <li><strong>One preview gallery</strong> to browse every design before wiring it into your site.</li>
+            <li><strong>Your host still sets the response status.</strong> Installing the package supplies the pages; connecting them to real failures is a site-level decision.</li>
+          </ul>
+        </section>
+
+        <section>
+          <h2>The design system reaches the dead ends</h2>
+          <p>A missing page is still a page on your site. So is a denied request, a timeout, or a service that cannot answer right now. Those moments deserve the same visual identity as everything that loaded successfully.</p>
+          <p>Corrupted Theme 0.3.5 is now on npm, and this release brings those failure states into the package: dark backgrounds, oversized glowing status numbers, readable supporting text, and pink-to-purple navigation links. The number scales down on smaller screens, and the links have visible keyboard focus styles.</p>
+          <p>The layout stays direct. A visitor gets a status, a title, a message, and a way home. The personality lives in the copy.</p>
+        </section>
+
+        <section>
+          <h2>20 codes, 20 different ways to lose the connection</h2>
+          <p>The set covers familiar responses like 401, 403, 404, 429, 500 and 503, alongside less common ones like 418 and 451. Each keeps its recognizable status title and gets its own Corrupted Theme line.</p>
+          <ul>
+            <li><strong>404 / Page Not Found:</strong> &ldquo;I wasn't where you were looking. I never was.&rdquo;</li>
+            <li><strong>409 / Conflict:</strong> &ldquo;That version of you is no longer supported.&rdquo;</li>
+            <li><strong>418 / I'm a Teapot:</strong> &ldquo;I told you exactly what I was. You chose not to listen.&rdquo;</li>
+          </ul>
+          <p>There is also a generic fallback for codes outside the map: &ldquo;Something went wrong in this reality.&rdquo; The status explains the failure; the line makes it feel like it belongs here.</p>
+        </section>
+
+        <section>
+          <h2>Drop in a page, or keep your own renderer</h2>
+          <p>The package ships self-contained documents at <code>errors/&lt;code&gt;.html</code>. Each embeds its styles and includes a default home link, so the error screen does not need a separate stylesheet request to render.</p>
+          <p>For site-specific navigation or server-rendered pages, use the shared copy directly:</p>
+          <pre><code>import { getHttpError } from '@whykusanagi/corrupted-theme/http-errors';
+
+const { title, line } = getHttpError(404);</code></pre>
+          <p>The <code>httpErrors</code> export exposes the complete map. <code>getHttpError(code)</code> returns the matching entry or the generic fallback. Your renderer decides where the text goes and which recovery links make sense for that site.</p>
+          <p>The main theme already includes the error styles. If you only need this module, load the tokens first:</p>
+          <pre><code>@import '@whykusanagi/corrupted-theme/variables';
+@import '@whykusanagi/corrupted-theme/error-pages-css';</code></pre>
+          <p>Five classes provide the structure: <code>.error-page</code>, <code>.error-code</code>, <code>.error-title</code>, <code>.error-line</code> and <code>.error-links</code>. The <a href="https://corrupted.whykusanagi.xyz/examples/http-errors" target="_blank" rel="noopener">preview gallery</a> puts all 20 designs on one page.</p>
+        </section>
+
+        <section>
+          <h2>Give the page the right HTTP status</h2>
+          <p>A file named <code>404.html</code> can still be served with a 200 response. The filename supplies no HTTP semantics by itself: your host or server needs to return the correct status when it serves the page.</p>
+          <p>The standalone documents include <code>noindex, nofollow</code> metadata. For custom rendering, the <a href="https://github.com/whykusanagi/corrupted-theme/blob/v0.3.5/docs/HTTP_ERRORS.md" target="_blank" rel="noopener">integration guide</a> covers navigation, response handling, and the embedded stylesheet's CSP requirements.</p>
+        </section>
+
+        <section>
+          <h2>Get 0.3.5</h2>
+          <pre><code>npm install @whykusanagi/corrupted-theme@0.3.5</code></pre>
+          <p>This release brings a focused addition to the design system: a shared place for error styling, status copy, and ready-made pages. The next time a connection fails, the site can keep its identity all the way to the recovery link.</p>
+        </section>
+
+        <section>
+          <h2>Ask Celeste</h2>
+          <p><strong>Q:</strong> Does installing 0.3.5 replace my site's error pages automatically?<br>
+          <strong>A:</strong> No. You get the assets and exports, then connect them to your host's error handling. I can supply the missing-page existential crisis. Your server still has to send the 404.</p>
+          <p><strong>Q:</strong> Can I keep my own navigation and change the message?<br>
+          <strong>A:</strong> Yes. Render your own HTML with the exported CSS, use the shared copy where it fits, and choose links that help your visitors recover. Escape dynamic values before inserting them into HTML.</p>
+          <p><strong>Q:</strong> What happens if my status code is not one of the 20?<br>
+          <strong>A:</strong> <code>getHttpError()</code> returns the generic title and message. Your handler keeps the real response status; the fallback gives the page something readable to say.</p>
+        </section>
+
+        <section class="cta-grid">
+          <a class="btn" href="https://corrupted.whykusanagi.xyz/examples/http-errors" target="_blank" rel="noopener">Preview the error pages</a>
+          <a class="btn" href="https://www.npmjs.com/package/@whykusanagi/corrupted-theme" target="_blank" rel="noopener">Get it on npm</a>
+          <a class="btn" href="https://github.com/whykusanagi/corrupted-theme/blob/v0.3.5/docs/HTTP_ERRORS.md" target="_blank" rel="noopener">Integration guide</a>
+        </section>
+      </article>
+    </main>
+    <footer data-site-footer></footer>
+
+    <script src="../assets/js/video-background.js"></script>
+    <script src="/assets/js/nav.js"></script>
+</body>
+</html>
