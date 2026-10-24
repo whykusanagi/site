@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Subathon Goal Tracker | whykusanagi</title>
+  <meta name="robots" content="noindex, nofollow">
+  <!--
+    OBS browser source: 1920x1080, URL https://whykusanagi.xyz/subathon-tracker
+    Count: ?subs=N sets it. Otherwise right-click source → Interact, then
+    + / - (or ↑ / ↓) adjust it, 0 resets. Saved in OBS's browser storage.
+  -->
+  <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
+  <style>
+    :root { --lav: #9b7bff; --pink: #ff5fa8; --card: rgba(18, 10, 30, .82); }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+    /* Fixed 1920x1080 stage, scaled to fit whatever size the source is. */
+    #stage { position: absolute; width: 1920px; height: 1080px; left: 50%; top: 50%;
+      transform-origin: center; color: #f3eaff; font-family: var(--font-display, inherit);
+      letter-spacing: .12em; text-transform: uppercase; }
+    #bg { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+    #art { position: absolute; left: 0; top: 0; width: 625px; height: 1080px; object-fit: cover; object-position: 50% 15%;
+      -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
+    #title { position: absolute; left: 38px; bottom: 80px; text-shadow: 0 4px 18px #000; }
+    #title h1 { margin: 0; font-size: 84px; letter-spacing: .08em; }
+    #title p { margin: 0; font-size: 26px; }
+    #count { position: absolute; left: 38px; top: 40px; font-size: 30px; text-shadow: 0 2px 10px #000; }
+    #count b { font-size: 72px; color: var(--pink); display: block; letter-spacing: 0; }
+    #head { position: absolute; left: 655px; top: 28px; font-size: 40px; }
+    #head span { color: #ff4d6d; }
+    #goals { position: absolute; left: 655px; top: 105px; width: 1180px; display: grid;
+      grid-template-columns: repeat(3, 1fr); grid-auto-flow: column; grid-template-rows: repeat(5, 172px); gap: 14px 40px; }
+    .goal { position: relative; background: var(--card); border: 2px solid var(--lav); padding: 46px 22px 14px; font-size: 19px; line-height: 1.45; transition: all .6s; }
+    .goal .n { position: absolute; top: 14px; left: -28px; background: var(--lav); padding: 0 12px; font-size: 26px; font-weight: 700; color: #fff; }
+    .goal.stretch { border-color: var(--pink); } .goal.stretch .n { background: var(--pink); }
+    .goal.done { opacity: .55; border-color: #6a5a8a; } .goal.done .n::after { content: " ✓"; }
+    .goal.next { box-shadow: 0 0 28px var(--pink); border-color: var(--pink); }
+    .goal .bar { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--pink); transition: width .6s; }
+    #extras { grid-row: 4 / span 2; grid-column: 3; }
+    #extras table { width: 100%; font-size: 17px; border-collapse: collapse; }
+    #extras td:last-child { text-align: right; color: #c9b4ff; }
+    #extras h3 { margin: 4px 0; font-size: 20px; color: var(--lav); text-transform: lowercase; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <!-- Live micro-gfx generator, dark polarity, no text: same look as the flyer bg. -->
+    <iframe id="bg" src="/tools/micro-gfx/index.html?embed=1&format=card&polarity=dark&seed=1130&eyebrow=&title=&serial=&nameplate=" title="" aria-hidden="true" tabindex="-1"></iframe>
+    <img id="art" src="https://s3.whykusanagi.xyz/optimized_assets/kimono_tentacled_obs.jpg" alt="">
+    <div id="count"><b id="subs">0</b>gifted subs</div>
+    <div id="title"><h1>SUBATHON</h1><p>Goals unlock Oct 24 → Dec 1</p><p>Princess reveal · Nov 30 · 4 PM PST</p></div>
+    <div id="head">+1 gifted: unique badge <span>(must be 18+)</span></div>
+    <div id="goals">
+      <div id="extras" class="goal">
+        <h3>incentives</h3>
+        <table>
+          <tr><td>5 subs</td><td>signed postcard</td></tr>
+          <tr><td>10 subs</td><td>reverse bunny</td></tr>
+          <tr><td>25 subs</td><td>C107 request</td></tr>
+          <tr><td>50 subs</td><td>NIKKE winter merch</td></tr>
+          <tr><td>100 subs</td><td>custom AI prompt</td></tr>
+        </table>
+        <h3>top rewards</h3>
+        <table>
+          <tr><td>1st</td><td>custom AI prompt + 2 &amp; 3</td></tr>
+          <tr><td>2nd</td><td>NIKKE winter merch + 3</td></tr>
+          <tr><td>3rd</td><td>C107 request</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script>
+    const GOALS = [
+      [10, 'Channel points can be used to request VRChat model swaps'],
+      [20, 'New model spicy outfit reveal · change profile pic'],
+      [30, 'Chat votes on new Twitch emote idea'],
+      [40, 'New variant for CelesteAI · let her tweet 💢'],
+      [50, 'Comiket Express unlocked: for top 3 gifters'],
+      [60, 'Automated account reviews discounted'],
+      [70, 'Suno engineering stream (create a new song live)'],
+      [80, 'Chat votes on next outfit reveal A B or C'],
+      [90, 'CelesteAI doccy released (all your chat messages rated)'],
+      [100, 'Card opening stream unlocked'],
+      [250, 'Chat decides the next spicy art commission'],
+      [300, 'Game demo early playtest release via Steam/itch.io'],
+      [350, 'Launch KusaCoin xD', true],
+    ];
+    const KEY = 'subathon-subs';
+    const extras = document.getElementById('extras');
+    const cards = GOALS.map(([n, text, stretch]) => {
+      const el = document.createElement('div');
+      el.className = 'goal' + (stretch ? ' stretch' : '');
+      el.innerHTML = `<div class="n">${n}</div>${text}<div class="bar"></div>`;
+      extras.before(el);
+      return el;
+    });
+
+    function read() { try { return +localStorage.getItem(KEY) || 0; } catch { return 0; } }
+    function render(subs) {
+      document.getElementById('subs').textContent = subs;
+      const nextIdx = GOALS.findIndex(([n]) => subs < n);
+      cards.forEach((el, i) => {
+        const prev = i ? GOALS[i - 1][0] : 0, n = GOALS[i][0];
+        el.classList.toggle('done', subs >= n);
+        el.classList.toggle('next', i === nextIdx);
+        el.querySelector('.bar').style.width = i === nextIdx ? `${((subs - prev) / (n - prev)) * 100}%` : '0';
+      });
+    }
+    function set(subs) {
+      subs = Math.max(0, subs | 0);
+      try { localStorage.setItem(KEY, subs); } catch {}
+      render(subs);
+    }
+
+    const param = new URLSearchParams(location.search).get('subs');
+    param !== null ? set(+param) : render(read());
+
+    // ponytail: manual count via OBS Interact; wire Twitch EventSub if hand-counting gets old.
+    addEventListener('keydown', (e) => {
+      const d = { '+': 1, '=': 1, ArrowUp: 1, '-': -1, ArrowDown: -1 }[e.key];
+      if (d) set(read() + d * (e.shiftKey ? 5 : 1));
+      if (e.key === '0') set(0);
+    });
+
+    const stage = document.getElementById('stage');
+    function fit() { stage.style.transform = `translate(-50%, -50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; }
+    addEventListener('resize', fit); fit();
+  </script>
+</body>
+</html>

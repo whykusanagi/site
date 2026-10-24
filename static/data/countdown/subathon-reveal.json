@@ -1,0 +1,38 @@
+{
+  "title": "Princess Model Reveal:",
+  "eventDate": "2026-11-30T16:00:00-08:00",
+  "basicMessage": "Princess model debut",
+  "detailedMessage": "👑 The <strong>Princess model</strong> debuts live — <strong>Nov 30, 4 PM PST</strong>.",
+  "completedMessage": "👑 The Princess is LIVE!",
+  "style": "compact",
+  "character": {
+    "image": "art/Nov_30_Subathon.png",
+    "background": {
+      "type": "diamond",
+      "color": "radial-gradient(circle, rgba(139, 92, 246, 0.4) 10%, rgba(217, 79, 144, 0.6) 60%)",
+      "borderColor": "#3a2555",
+      "pattern": false
+    },
+    "overlay": {
+      "image": null,
+      "position": null,
+      "animation": null
+    },
+    "objectPosition": "18% 25%"
+  },
+  "popup": {
+    "message": "👑 <strong>Princess model reveal</strong><br>Nov 30, 4 PM PST<br><a href=\"https://whykusanagi.xyz/subathon\" target=\"_blank\" style=\"color:#e86ca8;\">whykusanagi.xyz/subathon</a>",
+    "frequency": 10000,
+    "duration": 5000,
+    "colors": {
+      "bg": null,
+      "border": null,
+      "text": null
+    }
+  },
+  "colors": {
+    "primary": null,
+    "accent": null,
+    "text": null
+  }
+}

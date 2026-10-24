@@ -253,6 +253,18 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://whykusanagi.xyz/subathon</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://whykusanagi.xyz/subathon-tracker</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
     <loc>https://whykusanagi.xyz/wallpapers</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
