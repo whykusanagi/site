@@ -18,7 +18,7 @@
     #stage { position: absolute; width: 1920px; height: 1080px; left: 50%; top: 50%;
       transform-origin: center; color: #f3eaff; font-family: var(--font-display, inherit);
       letter-spacing: .12em; text-transform: uppercase; }
-    #bg { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; pointer-events: none; }
+    #bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
     #art { position: absolute; left: 0; top: 0; width: 625px; height: 1080px; object-fit: cover; object-position: 50% 15%;
       -webkit-mask-image: linear-gradient(90deg, #000 85%, transparent); mask-image: linear-gradient(90deg, #000 85%, transparent); }
     #title { position: absolute; left: 38px; bottom: 80px; text-shadow: 0 4px 18px #000; }
@@ -44,8 +44,8 @@
 </head>
 <body>
   <div id="stage">
-    <!-- Live micro-gfx generator, dark polarity, no text: same look as the flyer bg. -->
-    <iframe id="bg" src="/tools/micro-gfx/index.html?embed=1&format=card&polarity=dark&seed=1130&eyebrow=&title=&serial=&nameplate=" title="" aria-hidden="true" tabindex="-1"></iframe>
+    <!-- micro-gfx dark card as a PNG: site CSP frame-src blocks a same-site iframe. Change seed for a different pattern. -->
+    <img id="bg" src="/api/micro-gfx?format=card&amp;seed=1130&amp;polarity=dark&amp;eyebrow=&amp;title=&amp;serial=&amp;nameplate=" alt="">
     <img id="art" src="https://s3.whykusanagi.xyz/optimized_assets/kimono_tentacled_obs.jpg" alt="">
     <div id="count"><b id="subs">0</b>gifted subs</div>
     <div id="title"><h1>SUBATHON</h1><p>Goals unlock Oct 24 → Dec 1</p><p>Princess reveal · Nov 30 · 4 PM PST</p></div>
