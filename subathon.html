@@ -50,6 +50,19 @@
     .timer .label { font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-light); }
     .timer .clock { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
     .timer .when { font-size: .85rem; opacity: .8; }
+    .live { display: inline-flex; align-items: center; gap: .5rem; align-self: flex-start; padding: .3rem .8rem; border-radius: 999px;
+      font-size: .8rem; font-weight: 700; letter-spacing: .15em; text-transform: uppercase; background: rgba(255,255,255,.08); color: #bbb; text-decoration: none; }
+    .live .dot { width: .6rem; height: .6rem; border-radius: 50%; background: #777; }
+    .live.on { background: #e91916; color: #fff; }
+    .live.on .dot { background: #fff; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 50% { opacity: .3; } }
+    @media (prefers-reduced-motion: reduce) { .live.on .dot { animation: none; } }
+    .ctas { display: flex; flex-wrap: wrap; gap: .75rem; }
+    .ctas .btn { display: inline-flex; align-items: center; gap: .5rem; }
+    .btn-twitch { background: #9146ff !important; border-color: #9146ff !important; color: #fff !important; }
+    .cta-band { margin: 2.5rem 0 1rem; padding: 1.5rem; border: 1px solid #9146ff; border-radius: var(--radius-lg);
+      background: rgba(145, 70, 255, .12); display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; justify-content: space-between; }
+    .cta-band p { margin: 0; font-size: 1.1rem; }
     .goal-progress { margin: 2rem 0 1rem; }
     .goal-progress .meter { height: 12px; border-radius: 6px; background: rgba(255,255,255,.08); overflow: hidden; }
     .goal-progress .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #ff5fa8); transition: width 1s; }
@@ -93,6 +106,7 @@
         <img class="bg" src="/api/micro-gfx?format=card&amp;seed=1130&amp;polarity=dark&amp;eyebrow=&amp;title=&amp;serial=&amp;nameplate=" alt="">
         <img class="art" src="https://s3.whykusanagi.xyz/optimized_assets/kimono_tentacled_obs.jpg" alt="Celeste in a purple kimono, wrapped in tentacles">
         <div class="copy">
+          <a class="live" id="live" href="https://twitch.tv/whykusanagi" target="_blank" rel="noopener"><span class="dot"></span><span id="live-text">Checking Twitch…</span></a>
           <div class="eyebrow">Oct 24 → Dec 1 · 18+</div>
           <h1>Road to the Princess Reveal</h1>
           <p>Not a one-night subathon. Every gifted sub from now until Dec 1 counts toward the goals below, and each goal we hit unlocks its reward. It all builds to the Princess model debuting live on <a href="https://twitch.tv/whykusanagi" target="_blank" rel="noopener">Twitch</a>.</p>
@@ -103,6 +117,10 @@
             <div class="timer" data-until="2026-12-01T12:00:00-07:00">
               <div class="label">💜 Badge drops close</div><div class="clock">--</div><div class="when">Mon, Dec 1 · 12:00 PM MST</div>
             </div>
+          </div>
+          <div class="ctas">
+            <a class="btn btn-twitch" href="https://www.twitch.tv/subs/whykusanagi" target="_blank" rel="noopener"><i class="fas fa-gift"></i> Gift a sub · get the badge</a>
+            <a class="btn" id="watch-cta" href="https://twitch.tv/whykusanagi" target="_blank" rel="noopener"><i class="fab fa-twitch"></i> Follow on Twitch</a>
           </div>
         </div>
       </section>
@@ -130,6 +148,11 @@
         <div class="goal stretch" data-goal="350"><span class="n">350</span><div>Stretch goal: launch KusaCoin xD</div></div>
       </div>
 
+      <div class="cta-band">
+        <p><strong>Every gifted sub moves the bar</strong> and locks in your creator badge.</p>
+        <a class="btn btn-twitch" href="https://www.twitch.tv/subs/whykusanagi" target="_blank" rel="noopener"><i class="fas fa-gift"></i> Gift a sub on Twitch</a>
+      </div>
+
       <h2>Rewards</h2>
       <div class="rewards">
         <div class="goal">
@@ -152,7 +175,7 @@
         </div>
       </div>
 
-      <p><em>Illustration by @Aoi_Suzu_ · Design by @TATSUWU · 18+ adults only</em></p>
+      <p><em>Illustration by @Aoi_Suzu_ · 18+ adults only</em></p>
     </div>
     <footer data-site-footer></footer>
   </main>
@@ -171,6 +194,22 @@
       }
     }
     tick(); setInterval(tick, 1000);
+
+    // Live/offline pill via the Worker (/api/twitch-live, decapi-backed, 60s cache).
+    async function checkLive() {
+      try {
+        const { live, uptime } = await (await fetch('/api/twitch-live')).json();
+        const pill = document.getElementById('live');
+        pill.classList.toggle('on', live === true);
+        document.getElementById('live-text').textContent =
+          live === true ? `Live now · ${uptime}` : live === false ? 'Offline · follow for the reveal' : 'twitch.tv/whykusanagi';
+        document.getElementById('watch-cta').innerHTML =
+          live ? '<i class="fab fa-twitch"></i> Watch live now' : '<i class="fab fa-twitch"></i> Follow on Twitch';
+      } catch (e) {
+        console.error('[subathon] live check failed', e);
+      }
+    }
+    checkLive(); setInterval(checkLive, 60000);
 
     // Gifted count lives in static/data/subathon.json; edit + push to update.
     fetch('/static/data/subathon.json', { cache: 'no-store' })
