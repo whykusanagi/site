@@ -211,6 +211,12 @@
     <priority>0.6</priority>
   </url>
   <url>
+    <loc>https://whykusanagi.xyz/subathon</loc>
+    <lastmod>2026-10-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://whykusanagi.xyz/bastard-hero</loc>
     <lastmod>2026-10-22</lastmod>
     <changefreq>monthly</changefreq>
