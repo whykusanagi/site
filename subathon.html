@@ -37,11 +37,35 @@
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <style>
-    .subathon-flyer img { width: 100%; height: auto; border-radius: var(--radius-lg); }
-    .countdowns { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
-    .countdowns iframe { width: 100%; height: 420px; border: 0; }
-    .goal-table { width: 100%; border-collapse: collapse; }
-    .goal-table td { padding: .4rem .6rem; border-bottom: 1px solid var(--border, rgba(255,255,255,.1)); vertical-align: top; }
+    .event-hero { position: relative; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr); min-height: 560px;
+      border-radius: var(--radius-2xl); overflow: hidden; background: #0a0a0a; }
+    .event-hero .bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .9; }
+    .event-hero .art { position: relative; width: 100%; height: 100%; min-height: 560px; object-fit: cover; object-position: 50% 12%;
+      -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent); mask-image: linear-gradient(90deg, #000 80%, transparent); }
+    .event-hero .copy { position: relative; padding: 2.5rem 2rem; display: flex; flex-direction: column; justify-content: center; gap: 1rem; }
+    .event-hero h1 { margin: 0; font-size: clamp(2.2rem, 5vw, 3.6rem); letter-spacing: .06em; text-transform: uppercase; }
+    .eyebrow { letter-spacing: .3em; text-transform: uppercase; color: var(--accent-light); font-size: .85rem; }
+    .timers { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; }
+    .timer { padding: 1rem 1.25rem; border: 1px solid var(--accent); background: rgba(10, 6, 20, .75); border-radius: var(--radius-lg); }
+    .timer .label { font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-light); }
+    .timer .clock { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+    .timer .when { font-size: .85rem; opacity: .8; }
+    .progress { margin: 2rem 0 1rem; }
+    .progress .meter { height: 12px; border-radius: 6px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .progress .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #ff5fa8); transition: width 1s; }
+    .goals { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
+    .goal { position: relative; padding: 1.1rem 1.1rem 1rem; border: 1px solid rgba(155,123,255,.5); border-radius: var(--radius-lg); background: rgba(14, 8, 26, .7); }
+    .goal .n { display: inline-block; font-weight: 700; font-size: 1.3rem; padding: 0 .55rem; margin-bottom: .4rem; background: var(--accent); color: #fff; border-radius: 4px; }
+    .goal.stretch { border-color: #ff5fa8; } .goal.stretch .n { background: #ff5fa8; }
+    .goal.done { border-color: #4ade80; } .goal.done .n::after { content: " ✓ unlocked"; font-size: .75rem; letter-spacing: .1em; }
+    .goal.next { box-shadow: 0 0 22px rgba(255,95,168,.55); border-color: #ff5fa8; }
+    .rewards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .rewards dl { display: grid; grid-template-columns: auto 1fr; gap: .4rem 1rem; margin: 0; }
+    .rewards dt { font-weight: 700; } .rewards dd { margin: 0; text-align: right; color: var(--accent-light); }
+    @media (max-width: 1000px) {
+      .event-hero { grid-template-columns: 1fr; }
+      .event-hero .art { min-height: 420px; max-height: 60vh; -webkit-mask-image: linear-gradient(180deg, #000 75%, transparent); mask-image: linear-gradient(180deg, #000 75%, transparent); }
+    }
   </style>
   <script type="application/ld+json">
   {
@@ -65,61 +89,100 @@
 
   <main class="app-shell">
     <div class="content">
-      <h1>👑 Road to the Princess Reveal</h1>
-      <p>This isn't a one-night subathon. From <strong>Oct 24</strong> through <strong>Dec 1</strong>, every gifted sub counts toward the goals below, and each goal we hit unlocks its reward. It all builds to the new Princess model debuting live on <a href="https://twitch.tv/whykusanagi" target="_blank" rel="noopener">Twitch</a>, <strong>Sunday, Nov 30 · 4:00 PM PST</strong>.</p>
-
-      <div class="subathon-flyer glass glass-shadow">
-        <img src="https://s3.whykusanagi.xyz/art/Nov_30_Subathon.png" alt="Road to the Princess Reveal flyer: sub goals, incentives and top gifter rewards" width="1920" height="1080">
-      </div>
-
-      <h2>Countdowns</h2>
-      <div class="countdowns">
-        <iframe src="countdown?event=subathon-badges" title="Creator badge drop countdown" loading="lazy"></iframe>
-        <iframe src="countdown?event=subathon-reveal" title="Princess model reveal countdown" loading="lazy"></iframe>
-      </div>
+      <section class="event-hero glass-shadow">
+        <img class="bg" src="/api/micro-gfx?format=card&amp;seed=1130&amp;polarity=dark&amp;eyebrow=&amp;title=&amp;serial=&amp;nameplate=" alt="">
+        <img class="art" src="https://s3.whykusanagi.xyz/optimized_assets/kimono_tentacled_obs.jpg" alt="Celeste in a purple kimono, wrapped in tentacles">
+        <div class="copy">
+          <div class="eyebrow">Oct 24 → Dec 1 · 18+</div>
+          <h1>Road to the Princess Reveal</h1>
+          <p>Not a one-night subathon. Every gifted sub from now until Dec 1 counts toward the goals below, and each goal we hit unlocks its reward. It all builds to the Princess model debuting live on <a href="https://twitch.tv/whykusanagi" target="_blank" rel="noopener">Twitch</a>.</p>
+          <div class="timers">
+            <div class="timer" data-until="2026-11-30T16:00:00-08:00">
+              <div class="label">👑 Princess reveal</div><div class="clock">--</div><div class="when">Sun, Nov 30 · 4:00 PM PST</div>
+            </div>
+            <div class="timer" data-until="2026-12-01T12:00:00-07:00">
+              <div class="label">💜 Badge drops close</div><div class="clock">--</div><div class="when">Mon, Dec 1 · 12:00 PM MST</div>
+            </div>
+          </div>
+        </div>
+      </section>
 
       <h2>+1 Gifted = Unique Creator Badge</h2>
       <p>Gift a sub between <strong>Oct 24, 12:00 PM</strong> and <strong>Dec 1, 12:00 PM MST</strong> to earn a unique creator badge. <strong>Must be 18+.</strong></p>
 
-      <h2>Sub Goals</h2>
-      <p>Goals count gifted subs across the whole event window, not just reveal night.</p>
-      <table class="goal-table">
-          <tr><td><strong>10</strong></td><td>Channel points can be used to request VRChat model swaps</td></tr>
-          <tr><td><strong>20</strong></td><td>New model spicy outfit reveal + profile pic change</td></tr>
-          <tr><td><strong>30</strong></td><td>Chat votes on new Twitch emote idea</td></tr>
-          <tr><td><strong>40</strong></td><td>New variant for CelesteAI — let her tweet 💢</td></tr>
-          <tr><td><strong>50</strong></td><td>Comiket Express unlocked for top 3 gifters</td></tr>
-          <tr><td><strong>60</strong></td><td>Automated account reviews discounted</td></tr>
-          <tr><td><strong>70</strong></td><td>Suno engineering stream (create a new song live)</td></tr>
-          <tr><td><strong>80</strong></td><td>Chat votes on next outfit reveal: A, B or C</td></tr>
-          <tr><td><strong>90</strong></td><td>CelesteAI Doccy released (all your chat messages rated)</td></tr>
-          <tr><td><strong>100</strong></td><td>Card opening stream unlocked</td></tr>
-          <tr><td><strong>250</strong></td><td>Chat decides the next spicy art commission</td></tr>
-          <tr><td><strong>300</strong></td><td>Game demo early playtest release via Steam/itch.io</td></tr>
-          <tr><td><strong>350</strong></td><td><em>Stretch goal:</em> launch KusaCoin xD</td></tr>
-      </table>
+      <div class="progress">
+        <h2>Goals: <span id="subs">0</span> gifted so far</h2>
+        <div class="meter"><div class="fill" id="fill"></div></div>
+      </div>
+      <div class="goals">
+        <div class="goal" data-goal="10"><span class="n">10</span><div>Channel points can be used to request VRChat model swaps</div></div>
+        <div class="goal" data-goal="20"><span class="n">20</span><div>New model spicy outfit reveal + profile pic change</div></div>
+        <div class="goal" data-goal="30"><span class="n">30</span><div>Chat votes on a new Twitch emote idea</div></div>
+        <div class="goal" data-goal="40"><span class="n">40</span><div>New variant for CelesteAI: let her tweet 💢</div></div>
+        <div class="goal" data-goal="50"><span class="n">50</span><div>Comiket Express unlocked for the top 3 gifters</div></div>
+        <div class="goal" data-goal="60"><span class="n">60</span><div>Automated account reviews discounted</div></div>
+        <div class="goal" data-goal="70"><span class="n">70</span><div>Suno engineering stream: create a new song live</div></div>
+        <div class="goal" data-goal="80"><span class="n">80</span><div>Chat votes on the next outfit reveal: A, B or C</div></div>
+        <div class="goal" data-goal="90"><span class="n">90</span><div>CelesteAI Doccy released: all your chat messages rated</div></div>
+        <div class="goal" data-goal="100"><span class="n">100</span><div>Card opening stream unlocked</div></div>
+        <div class="goal" data-goal="250"><span class="n">250</span><div>Chat decides the next spicy art commission</div></div>
+        <div class="goal" data-goal="300"><span class="n">300</span><div>Game demo early playtest via Steam/itch.io</div></div>
+        <div class="goal stretch" data-goal="350"><span class="n">350</span><div>Stretch goal: launch KusaCoin xD</div></div>
+      </div>
 
-      <h2>Incentives</h2>
-      <table class="goal-table">
-          <tr><td><strong>5 subs</strong></td><td>Signed postcard</td></tr>
-          <tr><td><strong>10 subs</strong></td><td>Reverse Bunny</td></tr>
-          <tr><td><strong>25 subs</strong></td><td>C107 request</td></tr>
-          <tr><td><strong>50 subs</strong></td><td>NIKKE winter merch</td></tr>
-          <tr><td><strong>100 subs</strong></td><td>Custom AI prompt</td></tr>
-      </table>
+      <h2>Rewards</h2>
+      <div class="rewards">
+        <div class="goal">
+          <h3>Gifter incentives</h3>
+          <dl>
+            <dt>5 subs</dt><dd>Signed postcard</dd>
+            <dt>10 subs</dt><dd>Reverse Bunny</dd>
+            <dt>25 subs</dt><dd>C107 request</dd>
+            <dt>50 subs</dt><dd>NIKKE winter merch</dd>
+            <dt>100 subs</dt><dd>Custom AI prompt</dd>
+          </dl>
+        </div>
+        <div class="goal">
+          <h3>Top gifters</h3>
+          <dl>
+            <dt>1st</dt><dd>Custom AI prompt + 2nd &amp; 3rd rewards</dd>
+            <dt>2nd</dt><dd>NIKKE winter merch + 3rd reward</dd>
+            <dt>3rd</dt><dd>C107 request</dd>
+          </dl>
+        </div>
+      </div>
 
-      <h2>Top Gifter Rewards</h2>
-      <table class="goal-table">
-          <tr><td><strong>1st</strong></td><td>Custom AI prompt + 2nd &amp; 3rd rewards</td></tr>
-          <tr><td><strong>2nd</strong></td><td>NIKKE winter merch + 3rd reward</td></tr>
-          <tr><td><strong>3rd</strong></td><td>C107 request</td></tr>
-      </table>
-
-      <p><em>Illustration by @Aoi_Suzu_ · Design by @TATSUWU</em></p>
+      <p><em>Illustration by @Aoi_Suzu_ · Design by @TATSUWU · 18+ adults only</em></p>
     </div>
     <footer data-site-footer></footer>
   </main>
   <script src="assets/js/video-background.js"></script>
   <script src="/assets/js/nav.js"></script>
+  <script>
+    // Live countdowns (no iframes: site CSP frame-src blocks same-site embeds).
+    const timers = [...document.querySelectorAll('[data-until]')];
+    function tick() {
+      for (const t of timers) {
+        const ms = new Date(t.dataset.until) - Date.now();
+        const clock = t.querySelector('.clock');
+        if (ms <= 0) { clock.textContent = 'Now!'; continue; }
+        const d = Math.floor(ms / 864e5), h = Math.floor(ms / 36e5) % 24, m = Math.floor(ms / 6e4) % 60, s = Math.floor(ms / 1e3) % 60;
+        clock.textContent = `${d}d ${h}h ${m}m ${s}s`;
+      }
+    }
+    tick(); setInterval(tick, 1000);
+
+    // Gifted count lives in static/data/subathon.json; edit + push to update.
+    fetch('/static/data/subathon.json', { cache: 'no-store' })
+      .then((r) => r.json())
+      .then(({ subs }) => {
+        const goals = [...document.querySelectorAll('[data-goal]')];
+        const next = goals.find((g) => subs < +g.dataset.goal);
+        goals.forEach((g) => { g.classList.toggle('done', subs >= +g.dataset.goal); g.classList.toggle('next', g === next); });
+        document.getElementById('subs').textContent = subs;
+        document.getElementById('fill').style.width = `${Math.min(100, (subs / 350) * 100)}%`;
+      })
+      .catch((e) => console.error('[subathon] count unavailable', e));
+  </script>
 </body>
 </html>
