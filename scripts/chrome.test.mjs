@@ -15,6 +15,7 @@ const NAV_EXEMPT = new Set([
   'blog/_template.html',
   'tools/thumbnail-generator/index.html',
   'tools/neo-deco-portrait/index.html',
+  'subathon-tracker.html',
 ]);
 
 for (const file of allPages()) {

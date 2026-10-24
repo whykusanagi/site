@@ -13,6 +13,7 @@ const NOINDEX = new Set([
   'tools/neo-deco-portrait/index.html',
   'celeste-cli-presentation.html',
   'celeste-ops-presentation.html',
+  'subathon-tracker.html',
 ]);
 
 const KNOWN_TYPES = new Set([
