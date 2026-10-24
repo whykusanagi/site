@@ -50,9 +50,9 @@
     .timer .label { font-size: .8rem; letter-spacing: .2em; text-transform: uppercase; color: var(--accent-light); }
     .timer .clock { font-size: 2rem; font-weight: 700; font-variant-numeric: tabular-nums; }
     .timer .when { font-size: .85rem; opacity: .8; }
-    .progress { margin: 2rem 0 1rem; }
-    .progress .meter { height: 12px; border-radius: 6px; background: rgba(255,255,255,.08); overflow: hidden; }
-    .progress .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #ff5fa8); transition: width 1s; }
+    .goal-progress { margin: 2rem 0 1rem; }
+    .goal-progress .meter { height: 12px; border-radius: 6px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .goal-progress .fill { height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), #ff5fa8); transition: width 1s; }
     .goals { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 1rem; }
     .goal { position: relative; padding: 1.1rem 1.1rem 1rem; border: 1px solid rgba(155,123,255,.5); border-radius: var(--radius-lg); background: rgba(14, 8, 26, .7); }
     .goal .n { display: inline-block; font-weight: 700; font-size: 1.3rem; padding: 0 .55rem; margin-bottom: .4rem; background: var(--accent); color: #fff; border-radius: 4px; }
@@ -110,7 +110,7 @@
       <h2>+1 Gifted = Unique Creator Badge</h2>
       <p>Gift a sub between <strong>Oct 24, 12:00 PM</strong> and <strong>Dec 1, 12:00 PM MST</strong> to earn a unique creator badge. <strong>Must be 18+.</strong></p>
 
-      <div class="progress">
+      <div class="goal-progress">
         <h2>Goals: <span id="subs">0</span> gifted so far</h2>
         <div class="meter"><div class="fill" id="fill"></div></div>
       </div>
