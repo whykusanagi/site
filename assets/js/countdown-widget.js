@@ -377,10 +377,16 @@ function renderWidget(config) {
   
   // Character image
   if (config.character?.image) {
-    const characterImg = document.createElement('img');
+    // A .webm/.mp4 "image" plays as a silent loop (e.g. teaser clips in OBS).
+    const isVideo = /\.(webm|mp4)$/i.test(config.character.image);
+    const characterImg = document.createElement(isVideo ? 'video' : 'img');
     characterImg.className = 'countdown-character';
     characterImg.src = resolveAssetPath(config.character.image);
-    characterImg.alt = config.title || 'Event Character';
+    if (isVideo) {
+      Object.assign(characterImg, { autoplay: true, muted: true, loop: true, playsInline: true });
+    } else {
+      characterImg.alt = config.title || 'Event Character';
+    }
 
     if (config.character.rotation) {
       characterImg.style.transform = `translate(-50%, -50%) scale(0.9) rotate(${config.character.rotation}deg)`;
