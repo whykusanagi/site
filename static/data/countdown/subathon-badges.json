@@ -1,8 +1,8 @@
 {
   "title": "Creator Badge Drop Ends In:",
-  "eventDate": "2026-12-01T12:00:00-07:00",
+  "eventDate": "2026-11-21T12:00:00-07:00",
   "basicMessage": "+1 gifted sub = unique creator badge (18+)",
-  "detailedMessage": "💜 Gift a sub before <strong>Dec 1, 12 PM MST</strong> to lock in a unique creator badge! (Must be 18+)",
+  "detailedMessage": "💜 Gift a sub before <strong>Nov 21, 12 PM MST</strong> to lock in a unique creator badge! (Must be 18+)",
   "completedMessage": "Badge drops are closed. Thank you! 💜",
   "style": "compact",
   "character": {
@@ -21,7 +21,7 @@
     "objectPosition": "18% 25%"
   },
   "popup": {
-    "message": "💜 <strong>+1 GIFTED = UNIQUE BADGE</strong><br>Ends Dec 1, 12 PM MST<br><a href=\"https://whykusanagi.xyz/subathon\" target=\"_blank\" style=\"color:#e86ca8;\">whykusanagi.xyz/subathon</a>",
+    "message": "💜 <strong>+1 GIFTED = UNIQUE BADGE</strong><br>Ends Nov 21, 12 PM MST<br><a href=\"https://whykusanagi.xyz/subathon\" target=\"_blank\" style=\"color:#e86ca8;\">whykusanagi.xyz/subathon</a>",
     "frequency": 10000,
     "duration": 5000,
     "colors": {
