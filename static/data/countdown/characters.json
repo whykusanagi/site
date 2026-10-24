@@ -419,6 +419,20 @@
     "rotation": 0,
     "category": "headshot"
   },
+  "kimono-tentacled": {
+    "name": "Kimono Tentacled",
+    "image": "optimized_assets/kimono_tentacled_obs.jpg",
+    "objectPosition": "50% 15%",
+    "rotation": 0,
+    "category": "original"
+  },
+  "princess-tease": {
+    "name": "Princess Teaser Loop",
+    "image": "optimized_assets/princess_tease/princess_loop.webm",
+    "objectPosition": "50% 30%",
+    "rotation": 0,
+    "category": "original"
+  },
   "none": {
     "name": "No Character",
     "image": null,
