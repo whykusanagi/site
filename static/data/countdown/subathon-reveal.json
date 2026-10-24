@@ -1,8 +1,8 @@
 {
   "title": "Princess Model Reveal:",
   "eventDate": "2026-11-30T16:00:00-08:00",
-  "basicMessage": "Subathon + Princess model debut",
-  "detailedMessage": "👑 The <strong>Princess model</strong> debuts at the subathon — <strong>Nov 30, 4 PM PST</strong>.",
+  "basicMessage": "Princess model debut",
+  "detailedMessage": "👑 The <strong>Princess model</strong> debuts live — <strong>Nov 30, 4 PM PST</strong>.",
   "completedMessage": "👑 The Princess is LIVE!",
   "style": "compact",
   "character": {
@@ -21,7 +21,7 @@
     "objectPosition": "18% 25%"
   },
   "popup": {
-    "message": "👑 <strong>Princess model reveal</strong><br>Subathon Nov 30, 4 PM PST<br><a href=\"https://whykusanagi.xyz/subathon\" target=\"_blank\" style=\"color:#e86ca8;\">whykusanagi.xyz/subathon</a>",
+    "message": "👑 <strong>Princess model reveal</strong><br>Nov 30, 4 PM PST<br><a href=\"https://whykusanagi.xyz/subathon\" target=\"_blank\" style=\"color:#e86ca8;\">whykusanagi.xyz/subathon</a>",
     "frequency": 10000,
     "duration": 5000,
     "colors": {
