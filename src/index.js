@@ -10,6 +10,7 @@
  *   - /api/thumbnail            → headless PNG render of the thumbnail generator
  *   - /api/micro-gfx            → headless PNG render of the micro-gfx generator
  *   - /api/twitch-live          → whykusanagi live/offline status
+ *   - /api/subathon             → gifted-sub count from celeste_tts_bot
  *   - /api/health               → health check
  * (favicon is handled by Pages `_redirects`.)
  */
@@ -18,6 +19,7 @@ import { handleProxyRequest } from './lib/celeste-proxy.js';
 import { handleCountdownPresets, handleCountdownGenerate } from './lib/countdown-api.js';
 import { handleRender } from './lib/render-api.js';
 import { handleTwitchLive } from './lib/twitch-live.js';
+import { handleSubathon } from './lib/subathon.js';
 
 export default {
   async fetch(request, env, ctx) {
@@ -38,6 +40,9 @@ export default {
       }
       if (url.pathname === '/api/twitch-live') {
         return handleTwitchLive();
+      }
+      if (url.pathname === '/api/subathon') {
+        return handleSubathon(request, env);
       }
       if (url.pathname === '/api/chat') {
         return handleProxyRequest(request, env);

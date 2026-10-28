@@ -238,17 +238,32 @@
         <span class="tag"><b>${days}</b>day${days > 1 ? 's' : ''} left</span></a>`;
     }).join('');
 
-    // Gifted count lives in static/data/subathon.json; edit + push to update.
-    fetch('/static/data/subathon.json', { cache: 'no-store' })
-      .then((r) => r.json())
-      .then(({ subs }) => {
-        const goals = [...document.querySelectorAll('[data-goal]')];
-        const next = goals.find((g) => subs < +g.dataset.goal);
-        goals.forEach((g) => { g.classList.toggle('done', subs >= +g.dataset.goal); g.classList.toggle('next', g === next); });
-        document.getElementById('subs').textContent = subs;
-        document.getElementById('fill').style.width = `${Math.min(100, (subs / 350) * 100)}%`;
-      })
-      .catch((e) => console.error('[subathon] count unavailable', e));
+    function renderSubs(subs) {
+      if (!Number.isSafeInteger(subs) || subs < 0) throw new Error('invalid gifted-sub count');
+      const goals = [...document.querySelectorAll('[data-goal]')];
+      const next = goals.find((g) => subs < +g.dataset.goal);
+      goals.forEach((g) => { g.classList.toggle('done', subs >= +g.dataset.goal); g.classList.toggle('next', g === next); });
+      document.getElementById('subs').textContent = subs;
+      document.getElementById('fill').style.width = `${Math.min(100, (subs / 350) * 100)}%`;
+    }
+
+    async function refreshSubs() {
+      try {
+        const response = await fetch('/api/subathon', { cache: 'no-store' });
+        if (!response.ok) throw new Error(`count returned ${response.status}`);
+        renderSubs((await response.json()).subs);
+      } catch (error) {
+        console.error('[subathon] live count unavailable; using baseline', error);
+        try {
+          const response = await fetch('/static/data/subathon.json', { cache: 'no-store' });
+          if (!response.ok) throw new Error(`baseline returned ${response.status}`);
+          renderSubs((await response.json()).subs);
+        } catch (fallbackError) {
+          console.error('[subathon] baseline unavailable', fallbackError);
+        }
+      }
+    }
+    refreshSubs(); setInterval(refreshSubs, 60000);
   </script>
 </body>
 </html>
