@@ -10,7 +10,7 @@
  *   - /api/thumbnail            → headless PNG render of the thumbnail generator
  *   - /api/micro-gfx            → headless PNG render of the micro-gfx generator
  *   - /api/twitch-live          → whykusanagi live/offline status
- *   - /api/subathon             → gifted-sub count from celeste_tts_bot
+ *   - /api/subathon             → subathon sub points (celeste_tts_bot + offline adjustment)
  *   - /api/health               → health check
  * (favicon is handled by Pages `_redirects`.)
  */
