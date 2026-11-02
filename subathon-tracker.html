@@ -7,8 +7,10 @@
   <meta name="robots" content="noindex, nofollow">
   <!--
     OBS browser source: 1920x1080, URL https://whykusanagi.xyz/subathon-tracker
-    Count: ?subs=N sets it. Otherwise right-click source → Interact, then
-    + / - (or ↑ / ↓) adjust it, 0 resets. Saved in OBS's browser storage.
+    Slim bar instead: https://whykusanagi.xyz/subathon-tracker?view=bar
+      (1200x140 browser source, transparent background).
+    Count: polls /api/subathon every 30s (committed baseline + live gifted subs
+    from celeste-tts-bot). ?subs=N pins a fixed number for testing.
   -->
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
   <style>
@@ -40,6 +42,21 @@
     #extras table { width: 100%; font-size: 17px; border-collapse: collapse; }
     #extras td:last-child { text-align: right; color: #c9b4ff; }
     #extras h3 { margin: 4px 0; font-size: 20px; color: var(--lav); text-transform: lowercase; }
+
+    /* ?view=bar: slim lower-third meter, transparent for OBS. */
+    #bar { display: none; }
+    body.bar { background: transparent; }
+    body.bar #stage { display: none; }
+    body.bar #bar { display: block; position: absolute; inset: 12px; color: #f3eaff;
+      font-family: var(--font-display, inherit); letter-spacing: .12em; text-transform: uppercase;
+      text-shadow: 0 2px 8px #000; }
+    #bar .row { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; font-size: 22px; }
+    #bar .row b { color: var(--pink); font-size: 40px; letter-spacing: 0; }
+    #bar .row span:last-child { color: #c9b4ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #bar .meter { position: relative; height: 26px; margin-top: 8px; background: var(--card); border: 2px solid var(--lav); }
+    #bar .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, var(--lav), var(--pink));
+      box-shadow: 0 0 18px var(--pink); transition: width .8s; }
+    #bar .meter i { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 16px; }
   </style>
 </head>
 <body>
@@ -47,7 +64,7 @@
     <!-- micro-gfx dark card as a PNG: site CSP frame-src blocks a same-site iframe. Change seed for a different pattern. -->
     <img id="bg" src="/api/micro-gfx?format=card&amp;seed=1130&amp;polarity=dark&amp;eyebrow=&amp;title=&amp;serial=&amp;nameplate=" alt="">
     <img id="art" src="https://s3.whykusanagi.xyz/optimized_assets/kimono_tentacled_obs.jpg" alt="">
-    <div id="count"><b id="subs">0</b>gifted subs</div>
+    <div id="count"><b id="subs">0</b>subs</div>
     <div id="title"><h1>SUBATHON</h1><p>Goals unlock Oct 24 → Nov 21</p><p>Princess reveal · Nov 20 · 4 PM PST</p></div>
     <div id="head">+1 gifted: unique badge <span>(must be 18+)</span></div>
     <div id="goals">
@@ -69,6 +86,10 @@
       </div>
     </div>
   </div>
+  <div id="bar">
+    <div class="row"><span>subathon · <b id="bar-subs">0</b> subs</span><span id="bar-goal"></span></div>
+    <div class="meter"><div class="fill" id="bar-fill"></div><i id="bar-of"></i></div>
+  </div>
   <script>
     const GOALS = [
       [10, 'Channel points can be used to request VRChat model swaps'],
@@ -85,7 +106,6 @@
       [300, 'Game demo early playtest release via Steam/itch.io'],
       [350, 'Launch KusaCoin xD', true],
     ];
-    const KEY = 'subathon-subs';
     const extras = document.getElementById('extras');
     const cards = GOALS.map(([n, text, stretch]) => {
       const el = document.createElement('div');
@@ -95,8 +115,17 @@
       return el;
     });
 
-    function read() { try { return +localStorage.getItem(KEY) || 0; } catch { return 0; } }
+    function renderBar(subs) {
+      const i = GOALS.findIndex(([n]) => subs < n);
+      const [n, text] = i < 0 ? GOALS[GOALS.length - 1] : GOALS[i];
+      const prev = i > 0 ? GOALS[i - 1][0] : 0;
+      document.getElementById('bar-subs').textContent = subs;
+      document.getElementById('bar-goal').textContent = i < 0 ? 'every goal unlocked!' : `next: ${text}`;
+      document.getElementById('bar-of').textContent = i < 0 ? `${subs}` : `${subs} / ${n}`;
+      document.getElementById('bar-fill').style.width = i < 0 ? '100%' : `${((subs - prev) / (n - prev)) * 100}%`;
+    }
     function render(subs) {
+      renderBar(subs);
       document.getElementById('subs').textContent = subs;
       const nextIdx = GOALS.findIndex(([n]) => subs < n);
       cards.forEach((el, i) => {
@@ -106,21 +135,21 @@
         el.querySelector('.bar').style.width = i === nextIdx ? `${((subs - prev) / (n - prev)) * 100}%` : '0';
       });
     }
-    function set(subs) {
-      subs = Math.max(0, subs | 0);
-      try { localStorage.setItem(KEY, subs); } catch {}
-      render(subs);
+    const params = new URLSearchParams(location.search);
+    if (params.get('view') === 'bar') document.body.classList.add('bar');
+
+    // Same sources as subathon.html: live API first, committed baseline if the Worker is down.
+    async function poll() {
+      for (const url of ['/api/subathon', '/static/data/subathon.json']) {
+        try {
+          const res = await fetch(url, { cache: 'no-store' });
+          const subs = res.ok && (await res.json()).subs;
+          if (Number.isSafeInteger(subs) && subs >= 0) return render(subs);
+        } catch (e) { console.warn('[subathon-tracker]', url, e); }
+      }
     }
-
-    const param = new URLSearchParams(location.search).get('subs');
-    param !== null ? set(+param) : render(read());
-
-    // ponytail: manual count via OBS Interact; wire Twitch EventSub if hand-counting gets old.
-    addEventListener('keydown', (e) => {
-      const d = { '+': 1, '=': 1, ArrowUp: 1, '-': -1, ArrowDown: -1 }[e.key];
-      if (d) set(read() + d * (e.shiftKey ? 5 : 1));
-      if (e.key === '0') set(0);
-    });
+    if (params.has('subs')) render(Math.max(0, +params.get('subs') | 0));
+    else { poll(); setInterval(poll, 30000); }
 
     const stage = document.getElementById('stage');
     function fit() { stage.style.transform = `translate(-50%, -50%) scale(${Math.min(innerWidth / 1920, innerHeight / 1080)})`; }
