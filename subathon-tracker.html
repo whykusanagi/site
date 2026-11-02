@@ -47,16 +47,19 @@
     #bar { display: none; }
     html.bar, html.bar body { background: transparent !important; } /* beats theme.css html,body{background-color:var(--bg)} */
     body.bar #stage { display: none; }
-    body.bar #bar { display: block; position: absolute; inset: 12px; color: #f3eaff;
-      font-family: var(--font-display, inherit); letter-spacing: .12em; text-transform: uppercase;
-      text-shadow: 0 2px 8px #000; }
-    #bar .row { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; font-size: 22px; }
-    #bar .row b { color: var(--pink); font-size: 40px; letter-spacing: 0; }
-    #bar .row span:last-child { color: #c9b4ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    #bar .meter { position: relative; height: 26px; margin-top: 8px; background: var(--card); border: 2px solid var(--lav); }
+    /* Dark backing panel + heavy text shadow so it reads over busy looping backgrounds. */
+    body.bar #bar { display: block; position: absolute; top: 12px; left: 12px; right: 12px; color: #fff;
+      padding: 10px 16px 14px; background: rgba(10, 4, 20, .72); border: 2px solid var(--lav); border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(0,0,0,.8), 0 0 16px rgba(201,180,255,.35);
+      font-family: var(--font-display, inherit); font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      text-shadow: 0 0 2px #000, 0 2px 4px #000, 0 0 12px #000; }
+    #bar .row { display: flex; justify-content: space-between; align-items: baseline; gap: 24px; font-size: 26px; }
+    #bar .row b { color: var(--pink); font-size: 44px; letter-spacing: 0; }
+    #bar .row span:last-child { color: #e2d6ff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #bar .meter { position: relative; height: 40px; margin-top: 8px; background: rgba(0,0,0,.6); border: 2px solid var(--lav); border-radius: 6px; overflow: hidden; }
     #bar .fill { position: absolute; inset: 0 auto 0 0; width: 0; background: linear-gradient(90deg, var(--lav), var(--pink));
       box-shadow: 0 0 18px var(--pink); transition: width .8s; }
-    #bar .meter i { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 16px; }
+    #bar .meter i { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 22px; }
   </style>
 </head>
 <body>
