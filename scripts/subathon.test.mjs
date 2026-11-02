@@ -1,54 +1,39 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { countGiftedSubs, handleSubathon, mergeSubathonCount } from '../src/lib/subathon.js';
+import { handleSubathon, mergeSubathonCount } from '../src/lib/subathon.js';
 
-test('counts only gifted subscriptions in a Celeste credits session', () => {
-  assert.equal(countGiftedSubs({
-    new_subs: [
-      { is_gift: true },
-      { is_gift: false },
-      { is_gift: true },
-      null,
-    ],
-  }), 2);
+test('adds the offline adjustment to the bot sub points', () => {
+  const result = mergeSubathonCount({ subs: 17, offline_adjustment: 9 }, { points: 8 });
+  assert.equal(result.subs, 17);
+  assert.equal(result.source, 'celeste_tts_bot');
 });
 
-test('adds an active Celeste session to the committed baseline', () => {
-  const result = mergeSubathonCount(
-    { subs: 7, included_session_id: 'old-session' },
-    { session_id: 'current-session', new_subs: [{ is_gift: true }, { is_gift: true }] },
-  );
+test('counts zero bot points as a real answer, not a fallback', () => {
+  const result = mergeSubathonCount({ subs: 17, offline_adjustment: 9 }, { points: 0 });
   assert.equal(result.subs, 9);
   assert.equal(result.source, 'celeste_tts_bot');
 });
 
-test('does not double-count a session already included in the baseline', () => {
-  const result = mergeSubathonCount(
-    { subs: 9, included_session_id: 'current-session' },
-    { session_id: 'current-session', new_subs: [{ is_gift: true }, { is_gift: true }] },
-  );
-  assert.equal(result.subs, 9);
-  assert.equal(result.source, 'baseline');
+test('falls back to the committed total when the bot answer is missing or bad', () => {
+  for (const bot of [null, {}, { points: -1 }, { points: 'lots' }, { points: 1.5 }]) {
+    const result = mergeSubathonCount({ subs: 17, offline_adjustment: 9 }, bot);
+    assert.equal(result.subs, 17);
+    assert.equal(result.source, 'baseline');
+  }
 });
 
-test('uses the committed baseline when Celeste is unavailable', () => {
-  assert.equal(mergeSubathonCount({ subs: 7 }, null).subs, 7);
-});
-
-test('fetches Celeste credits server-side and returns only the merged count', async () => {
+test('fetches bot points server-side with the Access service token', async () => {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = async (input, init = {}) => {
     const url = new URL(input);
     if (url.pathname === '/static/data/subathon.json') {
-      return Response.json({ subs: 7, included_session_id: 'old-session' });
+      return Response.json({ subs: 17, offline_adjustment: 9 });
     }
-    assert.equal(url.href, 'https://celeste.example/api/credits');
+    assert.equal(url.href, 'https://celeste.example/api/subathon-points');
     assert.equal(init.headers['CF-Access-Client-Id'], 'client-id');
     assert.equal(init.headers['CF-Access-Client-Secret'], 'client-secret');
-    return Response.json({
-      session_id: 'current-session',
-      new_subs: [{ is_gift: true }, { is_gift: false }, { is_gift: true }],
-    });
+    assert.equal(init.redirect, 'manual');
+    return Response.json({ points: 11, sessions_with_subs: 2 });
   };
 
   try {
@@ -61,7 +46,7 @@ test('fetches Celeste credits server-side and returns only the merged count', as
       },
     );
     const body = await response.json();
-    assert.equal(body.subs, 9);
+    assert.equal(body.subs, 20);
     assert.equal(body.source, 'celeste_tts_bot');
     assert.match(body.updatedAt, /^\d{4}-\d{2}-\d{2}T/);
   } finally {
@@ -69,12 +54,12 @@ test('fetches Celeste credits server-side and returns only the merged count', as
   }
 });
 
-test('returns the baseline when the Celeste endpoint is offline', async () => {
+test('returns the committed total when the bot endpoint is offline', async () => {
   const originalFetch = globalThis.fetch;
   const originalConsoleError = console.error;
   globalThis.fetch = async (input) => {
     const url = new URL(input);
-    if (url.pathname === '/static/data/subathon.json') return Response.json({ subs: 7 });
+    if (url.pathname === '/static/data/subathon.json') return Response.json({ subs: 17, offline_adjustment: 9 });
     throw new Error('offline');
   };
   console.error = () => {};
@@ -84,7 +69,31 @@ test('returns the baseline when the Celeste endpoint is offline', async () => {
       new Request('https://whykusanagi.xyz/api/subathon'),
       { CELESTE_TTS_BOT_CREDITS_URL: 'https://celeste.example/api/credits' },
     );
-    assert.equal((await response.json()).subs, 7);
+    const body = await response.json();
+    assert.equal(body.subs, 17);
+    assert.equal(body.source, 'baseline');
+  } finally {
+    globalThis.fetch = originalFetch;
+    console.error = originalConsoleError;
+  }
+});
+
+test('treats an Access login redirect as offline', async () => {
+  const originalFetch = globalThis.fetch;
+  const originalConsoleError = console.error;
+  globalThis.fetch = async (input) => {
+    const url = new URL(input);
+    if (url.pathname === '/static/data/subathon.json') return Response.json({ subs: 17, offline_adjustment: 9 });
+    return new Response(null, { status: 302, headers: { Location: 'https://whykusanagi.cloudflareaccess.com/' } });
+  };
+  console.error = () => {};
+
+  try {
+    const response = await handleSubathon(
+      new Request('https://whykusanagi.xyz/api/subathon'),
+      { CELESTE_TTS_BOT_CREDITS_URL: 'https://celeste.example/api/credits' },
+    );
+    assert.equal((await response.json()).source, 'baseline');
   } finally {
     globalThis.fetch = originalFetch;
     console.error = originalConsoleError;

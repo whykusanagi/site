@@ -1,10 +1,16 @@
 /**
- * /api/subathon -> the committed subathon baseline plus the active Celeste
- * stream session's gifted subscriptions.
+ * /api/subathon -> subathon total in Twitch sub points (T1=1, T2=2, T3=6).
  *
- * celeste_tts_bot exposes its current credits session at /api/credits. Keep
- * that service behind Cloudflare Access (or another authenticated HTTPS
- * endpoint) and configure its URL with CELESTE_TTS_BOT_CREDITS_URL.
+ * total = celeste_tts_bot's /api/subathon-points (every sub the bot saw in the
+ *         subathon window, summed over its saved stream sessions on quasar)
+ *       + static/data/subathon.json `offline_adjustment` (subs the bot never saw,
+ *         e.g. gifts while it wasn't running; edit by hand from the Twitch feed).
+ *
+ * If the bot endpoint is unreachable, `subs` in subathon.json is served as-is, so
+ * keep it equal to the last known total when you edit the adjustment.
+ *
+ * The bot endpoint sits behind Cloudflare Access on the quasar tunnel. Its URL is
+ * derived from CELESTE_TTS_BOT_CREDITS_URL (same host, /api/subathon-points).
  */
 
 const JSON_HEADERS = {
@@ -17,28 +23,19 @@ function nonNegativeInteger(value, fallback = 0) {
   return Number.isSafeInteger(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
-export function countGiftedSubs(credits) {
-  if (!credits || !Array.isArray(credits.new_subs)) return 0;
-  return credits.new_subs.reduce(
-    (total, subscription) => total + (subscription?.is_gift === true ? 1 : 0),
-    0,
-  );
-}
-
-export function mergeSubathonCount(baseline, credits) {
-  const baselineSubs = nonNegativeInteger(baseline?.subs);
-  const sessionId = typeof credits?.session_id === 'string' ? credits.session_id : '';
-  const includedSessionId = typeof baseline?.included_session_id === 'string'
-    ? baseline.included_session_id
-    : '';
-  const activeSessionSubs = sessionId && sessionId !== includedSessionId
-    ? countGiftedSubs(credits)
-    : 0;
-
+export function mergeSubathonCount(baseline, bot) {
+  const points = Number(bot?.points);
+  if (Number.isSafeInteger(points) && points >= 0) {
+    return {
+      subs: nonNegativeInteger(baseline?.offline_adjustment) + points,
+      updatedAt: new Date().toISOString(),
+      source: 'celeste_tts_bot',
+    };
+  }
   return {
-    subs: baselineSubs + activeSessionSubs,
+    subs: nonNegativeInteger(baseline?.subs),
     updatedAt: new Date().toISOString(),
-    source: activeSessionSubs > 0 ? 'celeste_tts_bot' : 'baseline',
+    source: 'baseline',
   };
 }
 
@@ -51,27 +48,22 @@ async function fetchBaseline(request) {
   return response.json();
 }
 
-export async function fetchCelesteCredits(env) {
-  const creditsUrl = env.CELESTE_TTS_BOT_CREDITS_URL;
-  if (!creditsUrl) return null;
+export async function fetchBotPoints(env) {
+  if (!env.CELESTE_TTS_BOT_CREDITS_URL) return null;
+  const pointsUrl = new URL('/api/subathon-points', env.CELESTE_TTS_BOT_CREDITS_URL);
 
   const headers = { Accept: 'application/json' };
   if (env.CELESTE_TTS_BOT_ACCESS_CLIENT_ID && env.CELESTE_TTS_BOT_ACCESS_CLIENT_SECRET) {
     headers['CF-Access-Client-Id'] = env.CELESTE_TTS_BOT_ACCESS_CLIENT_ID;
     headers['CF-Access-Client-Secret'] = env.CELESTE_TTS_BOT_ACCESS_CLIENT_SECRET;
   }
-  if (env.CELESTE_TTS_BOT_AUTH_TOKEN) {
-    headers.Authorization = `Bearer ${env.CELESTE_TTS_BOT_AUTH_TOKEN}`;
-  }
 
-  const response = await fetch(creditsUrl, {
+  const response = await fetch(pointsUrl, {
     headers,
+    redirect: 'manual', // an Access login redirect means auth failed, not data
     signal: AbortSignal.timeout(5000),
   });
   if (!response.ok) throw new Error(`celeste_tts_bot returned ${response.status}`);
-
-  const contentLength = nonNegativeInteger(response.headers.get('Content-Length'));
-  if (contentLength > 262144) throw new Error('celeste_tts_bot response is too large');
   return response.json();
 }
 
@@ -94,14 +86,14 @@ export async function handleSubathon(request, env) {
     });
   }
 
-  let credits = null;
+  let bot = null;
   try {
-    credits = await fetchCelesteCredits(env);
+    bot = await fetchBotPoints(env);
   } catch (error) {
     console.error('[subathon] celeste_tts_bot fetch failed', error);
   }
 
-  return new Response(JSON.stringify(mergeSubathonCount(baseline, credits)), {
+  return new Response(JSON.stringify(mergeSubathonCount(baseline, bot)), {
     headers: JSON_HEADERS,
   });
 }
