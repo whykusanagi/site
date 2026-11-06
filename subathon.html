@@ -186,6 +186,10 @@
             <dt>3rd</dt><dd>C107 request</dd>
           </dl>
         </div>
+        <div class="goal">
+          <h3>Leaderboard</h3>
+          <dl id="leaders"><dt>…</dt><dd></dd></dl>
+        </div>
       </div>
 
       <p><em>Illustration by @Aoi_Suzu_ · 18+ adults only</em></p>
@@ -264,6 +268,18 @@
       }
     }
     refreshSubs(); setInterval(refreshSubs, 60000);
+
+    // Top gifters, hand-kept in subathon.json `leaderboard` (sorted, gifted-sub count).
+    fetch('/static/data/subathon.json', { cache: 'no-store' })
+      .then((r) => r.ok ? r.json() : Promise.reject(new Error(`leaderboard returned ${r.status}`)))
+      .then(({ leaderboard = [] }) => {
+        document.getElementById('leaders').replaceChildren(...leaderboard.flatMap(({ name, gifted }, i) => {
+          const dt = document.createElement('dt'), dd = document.createElement('dd');
+          dt.textContent = `${i + 1}. ${name}`; dd.textContent = `${gifted} gifted`;
+          return [dt, dd];
+        }));
+      })
+      .catch((error) => console.error('[subathon] leaderboard unavailable', error));
   </script>
 </body>
 </html>
