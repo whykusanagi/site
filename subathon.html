@@ -242,44 +242,39 @@
         <span class="tag"><b>${days}</b>day${days > 1 ? 's' : ''} left</span></a>`;
     }).join('');
 
-    function renderSubs(subs) {
-      if (!Number.isSafeInteger(subs) || subs < 0) throw new Error('invalid gifted-sub count');
+    function renderSubs({ subs, leaderboard = [] }) {
+      if (!Number.isSafeInteger(subs) || subs < 0) throw new Error('invalid sub count');
       const goals = [...document.querySelectorAll('[data-goal]')];
       const next = goals.find((g) => subs < +g.dataset.goal);
       goals.forEach((g) => { g.classList.toggle('done', subs >= +g.dataset.goal); g.classList.toggle('next', g === next); });
       document.getElementById('subs').textContent = subs;
       document.getElementById('fill').style.width = `${Math.min(100, (subs / 350) * 100)}%`;
+      // Names via textContent: they're viewer input.
+      document.getElementById('leaders').replaceChildren(...leaderboard.flatMap(({ name, gifted }, i) => {
+        const dt = document.createElement('dt'), dd = document.createElement('dd');
+        dt.textContent = `${i + 1}. ${name}`; dd.textContent = `${gifted} gifted`;
+        return [dt, dd];
+      }));
     }
 
+    // Live API (StreamElements → bot → baseline) first, committed baseline if the Worker is down.
     async function refreshSubs() {
       try {
         const response = await fetch('/api/subathon', { cache: 'no-store' });
         if (!response.ok) throw new Error(`count returned ${response.status}`);
-        renderSubs((await response.json()).subs);
+        renderSubs(await response.json());
       } catch (error) {
         console.error('[subathon] live count unavailable; using baseline', error);
         try {
           const response = await fetch('/static/data/subathon.json', { cache: 'no-store' });
           if (!response.ok) throw new Error(`baseline returned ${response.status}`);
-          renderSubs((await response.json()).subs);
+          renderSubs(await response.json());
         } catch (fallbackError) {
           console.error('[subathon] baseline unavailable', fallbackError);
         }
       }
     }
     refreshSubs(); setInterval(refreshSubs, 60000);
-
-    // Top gifters, hand-kept in subathon.json `leaderboard` (sorted, gifted-sub count).
-    fetch('/static/data/subathon.json', { cache: 'no-store' })
-      .then((r) => r.ok ? r.json() : Promise.reject(new Error(`leaderboard returned ${r.status}`)))
-      .then(({ leaderboard = [] }) => {
-        document.getElementById('leaders').replaceChildren(...leaderboard.flatMap(({ name, gifted }, i) => {
-          const dt = document.createElement('dt'), dd = document.createElement('dd');
-          dt.textContent = `${i + 1}. ${name}`; dd.textContent = `${gifted} gifted`;
-          return [dt, dd];
-        }));
-      })
-      .catch((error) => console.error('[subathon] leaderboard unavailable', error));
   </script>
 </body>
 </html>

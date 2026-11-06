@@ -9,8 +9,8 @@
     OBS browser source: 1920x1080, URL https://whykusanagi.xyz/subathon-tracker
     Slim bar instead: https://whykusanagi.xyz/subathon-tracker?view=bar
       (1200x140 browser source, transparent background).
-    Count: polls /api/subathon every 30s (committed baseline + live gifted subs
-    from celeste-tts-bot). ?subs=N pins a fixed number for testing.
+    Count + top gifters: polls /api/subathon every 30s (StreamElements feed,
+    falling back to celeste-tts-bot, then static/data/subathon.json). ?subs=N pins a fixed number for testing.
   -->
   <link rel="stylesheet" href="https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/dist/theme.min.css" integrity="sha384-kIMpzxf5yLsippKKW1QWDaxNEXnGPzVvYwsgWsOZr8zEK8wijVch27X+WwtYlTzd" crossorigin="anonymous">
   <style>
@@ -145,29 +145,26 @@
     const params = new URLSearchParams(location.search);
     if (params.get('view') === 'bar') { document.documentElement.classList.add('bar'); document.body.classList.add('bar'); }
 
+    // Top 3 gifters. Names via textContent: they're viewer input.
+    function renderLeaders(leaderboard) {
+      const top = leaderboard.slice(0, 3);
+      const h = document.createElement('h3'); h.textContent = 'top gifters';
+      document.getElementById('leaders').replaceChildren(...(top.length ? [h] : []), ...top.map(({ name, gifted }, i) => {
+        const row = document.createElement('div'), b = document.createElement('b');
+        row.textContent = `${i + 1}. ${name}`; b.textContent = gifted; row.append(b); return row;
+      }));
+    }
+
     // Same sources as subathon.html: live API first, committed baseline if the Worker is down.
     async function poll() {
       for (const url of ['/api/subathon', '/static/data/subathon.json']) {
         try {
           const res = await fetch(url, { cache: 'no-store' });
-          const subs = res.ok && (await res.json()).subs;
-          if (Number.isSafeInteger(subs) && subs >= 0) return render(subs);
+          const body = res.ok ? await res.json() : {};
+          if (Number.isSafeInteger(body.subs) && body.subs >= 0) { renderLeaders(body.leaderboard || []); return render(body.subs); }
         } catch (e) { console.warn('[subathon-tracker]', url, e); }
       }
     }
-    // Top gifters from subathon.json `leaderboard` (hand-kept, sorted). Names via textContent: they're viewer input.
-    async function pollLeaders() {
-      try {
-        const res = await fetch('/static/data/subathon.json', { cache: 'no-store' });
-        const top = res.ok ? ((await res.json()).leaderboard || []).slice(0, 3) : [];
-        const h = document.createElement('h3'); h.textContent = 'top gifters';
-        document.getElementById('leaders').replaceChildren(...(top.length ? [h] : []), ...top.map(({ name, gifted }, i) => {
-          const row = document.createElement('div'), b = document.createElement('b');
-          row.textContent = `${i + 1}. ${name}`; b.textContent = gifted; row.append(b); return row;
-        }));
-      } catch (e) { console.warn('[subathon-tracker] leaderboard', e); }
-    }
-    if (!document.body.classList.contains('bar')) { pollLeaders(); setInterval(pollLeaders, 60000); }
     if (params.has('subs')) render(Math.max(0, +params.get('subs') | 0));
     else { poll(); setInterval(poll, 30000); }
 
