@@ -1,1 +1,9 @@
-{ "subs": 17, "offline_adjustment": 9 }
+{
+  "subs": 27,
+  "offline_adjustment": 9,
+  "leaderboard": [
+    { "name": "ERO765pro", "gifted": 7 },
+    { "name": "BasedDark", "gifted": 5 },
+    { "name": "cursedgreed", "gifted": 4 }
+  ]
+}
