@@ -117,6 +117,42 @@
                 src="https://embed.music.apple.com/us/artist/celesteai/1895699799"
                 loading="lazy" title="CelesteAI on Apple Music"></iframe>
 
+        <section id="on-my-word" style="text-align:center; margin-bottom:2.5rem;">
+          <h2>New album: ON MY WORD 合図</h2>
+          <p>Ten new transmissions. Out Friday, November 27 at midnight.</p>
+          <p id="omw-countdown" style="font-size:2rem; font-weight:700; font-variant-numeric:tabular-nums; margin:1rem 0;" aria-live="off"></p>
+          <a id="omw-live" hidden href="https://open.spotify.com/artist/1zxJS4bTXkQANH1dzcfKh1" target="_blank" rel="noopener" class="btn"><i class="fab fa-spotify"></i> Out now: listen on Spotify</a>
+          <ol style="text-align:left; display:inline-block; line-height:1.9; margin-top:1rem;">
+            <li>COUNT ME DOWN ✶ 数えて</li>
+            <li>HEXBOUND 🕯 縛れ</li>
+            <li>IDOL ✦ 偶像</li>
+            <li>HOP ON IT ♡ 跳ねて</li>
+            <li>UNZIP ✂ 脱がせて</li>
+            <li>◐ KYOUZOU 鏡像</li>
+            <li>Yuubaku // 誘爆</li>
+            <li>【喰らう】KURAU</li>
+            <li>CONFESS † 祈って</li>
+            <li>YORU DAKE ☾ 夜だけ</li>
+          </ol>
+        </section>
+        <script>
+          // Countdown to ON MY WORD release; on hit, swap to the Spotify link.
+          (function () {
+            var release = new Date('2026-11-27T00:00:00-07:00'); // midnight Mountain (Arizona) time
+            var out = document.getElementById('omw-countdown');
+            var live = document.getElementById('omw-live');
+            function tick() {
+              var ms = release - Date.now();
+              if (ms <= 0) { out.hidden = true; live.hidden = false; return; }
+              var s = Math.floor(ms / 1000);
+              var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
+              out.textContent = d + 'd ' + h + 'h ' + m + 'm ' + (s % 60) + 's';
+              setTimeout(tick, 1000);
+            }
+            tick();
+          })();
+        </script>
+
         <h2>Abyssal Conquest <span style="color: var(--text-muted); font-weight: 400;">(2026)</span></h2>
         <p>The full-length descent — the original soundtrack to the <a href="blog/abyssal-conquest-demo">Abyssal Conquest</a> rails shooter, reborn as a standalone listen.</p>
 
