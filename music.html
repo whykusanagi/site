@@ -122,8 +122,8 @@
           <img src="https://s3.whykusanagi.xyz/optimized_assets/on_my_word_cover_web.jpg" alt="ON MY WORD 合図 album cover" width="400" height="400" loading="lazy" style="max-width:100%; height:auto; border-radius:12px; margin:1rem 0;">
           <p>Ten new transmissions. Out Friday, November 27 at midnight.</p>
           <p id="omw-countdown" style="font-size:2rem; font-weight:700; font-variant-numeric:tabular-nums; margin:1rem 0;" aria-live="off"></p>
-          <a id="omw-live" hidden href="https://open.spotify.com/artist/1zxJS4bTXkQANH1dzcfKh1" target="_blank" rel="noopener" class="btn"><i class="fab fa-spotify"></i> Out now: listen on Spotify</a>
-          <ol style="text-align:left; display:inline-block; line-height:1.9; margin-top:1rem;">
+          <a id="omw-live" style="display:none" href="https://open.spotify.com/artist/1zxJS4bTXkQANH1dzcfKh1" target="_blank" rel="noopener" class="btn"><i class="fab fa-spotify"></i> Out now: listen on Spotify</a>
+          <ol style="text-align:left; width:fit-content; line-height:1.9; margin:1rem auto 0;">
             <li>COUNT ME DOWN ✶ 数えて</li>
             <li>HEXBOUND 🕯 縛れ</li>
             <li>IDOL ✦ 偶像</li>
@@ -144,7 +144,7 @@
             var live = document.getElementById('omw-live');
             function tick() {
               var ms = release - Date.now();
-              if (ms <= 0) { out.hidden = true; live.hidden = false; return; }
+              if (ms <= 0) { out.style.display = 'none'; live.style.display = ''; return; }
               var s = Math.floor(ms / 1000);
               var d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60);
               out.textContent = d + 'd ' + h + 'h ' + m + 'm ' + (s % 60) + 's';
