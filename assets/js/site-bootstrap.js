@@ -6,7 +6,7 @@
 // Theme CDN versions are synchronized from package.json by npm run theme:sync.
 
 // === Toast (sitewide singleton — exposed on window for inline callers) ===
-import { Toast } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/toast.js';
+import { Toast } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/toast.js';
 window.Toast = Toast;
 
 // Click-to-copy hashtag on links.html (also a live Toast demo)
@@ -25,7 +25,7 @@ if (hashtagEl) {
 // CorruptedParticlesBackground is a class. Instantiating it handles DOMContentLoaded
 // internally and always forces DPR=1 on the background canvas (no dpr option needed).
 // count:15 = low density (default is 25). nsfw:true enables adult-content particles.
-import { CorruptedParticlesBackground } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/corrupted-particles-background.js';
+import { CorruptedParticlesBackground } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/corrupted-particles-background.js';
 // Two gates. Reduced motion is the accessibility one. The canvas check is a
 // performance one: on celeste.html this canvas animates every frame beneath a
 // 92-96% opaque backdrop, so it is pure cost with nothing visible on top.
@@ -39,7 +39,7 @@ import './decrypt-headings.js';
 
 // === Index-only: CRTEffects ambient layer + TerminalBoot/TitleDecoder hero ===
 if (document.body.classList.contains('crt-on')) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/crt-effects.js').then(({ CRTEffects }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/crt-effects.js').then(({ CRTEffects }) => {
     new CRTEffects(document.body, {
       autoStart:        true,
       scanlines:        true,
@@ -58,7 +58,7 @@ if (document.body.classList.contains('crt-on')) {
 // it never loads on pages without it.
 const mandalaEl = document.querySelector('[data-ct-mandala]');
 if (mandalaEl) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/corrupted-mandala.js').then(({ CorruptedMandala }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/corrupted-mandala.js').then(({ CorruptedMandala }) => {
     new CorruptedMandala(mandalaEl, {
       labelTop:    'WHYKUSANAGI',
       labelBottom: 'ABYSS.SYS',
@@ -71,7 +71,7 @@ if (mandalaEl) {
 
 const heroEl = document.querySelector('[data-ct-animation="hero-boot"]');
 if (heroEl) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/animation-blocks.js').then(async ({ TerminalBoot, TitleDecoder }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/animation-blocks.js').then(async ({ TerminalBoot, TitleDecoder }) => {
     const finalText = heroEl.textContent.trim();
 
     // Hide h1 native text so only the animation overlay is visible during the sequence.
@@ -105,7 +105,7 @@ if (heroEl) {
 // === links.html-only: ClockWidget ===
 const clockEl = document.getElementById('clock-widget');
 if (clockEl) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/clock-widget.js').then(({ ClockWidget }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/clock-widget.js').then(({ ClockWidget }) => {
     new ClockWidget(clockEl, {
       timezones: ['Asia/Tokyo', 'America/Los_Angeles', 'UTC'],
       format:    '12h',
@@ -127,7 +127,7 @@ function initNsfwReveal() {
   const targets = document.querySelectorAll('[data-nsfw-reveal]');
   if (!targets.length) return;
 
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/nsfw-reveal.js').then(({ NsfwReveal }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/nsfw-reveal.js').then(({ NsfwReveal }) => {
     targets.forEach(el => {
       const nr = new NsfwReveal(el, { warning: '18+ — click to reveal' });
       // nsfw:true site default → reveal immediately (content visible on load).
@@ -146,7 +146,7 @@ document.addEventListener('gallery:loaded', initNsfwReveal, { once: true });
 // Reference sheets use the theme lightbox; real image links remain usable without JS.
 const referenceGallery = document.querySelector('[data-reference-gallery]');
 if (referenceGallery) {
-  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/lightbox.js').then(({ Lightbox }) => {
+  import('https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/lightbox.js').then(({ Lightbox }) => {
     const anchors = [...referenceGallery.querySelectorAll('.reference-item a')];
     const lightbox = new Lightbox(null);
     lightbox.setImages(anchors.map(anchor => ({
