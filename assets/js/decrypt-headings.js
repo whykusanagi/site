@@ -1,7 +1,7 @@
 // The theme owns viewport observation, one-shot decoding and visibility cleanup.
 // Keep the site's heading selection policy so inline links/markup and the
 // separately animated home hero remain intact.
-import { ScrollDecode } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.5/src/lib/scroll-decode.js';
+import { ScrollDecode } from 'https://cdn.whykusanagi.xyz/corrupted-theme/@0.3.6/src/lib/scroll-decode.js';
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (!reducedMotion) {
